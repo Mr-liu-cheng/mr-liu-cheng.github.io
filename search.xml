@@ -1,6 +1,253 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>hexo 路径表示</title>
+    <url>/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Hexo 中，路径表示（即如何表示文件和目录的路径）有几个常见的用法和约定，具体取决于你是在配置站点、创建内容，还是处理资源。以下是常见的路径表示方式和相关解释：</p>
+<h2 id="相对路径与绝对路径"><a href="#相对路径与绝对路径" class="headerlink" title="相对路径与绝对路径"></a><strong>相对路径与绝对路径</strong></h2><ul>
+<li><p><strong>相对路径</strong> ：Hexo 中很多地方使用相对路径，通常相对路径是相对于 Hexo 项目的根目录或某些子目录的。例如：</p>
+<ul>
+<li><code>source/_posts/</code> 表示博客文章的存储位置。</li>
+<li><code>source/_pages/</code> 表示页面文件的存储位置。</li>
+</ul>
+</li>
+<li><p><strong>绝对路径</strong> ：通常是相对于网站根目录的路径，例如：</p>
+<ul>
+<li><code>/about/</code> 代表网站根目录下的 <code>about</code> 页面（通常通过 Hexo 配置生成）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Hexo-配置文件中的路径表示"><a href="#Hexo-配置文件中的路径表示" class="headerlink" title="Hexo 配置文件中的路径表示"></a><strong>Hexo 配置文件中的路径表示</strong></h2><p>在 Hexo 的 <code>_config.yml</code> 配置文件中，许多路径表示都是相对于站点根目录的。例如：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Hexo站点的URL</span></span><br><span class="line"><span class="attr">url:</span> <span class="string">http://yoursite.com</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 博客的URL路径</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 存放站点文件的目录</span></span><br><span class="line"><span class="attr">source_dir:</span> <span class="string">source</span></span><br><span class="line"><span class="attr">public_dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>url</code></strong> ：表示站点的根 URL。</li>
+<li><strong><code>permalink</code></strong> ：指定生成的文章 URL 格式。<code>/</code> 斜杠表示站点根目录。</li>
+<li><strong><code>source_dir</code></strong>  和 <strong><strong><code>source_dir</code></strong>  和 <code>public_dir</code></strong> ：定义了源文件和生成后的文件所在的目录。</li>
+</ul>
+<h2 id="创建文章与页面的路径表示"><a href="#创建文章与页面的路径表示" class="headerlink" title="创建文章与页面的路径表示"></a><strong>创建文章与页面的路径表示</strong></h2><p>在 Hexo 中，创建文章和页面时通常会有路径约定：</p>
+<ul>
+<li><strong>文章路径</strong> ：默认情况下，文章会存放在 <code>source/_posts/</code> 目录下。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new post <span class="string">&quot;My First Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>该命令会在 <code>source/_posts/</code> 目录下创建一个新的 Markdown 文件，文件名是文章标题的拼音。</p>
+<ul>
+<li><strong>页面路径</strong> ：页面会存放在 <code>source/_pages/</code> 目录下。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;About&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>该命令会在 <code>source/_pages/</code> 下创建一个新的页面文件，通常用于站点的静态页面（如关于页面、联系页面等）。</p>
+<h2 id="静态资源路径表示"><a href="#静态资源路径表示" class="headerlink" title="静态资源路径表示"></a><strong>静态资源路径表示</strong></h2><p>在 Hexo 中，静态资源（如图片、JavaScript 文件、CSS 文件等）通常放在 <code>source</code> 目录中的子目录中，然后通过相对路径引用。这些资源会被复制到 <code>public</code> 目录下，并可以通过 URL 引用。</p>
+<ul>
+<li>例如，你可以把图片放在 <code>source/images/</code> 目录中，引用时使用相对路径：</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Image</span>](<span class="link">images/my-image.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+<p>该图片会被复制到 <code>public/images/</code> 目录，并且可以通过 <code>/images/my-image.jpg</code> 访问。</p>
+<h2 id="主题配置中的路径"><a href="#主题配置中的路径" class="headerlink" title="主题配置中的路径"></a><strong>主题配置中的路径</strong></h2><p>在 Hexo 主题的 <code>_config.yml</code> 配置文件中，通常会有一些与路径相关的设置，特别是与静态资源和模板文件相关的路径。例如：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">landscape</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 主题中静态资源的路径</span></span><br><span class="line"><span class="attr">favicon:</span> <span class="string">/favicon.ico</span></span><br><span class="line"><span class="attr">logo:</span> <span class="string">/images/logo.png</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>favicon</code> 和 <code>logo</code> 等设置中使用的是站点根目录的路径（如 <code>/images/logo.png</code>），这些路径在生成站点时会指向 <code>public</code> 目录中的相应位置。</li>
+</ul>
+<h2 id="URL-路径与文件路径的映射"><a href="#URL-路径与文件路径的映射" class="headerlink" title="URL 路径与文件路径的映射"></a><strong>URL 路径与文件路径的映射</strong></h2><p>Hexo 将博客文章文件的路径（例如 <code>source/_posts/</code>）转换为对应的 URL 路径。例如，如果你有一个 <code>source/_posts/2024/hello-world.md</code> 的文章文件，Hexo 会将其转换为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://yoursite.com/2024/hello-world/</span><br></pre></td></tr></table></figure>
+
+<p>路径映射规则是通过 <code>_config.yml</code> 中的 <code>permalink</code> 配置项进行控制的。你可以自定义文章的 URL 路径格式，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br></pre></td></tr></table></figure>
+
+<p>这样，文章的 URL 路径会包含年份、月份、日期和文章标题。</p>
+<h2 id="路径和文件系统中的斜杠"><a href="#路径和文件系统中的斜杠" class="headerlink" title="路径和文件系统中的斜杠"></a>路径和文件系统中的斜杠</h2><ul>
+<li>在 Hexo 中，路径使用 <code>/</code> 斜杠表示文件和目录之间的分隔符。即使在 Windows 系统中，Hexo 仍然使用 <code>/</code> 作为路径分隔符，这是因为 Hexo 在不同操作系统上有统一的路径处理方式。</li>
+</ul>
+<h2 id="Hexo-路径表示的小技巧"><a href="#Hexo-路径表示的小技巧" class="headerlink" title="Hexo 路径表示的小技巧"></a><strong>Hexo 路径表示的小技巧</strong></h2><ul>
+<li><strong>绝对路径引用：</strong>  如果想要在站点中引用根目录下的文件，可以使用 <code>/</code> 开头的绝对路径。例如，<code>/images/logo.png</code> 会引用 <code>public/images/logo.png</code>。</li>
+<li><strong>相对路径引用：</strong>  在文章或页面中引用文件时，通常使用相对路径。例如，<code>./images/photo.jpg</code> 会引用 <code>source/images/photo.jpg</code>。</li>
+</ul>
+<p><strong>例子：在 Hexo 中使用路径</strong></p>
+<p>假设你有以下文件结构：</p>
+<figure class="highlight perl"><table><tr><td class="code"><pre><span class="line">hexo/</span><br><span class="line">  source/</span><br><span class="line">    _posts/</span><br><span class="line">      <span class="keyword">my</span>-first-post.md</span><br><span class="line">    images/</span><br><span class="line">      logo.png</span><br><span class="line">  themes/</span><br><span class="line">    <span class="keyword">my</span>-theme/</span><br><span class="line">      _config.yml</span><br><span class="line">  _config.yml</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><strong>创建一个新文章</strong> ：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new post <span class="string">&quot;My First Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>这将在 <code>source/_posts/</code> 中创建一个 <code>my-first-post.md</code> 文件。</p>
+<ol start="2">
+<li><strong>在文章中引用图片</strong> ：</li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Logo</span>](<span class="link">/images/logo.png</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这会引用 <code>public/images/logo.png</code> 文件。</p>
+<ol start="3">
+<li><strong>修改 <code>_config.yml</code> 配置</strong> ：</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">url:</span> <span class="string">http://mywebsite.com</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br></pre></td></tr></table></figure>
+
+<p>这将使生成的文章 URL 类似于 <code>http://mywebsite.com/2024/01/01/my-first-post/</code>。</p>
+<p><strong>总结</strong></p>
+<p>在 Hexo 中，路径的表示方式通常依赖于文件系统的位置、站点的根目录以及 <code>_config.yml</code> 中的配置。你可以使用相对路径和绝对路径来链接文章、页面、静态资源，并通过配置文件来控制 URL 路径和静态资源的位置。</p>
+<h2 id="和"><a href="#和" class="headerlink" title=".&#x2F;和..&#x2F;"></a>.&#x2F;和..&#x2F;</h2><p><code>./</code> 和 <code>../</code> 是文件路径中的相对路径符号，通常用于指示文件系统中的位置。它们在命令行、编程、文件引用等场景中都非常常见。下面是它们的具体含义：</p>
+<h3 id="的含义"><a href="#的含义" class="headerlink" title="./ 的含义"></a><code>./</code> 的含义</h3><ul>
+<li><code>./</code> 表示当前目录（即你当前所在的目录）。</li>
+<li>它通常用来表示当前目录下的某个文件或文件夹，或者作为命令行中的前缀来执行当前目录中的程序。</li>
+</ul>
+<p><strong>例子：</strong></p>
+<ul>
+<li><code>./file.txt</code>：指当前目录下的 <code>file.txt</code> 文件。</li>
+<li>在命令行中执行当前目录中的程序：<code>./myprogram</code>。<br>在 Hexo 或其他 Web 开发场景中，<code>./</code> 主要用于引用当前目录中的文件。例如，在文章中引用当前目录下的图片：</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">My Image</span>](<span class="link">./images/photo.jpg</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这表示引用 <code>source/images/photo.jpg</code> 文件。</p>
+<h3 id="的含义-1"><a href="#的含义-1" class="headerlink" title="../ 的含义"></a><code>../</code> 的含义</h3><ul>
+<li><code>../</code> 表示上一级目录（即当前目录的父目录）。</li>
+<li>它通常用于返回到当前目录的上一级目录，在文件系统中向上移动一个层级。</li>
+</ul>
+<p><strong>例子：</strong></p>
+<ul>
+<li><code>../file.txt</code>：指的是上一级目录中的 <code>file.txt</code> 文件。</li>
+<li><code>../../</code>：表示上上一级目录。<br>在 Hexo 或其他开发场景中，<code>../</code> 用于引用上级目录中的文件。例如，假设你在 <code>source/_posts/</code> 目录下，并且想要引用 <code>source/images/</code> 目录中的文件，可以使用 <code>../</code>：</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Logo</span>](<span class="link">../images/logo.png</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这表示从当前目录 <code>source/_posts/</code> 向上一级（即 <code>source/</code>）跳转，再进入 <code>images/</code> 目录，最终引用 <code>logo.png</code> 文件。</p>
+<p><strong>实际示例</strong></p>
+<p>假设文件结构如下：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo/</span><br><span class="line">  <span class="built_in">source</span>/</span><br><span class="line">    _posts/</span><br><span class="line">      post1.md</span><br><span class="line">    images/</span><br><span class="line">      logo.png</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果你在 <code>post1.md</code> 文件中想要引用 <code>logo.png</code> 文件：</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Logo</span>](<span class="link">../images/logo.png</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这样，<code>../</code> 表示从 <code>source/_posts/</code> 目录向上返回到 <code>source/</code> 目录，然后再进入 <code>images/</code> 目录。</p>
+<ul>
+<li>如果你在 <code>source/images/</code> 中，想引用 <code>source/_posts/post1.md</code> 文件：</li>
+</ul>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">[<span class="string">Post 1</span>](<span class="link">../_posts/post1.md</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这样，<code>../</code> 会让你从 <code>images/</code> 目录返回到 <code>source/</code>，然后进入 <code>_posts/</code> 目录。</p>
+<p><strong>总结：</strong></p>
+<ul>
+<li><strong><code>./</code></strong> ：当前目录。</li>
+<li><strong><code>../</code></strong> ：上一级目录（父目录）。</li>
+</ul>
+<p>这两个符号是相对路径的一部分，帮助你在不同的目录之间进行导航。</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li><p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
+</li>
+<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
+<li><p>打开 Clash for Windows。</p>
+</li>
+<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong>  </p>
+<ol>
+<li><p>确保规则优先级正确：</p>
+<p>  例如： </p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li><p>测试网络连接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong> </p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>butterfly 禁用头像旋转</title>
     <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
     <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
@@ -284,147 +531,119 @@
       </tags>
   </entry>
   <entry>
-    <title>hexo 路径表示</title>
-    <url>/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Hexo 中，路径表示（即如何表示文件和目录的路径）有几个常见的用法和约定，具体取决于你是在配置站点、创建内容，还是处理资源。以下是常见的路径表示方式和相关解释：</p>
-<h2 id="相对路径与绝对路径"><a href="#相对路径与绝对路径" class="headerlink" title="相对路径与绝对路径"></a><strong>相对路径与绝对路径</strong></h2><ul>
-<li><p><strong>相对路径</strong> ：Hexo 中很多地方使用相对路径，通常相对路径是相对于 Hexo 项目的根目录或某些子目录的。例如：</p>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
 <ul>
-<li><code>source/_posts/</code> 表示博客文章的存储位置。</li>
-<li><code>source/_pages/</code> 表示页面文件的存储位置。</li>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
 </ul>
 </li>
-<li><p><strong>绝对路径</strong> ：通常是相对于网站根目录的路径，例如：</p>
-<ul>
-<li><code>/about/</code> 代表网站根目录下的 <code>about</code> 页面（通常通过 Hexo 配置生成）。</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
 </ul>
 </li>
 </ul>
-<h2 id="Hexo-配置文件中的路径表示"><a href="#Hexo-配置文件中的路径表示" class="headerlink" title="Hexo 配置文件中的路径表示"></a><strong>Hexo 配置文件中的路径表示</strong></h2><p>在 Hexo 的 <code>_config.yml</code> 配置文件中，许多路径表示都是相对于站点根目录的。例如：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Hexo站点的URL</span></span><br><span class="line"><span class="attr">url:</span> <span class="string">http://yoursite.com</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 博客的URL路径</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 存放站点文件的目录</span></span><br><span class="line"><span class="attr">source_dir:</span> <span class="string">source</span></span><br><span class="line"><span class="attr">public_dir:</span> <span class="string">public</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>url</code></strong> ：表示站点的根 URL。</li>
-<li><strong><code>permalink</code></strong> ：指定生成的文章 URL 格式。<code>/</code> 斜杠表示站点根目录。</li>
-<li><strong><code>source_dir</code></strong>  和 <strong><strong><code>source_dir</code></strong>  和 <code>public_dir</code></strong> ：定义了源文件和生成后的文件所在的目录。</li>
-</ul>
-<h2 id="创建文章与页面的路径表示"><a href="#创建文章与页面的路径表示" class="headerlink" title="创建文章与页面的路径表示"></a><strong>创建文章与页面的路径表示</strong></h2><p>在 Hexo 中，创建文章和页面时通常会有路径约定：</p>
-<ul>
-<li><strong>文章路径</strong> ：默认情况下，文章会存放在 <code>source/_posts/</code> 目录下。</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new post <span class="string">&quot;My First Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>该命令会在 <code>source/_posts/</code> 目录下创建一个新的 Markdown 文件，文件名是文章标题的拼音。</p>
-<ul>
-<li><strong>页面路径</strong> ：页面会存放在 <code>source/_pages/</code> 目录下。</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;About&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>该命令会在 <code>source/_pages/</code> 下创建一个新的页面文件，通常用于站点的静态页面（如关于页面、联系页面等）。</p>
-<h2 id="静态资源路径表示"><a href="#静态资源路径表示" class="headerlink" title="静态资源路径表示"></a><strong>静态资源路径表示</strong></h2><p>在 Hexo 中，静态资源（如图片、JavaScript 文件、CSS 文件等）通常放在 <code>source</code> 目录中的子目录中，然后通过相对路径引用。这些资源会被复制到 <code>public</code> 目录下，并可以通过 URL 引用。</p>
-<ul>
-<li>例如，你可以把图片放在 <code>source/images/</code> 目录中，引用时使用相对路径：</li>
-</ul>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Image</span>](<span class="link">images/my-image.jpg</span>)</span><br></pre></td></tr></table></figure>
-
-<p>该图片会被复制到 <code>public/images/</code> 目录，并且可以通过 <code>/images/my-image.jpg</code> 访问。</p>
-<h2 id="主题配置中的路径"><a href="#主题配置中的路径" class="headerlink" title="主题配置中的路径"></a><strong>主题配置中的路径</strong></h2><p>在 Hexo 主题的 <code>_config.yml</code> 配置文件中，通常会有一些与路径相关的设置，特别是与静态资源和模板文件相关的路径。例如：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">landscape</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 主题中静态资源的路径</span></span><br><span class="line"><span class="attr">favicon:</span> <span class="string">/favicon.ico</span></span><br><span class="line"><span class="attr">logo:</span> <span class="string">/images/logo.png</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>favicon</code> 和 <code>logo</code> 等设置中使用的是站点根目录的路径（如 <code>/images/logo.png</code>），这些路径在生成站点时会指向 <code>public</code> 目录中的相应位置。</li>
-</ul>
-<h2 id="URL-路径与文件路径的映射"><a href="#URL-路径与文件路径的映射" class="headerlink" title="URL 路径与文件路径的映射"></a><strong>URL 路径与文件路径的映射</strong></h2><p>Hexo 将博客文章文件的路径（例如 <code>source/_posts/</code>）转换为对应的 URL 路径。例如，如果你有一个 <code>source/_posts/2024/hello-world.md</code> 的文章文件，Hexo 会将其转换为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">http://yoursite.com/2024/hello-world/</span><br></pre></td></tr></table></figure>
-
-<p>路径映射规则是通过 <code>_config.yml</code> 中的 <code>permalink</code> 配置项进行控制的。你可以自定义文章的 URL 路径格式，例如：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br></pre></td></tr></table></figure>
-
-<p>这样，文章的 URL 路径会包含年份、月份、日期和文章标题。</p>
-<h2 id="路径和文件系统中的斜杠"><a href="#路径和文件系统中的斜杠" class="headerlink" title="路径和文件系统中的斜杠"></a>路径和文件系统中的斜杠</h2><ul>
-<li>在 Hexo 中，路径使用 <code>/</code> 斜杠表示文件和目录之间的分隔符。即使在 Windows 系统中，Hexo 仍然使用 <code>/</code> 作为路径分隔符，这是因为 Hexo 在不同操作系统上有统一的路径处理方式。</li>
-</ul>
-<h2 id="Hexo-路径表示的小技巧"><a href="#Hexo-路径表示的小技巧" class="headerlink" title="Hexo 路径表示的小技巧"></a><strong>Hexo 路径表示的小技巧</strong></h2><ul>
-<li><strong>绝对路径引用：</strong>  如果想要在站点中引用根目录下的文件，可以使用 <code>/</code> 开头的绝对路径。例如，<code>/images/logo.png</code> 会引用 <code>public/images/logo.png</code>。</li>
-<li><strong>相对路径引用：</strong>  在文章或页面中引用文件时，通常使用相对路径。例如，<code>./images/photo.jpg</code> 会引用 <code>source/images/photo.jpg</code>。</li>
-</ul>
-<p><strong>例子：在 Hexo 中使用路径</strong></p>
-<p>假设你有以下文件结构：</p>
-<figure class="highlight perl"><table><tr><td class="code"><pre><span class="line">hexo/</span><br><span class="line">  source/</span><br><span class="line">    _posts/</span><br><span class="line">      <span class="keyword">my</span>-first-post.md</span><br><span class="line">    images/</span><br><span class="line">      logo.png</span><br><span class="line">  themes/</span><br><span class="line">    <span class="keyword">my</span>-theme/</span><br><span class="line">      _config.yml</span><br><span class="line">  _config.yml</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li><strong>创建一个新文章</strong> ：</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new post <span class="string">&quot;My First Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>这将在 <code>source/_posts/</code> 中创建一个 <code>my-first-post.md</code> 文件。</p>
-<ol start="2">
-<li><strong>在文章中引用图片</strong> ：</li>
-</ol>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Logo</span>](<span class="link">/images/logo.png</span>)</span><br></pre></td></tr></table></figure>
-
-<p>这会引用 <code>public/images/logo.png</code> 文件。</p>
-<ol start="3">
-<li><strong>修改 <code>_config.yml</code> 配置</strong> ：</li>
-</ol>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">url:</span> <span class="string">http://mywebsite.com</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br></pre></td></tr></table></figure>
-
-<p>这将使生成的文章 URL 类似于 <code>http://mywebsite.com/2024/01/01/my-first-post/</code>。</p>
-<p><strong>总结</strong></p>
-<p>在 Hexo 中，路径的表示方式通常依赖于文件系统的位置、站点的根目录以及 <code>_config.yml</code> 中的配置。你可以使用相对路径和绝对路径来链接文章、页面、静态资源，并通过配置文件来控制 URL 路径和静态资源的位置。</p>
-<h2 id="和"><a href="#和" class="headerlink" title=".&#x2F;和..&#x2F;"></a>.&#x2F;和..&#x2F;</h2><p><code>./</code> 和 <code>../</code> 是文件路径中的相对路径符号，通常用于指示文件系统中的位置。它们在命令行、编程、文件引用等场景中都非常常见。下面是它们的具体含义：</p>
-<h3 id="的含义"><a href="#的含义" class="headerlink" title="./ 的含义"></a><code>./</code> 的含义</h3><ul>
-<li><code>./</code> 表示当前目录（即你当前所在的目录）。</li>
-<li>它通常用来表示当前目录下的某个文件或文件夹，或者作为命令行中的前缀来执行当前目录中的程序。</li>
-</ul>
-<p><strong>例子：</strong></p>
-<ul>
-<li><code>./file.txt</code>：指当前目录下的 <code>file.txt</code> 文件。</li>
-<li>在命令行中执行当前目录中的程序：<code>./myprogram</code>。<br>在 Hexo 或其他 Web 开发场景中，<code>./</code> 主要用于引用当前目录中的文件。例如，在文章中引用当前目录下的图片：</li>
-</ul>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">My Image</span>](<span class="link">./images/photo.jpg</span>)</span><br></pre></td></tr></table></figure>
-
-<p>这表示引用 <code>source/images/photo.jpg</code> 文件。</p>
-<h3 id="的含义-1"><a href="#的含义-1" class="headerlink" title="../ 的含义"></a><code>../</code> 的含义</h3><ul>
-<li><code>../</code> 表示上一级目录（即当前目录的父目录）。</li>
-<li>它通常用于返回到当前目录的上一级目录，在文件系统中向上移动一个层级。</li>
-</ul>
-<p><strong>例子：</strong></p>
-<ul>
-<li><code>../file.txt</code>：指的是上一级目录中的 <code>file.txt</code> 文件。</li>
-<li><code>../../</code>：表示上上一级目录。<br>在 Hexo 或其他开发场景中，<code>../</code> 用于引用上级目录中的文件。例如，假设你在 <code>source/_posts/</code> 目录下，并且想要引用 <code>source/images/</code> 目录中的文件，可以使用 <code>../</code>：</li>
-</ul>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Logo</span>](<span class="link">../images/logo.png</span>)</span><br></pre></td></tr></table></figure>
-
-<p>这表示从当前目录 <code>source/_posts/</code> 向上一级（即 <code>source/</code>）跳转，再进入 <code>images/</code> 目录，最终引用 <code>logo.png</code> 文件。</p>
-<p><strong>实际示例</strong></p>
-<p>假设文件结构如下：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo/</span><br><span class="line">  <span class="built_in">source</span>/</span><br><span class="line">    _posts/</span><br><span class="line">      post1.md</span><br><span class="line">    images/</span><br><span class="line">      logo.png</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>如果你在 <code>post1.md</code> 文件中想要引用 <code>logo.png</code> 文件：</li>
-</ul>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">![<span class="string">Logo</span>](<span class="link">../images/logo.png</span>)</span><br></pre></td></tr></table></figure>
-
-<p>这样，<code>../</code> 表示从 <code>source/_posts/</code> 目录向上返回到 <code>source/</code> 目录，然后再进入 <code>images/</code> 目录。</p>
-<ul>
-<li>如果你在 <code>source/images/</code> 中，想引用 <code>source/_posts/post1.md</code> 文件：</li>
-</ul>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">[<span class="string">Post 1</span>](<span class="link">../_posts/post1.md</span>)</span><br></pre></td></tr></table></figure>
-
-<p>这样，<code>../</code> 会让你从 <code>images/</code> 目录返回到 <code>source/</code>，然后进入 <code>_posts/</code> 目录。</p>
-<p><strong>总结：</strong></p>
-<ul>
-<li><strong><code>./</code></strong> ：当前目录。</li>
-<li><strong><code>../</code></strong> ：上一级目录（父目录）。</li>
-</ul>
-<p>这两个符号是相对路径的一部分，帮助你在不同的目录之间进行导航。</p>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
 ]]></content>
       <categories>
-        <category>Hexo</category>
+        <category>unity</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
+        <tag>tmp</tag>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
+    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
+    <content><![CDATA[<ol>
+<li><p>去这个网站下载工程：</p>
+<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
+</li>
+<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
+<p><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/20241213_141006_image.png"></p>
+</li>
+<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
+</li>
+<li><p>勾选show html element 不然输入后不显示。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>unity</category>
+        <category>webGL</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>webGL</tag>
       </tags>
   </entry>
   <entry>
@@ -632,223 +851,40 @@
       </tags>
   </entry>
   <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+    <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
+    <url>/2025/01/02/%E6%97%A5%E5%8E%86%E3%80%90FullCalendar-Lunar-RRule-Popper%E3%80%91/</url>
+    <content><![CDATA[<p><strong>先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题</strong></p>
+<h1 id="FullCalendar"><a href="#FullCalendar" class="headerlink" title="FullCalendar"></a>FullCalendar</h1><ul>
+<li>视图</li>
+<li>单元格渲染</li>
+<li>单元格大小适配</li>
+</ul>
+<p>确保计算和数据加载完毕，延迟100ms渲染。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">datesSet</span>:</span><br><span class="line">    <span class="keyword">function</span> (<span class="params">dateInfo</span>) &#123;<span class="comment">//处理默认空事件留白</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Dates set:&#x27;</span>, dateInfo);  <span class="comment">// 打印日期范围</span></span><br><span class="line">        <span class="comment">// 延迟执行，以确保日历完全渲染</span></span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> dayCells = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-daygrid-day&#x27;</span>);  <span class="comment">// 获取所有日期格子</span></span><br><span class="line">            dayCells.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">dayCell</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> eventsContainer = dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-daygrid-day-events&#x27;</span>);</span><br><span class="line">                <span class="keyword">if</span> (eventsContainer) &#123;</span><br><span class="line">                    eventsContainer.<span class="property">style</span>.<span class="property">margin</span> = <span class="number">0</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    <span class="comment">// 如果该日期格子没有事件，隐藏事件容器</span></span><br><span class="line">                    <span class="keyword">if</span> (!dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-event&#x27;</span>)) &#123;</span><br><span class="line">                        eventsContainer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;, <span class="number">100</span>);  <span class="comment">// 延迟100ms执行</span></span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
+
+<h1 id="Lunar"><a href="#Lunar" class="headerlink" title="Lunar"></a>Lunar</h1><ul>
+<li>法定节假日</li>
+<li>节气</li>
+<li>农历日期</li>
+<li>宜忌</li>
+<li>生日</li>
+</ul>
+<h1 id="RRule"><a href="#RRule" class="headerlink" title="RRule"></a>RRule</h1><ul>
+<li><p>命名空间</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); </span><br><span class="line"><span class="comment">//无法识别 RRule，提示未定义，我们引入了rrule库就要引入命名空间 rrule</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>格式与FullCalendar插件语法不同：</p>
 <ul>
-<li><p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
+<li><strong>FullCalendar语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> calendar2 = <span class="keyword">new</span> <span class="title class_">FullCalendar</span>.<span class="title class_">Calendar</span>(calendarEl, &#123;</span><br><span class="line">      <span class="attr">events</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">              <span class="attr">title</span>: <span class="string">&#x27;my recurring event&#x27;</span>,</span><br><span class="line">              <span class="attr">rrule</span>: &#123;</span><br><span class="line">                  <span class="attr">freq</span>: <span class="string">&#x27;weekly&#x27;</span>,</span><br><span class="line">                  <span class="attr">interval</span>: <span class="number">1</span>,</span><br><span class="line">                  <span class="attr">byweekday</span>: [<span class="string">&#x27;mo&#x27;</span>, <span class="string">&#x27;fr&#x27;</span>],</span><br><span class="line">                  <span class="attr">dtstart</span>: <span class="string">&#x27;2024-02-01T10:30:00&#x27;</span>, <span class="comment">// will also accept &#x27;20120201T103000&#x27;</span></span><br><span class="line">                  <span class="attr">until</span>: <span class="string">&#x27;2025-06-01&#x27;</span> <span class="comment">// will also accept &#x27;20120201&#x27;</span></span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      ]</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>RRule 语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br><span class="line"><span class="keyword">var</span> rruleEvent =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">title</span>: <span class="string">&#x27;rrule event&#x27;</span>,</span><br><span class="line">    <span class="attr">rrule</span>: &#123;</span><br><span class="line">        <span class="attr">freq</span>: <span class="title class_">RRule</span>.<span class="property">WEEKLY</span>,</span><br><span class="line">        <span class="attr">interval</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="attr">byweekday</span>: [<span class="title class_">RRule</span>.<span class="property">MO</span>, <span class="title class_">RRule</span>.<span class="property">FR</span>],</span><br><span class="line">        <span class="attr">dtstart</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2024</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">10</span>, <span class="number">30</span>),</span><br><span class="line">        <span class="attr">until</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2025</span>, <span class="number">12</span>, <span class="number">31</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">duration</span>: <span class="string">&#x27;02:00&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 rrule.js 解析 RRule</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">typeof</span> <span class="title class_">RRule</span>); <span class="comment">// 应该输出 &quot;function&quot;</span></span><br><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); <span class="comment">// 获取所有日期实例</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转换为 FullCalendar 可用事件格式</span></span><br><span class="line"><span class="keyword">const</span> rruleEvents = rruleOccurrences.<span class="title function_">map</span>(<span class="function"><span class="params">date</span> =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">title</span>: rruleEvent.<span class="property">title</span>,</span><br><span class="line">    <span class="attr">start</span>: date,</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure></li>
 </ul>
 </li>
-<li><p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+<li><p>单个对象声明<br>在还没有做好重复事件配置处理时，保持按照单个声明，这个和其他event配置不同。因为一个重复事件肯能涉及好多时间段，相当于多个事件的集合。</p>
 </li>
-<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
+<li><p>events 属性和 evens 函数不可兼得<br>evens 函数:更灵活，配置变量,但是重复事件要自己转换<br>events 属性:死板，但是支持重复事件，根据FullCalendar语法来</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">events</span>:  [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents],</span><br><span class="line">or</span><br><span class="line"><span class="attr">events</span>: <span class="keyword">function</span> (<span class="params">info, successCallback, failureCallback</span>) &#123;</span><br><span class="line">            <span class="comment">// 获取当前视图的起始日期</span></span><br><span class="line">            <span class="keyword">const</span> viewStart = <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>);</span><br><span class="line">            <span class="keyword">const</span> curMonthIndex = (viewStart.<span class="title function_">getDate</span>() !== <span class="number">1</span>) ? viewStart.<span class="title function_">getMonth</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getMonth</span>();<span class="comment">//月份下标  0-11  12是下一年1月</span></span><br><span class="line">            currentYear = (viewStart.<span class="title function_">getMonth</span>() === <span class="number">11</span> &amp;&amp; curMonthIndex === <span class="number">12</span>) ? viewStart.<span class="title function_">getFullYear</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getFullYear</span>();</span><br><span class="line">            <span class="keyword">var</span> curMonth = curMonthIndex == <span class="number">12</span> ? <span class="number">1</span> : curMonthIndex + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">const</span> solar = <span class="title class_">Solar</span>.<span class="title function_">fromYmd</span>(currentYear, curMonth, <span class="number">1</span>); <span class="comment">// 构造阳历日期</span></span><br><span class="line">            <span class="keyword">const</span> lunar = solar.<span class="title function_">getLunar</span>(); <span class="comment">// 转为农历日期</span></span><br><span class="line">            <span class="keyword">var</span> curYearLunar = lunar.<span class="title function_">getYear</span>();</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;当前显示的主月份年份是:&#x27;</span>, currentYear, <span class="string">&#x27; &#x27;</span>, curMonth, <span class="string">&#x27; &#x27;</span>, lunar.<span class="title function_">toString</span>(), <span class="string">&#x27; &#x27;</span>, solar.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">            <span class="title function_">defineBirthday</span>(curYearLunar);</span><br><span class="line">            <span class="title class_">AddAnniversaryDate</span>();</span><br><span class="line">            <span class="title function_">defineMyEvent</span>();</span><br><span class="line">            <span class="title function_">defineInternationalFestivals</span>();</span><br><span class="line">            <span class="comment">// 合并所有事件数组</span></span><br><span class="line">            <span class="keyword">const</span> allEvents = [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 过滤出在当前视图范围内的事件</span></span><br><span class="line">            <span class="keyword">const</span> filteredEvents = allEvents.<span class="title function_">filter</span>(<span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> eventStart = <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">start</span>).<span class="title function_">getTime</span>();</span><br><span class="line">                <span class="keyword">const</span> eventEnd = event.<span class="property">end</span> ? <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">end</span>).<span class="title function_">getTime</span>() : eventStart;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 判断事件是否与视图范围有重叠</span></span><br><span class="line">                <span class="keyword">return</span> eventEnd &gt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>).<span class="title function_">getTime</span>() &amp;&amp; eventStart &lt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">end</span>).<span class="title function_">getTime</span>();</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 返回过滤后的事件</span></span><br><span class="line">            <span class="title function_">successCallback</span>(filteredEvents);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure></li>
 </ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
-</li>
-<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
-<li><p>打开 Clash for Windows。</p>
-</li>
-<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong>  </p>
-<ol>
-<li><p>确保规则优先级正确：</p>
-<p>  例如： </p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li><p>测试网络连接：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-</li>
-</ol>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong> </p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
-    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
-    <content><![CDATA[<ol>
-<li><p>去这个网站下载工程：</p>
-<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
-</li>
-<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
-<p><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/20241213_141006_image.png"></p>
-</li>
-<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
-</li>
-<li><p>勾选show html element 不然输入后不显示。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>unity</category>
-        <category>webGL</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>webGL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>tmp</tag>
-      </tags>
+<h1 id="Popper"><a href="#Popper" class="headerlink" title="Popper"></a>Popper</h1><p>鼠标进入时事件详情弹窗</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>医保</title>
@@ -926,41 +962,5 @@
       <tags>
         <tag>医保</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
-    <url>/2025/01/02/%E6%97%A5%E5%8E%86%E3%80%90FullCalendar-Lunar-RRule-Popper%E3%80%91/</url>
-    <content><![CDATA[<p><strong>先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题</strong></p>
-<h1 id="FullCalendar"><a href="#FullCalendar" class="headerlink" title="FullCalendar"></a>FullCalendar</h1><ul>
-<li>视图</li>
-<li>单元格渲染</li>
-<li>单元格大小适配</li>
-</ul>
-<p>确保计算和数据加载完毕，延迟100ms渲染。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">datesSet</span>:</span><br><span class="line">    <span class="keyword">function</span> (<span class="params">dateInfo</span>) &#123;<span class="comment">//处理默认空事件留白</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Dates set:&#x27;</span>, dateInfo);  <span class="comment">// 打印日期范围</span></span><br><span class="line">        <span class="comment">// 延迟执行，以确保日历完全渲染</span></span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> dayCells = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-daygrid-day&#x27;</span>);  <span class="comment">// 获取所有日期格子</span></span><br><span class="line">            dayCells.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">dayCell</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> eventsContainer = dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-daygrid-day-events&#x27;</span>);</span><br><span class="line">                <span class="keyword">if</span> (eventsContainer) &#123;</span><br><span class="line">                    eventsContainer.<span class="property">style</span>.<span class="property">margin</span> = <span class="number">0</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    <span class="comment">// 如果该日期格子没有事件，隐藏事件容器</span></span><br><span class="line">                    <span class="keyword">if</span> (!dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-event&#x27;</span>)) &#123;</span><br><span class="line">                        eventsContainer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;, <span class="number">100</span>);  <span class="comment">// 延迟100ms执行</span></span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
-
-<h1 id="Lunar"><a href="#Lunar" class="headerlink" title="Lunar"></a>Lunar</h1><ul>
-<li>法定节假日</li>
-<li>节气</li>
-<li>农历日期</li>
-<li>宜忌</li>
-<li>生日</li>
-</ul>
-<h1 id="RRule"><a href="#RRule" class="headerlink" title="RRule"></a>RRule</h1><ul>
-<li><p>命名空间</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); </span><br><span class="line"><span class="comment">//无法识别 RRule，提示未定义，我们引入了rrule库就要引入命名空间 rrule</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br></pre></td></tr></table></figure></li>
-<li><p>格式与FullCalendar插件语法不同：</p>
-<ul>
-<li><strong>FullCalendar语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> calendar2 = <span class="keyword">new</span> <span class="title class_">FullCalendar</span>.<span class="title class_">Calendar</span>(calendarEl, &#123;</span><br><span class="line">      <span class="attr">events</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">              <span class="attr">title</span>: <span class="string">&#x27;my recurring event&#x27;</span>,</span><br><span class="line">              <span class="attr">rrule</span>: &#123;</span><br><span class="line">                  <span class="attr">freq</span>: <span class="string">&#x27;weekly&#x27;</span>,</span><br><span class="line">                  <span class="attr">interval</span>: <span class="number">1</span>,</span><br><span class="line">                  <span class="attr">byweekday</span>: [<span class="string">&#x27;mo&#x27;</span>, <span class="string">&#x27;fr&#x27;</span>],</span><br><span class="line">                  <span class="attr">dtstart</span>: <span class="string">&#x27;2024-02-01T10:30:00&#x27;</span>, <span class="comment">// will also accept &#x27;20120201T103000&#x27;</span></span><br><span class="line">                  <span class="attr">until</span>: <span class="string">&#x27;2025-06-01&#x27;</span> <span class="comment">// will also accept &#x27;20120201&#x27;</span></span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      ]</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></li>
-<li><strong>RRule 语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br><span class="line"><span class="keyword">var</span> rruleEvent =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">title</span>: <span class="string">&#x27;rrule event&#x27;</span>,</span><br><span class="line">    <span class="attr">rrule</span>: &#123;</span><br><span class="line">        <span class="attr">freq</span>: <span class="title class_">RRule</span>.<span class="property">WEEKLY</span>,</span><br><span class="line">        <span class="attr">interval</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="attr">byweekday</span>: [<span class="title class_">RRule</span>.<span class="property">MO</span>, <span class="title class_">RRule</span>.<span class="property">FR</span>],</span><br><span class="line">        <span class="attr">dtstart</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2024</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">10</span>, <span class="number">30</span>),</span><br><span class="line">        <span class="attr">until</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2025</span>, <span class="number">12</span>, <span class="number">31</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">duration</span>: <span class="string">&#x27;02:00&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 rrule.js 解析 RRule</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">typeof</span> <span class="title class_">RRule</span>); <span class="comment">// 应该输出 &quot;function&quot;</span></span><br><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); <span class="comment">// 获取所有日期实例</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转换为 FullCalendar 可用事件格式</span></span><br><span class="line"><span class="keyword">const</span> rruleEvents = rruleOccurrences.<span class="title function_">map</span>(<span class="function"><span class="params">date</span> =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">title</span>: rruleEvent.<span class="property">title</span>,</span><br><span class="line">    <span class="attr">start</span>: date,</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p>单个对象声明<br>在还没有做好重复事件配置处理时，保持按照单个声明，这个和其他event配置不同。因为一个重复事件肯能涉及好多时间段，相当于多个事件的集合。</p>
-</li>
-<li><p>events 属性和 evens 函数不可兼得<br>evens 函数:更灵活，配置变量,但是重复事件要自己转换<br>events 属性:死板，但是支持重复事件，根据FullCalendar语法来</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">events</span>:  [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents],</span><br><span class="line">or</span><br><span class="line"><span class="attr">events</span>: <span class="keyword">function</span> (<span class="params">info, successCallback, failureCallback</span>) &#123;</span><br><span class="line">            <span class="comment">// 获取当前视图的起始日期</span></span><br><span class="line">            <span class="keyword">const</span> viewStart = <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>);</span><br><span class="line">            <span class="keyword">const</span> curMonthIndex = (viewStart.<span class="title function_">getDate</span>() !== <span class="number">1</span>) ? viewStart.<span class="title function_">getMonth</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getMonth</span>();<span class="comment">//月份下标  0-11  12是下一年1月</span></span><br><span class="line">            currentYear = (viewStart.<span class="title function_">getMonth</span>() === <span class="number">11</span> &amp;&amp; curMonthIndex === <span class="number">12</span>) ? viewStart.<span class="title function_">getFullYear</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getFullYear</span>();</span><br><span class="line">            <span class="keyword">var</span> curMonth = curMonthIndex == <span class="number">12</span> ? <span class="number">1</span> : curMonthIndex + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">const</span> solar = <span class="title class_">Solar</span>.<span class="title function_">fromYmd</span>(currentYear, curMonth, <span class="number">1</span>); <span class="comment">// 构造阳历日期</span></span><br><span class="line">            <span class="keyword">const</span> lunar = solar.<span class="title function_">getLunar</span>(); <span class="comment">// 转为农历日期</span></span><br><span class="line">            <span class="keyword">var</span> curYearLunar = lunar.<span class="title function_">getYear</span>();</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;当前显示的主月份年份是:&#x27;</span>, currentYear, <span class="string">&#x27; &#x27;</span>, curMonth, <span class="string">&#x27; &#x27;</span>, lunar.<span class="title function_">toString</span>(), <span class="string">&#x27; &#x27;</span>, solar.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">            <span class="title function_">defineBirthday</span>(curYearLunar);</span><br><span class="line">            <span class="title class_">AddAnniversaryDate</span>();</span><br><span class="line">            <span class="title function_">defineMyEvent</span>();</span><br><span class="line">            <span class="title function_">defineInternationalFestivals</span>();</span><br><span class="line">            <span class="comment">// 合并所有事件数组</span></span><br><span class="line">            <span class="keyword">const</span> allEvents = [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 过滤出在当前视图范围内的事件</span></span><br><span class="line">            <span class="keyword">const</span> filteredEvents = allEvents.<span class="title function_">filter</span>(<span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> eventStart = <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">start</span>).<span class="title function_">getTime</span>();</span><br><span class="line">                <span class="keyword">const</span> eventEnd = event.<span class="property">end</span> ? <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">end</span>).<span class="title function_">getTime</span>() : eventStart;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 判断事件是否与视图范围有重叠</span></span><br><span class="line">                <span class="keyword">return</span> eventEnd &gt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>).<span class="title function_">getTime</span>() &amp;&amp; eventStart &lt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">end</span>).<span class="title function_">getTime</span>();</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 返回过滤后的事件</span></span><br><span class="line">            <span class="title function_">successCallback</span>(filteredEvents);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="Popper"><a href="#Popper" class="headerlink" title="Popper"></a>Popper</h1><p>鼠标进入时事件详情弹窗</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
   </entry>
 </search>
