@@ -1,9 +1,8 @@
 ---
-title: Calendar
+title: 
 date: 2024-12-17 09:14:26
 ---
 <!DOCTYPE html>
-
 <html lang="zh-cn">
 
 <head>
@@ -28,6 +27,9 @@ date: 2024-12-17 09:14:26
     <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
     <!-- 本地脚本加载路径需要添加根目录节点-->
     <script src="/js/myCalendar.js"></script>
+    <script>
+        Show("calendar");
+    </script>
 </body>
 
 </html>
@@ -69,3 +71,11 @@ FullCalendar v4/v5 对时间和日期处理进行了优化，采用了更标准�
 5. 外观和样式：
 
 FullCalendar 在 v4 和 v5 中对 UI 和样式做了一些改进和调整。如果你之前自定义过样式，可能需要进行适配。
+
+
+# 视图
+
+月视图 ---- 日历
+时间网格视图  ---- 课程表、作息表
+列表视图  ---- 事件清单
+DayGrid视图  ---- 备忘录，周计划

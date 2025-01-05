@@ -1,16 +1,14 @@
 top:
-  - class_name: "task-widget" # 自定义 CSS 类名，用于个性化样式
-    id_name: "task-list"      # 元素的 ID 名称，便于前端 DOM 定位
-    name: "任务列表"           # 组件名称，在前端显示的标题
-    icon: "fas fa-tasks"      # 图标，可以是 Font Awesome 图标类名
-    html: |
-      <div>
-        <ul>
-          <li>About项目的视频和封面添加，标签技能完善</li>
-          <li>完成 Hexo 广告接入</li>
-          <li>完成 Hexo 游戏接入</li>
-        </ul>
-      </div>
+  # - class_name: "task-widget" # 自定义 CSS 类名，用于个性化样式
+  #   id_name: "task-list"      # 元素的 ID 名称，便于前端 DOM 定位
+  #   name: "任务列表"           # 组件名称，在前端显示的标题
+  #   icon: "fas fa-tasks"      # 图标，可以是 Font Awesome 图标类名
+  #   html: |
+  #     <div>
+  #       <ul>
+  #         <li>About项目的视频和封面添加，标签技能完善</li>
+  #       </ul>
+  #     </div>
   - class_name: "study-widget" # 自定义 CSS 类名，用于个性化样式
     id_name: "study-list"      # 元素的 ID 名称，便于前端 DOM 定位
     name: "学习目标"           # 组件名称，在前端显示的标题
@@ -27,11 +25,30 @@ top:
       </div>
   - class_name: "calendar-widget" # 自定义 CSS 类名，用于个性化样式
     id_name: "calendar-list"      # 元素的 ID 名称，便于前端 DOM 定位
-    name: "日历"           # 组件名称，在前端显示的标题
+    name: "今日事今日毕"           # 组件名称，在前端显示的标题
     icon: "fas fa-tasks"      # 图标，可以是 Font Awesome 图标类名
     html: |
-      <div>
-        <ul>
-          <a href="/Calendar/">日历</a>
-        </ul>
-      </div>
+      <head>
+          <meta charset="UTF-8">
+          <title>FullCalendar 农历和调休示例</title>
+          <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+          <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+      </head>
+
+      <body>
+          <a href="/Calendar/">
+              <!-- 日历容器 -->
+              <div id="calendar_aside"></div>
+              <!-- FullCalendar JavaScript -->
+              <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+              <!-- 引入农历库 -->
+              <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+              <!-- 本地脚本加载路径需要添加根目录节点-->
+              <script src="/js/myCalendar.js"></script>
+              <script>
+                  Show("calendar_aside");
+              </script>
+          </a>
+      </body>
+
