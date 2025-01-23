@@ -623,6 +623,34 @@ document.addEventListener('DOMContentLoaded', () => {
     'go-up': () => { // Back to top
       btf.scrollToDest(0, 500)
     },
+    'custom-button': () => {
+      // 自定义按钮（阅读模式）
+      // document.getElementById("custom-button").addEventListener("click", function () {
+      console.log('click');
+      var page;
+      const _page = document.getElementById("page");
+      if (_page)
+        page = _page;
+      const _post = document.getElementById("post");
+      if (_post)
+        page = _post;
+      page.style.width = "100%"; // 撑满屏幕
+      // page.style.setProperty("padding", "160px", "important");
+      page.style.padding = "86px"; // 撑满屏幕 不加单位视为百分百
+      const content = document.getElementById("content-inner");
+      content.style.maxWidth = "100%"; // 撑满屏幕
+      content.style.margin = "0"; // 撑满屏幕
+      content.style.padding = "0"; // 撑满屏幕
+      // })
+    },
+    'music-button': () => {
+        const musicPlayer = document.getElementById("music-player");
+        if (musicPlayer.style.display === "none") {
+          musicPlayer.style.display = "block";
+        } else {
+          musicPlayer.style.display = "none";
+        }
+    },
     'hide-aside-btn': () => { // Hide aside
       const $htmlDom = document.documentElement.classList
       const saveStatus = $htmlDom.contains('hide-aside') ? 'show' : 'hide'
@@ -630,7 +658,14 @@ document.addEventListener('DOMContentLoaded', () => {
       $htmlDom.toggle('hide-aside')
 
       //内容扩宽
-      const page = document.getElementById("page");
+      var page;
+      const _page = document.getElementById("page");
+      if (_page)
+        page = _page;
+      const _post = document.getElementById("post");
+      if (_post)
+        page = _post;
+
       if (page && saveStatus == 'hide') {
         page.style.width = "100%"; // 撑满屏幕
         page.style.padding = "86px"; // 撑满屏幕 不加单位视为百分百

@@ -420,20 +420,20 @@ public class DataProcessingExample : MonoBehaviour
 
 ### **1. `Execute` 的作用**
 
-- **`IJob`**: 当你实现一个普通的 Job（非并行），`Execute` 会被调用一次，用来执行你的任务逻辑。
-- **`IJobParallelFor`**: 当你实现并行 Job 时，`Execute` 方法会被多次调用，每次处理任务队列中的一个分块或一个索引。
+- `IJob`: 当你实现一个普通的 Job（非并行），`Execute` 会被调用一次，用来执行你的任务逻辑。
+- `IJobParallelFor`: 当你实现并行 Job 时，`Execute` 方法会被多次调用，每次处理任务队列中的一个分块或一个索引。
 
 ---
 
 ### **2. `Execute` 的签名**
 
-- **对于 `IJob`**：
+- 对于 `IJob`：
   ```csharp
   public void Execute()
   ```
   - 没有参数，因为它处理的是一个整体任务。
 
-- **对于 `IJobParallelFor`**：
+- 对于 `IJobParallelFor`：
   ```csharp
   public void Execute(int index)
   ```
@@ -449,7 +449,7 @@ public class DataProcessingExample : MonoBehaviour
 
 ### **4. 详细案例**
 
-#### **单任务的 `IJob`**
+#### 单任务的 `IJob`
 ```csharp
 using Unity.Jobs;
 using UnityEngine;
@@ -479,7 +479,7 @@ Hello from SimpleJob!
 
 ---
 
-#### **并行任务的 `IJobParallelFor`**
+#### 并行任务的 `IJobParallelFor`
 ```csharp
 using Unity.Jobs;
 using Unity.Collections;
@@ -559,7 +559,7 @@ Index 9: 81
 ---
 
 ### **6. 总结**
-- **`Execute` 是 Job 的核心执行逻辑**，由 Unity 的 Job System 在适当的线程中调用。
-- **`IJob` 的 `Execute`** 没有参数，用于处理整体任务。
-- **`IJobParallelFor` 的 `Execute`** 接受一个 `index` 参数，用于处理特定的数据块或索引。
+- `Execute` 是 Job 的核心执行逻辑，由 Unity 的 Job System 在适当的线程中调用。
+- `IJob` 的 `Execute` 没有参数，用于处理整体任务。
+- `IJobParallelFor` 的 `Execute` 接受一个 `index` 参数，用于处理特定的数据块或索引。
 - 使用 Jobs System 时，`Execute` 是定义任务行为的关键入口点。
