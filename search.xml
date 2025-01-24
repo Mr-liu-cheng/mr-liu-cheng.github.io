@@ -2142,7 +2142,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#46;&#117;&#x6e;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#108;&#x6c;&#x61;&#x62;&#45;&#x70;&#x72;&#111;&#120;&#121;&#64;&#50;&#x2e;&#x36;&#46;&#x30;">&#x63;&#x6f;&#109;&#46;&#117;&#x6e;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#108;&#x6c;&#x61;&#x62;&#45;&#x70;&#x72;&#111;&#120;&#121;&#64;&#50;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#121;&#46;&#99;&#x6f;&#108;&#108;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;">&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#121;&#46;&#99;&#x6f;&#108;&#108;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -2557,125 +2557,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 托管代码与非托管代码</title>
-    <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
-<h3 id="1-托管代码（Managed-Code）"><a href="#1-托管代码（Managed-Code）" class="headerlink" title="1. 托管代码（Managed Code）"></a>1. <strong>托管代码（Managed Code）</strong></h3><p><strong>托管代码</strong> 是由 .NET 运行时（如 <strong>CLR</strong>，即公共语言运行时）托管和管理的代码。也就是说，托管代码的执行是在 <strong>CLR 环境中</strong>进行的，CLR 提供了内存管理、异常处理、垃圾回收、安全性等功能。这意味着开发者无需自己管理内存分配和释放，CLR 会负责这些操作。</p>
-<h4 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h4><ul>
-<li><strong>内存管理</strong>：托管代码的内存管理是由垃圾回收器（GC，Garbage Collector）自动处理的。</li>
-<li><strong>类型安全</strong>：CLR 会确保类型的安全性，例如防止类型转换错误、非法内存访问等。</li>
-<li><strong>自动垃圾回收</strong>：CLR 会定期回收不再使用的内存空间，避免内存泄漏。</li>
-<li><strong>安全性</strong>：CLR 会进行代码的安全检查，确保代码不会执行恶意操作。</li>
-<li><strong>平台独立性</strong>：托管代码一般是通过 <strong>中间语言（IL，Intermediate Language）</strong> 编译的，这样可以通过不同平台上的 CLR 实现执行。</li>
-</ul>
-<p>托管代码的一个例子就是 <strong>C#</strong> 中编写的代码，它会被编译成 <strong>中间语言（IL）</strong>，然后在 .NET 环境中运行。</p>
-<p><strong>例如</strong>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Hello, World!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的代码就是托管代码，它会被 C# 编译器编译为中间语言（IL），然后通过 CLR 执行。</p>
-<h3 id="2-非托管代码（Unmanaged-Code）"><a href="#2-非托管代码（Unmanaged-Code）" class="headerlink" title="2. 非托管代码（Unmanaged Code）"></a>2. <strong>非托管代码（Unmanaged Code）</strong></h3><p><strong>非托管代码</strong> 是指不由 CLR 或类似的运行时环境管理的代码。这类代码直接与操作系统交互，开发者必须手动管理内存、资源和安全性等问题。非托管代码通常是用 <strong>C++<strong>、</strong>C</strong> 或其他低级语言编写的。</p>
-<h4 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h4><ul>
-<li><strong>手动内存管理</strong>：开发者需要自己负责分配和释放内存，容易出现内存泄漏问题。</li>
-<li><strong>直接访问硬件</strong>：非托管代码能够直接操作硬件，进行系统级别的操作。</li>
-<li><strong>无垃圾回收</strong>：没有像 CLR 那样的垃圾回收机制，必须手动释放资源。</li>
-<li><strong>性能优势</strong>：由于没有运行时环境的管理，非托管代码通常比托管代码更加高效，尤其是在对性能要求极高的场景下。</li>
-</ul>
-<p>非托管代码通常被编译为机器码并直接运行在操作系统上。</p>
-<p><strong>例如</strong>：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的 C++ 代码是非托管代码，它被编译为机器代码，直接在操作系统中执行。</p>
-<h3 id="3-托管代码与非托管代码的区别"><a href="#3-托管代码与非托管代码的区别" class="headerlink" title="3. 托管代码与非托管代码的区别"></a>3. <strong>托管代码与非托管代码的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th>托管代码</th>
-<th>非托管代码</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>执行环境</td>
-<td>运行在 <strong>CLR</strong>（公共语言运行时）中</td>
-<td>直接运行在操作系统上</td>
-</tr>
-<tr>
-<td>内存管理</td>
-<td>自动由 <strong>垃圾回收器（GC）</strong> 管理</td>
-<td>需要开发者手动管理内存</td>
-</tr>
-<tr>
-<td>类型安全</td>
-<td>自动进行类型检查，防止类型错误</td>
-<td>可能会发生类型错误，必须手动管理</td>
-</tr>
-<tr>
-<td>安全性</td>
-<td>CLR 进行安全检查，防止恶意代码执行</td>
-<td>代码可能没有安全性保障，易受攻击</td>
-</tr>
-<tr>
-<td>性能</td>
-<td>性能较低，因为有垃圾回收等运行时开销</td>
-<td>性能较高，因为没有运行时环境的开销</td>
-</tr>
-<tr>
-<td>示例语言</td>
-<td>C#、VB.NET、F# 等</td>
-<td>C、C++ 等</td>
-</tr>
-<tr>
-<td>可移植性</td>
-<td>通过中间语言（IL）可以跨平台运行</td>
-<td>必须针对每个平台进行编译</td>
-</tr>
-</tbody></table>
-<h3 id="4-托管代码与非托管代码的交互"><a href="#4-托管代码与非托管代码的交互" class="headerlink" title="4. 托管代码与非托管代码的交互"></a>4. <strong>托管代码与非托管代码的交互</strong></h3><p>虽然托管代码和非托管代码有很多差异，但在实际应用中，它们经常需要互相交互，特别是在需要访问系统底层或与已有的非托管代码库集成时。通常有几种方式来实现托管代码与非托管代码的交互：</p>
-<ul>
-<li><p><strong>P&#x2F;Invoke（平台调用）</strong>：托管代码可以通过 <strong>P&#x2F;Invoke</strong> 调用非托管的 API（例如 Windows API）。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, CharSet = CharSet.Auto)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> IntPtr <span class="title">GetConsoleWindow</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        IntPtr hwnd = GetConsoleWindow();</span><br><span class="line">        Console.WriteLine(hwnd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上是通过 <strong>P&#x2F;Invoke</strong> 调用 Windows 的非托管函数 <code>GetConsoleWindow</code>。</p>
-</li>
-<li><p><strong>C++&#x2F;CLI（C++ 和托管代码混合）</strong>：C++&#x2F;CLI 是一种可以同时操作托管代码和非托管代码的语言，可以方便地在同一项目中混合使用 C++（非托管代码）和 C#（托管代码）。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#using <span class="string">&lt;System.dll&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ref <span class="keyword">class</span> <span class="title class_">ManagedClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PrintMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Console::<span class="built_in">WriteLine</span>(<span class="string">&quot;Hello from C++/CLI!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>COM（组件对象模型）</strong>：通过 COM 机制，非托管代码可以通过 COM 接口与托管代码进行交互。</p>
-</li>
-</ul>
-<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. <strong>总结</strong></h3><ul>
-<li><strong>托管代码</strong> 是由 .NET 运行时管理的代码，它具有内存管理、安全性和平台独立性的优势。常见的托管语言包括 C# 和 VB.NET。</li>
-<li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
-<li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 开发非游戏应用</title>
     <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
@@ -2819,6 +2700,125 @@
 </ol>
 <hr>
 <p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 托管代码与非托管代码</title>
+    <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
+<h3 id="1-托管代码（Managed-Code）"><a href="#1-托管代码（Managed-Code）" class="headerlink" title="1. 托管代码（Managed Code）"></a>1. <strong>托管代码（Managed Code）</strong></h3><p><strong>托管代码</strong> 是由 .NET 运行时（如 <strong>CLR</strong>，即公共语言运行时）托管和管理的代码。也就是说，托管代码的执行是在 <strong>CLR 环境中</strong>进行的，CLR 提供了内存管理、异常处理、垃圾回收、安全性等功能。这意味着开发者无需自己管理内存分配和释放，CLR 会负责这些操作。</p>
+<h4 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h4><ul>
+<li><strong>内存管理</strong>：托管代码的内存管理是由垃圾回收器（GC，Garbage Collector）自动处理的。</li>
+<li><strong>类型安全</strong>：CLR 会确保类型的安全性，例如防止类型转换错误、非法内存访问等。</li>
+<li><strong>自动垃圾回收</strong>：CLR 会定期回收不再使用的内存空间，避免内存泄漏。</li>
+<li><strong>安全性</strong>：CLR 会进行代码的安全检查，确保代码不会执行恶意操作。</li>
+<li><strong>平台独立性</strong>：托管代码一般是通过 <strong>中间语言（IL，Intermediate Language）</strong> 编译的，这样可以通过不同平台上的 CLR 实现执行。</li>
+</ul>
+<p>托管代码的一个例子就是 <strong>C#</strong> 中编写的代码，它会被编译成 <strong>中间语言（IL）</strong>，然后在 .NET 环境中运行。</p>
+<p><strong>例如</strong>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Hello, World!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码就是托管代码，它会被 C# 编译器编译为中间语言（IL），然后通过 CLR 执行。</p>
+<h3 id="2-非托管代码（Unmanaged-Code）"><a href="#2-非托管代码（Unmanaged-Code）" class="headerlink" title="2. 非托管代码（Unmanaged Code）"></a>2. <strong>非托管代码（Unmanaged Code）</strong></h3><p><strong>非托管代码</strong> 是指不由 CLR 或类似的运行时环境管理的代码。这类代码直接与操作系统交互，开发者必须手动管理内存、资源和安全性等问题。非托管代码通常是用 <strong>C++<strong>、</strong>C</strong> 或其他低级语言编写的。</p>
+<h4 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h4><ul>
+<li><strong>手动内存管理</strong>：开发者需要自己负责分配和释放内存，容易出现内存泄漏问题。</li>
+<li><strong>直接访问硬件</strong>：非托管代码能够直接操作硬件，进行系统级别的操作。</li>
+<li><strong>无垃圾回收</strong>：没有像 CLR 那样的垃圾回收机制，必须手动释放资源。</li>
+<li><strong>性能优势</strong>：由于没有运行时环境的管理，非托管代码通常比托管代码更加高效，尤其是在对性能要求极高的场景下。</li>
+</ul>
+<p>非托管代码通常被编译为机器码并直接运行在操作系统上。</p>
+<p><strong>例如</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 C++ 代码是非托管代码，它被编译为机器代码，直接在操作系统中执行。</p>
+<h3 id="3-托管代码与非托管代码的区别"><a href="#3-托管代码与非托管代码的区别" class="headerlink" title="3. 托管代码与非托管代码的区别"></a>3. <strong>托管代码与非托管代码的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>托管代码</th>
+<th>非托管代码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>执行环境</td>
+<td>运行在 <strong>CLR</strong>（公共语言运行时）中</td>
+<td>直接运行在操作系统上</td>
+</tr>
+<tr>
+<td>内存管理</td>
+<td>自动由 <strong>垃圾回收器（GC）</strong> 管理</td>
+<td>需要开发者手动管理内存</td>
+</tr>
+<tr>
+<td>类型安全</td>
+<td>自动进行类型检查，防止类型错误</td>
+<td>可能会发生类型错误，必须手动管理</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>CLR 进行安全检查，防止恶意代码执行</td>
+<td>代码可能没有安全性保障，易受攻击</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>性能较低，因为有垃圾回收等运行时开销</td>
+<td>性能较高，因为没有运行时环境的开销</td>
+</tr>
+<tr>
+<td>示例语言</td>
+<td>C#、VB.NET、F# 等</td>
+<td>C、C++ 等</td>
+</tr>
+<tr>
+<td>可移植性</td>
+<td>通过中间语言（IL）可以跨平台运行</td>
+<td>必须针对每个平台进行编译</td>
+</tr>
+</tbody></table>
+<h3 id="4-托管代码与非托管代码的交互"><a href="#4-托管代码与非托管代码的交互" class="headerlink" title="4. 托管代码与非托管代码的交互"></a>4. <strong>托管代码与非托管代码的交互</strong></h3><p>虽然托管代码和非托管代码有很多差异，但在实际应用中，它们经常需要互相交互，特别是在需要访问系统底层或与已有的非托管代码库集成时。通常有几种方式来实现托管代码与非托管代码的交互：</p>
+<ul>
+<li><p><strong>P&#x2F;Invoke（平台调用）</strong>：托管代码可以通过 <strong>P&#x2F;Invoke</strong> 调用非托管的 API（例如 Windows API）。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, CharSet = CharSet.Auto)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> IntPtr <span class="title">GetConsoleWindow</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        IntPtr hwnd = GetConsoleWindow();</span><br><span class="line">        Console.WriteLine(hwnd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上是通过 <strong>P&#x2F;Invoke</strong> 调用 Windows 的非托管函数 <code>GetConsoleWindow</code>。</p>
+</li>
+<li><p><strong>C++&#x2F;CLI（C++ 和托管代码混合）</strong>：C++&#x2F;CLI 是一种可以同时操作托管代码和非托管代码的语言，可以方便地在同一项目中混合使用 C++（非托管代码）和 C#（托管代码）。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#using <span class="string">&lt;System.dll&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ref <span class="keyword">class</span> <span class="title class_">ManagedClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PrintMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Console::<span class="built_in">WriteLine</span>(<span class="string">&quot;Hello from C++/CLI!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>COM（组件对象模型）</strong>：通过 COM 机制，非托管代码可以通过 COM 接口与托管代码进行交互。</p>
+</li>
+</ul>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. <strong>总结</strong></h3><ul>
+<li><strong>托管代码</strong> 是由 .NET 运行时管理的代码，它具有内存管理、安全性和平台独立性的优势。常见的托管语言包括 C# 和 VB.NET。</li>
+<li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
+<li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
 ]]></content>
   </entry>
   <entry>
@@ -3017,6 +3017,186 @@
       </categories>
       <tags>
         <tag>butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>github 作为热更新服</title>
+    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
+<li><p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li><p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
+<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li><p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image.png" alt="alt text"></p>
+<p><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image-1.png" alt="alt text"><br><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li><p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
+</li>
+<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
+<li><p>打开 Clash for Windows。</p>
+</li>
+<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong>  </p>
+<ol>
+<li><p>确保规则优先级正确：</p>
+<p>  例如： </p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li><p>测试网络连接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong> </p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -3371,186 +3551,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image.png" alt="alt text"></p>
-<p><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image-1.png" alt="alt text"><br><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="https://mr-liu-cheng.github.io/2024/12/11/git%E5%AD%A6%E4%B9%A0/image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>github 作为热更新服</title>
-    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
-<li><p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li><p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
-<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li><p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
-<ul>
-<li><p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
-</li>
-<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
-</li>
-<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
-<li><p>打开 Clash for Windows。</p>
-</li>
-<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong>  </p>
-<ol>
-<li><p>确保规则优先级正确：</p>
-<p>  例如： </p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li><p>测试网络连接：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-</li>
-</ol>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong> </p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -3945,6 +3945,31 @@
       </tags>
   </entry>
   <entry>
+    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
+    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
+    <content><![CDATA[<ol>
+<li><p>去这个网站下载工程：</p>
+<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
+</li>
+<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
+<p><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/20241213_141006_image.png"></p>
+</li>
+<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
+</li>
+<li><p>勾选show html element 不然输入后不显示。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>unity</category>
+        <category>webGL</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>webGL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity 打AB包流程</title>
     <url>/2025/01/23/unity-%E6%89%93AB%E5%8C%85%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p>下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。</p>
@@ -4119,31 +4144,6 @@
 <h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
   </entry>
   <entry>
-    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
-    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
-    <content><![CDATA[<ol>
-<li><p>去这个网站下载工程：</p>
-<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
-</li>
-<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
-<p><img src="https://mr-liu-cheng.github.io/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/20241213_141006_image.png"></p>
-</li>
-<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
-</li>
-<li><p>勾选show html element 不然输入后不显示。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>unity</category>
-        <category>webGL</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>webGL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>vs隐藏unity插件在解决方案列表中显示</title>
     <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
     <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
@@ -4243,83 +4243,6 @@
       </categories>
       <tags>
         <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>医保</title>
-    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
-    <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
-<h2 id="一档医保报销比例"><a href="#一档医保报销比例" class="headerlink" title="一档医保报销比例"></a>一档医保报销比例</h2><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
-<h3 id="一、门诊报销比例"><a href="#一、门诊报销比例" class="headerlink" title="一、门诊报销比例"></a>一、门诊报销比例</h3><p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
-<ul>
-<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
-<li>二级医院报销比例：65%;</li>
-<li>三级医院报销比例：55%;</li>
-</ul>
-<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
-<h3 id="二、一档医保市内住院报销比例"><a href="#二、一档医保市内住院报销比例" class="headerlink" title="二、一档医保市内住院报销比例"></a>二、一档医保市内住院报销比例</h3><p>在一级以下医院支付比例为94%;</p>
-<p>二级医院支付比例为92%;</p>
-<p>三级医院支付比例为90%;</p>
-<p>退休人员支付比例为95%。</p>
-<p>住院起付线</p>
-<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
-<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
-<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
-<h2 id="灵活就业医保缴费标准"><a href="#灵活就业医保缴费标准" class="headerlink" title="灵活就业医保缴费标准"></a>灵活就业医保缴费标准</h2><p><img src="https://mr-liu-cheng.github.io/2025/01/03/%E5%8C%BB%E4%BF%9D/image.png"></p>
-<blockquote>
-<p>缴费金额：</p>
-</blockquote>
-<p>6733x0.02 个人余额134</p>
-<p>6733x0.07 个人缴纳医保费用471</p>
-<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
-<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
-<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
-<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
-<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
-</ul>
-<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
-<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
-<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
-</ul>
-<h2 id="门诊和住院医保报销的区别"><a href="#门诊和住院医保报销的区别" class="headerlink" title="门诊和住院医保报销的区别"></a>门诊和住院医保报销的区别</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>门诊</th>
-<th>住院</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>报销比例</td>
-<td>一般较低</td>
-<td>一般较高</td>
-</tr>
-<tr>
-<td>起付线</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>年度限额</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>报销范围</td>
-<td>诊疗费、药费、检查费等</td>
-<td>所有医疗费用</td>
-</tr>
-</tbody></table>
-]]></content>
-      <categories>
-        <category>社保</category>
-      </categories>
-      <tags>
-        <tag>医保</tag>
       </tags>
   </entry>
   <entry>
@@ -4522,6 +4445,83 @@
       </categories>
       <tags>
         <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>医保</title>
+    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
+    <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
+<h2 id="一档医保报销比例"><a href="#一档医保报销比例" class="headerlink" title="一档医保报销比例"></a>一档医保报销比例</h2><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
+<h3 id="一、门诊报销比例"><a href="#一、门诊报销比例" class="headerlink" title="一、门诊报销比例"></a>一、门诊报销比例</h3><p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
+<ul>
+<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
+<li>二级医院报销比例：65%;</li>
+<li>三级医院报销比例：55%;</li>
+</ul>
+<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
+<h3 id="二、一档医保市内住院报销比例"><a href="#二、一档医保市内住院报销比例" class="headerlink" title="二、一档医保市内住院报销比例"></a>二、一档医保市内住院报销比例</h3><p>在一级以下医院支付比例为94%;</p>
+<p>二级医院支付比例为92%;</p>
+<p>三级医院支付比例为90%;</p>
+<p>退休人员支付比例为95%。</p>
+<p>住院起付线</p>
+<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
+<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
+<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
+<h2 id="灵活就业医保缴费标准"><a href="#灵活就业医保缴费标准" class="headerlink" title="灵活就业医保缴费标准"></a>灵活就业医保缴费标准</h2><p><img src="https://mr-liu-cheng.github.io/2025/01/03/%E5%8C%BB%E4%BF%9D/image.png"></p>
+<blockquote>
+<p>缴费金额：</p>
+</blockquote>
+<p>6733x0.02 个人余额134</p>
+<p>6733x0.07 个人缴纳医保费用471</p>
+<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
+<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
+<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
+<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
+<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
+</ul>
+<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
+<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
+<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
+</ul>
+<h2 id="门诊和住院医保报销的区别"><a href="#门诊和住院医保报销的区别" class="headerlink" title="门诊和住院医保报销的区别"></a>门诊和住院医保报销的区别</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>门诊</th>
+<th>住院</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>报销比例</td>
+<td>一般较低</td>
+<td>一般较高</td>
+</tr>
+<tr>
+<td>起付线</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>年度限额</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>报销范围</td>
+<td>诊疗费、药费、检查费等</td>
+<td>所有医疗费用</td>
+</tr>
+</tbody></table>
+]]></content>
+      <categories>
+        <category>社保</category>
+      </categories>
+      <tags>
+        <tag>医保</tag>
       </tags>
   </entry>
   <entry>

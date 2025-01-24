@@ -539,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (!isExpand) {
             let parent = currentActive.parentNode
-            while (!parent.matches('.toc')) {
+            while (parent && parent.nodeType === 1 && !parent.matches('.toc')) {
               if (parent.matches('li')) parent.classList.add('active')
               parent = parent.parentNode
             }
@@ -623,26 +623,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'go-up': () => { // Back to top
       btf.scrollToDest(0, 500)
     },
-    'custom-button': () => {
-      // 自定义按钮（阅读模式）
-      // document.getElementById("custom-button").addEventListener("click", function () {
-      console.log('click');
-      var page;
-      const _page = document.getElementById("page");
-      if (_page)
-        page = _page;
-      const _post = document.getElementById("post");
-      if (_post)
-        page = _post;
-      page.style.width = "100%"; // 撑满屏幕
-      // page.style.setProperty("padding", "160px", "important");
-      page.style.padding = "86px"; // 撑满屏幕 不加单位视为百分百
-      const content = document.getElementById("content-inner");
-      content.style.maxWidth = "100%"; // 撑满屏幕
-      content.style.margin = "0"; // 撑满屏幕
-      content.style.padding = "0"; // 撑满屏幕
-      // })
-    },
     'music-button': () => {
         const musicPlayer = document.getElementById("music-player");
         if (musicPlayer.style.display === "none") {
@@ -668,11 +648,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (page && saveStatus == 'hide') {
         page.style.width = "100%"; // 撑满屏幕
-        page.style.padding = "86px"; // 撑满屏幕 不加单位视为百分百
+        page.style.padding = "86px"; //  不加单位视为百分百 上右下左
         const content = document.getElementById("content-inner");
-        content.style.maxWidth = "100%"; // 撑满屏幕
-        content.style.margin = "0"; // 撑满屏幕
-        content.style.padding = "0"; // 撑满屏幕
+        content.style.maxWidth = "100%"; 
+        content.style.margin = "0"; 
+        content.style.padding = "0"; 
+      }else if (page && saveStatus == 'show') {
+        page.style.width = "80%";
+        page.style.padding = "0px 0px 0px 86px"; //  不加单位视为百分百 上右下左
       }
     },
     'mobile-toc-button': (p, item) => { // Show mobile toc
