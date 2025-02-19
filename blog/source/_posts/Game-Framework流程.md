@@ -15,6 +15,7 @@ description:
 - [烟雨迷离半世殇GF视频教程](https://www.bilibili.com/medialist/detail/ml759678145)
 - [GF API 手册](https://gameframework.cn/api/index.html)
 - [常见问题](https://gameframework.cn/faq/)
+- [源码分析](https://blog.csdn.net/qq_26999509/article/details/102758769?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522f6a6e8709f22cf67742712f866f9e7f4%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=f6a6e8709f22cf67742712f866f9e7f4&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-102758769-null-null.nonecase&utm_term=gameframework&spm=1018.2226.3001.4450)
   
 **参考项目：**
 - [GF官方](https://github.com/EllanJiang)（包涵GameFrameWork 源码，UnityGameFrameWork Package， StarForce 示例工程）

@@ -1288,3 +1288,521 @@ public class VersionData
 ---
 
 通过这种方式，可以高效地判断客户端是否需要热更新，并确保资源和代码是最新版本。
+
+
+# HybridCLR 是如何删除弃用的业务逻辑
+
+在 **HybridCLR** 的热更新机制下，C# 代码的更新是通过**替换 DLL** 来实现的，而不是像 Lua 那样直接修改脚本文件。因此，在**删除废弃的业务逻辑**时，需要从**逻辑层面**和**文件层面**两部分处理。
+
+---
+
+# **1. 逻辑层面：卸载废弃的代码**
+即使热更新加载了新版本的 DLL，旧版本的类、方法仍可能**被引用或驻留在内存中**，需要确保：
+
+1. **不再调用旧代码**
+2. **清理旧 DLL 占用的资源**
+3. **避免旧代码仍在运行**（例如事件监听、线程、静态变量等）
+
+### **（1）移除已加载的废弃类**
+HybridCLR 通过 **Assembly.Load()** 加载新的 DLL，默认情况下，**已加载的类不会自动卸载**。所以要确保：
+- **不再引用废弃代码**
+- **手动移除相关的对象**
+
+**示例：清理废弃类**
+```csharp
+// 让 C# 运行时不再持有旧逻辑的引用
+OldLogic.Instance = null;
+```
+
+---
+
+### **（2）清理静态变量 & 事件监听**
+如果有**静态变量**持有废弃类的实例，必须手动清理：
+```csharp
+OldLogic.StaticInstance = null;
+```
+如果有**事件监听**，需要取消：
+```csharp
+EventManager.OnEvent -= OldLogic.HandleEvent;
+```
+
+---
+
+### **（3）释放旧 DLL**
+.NET Core/Mono **不支持卸载单个 DLL**，但可以**更换 AppDomain** 来隔离和卸载：
+```csharp
+// 彻底卸载 HybridCLR 加载的所有热更 DLL
+HybridCLR.RuntimeApi.UnloadHotUpdateAssemblies();
+```
+但 HybridCLR 目前 **不支持完全卸载 DLL**，如果有大版本更新，建议直接**重启进程**：
+```csharp
+Application.Quit();
+```
+
+---
+
+# **2. 文件层面：删除废弃的 DLL**
+HybridCLR 的热更 DLL 一般存放在 **PersistentDataPath** 目录，需要手动删除：
+
+```csharp
+string oldDllPath = Path.Combine(Application.persistentDataPath, "HotUpdate.dll");
+if (File.Exists(oldDllPath))
+{
+    File.Delete(oldDllPath);
+}
+```
+如果 DLL 是从 **远程服务器下载的**，可以在更新时**只下载新版本的 DLL**，同时清理旧 DLL。
+
+**示例：删除所有旧 DLL**
+```csharp
+string hotfixPath = Path.Combine(Application.persistentDataPath, "hotfix");
+if (Directory.Exists(hotfixPath))
+{
+    Directory.Delete(hotfixPath, true);
+}
+```
+
+---
+
+# **3. 如何彻底卸载旧业务逻辑**
+**如果 HybridCLR 不能卸载 DLL，怎样才能彻底移除旧代码？**
+
+### **方案 1：重启进程**
+由于 .NET 运行时不能单独卸载某个 DLL，**最干净的做法**是**更新完成后，直接重启游戏**：
+```csharp
+Application.Quit();  // 退出游戏
+```
+然后下次启动时，加载最新的 DLL，而不会保留旧逻辑。
+
+---
+
+### **方案 2：使用不同 Assembly 加载 DLL**
+HybridCLR **支持加载多个版本的 DLL**，可以：
+1. **每次热更加载不同的 DLL（如 `HotUpdate_v2.dll`）**
+2. **旧 DLL 永远不会被新代码访问**
+3. **新 DLL 替换旧逻辑后，旧 DLL 文件可删除**
+
+示例：
+```csharp
+var assembly = Assembly.Load(File.ReadAllBytes("HotUpdate_v2.dll"));
+```
+然后把旧 DLL 从 `PersistentDataPath` 中删除。
+
+---
+
+# **总结**
+| 操作 | 方法 |
+|------|------|
+| **停止旧逻辑运行** | 解除引用 (`OldLogic.Instance = null`)，取消事件监听 |
+| **清理静态变量** | `OldLogic.StaticInstance = null;` |
+| **卸载热更 DLL** | `HybridCLR.RuntimeApi.UnloadHotUpdateAssemblies();` |
+| **删除旧 DLL 文件** | `File.Delete(path)` |
+| **彻底清除** | **重启游戏 (`Application.Quit()`)** |
+
+**推荐方案**
+- **小版本热更**：用 `UnloadHotUpdateAssemblies()` 释放旧 DLL，并删除旧文件。
+- **大版本更新**：直接 `Application.Quit()` 重启游戏，确保所有旧代码彻底清除。
+
+---
+
+你目前是想**小规模热修**（尽量不停游戏），还是**大版本更新**（可以重启）？
+
+
+
+
+
+
+# 划分程序集
+
+在你的 **游戏厅（Game Hub）** 项目中，每个小游戏都可能是**独立的业务模块**，为了**支持随时下架、更新或新增游戏**，你需要合理划分 **Assembly** 并采用 **插件式架构**，使得每个游戏都可以**独立加载、卸载**，从而实现灵活管理。  
+
+---
+
+# **1. Assembly 划分方案**
+建议将项目拆分成多个 **Assembly**（DLL），核心划分如下：  
+
+### **（1）主程序 Assembly（GameHub.dll）**
+- 负责 **游戏大厅的管理**（UI、网络、用户数据、支付等）
+- **不会变动**，不随小游戏更新而修改
+- 只负责 **加载/卸载 子游戏 DLL**
+
+### **（2）小游戏 Assembly（GameA.dll、GameB.dll...）**
+- **每个游戏单独一个 DLL**，如 `GameA.dll`、`GameB.dll`
+- 游戏代码、资源、逻辑**完全封装**在该 DLL 中
+- 可以**单独卸载、更新或删除**
+
+### **（3）公共 Assembly（Common.dll）**
+- 存放 **共享逻辑、工具方法**
+- 避免每个小游戏重复代码
+- 例如：
+  - **网络通信模块**
+  - **UI 基础组件**
+  - **工具类（日志、数学计算等）**
+
+**📌 关键点**：
+- **每个小游戏必须独立**（即 **不引用其他游戏**，避免删除时影响其他游戏）。
+- **小游戏之间通过接口通信**，而不是直接调用代码。
+
+---
+
+# **2. 具体实现**
+### **（1）小游戏代码结构**
+示例：`GameA.dll`  
+```csharp
+public class GameA : IGameModule
+{
+    public void StartGame()
+    {
+        Debug.Log("Game A 启动");
+        // 游戏逻辑
+    }
+
+    public void StopGame()
+    {
+        Debug.Log("Game A 结束");
+        // 清理资源
+    }
+}
+```
+
+### **（2）定义通用接口（GameHub 统一管理）**
+主程序 `GameHub.dll` 只认识 **接口**，不依赖具体游戏：
+```csharp
+public interface IGameModule
+{
+    void StartGame();
+    void StopGame();
+}
+```
+---
+
+### **（3）动态加载游戏（按需加载 DLL）**
+**📌 核心逻辑：**  
+- **GameHub.dll 负责加载/卸载游戏**
+- **从 `PersistentDataPath` 读取新的游戏 DLL**
+- **实例化 `IGameModule`，运行游戏**
+
+#### **✅ 加载游戏**
+```csharp
+public IGameModule LoadGame(string gameName)
+{
+    string path = Path.Combine(Application.persistentDataPath, $"{gameName}.dll");
+
+    if (!File.Exists(path))
+    {
+        Debug.LogError($"找不到 {path}");
+        return null;
+    }
+
+    byte[] dllBytes = File.ReadAllBytes(path);
+    Assembly assembly = Assembly.Load(dllBytes);
+
+    Type gameType = assembly.GetType($"{gameName}.GameMain"); // 确保游戏类符合命名规则
+    if (gameType == null)
+    {
+        Debug.LogError($"{gameName} 里没有 GameMain 类");
+        return null;
+    }
+
+    return Activator.CreateInstance(gameType) as IGameModule;
+}
+```
+
+#### **✅ 运行游戏**
+```csharp
+IGameModule currentGame = LoadGame("GameA");
+currentGame?.StartGame();
+```
+
+---
+
+### **（4）删除/下架游戏**
+当 **游戏下架** 时，需要：
+1. **停止该游戏**
+2. **卸载 DLL**
+3. **删除文件**
+
+**✅ 停止游戏并清理**
+```csharp
+if (currentGame != null)
+{
+    currentGame.StopGame();
+    currentGame = null;
+}
+```
+
+**✅ 删除 DLL 文件**
+```csharp
+string gamePath = Path.Combine(Application.persistentDataPath, "GameA.dll");
+if (File.Exists(gamePath))
+{
+    File.Delete(gamePath);
+    Debug.Log("GameA 已删除");
+}
+```
+
+**⚠️ 注意**
+- 由于 C# **不支持卸载单个 DLL**，建议：
+  - **加载时使用不同 Assembly**，避免占用
+  - **删除后，建议重启游戏进程**
+  
+---
+
+### **（5）游戏更新**
+**1. 服务器推送新版本 `GameA_v2.dll`**
+**2. 替换 `GameA.dll` 并加载新 DLL**
+**3. 调用 `StopGame()` 关闭旧版本**
+**4. 重新加载新版本 `GameA` 并运行**
+
+```csharp
+string oldPath = Path.Combine(Application.persistentDataPath, "GameA.dll");
+string newPath = Path.Combine(Application.persistentDataPath, "GameA_v2.dll");
+
+if (File.Exists(oldPath)) File.Delete(oldPath);
+File.Move(newPath, oldPath);
+
+IGameModule currentGame = LoadGame("GameA");
+currentGame?.StartGame();
+```
+
+---
+
+# **3. HybridCLR 支持点**
+**HybridCLR 主要用于支持**：
+1. **运行 IL2CPP 下的热更 C# 代码**
+2. **动态加载 C# DLL**
+3. **支持在 iOS/Android/WebGL 运行 C# 热更代码**
+
+你可以使用 HybridCLR **动态加载和替换游戏 DLL**，但要注意：
+- **不支持完全卸载 DLL**，所以游戏下架后**最好重启进程**清理内存。
+- **要确保新 DLL 兼容老的 `IGameModule` 接口**，否则会崩溃。
+
+---
+
+# **4. 总结**
+| 方案 | 方案描述 | 适用场景 |
+|------|---------|---------|
+| **每个小游戏一个 DLL** | 每个游戏 `GameA.dll`、`GameB.dll` 独立，主程序动态加载/卸载 | 适合有多个小游戏、可随时更新 |
+| **统一管理接口 `IGameModule`** | 只在 `GameHub.dll` 里使用 `IGameModule`，防止硬编码依赖 | 让 `GameHub` 代码更稳定，减少改动 |
+| **热更新游戏** | 服务器推送 `GameA_v2.dll`，删除 `GameA.dll`，然后重新加载 | 适合定期更新游戏内容 |
+| **下架游戏** | `StopGame()` 清理资源，删除 `GameA.dll`，并建议重启游戏 | 适合游戏随时下架 |
+
+---
+
+# **5. 你接下来的问题**
+你是更关注 **如何加载/卸载 DLL**，还是想了解 **HybridCLR 在不同平台（iOS/Android/WebGL）的兼容性**？
+
+
+# 公共程序集为啥不能与主程序集合并
+
+### **1. 公共 Assembly 是否可以合并到主程序 Assembly？**
+**✅ 可以合并**，但不推荐，具体情况如下：  
+
+| 方案 | 适用场景 | 优点 | 缺点 |
+|------|---------|------|------|
+| **合并到主程序 (GameHub.dll)** | **小型项目，功能较少** | 结构简单，减少 DLL 数量 | 不能动态更新公共逻辑，每次修改都要重打主包 |
+| **独立公共 Assembly (Common.dll)** | **大型项目，多个游戏共享逻辑** | 允许热更新公共代码，减少主程序改动 | 需要管理额外的 DLL |
+
+**📌 建议**
+- **如果项目较小（比如只有几个小游戏）**，可以把 **公共代码** 合并到 `GameHub.dll`，减少 DLL 数量。
+- **如果项目较大（支持几十款游戏）**，推荐**拆分 `Common.dll`**，让公共逻辑独立，这样**既能复用，也能热更新**。
+
+---
+
+### **2. Assembly 与 AssetBundle（AB 包）如何关联？**
+在 **Unity 资源管理** 中，`Assembly`（DLL）和 `AssetBundle`（AB包）是 **两个独立的概念**，但可以**配合使用**。
+
+#### **（1）如何关联？**
+| 目标 | 方案 |
+|------|------|
+| **热更新代码** | **放入 `DLL`，用 HybridCLR 动态加载** |
+| **热更新资源（Prefab、材质等）** | **打成 `AB包`，运行时下载 & 加载** |
+
+#### **（2）示例：游戏 `GameA` 结构**
+```
+📁 GameA 资源包
+├── GameA.dll            // 游戏代码
+├── GameA_Assets.ab      // 该游戏的资源（Prefab、材质）
+```
+---
+
+### **3. 具体如何管理 DLL 和 AB 包？**
+**✅ 推荐管理方式：**
+1. **每个游戏一个 DLL + 一个 AB 包**
+2. **服务器维护 `version.json` 文件，管理最新版本**
+3. **客户端比对 `version.json`，决定是否下载更新**
+4. **动态加载新 DLL 和 AB 包**
+
+---
+
+### **4. AB 包与 DLL 的加载代码**
+📌 **示例：同时加载 `GameA.dll` 和 `GameA_Assets.ab`**
+
+```csharp
+public IEnumerator LoadGame(string gameName)
+{
+    string dllPath = Path.Combine(Application.persistentDataPath, $"{gameName}.dll");
+    string abPath = Path.Combine(Application.persistentDataPath, $"{gameName}_Assets.ab");
+
+    // 1. 先加载 DLL
+    byte[] dllBytes = File.ReadAllBytes(dllPath);
+    Assembly assembly = Assembly.Load(dllBytes);
+
+    // 2. 再加载 AB 包
+    AssetBundle ab = AssetBundle.LoadFromFile(abPath);
+    if (ab == null)
+    {
+        Debug.LogError("AB 包加载失败：" + abPath);
+        yield break;
+    }
+
+    // 3. 实例化游戏主逻辑
+    Type gameType = assembly.GetType($"{gameName}.GameMain");
+    if (gameType != null)
+    {
+        IGameModule gameInstance = Activator.CreateInstance(gameType) as IGameModule;
+        gameInstance?.StartGame();
+    }
+}
+```
+
+---
+
+### **5. 热更新时，如何删除废弃的 DLL 和 AB？**
+当游戏 **下架** 或 **更新版本时**，需要删除旧的 DLL 和 AB 文件：
+
+```csharp
+public void DeleteOldGame(string gameName)
+{
+    string dllPath = Path.Combine(Application.persistentDataPath, $"{gameName}.dll");
+    string abPath = Path.Combine(Application.persistentDataPath, $"{gameName}_Assets.ab");
+
+    if (File.Exists(dllPath))
+    {
+        File.Delete(dllPath);
+        Debug.Log($"{gameName}.dll 已删除");
+    }
+
+    if (File.Exists(abPath))
+    {
+        File.Delete(abPath);
+        Debug.Log($"{gameName}_Assets.ab 已删除");
+    }
+}
+```
+
+---
+
+### **6. 总结**
+| 方案 | 是否推荐 | 说明 |
+|------|---------|------|
+| **公共 Assembly 合并到主程序** | ❌ **不推荐** | 不能热更新公共逻辑，改动大 |
+| **公共 Assembly 独立 (`Common.dll`)** | ✅ **推荐** | 允许热更新公共代码，减少主程序改动 |
+| **DLL 与 AB 包管理** | ✅ **推荐** | **游戏代码**放 `DLL`，**资源**放 `AB`，分别热更新 |
+| **游戏下架时删除 `DLL + AB`** | ✅ **推荐** | 确保游戏**彻底卸载**，避免浪费存储 |
+
+**🔥 你可以根据项目大小选择合适的管理方式，整体来说独立 DLL 和 AB 包管理是最佳方案！** 🚀
+
+
+
+
+# **热更新的最佳时机和界面选择**
+在 Unity 使用 **HybridCLR** 进行热更新时，选择合适的更新时机和界面非常重要，否则可能导致**游戏崩溃**、**逻辑异常**或**资源丢失**。以下是最佳实践：
+
+---
+
+## **1. 热更新的最佳时机**
+📌 **建议在“非交互”状态下进行更新**，避免玩家正在操作时导致异常：
+✅ **推荐的时机：**
+- **游戏启动时**（Splash/Loading 界面）
+- **进入主界面前**（下载完资源后进入大厅）
+- **玩家进入游戏前**（在“游戏选择”界面检查更新）
+- **切换大场景时**（如从大厅进入副本/新地图）
+- **后台运行时**（玩家暂时离开游戏）
+
+❌ **避免在以下情况下更新：**
+- **游戏进行中**（玩家正在战斗、跑图时更新会导致闪退）
+- **正在加载资源时**（影响加载稳定性）
+- **与服务器交互中**（如果协议更新了但旧逻辑仍在运行，可能导致同步失败）
+
+---
+
+## **2. 热更新时的界面选择**
+📌 **推荐使用“过渡界面”或“更新提示界面”**
+| **界面类型** | **是否推荐** | **理由** |
+|-------------|------------|----------|
+| **独立更新界面**（如“正在更新”） | ✅ **推荐** | 提示用户更新进度，防止误操作 |
+| **游戏启动界面**（Logo、Loading） | ✅ **推荐** | 最安全，不影响正常游戏流程 |
+| **游戏大厅（非交互状态）** | ✅ **推荐** | 适用于“在线更新” |
+| **游戏进行中（战斗、副本）** | ❌ **不推荐** | 影响玩家体验，容易崩溃 |
+| **UI弹窗提醒更新** | ⚠ **谨慎** | 适用于小补丁，不适用于大版本更新 |
+
+---
+
+## **3. 具体热更新流程**
+📌 **示例：在“游戏大厅”进行更新**
+```csharp
+IEnumerator CheckForUpdates()
+{
+    // 1. 显示更新界面
+    UIManager.Instance.ShowUpdatePanel("正在检查更新...");
+
+    // 2. 下载最新的版本信息
+    string versionUrl = "https://server.com/version.json";
+    UnityWebRequest request = UnityWebRequest.Get(versionUrl);
+    yield return request.SendWebRequest();
+
+    if (request.result == UnityWebRequest.Result.Success)
+    {
+        string versionData = request.downloadHandler.text;
+        VersionInfo newVersion = JsonUtility.FromJson<VersionInfo>(versionData);
+
+        // 3. 比对当前版本
+        if (newVersion.version != currentVersion)
+        {
+            UIManager.Instance.ShowUpdatePanel("发现新版本，开始更新...");
+
+            // 4. 下载新 DLL 和 AB 包
+            yield return DownloadAndReplace(newVersion);
+            
+            // 5. 更新完成后提示玩家重启
+            UIManager.Instance.ShowUpdatePanel("更新完成，请重启游戏！");
+        }
+    }
+}
+```
+
+---
+
+## **4. 避免问题的关键**
+### **✅ 关键点 1：更新时切断交互**
+- **更新期间**禁用按钮、滑动等操作，防止玩家误触
+- **建议锁定 UI 操作**，直到更新完成
+
+### **✅ 关键点 2：分批更新**
+- 如果 **游戏大厅 + 多个小游戏**：
+  - **主程序 DLL** 在启动时更新
+  - **小游戏 DLL & 资源** 在游戏选择时更新
+
+### **✅ 关键点 3：更新后强制重启**
+- HybridCLR **不能直接替换运行中的 DLL**
+- 更新完成后，需要 **重新启动游戏**，加载新 DLL
+```csharp
+void RestartGame()
+{
+    // 退出游戏并重新启动
+    Application.Quit();
+    System.Diagnostics.Process.Start(Application.dataPath.Replace("_Data", ".exe"));
+}
+```
+
+---
+
+## **5. 结论**
+| **问题** | **解决方案** |
+|---------|-------------|
+| **什么时候更新？** | **游戏启动 / 进入大厅 / 切换大场景** |
+| **在哪里更新？** | **加载界面 / 独立更新界面 / 游戏大厅** |
+| **如何避免错误？** | **禁用交互、分批更新、更新后强制重启** |
+
+这样可以 **最大化避免游戏崩溃**，让玩家平稳地进行热更新。🚀
