@@ -2,7 +2,7 @@ name: Deploy Hexo Blog
 
 on:
   push:
-    branches: [ master ]  # 当 main 分支有推送时触发
+    branches: [ master, main ]  # 同时监听 master 和 main 分支
 
 jobs:
   build-and-deploy:
@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 这对某些Hexo主题是必要的
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -22,11 +24,13 @@ jobs:
           npm install
 
       - name: Build static files
-        run: hexo generate
+        run: |
+          hexo clean
+          hexo generate
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
-          publish_branch: gh-pages  # 部署到 gh-pages 分支
+          publish_branch: gh-pages
