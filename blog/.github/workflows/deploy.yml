@@ -1,47 +1,48 @@
-name: Auto Deploy Hexo
+name: Deploy Hexo to GitHub Pages
 
 on:
   push:
-    branches: [ master ]  # 监听网页提交的分支
-  workflow_dispatch:    # 保留手动触发选项
+    paths:
+      - 'source/_posts/**'  # 仅当文章文件夹有改动时触发
+      - '_config.yml'       # 如果配置文件改了也重新部署
+      - 'themes/**'         # 主题改动也触发部署
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 拉取代码（关键修改点）
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # 必须！获取完整提交历史
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      # 2. 设置Node环境
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v2
         with:
           node-version: '20'
 
-      # 3. 安装依赖（保持你的原有配置）
       - name: Install Dependencies
-        run: |
-          npm install
-          npm install hexo-deployer-git --save
-          npm install hexo-cli -g
+        run: npm install
 
-      # 4. 生成静态文件
-      - name: Generate
+      - name: Install Hexo CLI and Deployer
+        run: |
+          npm install hexo-cli -g
+          npm install hexo-deployer-git --save
+
+      - name: Generate Static Files
         run: |
           hexo clean
           hexo generate
 
-      # 5. 自动部署（优化版）
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 改用自动生成的token
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           cd public
           git init
-          git add -A
-          git commit -m "Deploy from GitHub Actions"
-          git push --force "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" main:gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Deploy Hexo site - $(date +'%Y-%m-%d %H:%M:%S')"
+          git push --force https://${{ secrets.GH_TOKEN }}@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git master:gh-pages
