@@ -1,36 +1,47 @@
-name: Deploy Hexo Blog
+name: Auto Deploy Hexo
 
 on:
   push:
-    branches: [ master, main ]  # 同时监听 master 和 main 分支
+    branches: [ main ]  # 监听网页提交的分支
+  workflow_dispatch:    # 保留手动触发选项
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
+      # 1. 拉取代码（关键修改点）
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 这对某些Hexo主题是必要的
+          fetch-depth: 0  # 必须！获取完整提交历史
 
-      - name: Set up Node.js
+      # 2. 设置Node环境
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
 
-      - name: Install Hexo and dependencies
+      # 3. 安装依赖（保持你的原有配置）
+      - name: Install Dependencies
         run: |
-          npm install -g hexo-cli
           npm install
+          npm install hexo-deployer-git --save
+          npm install hexo-cli -g
 
-      - name: Build static files
+      # 4. 生成静态文件
+      - name: Generate
         run: |
           hexo clean
           hexo generate
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
+      # 5. 自动部署（优化版）
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 改用自动生成的token
+        run: |
+          cd public
+          git init
+          git add -A
+          git commit -m "Deploy from GitHub Actions"
+          git push --force "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" main:gh-pages
