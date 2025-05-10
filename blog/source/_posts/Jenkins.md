@@ -1,3 +1,12 @@
+---
+title: Jenkins 简介
+date: 2025-05-08 14:16:02
+updated: 2025-01-08 14:16:02
+tags: Jenkins
+categories: Jenkins
+keywords: Jenkins
+description:
+---
 ### **Jenkins 简介**
 Jenkins 是一个开源的 **持续集成和持续交付 (CI/CD)** 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。
 
