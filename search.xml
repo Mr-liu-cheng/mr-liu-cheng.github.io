@@ -455,144 +455,96 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
-    <url>/2025/05/10/GitHub%20+%20CDN/</url>
-    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
-<hr>
-<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph LR</span><br><span class="line">   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]</span><br><span class="line">   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]</span><br><span class="line">   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]</span><br><span class="line">   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</span><br></pre></td></tr></table></figure>
-
+    <title>C# CLR</title>
+    <url>/2025/01/20/C-CLR/</url>
+    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、VB.NET、F# 等）编写的程序。</p>
+<h3 id="CLR-的主要功能："><a href="#CLR-的主要功能：" class="headerlink" title="CLR 的主要功能："></a>CLR 的主要功能：</h3><ol>
+<li><p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
+</li>
+<li><p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
+</li>
+<li><p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
+</li>
+<li><p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
+</li>
+<li><p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 VB.NET 编写的类和方法。</p>
+</li>
+<li><p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
+</li>
+</ol>
+<h3 id="CLR-主要包含的部分："><a href="#CLR-主要包含的部分：" class="headerlink" title="CLR 主要包含的部分："></a>CLR 主要包含的部分：</h3><ul>
+<li><p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
+</li>
+<li><p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
+</li>
+<li><p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
+</li>
+<li><p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
+</li>
+</ul>
+<h3 id="CLR-与其他技术的关系："><a href="#CLR-与其他技术的关系：" class="headerlink" title="CLR 与其他技术的关系："></a>CLR 与其他技术的关系：</h3><ul>
+<li><p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
+</li>
+<li><p>**.NET Core 和 .NET 5&#x2F;6+**：随着 .NET Core 和后来的统一平台 .NET 5&#x2F;6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
+</li>
+</ul>
+<h3 id="CLR-的作用："><a href="#CLR-的作用：" class="headerlink" title="CLR 的作用："></a>CLR 的作用：</h3><ul>
+<li><p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
+</li>
+<li><p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
+</li>
+</ul>
+<h3 id="小结："><a href="#小结：" class="headerlink" title="小结："></a>小结：</h3><p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
+<h2 id="跨平台"><a href="#跨平台" class="headerlink" title="跨平台"></a>跨平台</h2><p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5&#x2F;6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
+<h3 id="CLR-如何实现跨平台支持："><a href="#CLR-如何实现跨平台支持：" class="headerlink" title="CLR 如何实现跨平台支持："></a>CLR 如何实现跨平台支持：</h3><ol>
+<li><p><strong>平台无关性</strong>：</p>
 <ul>
-<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
-<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
-<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
-</ul>
-<hr>
-<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
-<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
-<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
-<li>获取直链：  <ul>
-<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
+<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
+<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
 </ul>
 </li>
-</ol>
-<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
-<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
-<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<li><p><strong>跨语言互操作性</strong>：</p>
 <ul>
-<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
+<li>CLR 支持多种编程语言（例如 C#、F#、VB.NET 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
 </ul>
 </li>
-</ol>
-<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
-<ol>
-<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
-<li>在Cloudflare中：  <ul>
-<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
-<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
-</ul>
-</li>
-<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
-<ol>
-<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<li><p><strong>运行时环境的适配</strong>：</p>
 <ul>
-<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
-<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
-<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
-</ul>
-<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
-<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
-<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
-</ul>
-<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
-<li><strong>流量统计</strong>：  <ul>
-<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
-<li>在Cloudflare面板查看CDN请求数。</li>
-</ul>
-</li>
-<li><strong>防滥用</strong>：  <ul>
-<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：<ul>
+<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
+<li>**.NET Core &#x2F; .NET 5+**：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
 </ul>
 </li>
 </ul>
-<hr>
-<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐方案</th>
-<th>注意事项</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>免费游戏试玩</strong></td>
-<td>GitHub Releases直链</td>
-<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
-</tr>
-<tr>
-<td><strong>开源项目分发</strong></td>
-<td>jsDelivr CDN</td>
-<td>必须公开仓库，适合Demo或工具类游戏。</td>
-</tr>
-<tr>
-<td><strong>商业游戏早期测试</strong></td>
-<td>Cloudflare+B2</td>
-<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
-</tr>
-<tr>
-<td><strong>大规模正式发布</strong></td>
-<td>需迁移至专业CDN&#x2F;自建</td>
-<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
-<thead>
-<tr>
-<th>方案</th>
-<th>存储成本</th>
-<th>流量成本（1TB下载）</th>
-<th>适用阶段</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GitHub直链</strong></td>
-<td>免费</td>
-<td>免费（但有限流风险）</td>
-<td>原型&#x2F;测试</td>
-</tr>
-<tr>
-<td><strong>Cloudflare+B2</strong></td>
-<td>$0.005&#x2F;GB&#x2F;月</td>
-<td>$10~$50</td>
-<td>小规模发布</td>
-</tr>
-<tr>
-<td><strong>AWS S3+CloudFront</strong></td>
-<td>$0.023&#x2F;GB&#x2F;月</td>
-<td>$85~$120</td>
-<td>中等规模</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
-<ol>
-<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
-<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
-<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
-</ol>
-<p>此方案适合：  </p>
+</li>
+<li><p><strong>垃圾回收与内存管理</strong>：</p>
 <ul>
-<li>独立开发者验证游戏热度。  </li>
-<li>开源项目或免费游戏分发。  </li>
-<li>规避早期服务器运维成本。</li>
+<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
 </ul>
+</li>
+<li><p><strong>平台特定实现</strong>：</p>
+<ul>
+<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
+</ul>
+</li>
+<li><p><strong>移植和兼容性</strong>：</p>
+<ul>
+<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
+</ul>
+</li>
+</ol>
+<h3 id="CLR-与-Unity-的跨平台能力："><a href="#CLR-与-Unity-的跨平台能力：" class="headerlink" title="CLR 与 Unity 的跨平台能力："></a>CLR 与 Unity 的跨平台能力：</h3><p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
+<ul>
+<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
+<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
+</ul>
+<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
+<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
+<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
+</ul>
+<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
 ]]></content>
   </entry>
   <entry>
@@ -1064,128 +1016,8 @@
 ]]></content>
   </entry>
   <entry>
-    <title>C# CLR</title>
-    <url>/2025/01/20/C-CLR/</url>
-    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、VB.NET、F# 等）编写的程序。</p>
-<h3 id="CLR-的主要功能："><a href="#CLR-的主要功能：" class="headerlink" title="CLR 的主要功能："></a>CLR 的主要功能：</h3><ol>
-<li><p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
-</li>
-<li><p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
-</li>
-<li><p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
-</li>
-<li><p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
-</li>
-<li><p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 VB.NET 编写的类和方法。</p>
-</li>
-<li><p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
-</li>
-</ol>
-<h3 id="CLR-主要包含的部分："><a href="#CLR-主要包含的部分：" class="headerlink" title="CLR 主要包含的部分："></a>CLR 主要包含的部分：</h3><ul>
-<li><p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
-</li>
-<li><p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
-</li>
-<li><p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
-</li>
-<li><p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
-</li>
-</ul>
-<h3 id="CLR-与其他技术的关系："><a href="#CLR-与其他技术的关系：" class="headerlink" title="CLR 与其他技术的关系："></a>CLR 与其他技术的关系：</h3><ul>
-<li><p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
-</li>
-<li><p>**.NET Core 和 .NET 5&#x2F;6+**：随着 .NET Core 和后来的统一平台 .NET 5&#x2F;6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
-</li>
-</ul>
-<h3 id="CLR-的作用："><a href="#CLR-的作用：" class="headerlink" title="CLR 的作用："></a>CLR 的作用：</h3><ul>
-<li><p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
-</li>
-<li><p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
-</li>
-</ul>
-<h3 id="小结："><a href="#小结：" class="headerlink" title="小结："></a>小结：</h3><p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
-<h2 id="跨平台"><a href="#跨平台" class="headerlink" title="跨平台"></a>跨平台</h2><p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5&#x2F;6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
-<h3 id="CLR-如何实现跨平台支持："><a href="#CLR-如何实现跨平台支持：" class="headerlink" title="CLR 如何实现跨平台支持："></a>CLR 如何实现跨平台支持：</h3><ol>
-<li><p><strong>平台无关性</strong>：</p>
-<ul>
-<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
-<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
-</ul>
-</li>
-<li><p><strong>跨语言互操作性</strong>：</p>
-<ul>
-<li>CLR 支持多种编程语言（例如 C#、F#、VB.NET 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
-</ul>
-</li>
-<li><p><strong>运行时环境的适配</strong>：</p>
-<ul>
-<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：<ul>
-<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
-<li>**.NET Core &#x2F; .NET 5+**：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>垃圾回收与内存管理</strong>：</p>
-<ul>
-<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
-</ul>
-</li>
-<li><p><strong>平台特定实现</strong>：</p>
-<ul>
-<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
-</ul>
-</li>
-<li><p><strong>移植和兼容性</strong>：</p>
-<ul>
-<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
-</ul>
-</li>
-</ol>
-<h3 id="CLR-与-Unity-的跨平台能力："><a href="#CLR-与-Unity-的跨平台能力：" class="headerlink" title="CLR 与 Unity 的跨平台能力："></a>CLR 与 Unity 的跨平台能力：</h3><p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
-<ul>
-<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
-<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
-</ul>
-<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
-<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
-<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
-</ul>
-<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2025/05/10/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
-    <content><![CDATA[<p>谢谢提供路径信息。</p>
-<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
-<blockquote>
-<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
-<hr>
-<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
-<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-
-<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
-<hr>
-<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
-<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
-<hr>
-<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2025/05/10/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
+    <title>GitHub Actions部署流程</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
     <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
 <hr>
 <h3 id="🧾-YAML-脚本结构快速回顾"><a href="#🧾-YAML-脚本结构快速回顾" class="headerlink" title="🧾 YAML 脚本结构快速回顾"></a>🧾 YAML 脚本结构快速回顾</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
@@ -1251,6 +1083,186 @@
 <p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
 <hr>
 <p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
+]]></content>
+      <categories>
+        <category>GitHub Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub + CDN</title>
+    <url>/2025/05/08/GitHub%20+%20CDN/</url>
+    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
+<hr>
+<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph LR</span><br><span class="line">   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]</span><br><span class="line">   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]</span><br><span class="line">   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]</span><br><span class="line">   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
+<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
+<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
+</ul>
+<hr>
+<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
+<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
+<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
+<li>获取直链：  <ul>
+<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
+<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
+<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
+</ul>
+</li>
+</ol>
+<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
+<ol>
+<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
+<li>在Cloudflare中：  <ul>
+<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
+<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
+</ul>
+</li>
+<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
+<ol>
+<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
+<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
+<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
+</ul>
+<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
+<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
+<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
+</ul>
+<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
+<li><strong>流量统计</strong>：  <ul>
+<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
+<li>在Cloudflare面板查看CDN请求数。</li>
+</ul>
+</li>
+<li><strong>防滥用</strong>：  <ul>
+<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>免费游戏试玩</strong></td>
+<td>GitHub Releases直链</td>
+<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
+</tr>
+<tr>
+<td><strong>开源项目分发</strong></td>
+<td>jsDelivr CDN</td>
+<td>必须公开仓库，适合Demo或工具类游戏。</td>
+</tr>
+<tr>
+<td><strong>商业游戏早期测试</strong></td>
+<td>Cloudflare+B2</td>
+<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
+</tr>
+<tr>
+<td><strong>大规模正式发布</strong></td>
+<td>需迁移至专业CDN&#x2F;自建</td>
+<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>存储成本</th>
+<th>流量成本（1TB下载）</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub直链</strong></td>
+<td>免费</td>
+<td>免费（但有限流风险）</td>
+<td>原型&#x2F;测试</td>
+</tr>
+<tr>
+<td><strong>Cloudflare+B2</strong></td>
+<td>$0.005&#x2F;GB&#x2F;月</td>
+<td>$10~$50</td>
+<td>小规模发布</td>
+</tr>
+<tr>
+<td><strong>AWS S3+CloudFront</strong></td>
+<td>$0.023&#x2F;GB&#x2F;月</td>
+<td>$85~$120</td>
+<td>中等规模</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
+<ol>
+<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
+<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
+<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
+</ol>
+<p>此方案适合：  </p>
+<ul>
+<li>独立开发者验证游戏热度。  </li>
+<li>开源项目或免费游戏分发。  </li>
+<li>规避早期服务器运维成本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GitHub,CDN</category>
+      </categories>
+      <tags>
+        <tag>GitHub,CDN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2025/05/10/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
+    <content><![CDATA[<p>谢谢提供路径信息。</p>
+<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
+<blockquote>
+<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
+<hr>
+<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
+<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
+<hr>
+<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
+<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
+<hr>
+<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
 ]]></content>
   </entry>
   <entry>
@@ -1438,332 +1450,6 @@
 <li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
 </ul>
 <p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 简介</title>
-    <url>/2025/05/08/Jenkins/</url>
-    <content><![CDATA[<h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a><strong>Jenkins 简介</strong></h3><p>Jenkins 是一个开源的 <strong>持续集成和持续交付 (CI&#x2F;CD)</strong> 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。</p>
-<hr>
-<h2 id="1-Jenkins-安装"><a href="#1-Jenkins-安装" class="headerlink" title="1. Jenkins 安装"></a><strong>1. Jenkins 安装</strong></h2><h3 id="1-Windows-安装"><a href="#1-Windows-安装" class="headerlink" title="(1) Windows 安装"></a><strong>(1) Windows 安装</strong></h3><ol>
-<li><p><strong>下载 Jenkins</strong>：</p>
-<ul>
-<li>官网下载地址：<a href="https://www.jenkins.io/download/">https://www.jenkins.io/download/</a></li>
-<li>选择 <strong>Windows 版本（.msi 安装包）</strong>。</li>
-</ul>
-</li>
-<li><p><strong>运行安装程序</strong>：</p>
-<ul>
-<li>双击 <code>.msi</code> 文件，按向导安装。</li>
-<li>默认端口：<code>8080</code>（可修改）。</li>
-</ul>
-</li>
-<li><p><strong>启动 Jenkins</strong>：</p>
-<ul>
-<li>安装完成后，访问 <code>http://localhost:8080</code>。</li>
-<li>首次启动需要输入 <strong>初始管理员密码</strong>（在日志或 <code>C:\Program Files\Jenkins\secrets\initialAdminPassword</code> 中查找）。</li>
-</ul>
-</li>
-<li><p><strong>安装推荐插件</strong>：</p>
-<ul>
-<li>选择 **”Install suggested plugins”**（推荐）。</li>
-<li>等待插件安装完成。</li>
-</ul>
-</li>
-<li><p><strong>创建管理员账户</strong>：</p>
-<ul>
-<li>设置用户名、密码和邮箱。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="2-Linux-macOS-安装"><a href="#2-Linux-macOS-安装" class="headerlink" title="(2) Linux&#x2F;macOS 安装"></a><strong>(2) Linux&#x2F;macOS 安装</strong></h3><h4 id="方法-1：使用-Docker（推荐）"><a href="#方法-1：使用-Docker（推荐）" class="headerlink" title="方法 1：使用 Docker（推荐）"></a><strong>方法 1：使用 Docker（推荐）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts</span><br></pre></td></tr></table></figure>
-<p>访问 <code>http://localhost:8080</code> 进行初始化。</p>
-<h4 id="方法-2：直接安装（Ubuntu-Debian）"><a href="#方法-2：直接安装（Ubuntu-Debian）" class="headerlink" title="方法 2：直接安装（Ubuntu&#x2F;Debian）"></a><strong>方法 2：直接安装（Ubuntu&#x2F;Debian）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | <span class="built_in">sudo</span> apt-key add -</span><br><span class="line"><span class="built_in">sudo</span> sh -c <span class="string">&#x27;echo deb http://pkg.jenkins.io/debian-stable binary/ &gt; /etc/apt/sources.list.d/jenkins.list&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install jenkins</span><br><span class="line"><span class="built_in">sudo</span> systemctl start jenkins</span><br></pre></td></tr></table></figure>
-<p>访问 <code>http://localhost:8080</code>。</p>
-<hr>
-<h2 id="2-Jenkins-基本配置"><a href="#2-Jenkins-基本配置" class="headerlink" title="2. Jenkins 基本配置"></a><strong>2. Jenkins 基本配置</strong></h2><h3 id="1-管理插件"><a href="#1-管理插件" class="headerlink" title="(1) 管理插件"></a><strong>(1) 管理插件</strong></h3><ol>
-<li><strong>进入插件管理</strong>：<ul>
-<li><strong>Dashboard → Manage Jenkins → Manage Plugins</strong>。</li>
-</ul>
-</li>
-<li><strong>安装常用插件</strong>：<ul>
-<li><strong>Git</strong>（用于代码拉取）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Docker</strong>（用于容器化构建）</li>
-<li><strong>Blue Ocean</strong>（可视化流水线）</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-配置全局工具"><a href="#2-配置全局工具" class="headerlink" title="(2) 配置全局工具"></a><strong>(2) 配置全局工具</strong></h3><ol>
-<li><strong>进入全局工具配置</strong>：<ul>
-<li><strong>Dashboard → Manage Jenkins → Global Tool Configuration</strong>。</li>
-</ul>
-</li>
-<li><strong>配置 JDK、Maven、Git</strong>：<ul>
-<li>指定路径或自动安装。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-Jenkins-创建第一个-Job"><a href="#3-Jenkins-创建第一个-Job" class="headerlink" title="3. Jenkins 创建第一个 Job"></a><strong>3. Jenkins 创建第一个 Job</strong></h2><h3 id="1-自由风格项目（Freestyle-Project）"><a href="#1-自由风格项目（Freestyle-Project）" class="headerlink" title="(1) 自由风格项目（Freestyle Project）"></a><strong>(1) 自由风格项目（Freestyle Project）</strong></h3><ol>
-<li><strong>新建 Job</strong>：<ul>
-<li><strong>Dashboard → New Item → Freestyle project</strong>。</li>
-</ul>
-</li>
-<li><strong>配置 Git 仓库</strong>：<ul>
-<li><strong>Source Code Management → Git</strong>，输入仓库 URL。</li>
-</ul>
-</li>
-<li><strong>设置构建触发器</strong>：<ul>
-<li><strong>Poll SCM</strong>（定时检查代码更新）。</li>
-<li><strong>GitHub Webhook</strong>（代码提交后自动触发）。</li>
-</ul>
-</li>
-<li><strong>添加构建步骤</strong>：<ul>
-<li><strong>Execute shell</strong>（Linux）或 <strong>Execute Windows batch command</strong>（Windows）：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Building...&quot;</span></span><br><span class="line">mvn clean package</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>保存并运行</strong>：<ul>
-<li>点击 <strong>Build Now</strong> 手动触发构建。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-使用-Pipeline（推荐）"><a href="#2-使用-Pipeline（推荐）" class="headerlink" title="(2) 使用 Pipeline（推荐）"></a><strong>(2) 使用 Pipeline（推荐）</strong></h3><ol>
-<li><strong>新建 Pipeline Job</strong>：<ul>
-<li><strong>New Item → Pipeline</strong>。</li>
-</ul>
-</li>
-<li><strong>编写 Jenkinsfile</strong>（示例）：<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn clean package&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn test&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;scp target/*.jar user@server:/path/&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><strong>保存并运行</strong>：<ul>
-<li>代码提交后自动触发 Pipeline。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="4-Jenkins-集成-GitHub-GitLab"><a href="#4-Jenkins-集成-GitHub-GitLab" class="headerlink" title="4. Jenkins 集成 GitHub&#x2F;GitLab"></a><strong>4. Jenkins 集成 GitHub&#x2F;GitLab</strong></h2><h3 id="1-GitHub-Webhook-自动触发"><a href="#1-GitHub-Webhook-自动触发" class="headerlink" title="(1) GitHub Webhook 自动触发"></a><strong>(1) GitHub Webhook 自动触发</strong></h3><ol>
-<li><strong>在 GitHub 仓库设置 Webhook</strong>：<ul>
-<li><strong>Settings → Webhooks → Add webhook</strong>。</li>
-<li>Payload URL: <code>http://&lt;你的Jenkins服务器&gt;/github-webhook/</code>。</li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置 GitHub 插件</strong>：<ul>
-<li><strong>Manage Jenkins → Configure System → GitHub Server</strong>。</li>
-<li>添加 GitHub 凭据（Personal Access Token）。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-GitLab-CI-CD-集成"><a href="#2-GitLab-CI-CD-集成" class="headerlink" title="(2) GitLab CI&#x2F;CD 集成"></a><strong>(2) GitLab CI&#x2F;CD 集成</strong></h3><ol>
-<li><strong>安装 GitLab 插件</strong>：<ul>
-<li>**Manage Plugins → 搜索 “GitLab”**。</li>
-</ul>
-</li>
-<li><strong>配置 GitLab 连接</strong>：<ul>
-<li><strong>Manage Jenkins → Configure System → GitLab</strong>。</li>
-<li>输入 GitLab URL 和 API Token。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="5-Jenkins-常见问题"><a href="#5-Jenkins-常见问题" class="headerlink" title="5. Jenkins 常见问题"></a><strong>5. Jenkins 常见问题</strong></h2><h3 id="1-Jenkins-启动失败"><a href="#1-Jenkins-启动失败" class="headerlink" title="(1) Jenkins 启动失败"></a><strong>(1) Jenkins 启动失败</strong></h3><ul>
-<li><strong>检查端口冲突</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -ano | findstr 8080  <span class="comment"># Windows</span></span><br><span class="line"><span class="built_in">sudo</span> lsof -i :8080           <span class="comment"># Linux/macOS</span></span><br></pre></td></tr></table></figure></li>
-<li><strong>修改端口</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nano /etc/default/jenkins  <span class="comment"># 修改 HTTP_PORT</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl restart jenkins</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="2-插件安装失败"><a href="#2-插件安装失败" class="headerlink" title="(2) 插件安装失败"></a><strong>(2) 插件安装失败</strong></h3><ul>
-<li><strong>更换镜像源</strong>：<ul>
-<li><strong>Manage Jenkins → Manage Plugins → Advanced</strong>。</li>
-<li>修改 Update Site 为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<h3 id="3-构建失败排查"><a href="#3-构建失败排查" class="headerlink" title="(3) 构建失败排查"></a><strong>(3) 构建失败排查</strong></h3><ul>
-<li><strong>查看控制台日志</strong>：<ul>
-<li>进入构建详情 → <strong>Console Output</strong>。</li>
-</ul>
-</li>
-<li><strong>检查环境变量</strong>：<ul>
-<li><code>echo $PATH</code>（Linux）或 <code>echo %PATH%</code>（Windows）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h2 id="6-Jenkins-进阶功能"><a href="#6-Jenkins-进阶功能" class="headerlink" title="6. Jenkins 进阶功能"></a><strong>6. Jenkins 进阶功能</strong></h2><table>
-<thead>
-<tr>
-<th>功能</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>分布式构建</strong></td>
-<td>使用 Agent 节点分担主节点压力</td>
-</tr>
-<tr>
-<td><strong>Blue Ocean</strong></td>
-<td>可视化 Pipeline 编辑</td>
-</tr>
-<tr>
-<td><strong>Docker 集成</strong></td>
-<td>在容器中运行构建</td>
-</tr>
-<tr>
-<td><strong>Kubernetes 插件</strong></td>
-<td>动态创建 Pod 运行 Job</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-学习资源"><a href="#7-学习资源" class="headerlink" title="7. 学习资源"></a><strong>7. 学习资源</strong></h2><ul>
-<li><strong>官方文档</strong>：<a href="https://www.jenkins.io/doc/">https://www.jenkins.io/doc/</a></li>
-<li><strong>中文社区</strong>：<a href="https://jenkins-zh.cn/">https://jenkins-zh.cn/</a></li>
-<li><strong>实战课程</strong>：<ul>
-<li>Udemy: <a href="https://www.udemy.com/course/jenkins-from-zero-to-hero/">Jenkins CI&#x2F;CD Pipeline</a></li>
-<li>B站：搜索 “Jenkins 教程”</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li>Jenkins 是强大的 CI&#x2F;CD 工具，支持自动化构建、测试和部署。</li>
-<li>推荐使用 <strong>Pipeline + Docker</strong> 实现现代化 DevOps 流程。</li>
-<li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
-</ul>
-<p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -3099,97 +2785,329 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Markdown 语法</title>
-    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
+    <title>Jenkins 简介</title>
+    <url>/2025/05/08/Jenkins/</url>
+    <content><![CDATA[<h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a><strong>Jenkins 简介</strong></h3><p>Jenkins 是一个开源的 <strong>持续集成和持续交付 (CI&#x2F;CD)</strong> 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。</p>
 <hr>
-<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
-<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
+<h2 id="1-Jenkins-安装"><a href="#1-Jenkins-安装" class="headerlink" title="1. Jenkins 安装"></a><strong>1. Jenkins 安装</strong></h2><h3 id="1-Windows-安装"><a href="#1-Windows-安装" class="headerlink" title="(1) Windows 安装"></a><strong>(1) Windows 安装</strong></h3><ol>
+<li><p><strong>下载 Jenkins</strong>：</p>
 <ul>
-<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
-<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
-<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
+<li>官网下载地址：<a href="https://www.jenkins.io/download/">https://www.jenkins.io/download/</a></li>
+<li>选择 <strong>Windows 版本（.msi 安装包）</strong>。</li>
 </ul>
-<h3 id="PPT-预览"><a href="#PPT-预览" class="headerlink" title="PPT 预览"></a>PPT 预览</h3><p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
+</li>
+<li><p><strong>运行安装程序</strong>：</p>
+<ul>
+<li>双击 <code>.msi</code> 文件，按向导安装。</li>
+<li>默认端口：<code>8080</code>（可修改）。</li>
+</ul>
+</li>
+<li><p><strong>启动 Jenkins</strong>：</p>
+<ul>
+<li>安装完成后，访问 <code>http://localhost:8080</code>。</li>
+<li>首次启动需要输入 <strong>初始管理员密码</strong>（在日志或 <code>C:\Program Files\Jenkins\secrets\initialAdminPassword</code> 中查找）。</li>
+</ul>
+</li>
+<li><p><strong>安装推荐插件</strong>：</p>
+<ul>
+<li>选择 **”Install suggested plugins”**（推荐）。</li>
+<li>等待插件安装完成。</li>
+</ul>
+</li>
+<li><p><strong>创建管理员账户</strong>：</p>
+<ul>
+<li>设置用户名、密码和邮箱。</li>
+</ul>
+</li>
+</ol>
 <hr>
-<h2 id="什么是-Markdown"><a href="#什么是-Markdown" class="headerlink" title="什么是 Markdown"></a>什么是 Markdown</h2><p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
+<h3 id="2-Linux-macOS-安装"><a href="#2-Linux-macOS-安装" class="headerlink" title="(2) Linux&#x2F;macOS 安装"></a><strong>(2) Linux&#x2F;macOS 安装</strong></h3><h4 id="方法-1：使用-Docker（推荐）"><a href="#方法-1：使用-Docker（推荐）" class="headerlink" title="方法 1：使用 Docker（推荐）"></a><strong>方法 1：使用 Docker（推荐）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts</span><br></pre></td></tr></table></figure>
+<p>访问 <code>http://localhost:8080</code> 进行初始化。</p>
+<h4 id="方法-2：直接安装（Ubuntu-Debian）"><a href="#方法-2：直接安装（Ubuntu-Debian）" class="headerlink" title="方法 2：直接安装（Ubuntu&#x2F;Debian）"></a><strong>方法 2：直接安装（Ubuntu&#x2F;Debian）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | <span class="built_in">sudo</span> apt-key add -</span><br><span class="line"><span class="built_in">sudo</span> sh -c <span class="string">&#x27;echo deb http://pkg.jenkins.io/debian-stable binary/ &gt; /etc/apt/sources.list.d/jenkins.list&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install jenkins</span><br><span class="line"><span class="built_in">sudo</span> systemctl start jenkins</span><br></pre></td></tr></table></figure>
+<p>访问 <code>http://localhost:8080</code>。</p>
 <hr>
-<h3 id="1-制作待办事宜-Todo-列表"><a href="#1-制作待办事宜-Todo-列表" class="headerlink" title="1. 制作待办事宜 Todo 列表"></a>1. 制作待办事宜 <code>Todo</code> 列表</h3><ul>
-<li><input checked disabled type="checkbox"> 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
-<li><input checked disabled type="checkbox"> 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
-<li><input checked disabled type="checkbox"> 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
-<li><input checked disabled type="checkbox"> 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
-<li><input checked disabled type="checkbox"> 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
-<li><input checked disabled type="checkbox"> 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
-<li><input checked disabled type="checkbox"> 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
-<li><input checked disabled type="checkbox"> ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
-<li><input checked disabled type="checkbox"> ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
-<li><input checked disabled type="checkbox"> 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
-<li><input checked disabled type="checkbox"> 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
-<li><input checked disabled type="checkbox"> 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
+<h2 id="2-Jenkins-基本配置"><a href="#2-Jenkins-基本配置" class="headerlink" title="2. Jenkins 基本配置"></a><strong>2. Jenkins 基本配置</strong></h2><h3 id="1-管理插件"><a href="#1-管理插件" class="headerlink" title="(1) 管理插件"></a><strong>(1) 管理插件</strong></h3><ol>
+<li><strong>进入插件管理</strong>：<ul>
+<li><strong>Dashboard → Manage Jenkins → Manage Plugins</strong>。</li>
+</ul>
+</li>
+<li><strong>安装常用插件</strong>：<ul>
+<li><strong>Git</strong>（用于代码拉取）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Docker</strong>（用于容器化构建）</li>
+<li><strong>Blue Ocean</strong>（可视化流水线）</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-配置全局工具"><a href="#2-配置全局工具" class="headerlink" title="(2) 配置全局工具"></a><strong>(2) 配置全局工具</strong></h3><ol>
+<li><strong>进入全局工具配置</strong>：<ul>
+<li><strong>Dashboard → Manage Jenkins → Global Tool Configuration</strong>。</li>
+</ul>
+</li>
+<li><strong>配置 JDK、Maven、Git</strong>：<ul>
+<li>指定路径或自动安装。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-Jenkins-创建第一个-Job"><a href="#3-Jenkins-创建第一个-Job" class="headerlink" title="3. Jenkins 创建第一个 Job"></a><strong>3. Jenkins 创建第一个 Job</strong></h2><h3 id="1-自由风格项目（Freestyle-Project）"><a href="#1-自由风格项目（Freestyle-Project）" class="headerlink" title="(1) 自由风格项目（Freestyle Project）"></a><strong>(1) 自由风格项目（Freestyle Project）</strong></h3><ol>
+<li><strong>新建 Job</strong>：<ul>
+<li><strong>Dashboard → New Item → Freestyle project</strong>。</li>
+</ul>
+</li>
+<li><strong>配置 Git 仓库</strong>：<ul>
+<li><strong>Source Code Management → Git</strong>，输入仓库 URL。</li>
+</ul>
+</li>
+<li><strong>设置构建触发器</strong>：<ul>
+<li><strong>Poll SCM</strong>（定时检查代码更新）。</li>
+<li><strong>GitHub Webhook</strong>（代码提交后自动触发）。</li>
+</ul>
+</li>
+<li><strong>添加构建步骤</strong>：<ul>
+<li><strong>Execute shell</strong>（Linux）或 <strong>Execute Windows batch command</strong>（Windows）：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Building...&quot;</span></span><br><span class="line">mvn clean package</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>保存并运行</strong>：<ul>
+<li>点击 <strong>Build Now</strong> 手动触发构建。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-使用-Pipeline（推荐）"><a href="#2-使用-Pipeline（推荐）" class="headerlink" title="(2) 使用 Pipeline（推荐）"></a><strong>(2) 使用 Pipeline（推荐）</strong></h3><ol>
+<li><strong>新建 Pipeline Job</strong>：<ul>
+<li><strong>New Item → Pipeline</strong>。</li>
+</ul>
+</li>
+<li><strong>编写 Jenkinsfile</strong>（示例）：<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn clean package&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn test&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;scp target/*.jar user@server:/path/&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>保存并运行</strong>：<ul>
+<li>代码提交后自动触发 Pipeline。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="4-Jenkins-集成-GitHub-GitLab"><a href="#4-Jenkins-集成-GitHub-GitLab" class="headerlink" title="4. Jenkins 集成 GitHub&#x2F;GitLab"></a><strong>4. Jenkins 集成 GitHub&#x2F;GitLab</strong></h2><h3 id="1-GitHub-Webhook-自动触发"><a href="#1-GitHub-Webhook-自动触发" class="headerlink" title="(1) GitHub Webhook 自动触发"></a><strong>(1) GitHub Webhook 自动触发</strong></h3><ol>
+<li><strong>在 GitHub 仓库设置 Webhook</strong>：<ul>
+<li><strong>Settings → Webhooks → Add webhook</strong>。</li>
+<li>Payload URL: <code>http://&lt;你的Jenkins服务器&gt;/github-webhook/</code>。</li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置 GitHub 插件</strong>：<ul>
+<li><strong>Manage Jenkins → Configure System → GitHub Server</strong>。</li>
+<li>添加 GitHub 凭据（Personal Access Token）。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-GitLab-CI-CD-集成"><a href="#2-GitLab-CI-CD-集成" class="headerlink" title="(2) GitLab CI&#x2F;CD 集成"></a><strong>(2) GitLab CI&#x2F;CD 集成</strong></h3><ol>
+<li><strong>安装 GitLab 插件</strong>：<ul>
+<li>**Manage Plugins → 搜索 “GitLab”**。</li>
+</ul>
+</li>
+<li><strong>配置 GitLab 连接</strong>：<ul>
+<li><strong>Manage Jenkins → Configure System → GitLab</strong>。</li>
+<li>输入 GitLab URL 和 API Token。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="5-Jenkins-常见问题"><a href="#5-Jenkins-常见问题" class="headerlink" title="5. Jenkins 常见问题"></a><strong>5. Jenkins 常见问题</strong></h2><h3 id="1-Jenkins-启动失败"><a href="#1-Jenkins-启动失败" class="headerlink" title="(1) Jenkins 启动失败"></a><strong>(1) Jenkins 启动失败</strong></h3><ul>
+<li><strong>检查端口冲突</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -ano | findstr 8080  <span class="comment"># Windows</span></span><br><span class="line"><span class="built_in">sudo</span> lsof -i :8080           <span class="comment"># Linux/macOS</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>修改端口</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nano /etc/default/jenkins  <span class="comment"># 修改 HTTP_PORT</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl restart jenkins</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-插件安装失败"><a href="#2-插件安装失败" class="headerlink" title="(2) 插件安装失败"></a><strong>(2) 插件安装失败</strong></h3><ul>
+<li><strong>更换镜像源</strong>：<ul>
+<li><strong>Manage Jenkins → Manage Plugins → Advanced</strong>。</li>
+<li>修改 Update Site 为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-构建失败排查"><a href="#3-构建失败排查" class="headerlink" title="(3) 构建失败排查"></a><strong>(3) 构建失败排查</strong></h3><ul>
+<li><strong>查看控制台日志</strong>：<ul>
+<li>进入构建详情 → <strong>Console Output</strong>。</li>
+</ul>
+</li>
+<li><strong>检查环境变量</strong>：<ul>
+<li><code>echo $PATH</code>（Linux）或 <code>echo %PATH%</code>（Windows）。</li>
+</ul>
+</li>
 </ul>
 <hr>
-<h3 id="2-书写一个质能守恒公式-LaTeX"><a href="#2-书写一个质能守恒公式-LaTeX" class="headerlink" title="2. 书写一个质能守恒公式[^LaTeX]"></a>2. 书写一个质能守恒公式[^LaTeX]</h3><p>$$<br>E&#x3D;mc^2<br>$$</p>
-<hr>
-<h3 id="3-高亮一段代码-code"><a href="#3-高亮一段代码-code" class="headerlink" title="3. 高亮一段代码[^code]"></a>3. 高亮一段代码[^code]</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="4-高效绘制流程图"><a href="#4-高效绘制流程图" class="headerlink" title="4. 高效绘制流程图"></a>4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户请求] --&gt; B[语义解析]</span><br><span class="line">    B --&gt; C[RAG检索]</span><br><span class="line">    </span><br><span class="line">    C --&gt;|✅ 知识库匹配| D[上下文增强]</span><br><span class="line">    C --&gt;|❌ 无匹配| E[任务分解]</span><br><span class="line">    </span><br><span class="line">    D --&gt; E</span><br><span class="line">    </span><br><span class="line">    E --&gt; F&#123;工具选择&#125;</span><br><span class="line">    </span><br><span class="line">    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;</span><br><span class="line">    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;</span><br><span class="line">    </span><br><span class="line">    G --&gt;|✏️ 文件操作| I[读写/替换]</span><br><span class="line">    G --&gt;|🖥️ 系统命令执行| J[执行命令]</span><br><span class="line">    G --&gt;|🔍 代码分析| K[代码分析]</span><br><span class="line">    </span><br><span class="line">    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]</span><br><span class="line">    H --&gt;|📦 访问MCP资源| M[访问MCP资源]</span><br><span class="line">    </span><br><span class="line">    I --&gt; N[结果验证]</span><br><span class="line">    J --&gt; N</span><br><span class="line">    K --&gt; N</span><br><span class="line">    L --&gt; N</span><br><span class="line">    M --&gt; N</span><br><span class="line">    </span><br><span class="line">    N --&gt; O&#123;完成判断&#125;</span><br><span class="line">    </span><br><span class="line">    O --&gt;|✅| P[提交最终结果]</span><br><span class="line">    O --&gt;|❌| E</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="5-高效绘制序列图"><a href="#5-高效绘制序列图" class="headerlink" title="5. 高效绘制序列图"></a>5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">  participant Alice</span><br><span class="line">  participant Bob</span><br><span class="line">  Alice-&gt;John: Hello John, how are you?</span><br><span class="line">  loop Healthcheck</span><br><span class="line">      John-&gt;John: Fight against hypochondria</span><br><span class="line">  end</span><br><span class="line">  Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">  John--&gt;Alice: Great!</span><br><span class="line">  John-&gt;Bob: How about you?</span><br><span class="line">  Bob--&gt;John: Jolly good!</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="6-高效绘制甘特图"><a href="#6-高效绘制甘特图" class="headerlink" title="6. 高效绘制甘特图"></a>6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3><blockquote>
-<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gantt</span><br><span class="line">  title 项目开发流程</span><br><span class="line">  section 项目确定</span><br><span class="line">    需求分析       :a1, 2019-06-22, 3d</span><br><span class="line">    可行性报告     :after a1, 5d</span><br><span class="line">    概念验证       : 5d</span><br><span class="line">  section 项目实施</span><br><span class="line">    概要设计      :2019-07-05  , 5d</span><br><span class="line">    详细设计      :2019-07-08, 10d</span><br><span class="line">    编码          :2019-07-15, 10d</span><br><span class="line">    测试          :2019-07-22, 5d</span><br><span class="line">  section 发布验收</span><br><span class="line">    发布: 2d</span><br><span class="line">    验收: 3d</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="8-绘制表格"><a href="#8-绘制表格" class="headerlink" title="8. 绘制表格"></a>8. 绘制表格</h3><table>
+<h2 id="6-Jenkins-进阶功能"><a href="#6-Jenkins-进阶功能" class="headerlink" title="6. Jenkins 进阶功能"></a><strong>6. Jenkins 进阶功能</strong></h2><table>
 <thead>
 <tr>
-<th align="left">作品名称</th>
-<th align="left">在线地址</th>
-<th align="center">上线日期</th>
+<th>功能</th>
+<th>说明</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="left">逍遥自在轩</td>
-<td align="left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
-<td align="center">2024-04-26</td>
+<td><strong>分布式构建</strong></td>
+<td>使用 Agent 节点分担主节点压力</td>
 </tr>
 <tr>
-<td align="left">玉桃文飨轩</td>
-<td align="left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
-<td align="center">2022-08-26</td>
+<td><strong>Blue Ocean</strong></td>
+<td>可视化 Pipeline 编辑</td>
 </tr>
 <tr>
-<td align="left">缘知随心庭</td>
-<td align="left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
-<td align="center">2022-02-26</td>
+<td><strong>Docker 集成</strong></td>
+<td>在容器中运行构建</td>
 </tr>
 <tr>
-<td align="left">静轩之别苑</td>
-<td align="left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
-<td align="center">2019-01-12</td>
-</tr>
-<tr>
-<td align="left">晚晴幽草轩</td>
-<td align="left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
-<td align="center">2014-09-20</td>
+<td><strong>Kubernetes 插件</strong></td>
+<td>动态创建 Pod 运行 Job</td>
 </tr>
 </tbody></table>
 <hr>
-<h3 id="9-更详细语法说明"><a href="#9-更详细语法说明" class="headerlink" title="9. 更详细语法说明"></a>9. 更详细语法说明</h3><p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
-<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
-<p>最新更新于 2025.04.16</p>
+<h2 id="7-学习资源"><a href="#7-学习资源" class="headerlink" title="7. 学习资源"></a><strong>7. 学习资源</strong></h2><ul>
+<li><strong>官方文档</strong>：<a href="https://www.jenkins.io/doc/">https://www.jenkins.io/doc/</a></li>
+<li><strong>中文社区</strong>：<a href="https://jenkins-zh.cn/">https://jenkins-zh.cn/</a></li>
+<li><strong>实战课程</strong>：<ul>
+<li>Udemy: <a href="https://www.udemy.com/course/jenkins-from-zero-to-hero/">Jenkins CI&#x2F;CD Pipeline</a></li>
+<li>B站：搜索 “Jenkins 教程”</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li>Jenkins 是强大的 CI&#x2F;CD 工具，支持自动化构建、测试和部署。</li>
+<li>推荐使用 <strong>Pipeline + Docker</strong> 实现现代化 DevOps 流程。</li>
+<li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
+</ul>
+<p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
 ]]></content>
       <categories>
-        <category>Markdown</category>
+        <category>Jenkins</category>
       </categories>
       <tags>
-        <tag>Markdown</tag>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -3318,6 +3236,100 @@
       </categories>
       <tags>
         <tag>Lean Cloud</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 语法</title>
+    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
+<hr>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
+<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
+<ul>
+<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
+<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
+<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
+</ul>
+<h3 id="PPT-预览"><a href="#PPT-预览" class="headerlink" title="PPT 预览"></a>PPT 预览</h3><p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
+<hr>
+<h2 id="什么是-Markdown"><a href="#什么是-Markdown" class="headerlink" title="什么是 Markdown"></a>什么是 Markdown</h2><p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
+<hr>
+<h3 id="1-制作待办事宜-Todo-列表"><a href="#1-制作待办事宜-Todo-列表" class="headerlink" title="1. 制作待办事宜 Todo 列表"></a>1. 制作待办事宜 <code>Todo</code> 列表</h3><ul>
+<li><input checked disabled type="checkbox"> 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
+<li><input checked disabled type="checkbox"> 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
+<li><input checked disabled type="checkbox"> 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
+<li><input checked disabled type="checkbox"> 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
+<li><input checked disabled type="checkbox"> 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
+<li><input checked disabled type="checkbox"> 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
+<li><input checked disabled type="checkbox"> 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
+<li><input checked disabled type="checkbox"> ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
+<li><input checked disabled type="checkbox"> ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
+<li><input checked disabled type="checkbox"> 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
+<li><input checked disabled type="checkbox"> 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
+<li><input checked disabled type="checkbox"> 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
+</ul>
+<hr>
+<h3 id="2-书写一个质能守恒公式-LaTeX"><a href="#2-书写一个质能守恒公式-LaTeX" class="headerlink" title="2. 书写一个质能守恒公式[^LaTeX]"></a>2. 书写一个质能守恒公式[^LaTeX]</h3><p>$$<br>E&#x3D;mc^2<br>$$</p>
+<hr>
+<h3 id="3-高亮一段代码-code"><a href="#3-高亮一段代码-code" class="headerlink" title="3. 高亮一段代码[^code]"></a>3. 高亮一段代码[^code]</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-高效绘制流程图"><a href="#4-高效绘制流程图" class="headerlink" title="4. 高效绘制流程图"></a>4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户请求] --&gt; B[语义解析]</span><br><span class="line">    B --&gt; C[RAG检索]</span><br><span class="line">    </span><br><span class="line">    C --&gt;|✅ 知识库匹配| D[上下文增强]</span><br><span class="line">    C --&gt;|❌ 无匹配| E[任务分解]</span><br><span class="line">    </span><br><span class="line">    D --&gt; E</span><br><span class="line">    </span><br><span class="line">    E --&gt; F&#123;工具选择&#125;</span><br><span class="line">    </span><br><span class="line">    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;</span><br><span class="line">    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;</span><br><span class="line">    </span><br><span class="line">    G --&gt;|✏️ 文件操作| I[读写/替换]</span><br><span class="line">    G --&gt;|🖥️ 系统命令执行| J[执行命令]</span><br><span class="line">    G --&gt;|🔍 代码分析| K[代码分析]</span><br><span class="line">    </span><br><span class="line">    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]</span><br><span class="line">    H --&gt;|📦 访问MCP资源| M[访问MCP资源]</span><br><span class="line">    </span><br><span class="line">    I --&gt; N[结果验证]</span><br><span class="line">    J --&gt; N</span><br><span class="line">    K --&gt; N</span><br><span class="line">    L --&gt; N</span><br><span class="line">    M --&gt; N</span><br><span class="line">    </span><br><span class="line">    N --&gt; O&#123;完成判断&#125;</span><br><span class="line">    </span><br><span class="line">    O --&gt;|✅| P[提交最终结果]</span><br><span class="line">    O --&gt;|❌| E</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-高效绘制序列图"><a href="#5-高效绘制序列图" class="headerlink" title="5. 高效绘制序列图"></a>5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">  participant Alice</span><br><span class="line">  participant Bob</span><br><span class="line">  Alice-&gt;John: Hello John, how are you?</span><br><span class="line">  loop Healthcheck</span><br><span class="line">      John-&gt;John: Fight against hypochondria</span><br><span class="line">  end</span><br><span class="line">  Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">  John--&gt;Alice: Great!</span><br><span class="line">  John-&gt;Bob: How about you?</span><br><span class="line">  Bob--&gt;John: Jolly good!</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-高效绘制甘特图"><a href="#6-高效绘制甘特图" class="headerlink" title="6. 高效绘制甘特图"></a>6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3><blockquote>
+<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gantt</span><br><span class="line">  title 项目开发流程</span><br><span class="line">  section 项目确定</span><br><span class="line">    需求分析       :a1, 2019-06-22, 3d</span><br><span class="line">    可行性报告     :after a1, 5d</span><br><span class="line">    概念验证       : 5d</span><br><span class="line">  section 项目实施</span><br><span class="line">    概要设计      :2019-07-05  , 5d</span><br><span class="line">    详细设计      :2019-07-08, 10d</span><br><span class="line">    编码          :2019-07-15, 10d</span><br><span class="line">    测试          :2019-07-22, 5d</span><br><span class="line">  section 发布验收</span><br><span class="line">    发布: 2d</span><br><span class="line">    验收: 3d</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="8-绘制表格"><a href="#8-绘制表格" class="headerlink" title="8. 绘制表格"></a>8. 绘制表格</h3><table>
+<thead>
+<tr>
+<th align="left">作品名称</th>
+<th align="left">在线地址</th>
+<th align="center">上线日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">逍遥自在轩</td>
+<td align="left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
+<td align="center">2024-04-26</td>
+</tr>
+<tr>
+<td align="left">玉桃文飨轩</td>
+<td align="left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
+<td align="center">2022-08-26</td>
+</tr>
+<tr>
+<td align="left">缘知随心庭</td>
+<td align="left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
+<td align="center">2022-02-26</td>
+</tr>
+<tr>
+<td align="left">静轩之别苑</td>
+<td align="left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
+<td align="center">2019-01-12</td>
+</tr>
+<tr>
+<td align="left">晚晴幽草轩</td>
+<td align="left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
+<td align="center">2014-09-20</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="9-更详细语法说明"><a href="#9-更详细语法说明" class="headerlink" title="9. 更详细语法说明"></a>9. 更详细语法说明</h3><p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
+<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
+<p>最新更新于 2025.04.16</p>
+]]></content>
+      <categories>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -3700,38 +3712,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity UWA &amp; UWP</title>
-    <url>/2025/01/15/Unity-UWA-UWP/</url>
-    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
-<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
-<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
-<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
-</ul>
-<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
-<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
-<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
-</ul>
-<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
-<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
-<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
-</ul>
-<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
-<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
-<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
-<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
-</ul>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
-<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
-<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
-</ul>
-<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity ScriptableObject</title>
     <url>/2025/01/16/Unity-ScriptableObject/</url>
     <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
@@ -3835,11 +3815,43 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity UWA &amp; UWP</title>
+    <url>/2025/01/15/Unity-UWA-UWP/</url>
+    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
+<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
+<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
+<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
+</ul>
+<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
+<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
+<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
+</ul>
+<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
+<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
+<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
+</ul>
+<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
+<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
+<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
+<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
+</ul>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
+<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
+<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
+</ul>
+<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#46;&#117;&#110;&#x69;&#116;&#121;&#x2e;&#99;&#111;&#108;&#108;&#97;&#98;&#x2d;&#x70;&#x72;&#x6f;&#120;&#121;&#64;&#50;&#x2e;&#54;&#x2e;&#48;">&#x63;&#111;&#109;&#46;&#117;&#110;&#x69;&#116;&#121;&#x2e;&#99;&#111;&#108;&#108;&#97;&#98;&#x2d;&#x70;&#x72;&#x6f;&#120;&#121;&#64;&#50;&#x2e;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#109;&#x2e;&#117;&#110;&#105;&#116;&#121;&#46;&#99;&#111;&#108;&#108;&#x61;&#x62;&#x2d;&#x70;&#114;&#x6f;&#x78;&#121;&#x40;&#x32;&#46;&#54;&#x2e;&#48;">&#99;&#111;&#109;&#x2e;&#117;&#110;&#105;&#116;&#121;&#46;&#99;&#111;&#108;&#108;&#x61;&#x62;&#x2d;&#x70;&#114;&#x6f;&#x78;&#121;&#x40;&#x32;&#46;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -4490,6 +4502,18 @@
 ]]></content>
   </entry>
   <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 渲染管线选择</title>
     <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
     <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
@@ -4703,18 +4727,6 @@
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -5146,6 +5158,109 @@
       </tags>
   </entry>
   <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li><p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
+</li>
+<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
+<li><p>打开 Clash for Windows。</p>
+</li>
+<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong>  </p>
+<ol>
+<li><p>确保规则优先级正确：</p>
+<p>  例如： </p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li><p>测试网络连接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong> </p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo 路径表示</title>
     <url>/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/</url>
     <content><![CDATA[<p>在 Hexo 中，路径表示（即如何表示文件和目录的路径）有几个常见的用法和约定，具体取决于你是在配置站点、创建内容，还是处理资源。以下是常见的路径表示方式和相关解释：</p>
@@ -5287,109 +5402,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
-<ul>
-<li><p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
-</li>
-<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
-</li>
-<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
-<li><p>打开 Clash for Windows。</p>
-</li>
-<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong>  </p>
-<ol>
-<li><p>确保规则优先级正确：</p>
-<p>  例如： </p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li><p>测试网络连接：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-</li>
-</ol>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong> </p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -6887,6 +6899,320 @@
 <h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
   </entry>
   <entry>
+    <title>unity 面试总结</title>
+    <url>/2025/02/20/unity-%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"><a href="#IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？" class="headerlink" title="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"></a>IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？</h1><p>IT 技术类岗位的面试通常包括多个环节，具体的面试轮次、问题类型和考察重点取决于 <strong>公司规模、职位级别（初级&#x2F;中级&#x2F;高级）、技术方向（前端&#x2F;后端&#x2F;全栈&#x2F;算法&#x2F;架构&#x2F;游戏开发等）</strong>。以下是 <strong>一般 IT 技术岗面试流程、可能的问题类型、考察点以及面试官的期望</strong>。  </p>
+<hr>
+<h2 id="📌-IT-技术岗位的常见面试流程"><a href="#📌-IT-技术岗位的常见面试流程" class="headerlink" title="📌 IT 技术岗位的常见面试流程"></a><strong>📌 IT 技术岗位的常见面试流程</strong></h2><p>IT 技术岗的面试一般包括以下 <strong>3-5 轮</strong>：</p>
+<ol>
+<li><p><strong>简历筛选</strong></p>
+<ul>
+<li><strong>HR 或技术经理查看简历，筛选符合要求的候选人。</strong></li>
+<li>重点关注：工作经验、项目经历、技术栈、教育背景。</li>
+</ul>
+</li>
+<li><p><strong>技术面试（1~2 轮）</strong></p>
+<ul>
+<li><strong>编程能力、操作系统、网络、数据结构与算法</strong></li>
+<li><strong>系统设计 &#x2F; 框架理解</strong></li>
+<li><strong>项目经验、解决问题的思路和问题解决能力</strong></li>
+<li><strong>代码质量、设计模式、架构理解</strong></li>
+</ul>
+</li>
+<li><p><strong>综合面试（1 轮）</strong></p>
+<ul>
+<li>团队合作：考察与团队协作的能力。</li>
+<li>问题解决：了解面对挑战时的应对方式。</li>
+<li>学习能力：询问如何学习新技术，评估自我提升能力。</li>
+<li>沟通能力：能否清晰表达技术概念，让非技术人员也能理解。是否具备倾听能力，能够理解他人需求。</li>
+<li>抗压能力：强调你的时间管理和优先级排序能力。提到你如何通过团队协作或自我调节缓解压力。</li>
+<li>职业规划：<ul>
+<li>候选人是否有明确的短期和长期目标。</li>
+<li>是否愿意在公司和行业内长期发展。</li>
+<li>是否有持续学习和提升的意愿。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>HR 终面</strong></p>
+<ul>
+<li><strong>薪资、福利、职业规划</strong></li>
+<li><strong>团队文化匹配度</strong></li>
+<li><strong>背景调查</strong></li>
+<li><strong>离职原因</strong></li>
+</ul>
+</li>
+<li><p><strong>主管 &#x2F; 总监面试（部分公司有）</strong></p>
+<ul>
+<li>技术负责人或高层领导考察 <strong>宏观思维、团队协作、职业稳定性</strong>。</li>
+<li>战略思维：针对高级职位，考察对公司业务的理解和战略思考。</li>
+<li>领导能力：评估团队管理和领导潜力。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="🔍-技术面试的主要考察方向"><a href="#🔍-技术面试的主要考察方向" class="headerlink" title="🔍 技术面试的主要考察方向"></a><strong>🔍 技术面试的主要考察方向</strong></h2><p>技术面试一般从以下几个方面提问：</p>
+<h3 id="1️⃣-计算机基础（必考）"><a href="#1️⃣-计算机基础（必考）" class="headerlink" title="1️⃣ 计算机基础（必考）"></a><strong>1️⃣ 计算机基础（必考）</strong></h3><p>主要考察 <strong>计算机科学核心知识</strong>，包括：</p>
+<ul>
+<li><p><strong>数据结构与算法</strong></p>
+<ul>
+<li>常见数据结构（数组、链表、栈、队列、哈希表、树、图等）。</li>
+<li>算法：排序、查找、递归、动态规划、贪心算法、回溯等。</li>
+<li>复杂度分析（时间复杂度 &amp; 空间复杂度）。</li>
+</ul>
+</li>
+<li><p><strong>操作系统</strong></p>
+<ul>
+<li>进程 vs 线程、线程同步、死锁、内存管理（分页&#x2F;分段）、I&#x2F;O、多线程并发。</li>
+</ul>
+</li>
+<li><p><strong>计算机网络</strong></p>
+<ul>
+<li>TCP vs UDP，三次握手 &amp; 四次挥手，HTTP&#x2F;HTTPS，DNS解析，Socket 编程。</li>
+</ul>
+</li>
+<li><p><strong>数据库</strong></p>
+<ul>
+<li>SQL（增删改查、索引、事务、锁机制）。</li>
+<li>NoSQL（MongoDB、Redis 等）。</li>
+<li>数据库优化 &amp; 事务 ACID 原理。</li>
+</ul>
+</li>
+</ul>
+<p><strong>💡 面试官关注点：</strong></p>
+<ul>
+<li><strong>你的计算机基础是否扎实？</strong></li>
+<li><strong>是否能合理优化代码，解决性能问题？</strong></li>
+<li><strong>是否理解底层原理，而不是单纯调用 API？</strong></li>
+</ul>
+<hr>
+<h3 id="2️⃣-编程能力-代码风格"><a href="#2️⃣-编程能力-代码风格" class="headerlink" title="2️⃣ 编程能力 &amp; 代码风格"></a><strong>2️⃣ 编程能力 &amp; 代码风格</strong></h3><p><strong>典型问题：</strong></p>
+<ul>
+<li><strong>手写算法题</strong>（如：二叉树遍历、链表反转、字符串处理）。</li>
+<li><strong>写一个类，设计合适的数据结构，保证高效查询、插入、删除等操作</strong>。</li>
+<li><strong>多线程编程：如何实现线程安全的单例模式？如何避免死锁？</strong></li>
+</ul>
+<p><strong>💡 面试官关注点：</strong></p>
+<ul>
+<li><strong>代码是否简洁、可读、可维护？</strong></li>
+<li><strong>是否能用高效的方式解决问题？</strong></li>
+<li><strong>是否具备良好的编码习惯？（命名规范、异常处理、边界情况等）</strong></li>
+</ul>
+<hr>
+<h3 id="3️⃣-框架-语言特性"><a href="#3️⃣-框架-语言特性" class="headerlink" title="3️⃣ 框架 &#x2F; 语言特性"></a><strong>3️⃣ 框架 &#x2F; 语言特性</strong></h3><p>根据职位方向，考察对应的技术栈：</p>
+<ul>
+<li><p><strong>前端开发（React &#x2F; Vue &#x2F; TypeScript）</strong></p>
+<ul>
+<li>虚拟 DOM、Diff 算法、前端性能优化。</li>
+<li>Webpack、Vite、组件化开发、前端工程化。</li>
+<li>跨域问题、前端安全（XSS、CSRF）。</li>
+</ul>
+</li>
+<li><p><strong>后端开发（Java &#x2F; C# &#x2F; Python &#x2F; Node.js）</strong></p>
+<ul>
+<li>线程 &amp; 进程、内存管理、垃圾回收机制。</li>
+<li>高并发 &amp; 分布式架构（如：微服务、RPC）。</li>
+<li>设计模式（单例、工厂、观察者、策略模式等）。</li>
+</ul>
+</li>
+<li><p><strong>游戏开发（Unity &#x2F; Unreal &#x2F; C++）</strong></p>
+<ul>
+<li>游戏引擎架构、渲染管线、物理系统、动画系统。</li>
+<li>ECS（实体组件系统）、Unity Shader &#x2F; UE 蓝图。</li>
+<li>资源管理、性能优化、内存管理。</li>
+</ul>
+</li>
+</ul>
+<p><strong>💡 面试官关注点：</strong></p>
+<ul>
+<li><strong>你对框架&#x2F;工具是否熟练？能否写出高效代码？</strong></li>
+<li><strong>是否理解底层原理，而不是只会使用？</strong></li>
+<li><strong>是否有解决复杂问题的能力？</strong></li>
+</ul>
+<hr>
+<h3 id="4️⃣-系统设计-架构"><a href="#4️⃣-系统设计-架构" class="headerlink" title="4️⃣ 系统设计 &amp; 架构"></a><strong>4️⃣ 系统设计 &amp; 架构</strong></h3><p>针对 <strong>中高级工程师</strong>，考察：</p>
+<ul>
+<li><strong>如何设计一个高可用的系统？</strong></li>
+<li><strong>如何优化数据库查询，避免性能瓶颈？</strong></li>
+<li><strong>微服务 vs 单体架构的优缺点？</strong></li>
+<li><strong>如何设计一个缓存系统，防止缓存击穿？</strong></li>
+</ul>
+<p><strong>💡 面试官关注点：</strong></p>
+<ul>
+<li><strong>你是否有全局思维，能设计可扩展的架构？</strong></li>
+<li><strong>能否平衡性能、稳定性和成本？</strong></li>
+<li><strong>是否有大型项目经验？</strong></li>
+</ul>
+<hr>
+<h3 id="5️⃣-项目经验-解决问题能力"><a href="#5️⃣-项目经验-解决问题能力" class="headerlink" title="5️⃣ 项目经验 &amp; 解决问题能力"></a><strong>5️⃣ 项目经验 &amp; 解决问题能力</strong></h3><p><strong>可能的问题：</strong></p>
+<ul>
+<li>介绍你做过的项目，遇到哪些挑战？如何解决？</li>
+<li>你在项目中负责什么？团队如何协作？</li>
+<li>你的代码优化思路是什么？</li>
+</ul>
+<p><strong>💡 面试官关注点：</strong></p>
+<ul>
+<li><strong>你是否能独立解决问题？</strong></li>
+<li><strong>是否真正理解项目架构？</strong></li>
+<li><strong>是否具备团队合作能力？</strong></li>
+</ul>
+<hr>
+<h3 id="6️⃣-软技能-团队合作"><a href="#6️⃣-软技能-团队合作" class="headerlink" title="6️⃣ 软技能 &amp; 团队合作"></a><strong>6️⃣ 软技能 &amp; 团队合作</strong></h3><p><strong>常见问题</strong></p>
+<ul>
+<li>你遇到过最难的问题是什么？如何解决？</li>
+<li>你如何处理团队冲突？</li>
+<li>你的职业规划是什么？</li>
+</ul>
+<p><strong>💡 面试官关注点：</strong></p>
+<ul>
+<li><strong>你的沟通能力如何？</strong></li>
+<li><strong>是否愿意学习新技术？</strong></li>
+<li><strong>是否适合团队文化？</strong></li>
+</ul>
+<hr>
+<h2 id="🎯-面试官希望得到的信息"><a href="#🎯-面试官希望得到的信息" class="headerlink" title="🎯 面试官希望得到的信息"></a><strong>🎯 面试官希望得到的信息</strong></h2><table>
+<thead>
+<tr>
+<th>面试维度</th>
+<th>期望信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>技术能力</strong></td>
+<td>是否具备扎实的计算机基础和编程能力？</td>
+</tr>
+<tr>
+<td><strong>解决问题能力</strong></td>
+<td>是否能高效解决复杂问题？</td>
+</tr>
+<tr>
+<td><strong>项目经验</strong></td>
+<td>过去的项目经历是否和岗位匹配？</td>
+</tr>
+<tr>
+<td><strong>团队合作</strong></td>
+<td>是否善于沟通、协作？</td>
+</tr>
+<tr>
+<td><strong>学习能力</strong></td>
+<td>是否愿意学习新技术？是否具备成长潜力？</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="📌-总结"><a href="#📌-总结" class="headerlink" title="📌 总结"></a><strong>📌 总结</strong></h2><ol>
+<li><strong>面试一般有 3~5 轮</strong>（技术面 + 综合面 + HR 面）。</li>
+<li><strong>核心考察点：计算机基础、编程能力、项目经验、架构设计、团队合作</strong>。</li>
+<li><strong>面试官希望了解你的问题解决能力、代码质量、技术深度以及成长潜力</strong>。</li>
+</ol>
+<p>🎯 <strong>如果你能在技术 + 项目 + 软技能方面表现出色，就能顺利通过面试！</strong> 🚀</p>
+<h2 id="HR问离职原因的初衷"><a href="#HR问离职原因的初衷" class="headerlink" title="HR问离职原因的初衷"></a>HR问离职原因的初衷</h2><p>HR在面试中询问<strong>离职原因</strong>，主要是为了从多个维度了解候选人，评估其是否适合公司和岗位。以下是HR提问离职原因的<strong>初衷</strong>和<strong>关注点</strong>：</p>
+<hr>
+<h3 id="1-了解候选人的职业动机"><a href="#1-了解候选人的职业动机" class="headerlink" title="1. 了解候选人的职业动机"></a>1. <strong>了解候选人的职业动机</strong></h3><ul>
+<li><strong>初衷</strong>：HR希望通过离职原因了解候选人的职业追求和价值观。</li>
+<li><strong>关注点</strong>：<ul>
+<li>候选人是否因为缺乏成长机会而离职？</li>
+<li>是否因为对工作内容或公司文化不满？</li>
+<li>是否因为薪资、福利或职业发展受限？</li>
+</ul>
+</li>
+<li><strong>目的</strong>：判断候选人的职业目标是否与公司提供的机会匹配。</li>
+</ul>
+<hr>
+<h3 id="2-评估候选人的稳定性"><a href="#2-评估候选人的稳定性" class="headerlink" title="2. 评估候选人的稳定性"></a>2. <strong>评估候选人的稳定性</strong></h3><ul>
+<li><strong>初衷</strong>：HR希望了解候选人的离职是否合理，是否存在频繁跳槽的倾向。</li>
+<li><strong>关注点</strong>：<ul>
+<li>候选人是否因为短期问题（如人际关系、压力）轻易离职？</li>
+<li>是否因为对公司或岗位缺乏深入了解而频繁更换工作？</li>
+</ul>
+</li>
+<li><strong>目的</strong>：判断候选人是否能在公司长期发展，降低招聘成本。</li>
+</ul>
+<hr>
+<h3 id="3-了解候选人的工作态度"><a href="#3-了解候选人的工作态度" class="headerlink" title="3. 了解候选人的工作态度"></a>3. <strong>了解候选人的工作态度</strong></h3><ul>
+<li><strong>初衷</strong>：HR希望通过离职原因了解候选人对工作的态度和责任感。</li>
+<li><strong>关注点</strong>：<ul>
+<li>候选人是否因为逃避问题（如压力、挑战）而离职？</li>
+<li>是否因为与团队或上级关系不佳而离职？</li>
+</ul>
+</li>
+<li><strong>目的</strong>：判断候选人是否具备积极的工作态度和团队合作精神。</li>
+</ul>
+<hr>
+<h3 id="4-排除潜在风险"><a href="#4-排除潜在风险" class="headerlink" title="4. 排除潜在风险"></a>4. <strong>排除潜在风险</strong></h3><ul>
+<li><strong>初衷</strong>：HR希望排除候选人可能带来的潜在风险。</li>
+<li><strong>关注点</strong>：<ul>
+<li>候选人是否因为绩效问题被辞退？</li>
+<li>是否因为违反公司规定或职业道德而离职？</li>
+</ul>
+</li>
+<li><strong>目的</strong>：确保候选人没有隐藏的不良记录或行为。</li>
+</ul>
+<hr>
+<h3 id="5-判断候选人与公司文化的契合度"><a href="#5-判断候选人与公司文化的契合度" class="headerlink" title="5. 判断候选人与公司文化的契合度"></a>5. <strong>判断候选人与公司文化的契合度</strong></h3><ul>
+<li><strong>初衷</strong>：HR希望通过离职原因了解候选人对公司文化的偏好。</li>
+<li><strong>关注点</strong>：<ul>
+<li>候选人是否因为不适应前公司的文化而离职？</li>
+<li>是否因为希望寻找更符合自己价值观的工作环境？</li>
+</ul>
+</li>
+<li><strong>目的</strong>：判断候选人是否适合当前公司的文化和团队氛围。</li>
+</ul>
+<hr>
+<h3 id="6-为候选人提供更好的机会"><a href="#6-为候选人提供更好的机会" class="headerlink" title="6. 为候选人提供更好的机会"></a>6. <strong>为候选人提供更好的机会</strong></h3><ul>
+<li><strong>初衷</strong>：HR希望通过了解离职原因，为候选人提供更适合的岗位或发展机会。</li>
+<li><strong>关注点</strong>：<ul>
+<li>候选人是否因为缺乏挑战或发展空间而离职？</li>
+<li>是否因为对某些工作条件（如远程办公、弹性时间）有特殊需求？</li>
+</ul>
+</li>
+<li><strong>目的</strong>：确保公司能够满足候选人的需求，提升招聘成功率。</li>
+</ul>
+<hr>
+<h3 id="HR希望听到的回答："><a href="#HR希望听到的回答：" class="headerlink" title="HR希望听到的回答："></a>HR希望听到的回答：</h3><ol>
+<li><strong>积极正面的原因</strong>：<ul>
+<li>寻求更好的职业发展机会。</li>
+<li>希望尝试新的领域或挑战。</li>
+<li>前公司发展方向与个人职业规划不一致。</li>
+</ul>
+</li>
+<li><strong>客观合理的原因</strong>：<ul>
+<li>公司裁员或业务调整。</li>
+<li>地理位置或家庭原因。</li>
+<li>合同到期或项目结束。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="HR不希望听到的回答："><a href="#HR不希望听到的回答：" class="headerlink" title="HR不希望听到的回答："></a>HR不希望听到的回答：</h3><ol>
+<li><strong>消极负面的原因</strong>：<ul>
+<li>抱怨前公司或同事。</li>
+<li>因为人际关系问题离职。</li>
+<li>因为工作压力大或任务繁重而逃避。</li>
+</ul>
+</li>
+<li><strong>模糊或不真实的原因</strong>：<ul>
+<li>说不清离职原因。</li>
+<li>隐瞒真实原因，显得不够坦诚。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="如何回答离职原因："><a href="#如何回答离职原因：" class="headerlink" title="如何回答离职原因："></a>如何回答离职原因：</h3><ol>
+<li><strong>保持积极态度</strong>：避免批评前公司或同事，专注于个人成长和发展。</li>
+<li><strong>突出职业规划</strong>：强调你希望寻找更好的发展机会，与新岗位的目标一致。</li>
+<li><strong>简洁明了</strong>：不要过度解释，点到为止，保持真诚。</li>
+</ol>
+<p><strong>示例回答</strong>：</p>
+<ul>
+<li>“我在前公司学到了很多，但希望寻找一个更具挑战性的岗位，能够更好地发挥我的技术优势。”</li>
+<li>“前公司因为业务调整，我的职业发展方向与公司规划不一致，所以选择寻找新的机会。”</li>
+<li>“我希望在一个更注重创新和团队合作的环境中工作，这与贵公司的文化非常契合。”</li>
+</ul>
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>HR提问离职原因，主要是为了评估候选人的职业动机、稳定性、工作态度和与公司文化的契合度。通过积极、合理的回答，你可以展现自己的职业素养和发展潜力，增加面试成功率。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>unity 插件工具</title>
     <url>/2025/01/06/unity-%E6%8F%92%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p><a href="https://blog.csdn.net/weixin_43705303/article/details/126761956">Unity常见插件汇总 csdn</a><br><a href="https://zhuanlan.zhihu.com/p/62471100">知乎</a><br><a href="https://blog.csdn.net/u014361280/article/details/122806834">详细</a><br><a href="https://www.gcores.com/articles/191584#nopop_e204c">cato 使用的20个插件</a></p>
@@ -7405,317 +7731,34 @@
       </tags>
   </entry>
   <entry>
-    <title>unity 面试总结</title>
-    <url>/2025/02/20/unity-%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h1 id="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"><a href="#IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？" class="headerlink" title="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"></a>IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？</h1><p>IT 技术类岗位的面试通常包括多个环节，具体的面试轮次、问题类型和考察重点取决于 <strong>公司规模、职位级别（初级&#x2F;中级&#x2F;高级）、技术方向（前端&#x2F;后端&#x2F;全栈&#x2F;算法&#x2F;架构&#x2F;游戏开发等）</strong>。以下是 <strong>一般 IT 技术岗面试流程、可能的问题类型、考察点以及面试官的期望</strong>。  </p>
-<hr>
-<h2 id="📌-IT-技术岗位的常见面试流程"><a href="#📌-IT-技术岗位的常见面试流程" class="headerlink" title="📌 IT 技术岗位的常见面试流程"></a><strong>📌 IT 技术岗位的常见面试流程</strong></h2><p>IT 技术岗的面试一般包括以下 <strong>3-5 轮</strong>：</p>
-<ol>
-<li><p><strong>简历筛选</strong></p>
-<ul>
-<li><strong>HR 或技术经理查看简历，筛选符合要求的候选人。</strong></li>
-<li>重点关注：工作经验、项目经历、技术栈、教育背景。</li>
-</ul>
+    <title>团结引擎</title>
+    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
+    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
+<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
+<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
+<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
+<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
+<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
+<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
+<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
+<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
+<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
+<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
+<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
+<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
+<li><p>专为中国开发者定制</p>
+<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
 </li>
-<li><p><strong>技术面试（1~2 轮）</strong></p>
-<ul>
-<li><strong>编程能力、操作系统、网络、数据结构与算法</strong></li>
-<li><strong>系统设计 &#x2F; 框架理解</strong></li>
-<li><strong>项目经验、解决问题的思路和问题解决能力</strong></li>
-<li><strong>代码质量、设计模式、架构理解</strong></li>
-</ul>
+<li><p>本土科技生态支持</p>
+<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
 </li>
-<li><p><strong>综合面试（1 轮）</strong></p>
-<ul>
-<li>团队合作：考察与团队协作的能力。</li>
-<li>问题解决：了解面对挑战时的应对方式。</li>
-<li>学习能力：询问如何学习新技术，评估自我提升能力。</li>
-<li>沟通能力：能否清晰表达技术概念，让非技术人员也能理解。是否具备倾听能力，能够理解他人需求。</li>
-<li>抗压能力：强调你的时间管理和优先级排序能力。提到你如何通过团队协作或自我调节缓解压力。</li>
-<li>职业规划：<ul>
-<li>候选人是否有明确的短期和长期目标。</li>
-<li>是否愿意在公司和行业内长期发展。</li>
-<li>是否有持续学习和提升的意愿。</li>
-</ul>
+<li><p>微信小游戏解决方案</p>
+<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
+</li>
+<li><p>车机定制编辑器</p>
+<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
 </li>
 </ul>
-</li>
-<li><p><strong>HR 终面</strong></p>
-<ul>
-<li><strong>薪资、福利、职业规划</strong></li>
-<li><strong>团队文化匹配度</strong></li>
-<li><strong>背景调查</strong></li>
-<li><strong>离职原因</strong></li>
-</ul>
-</li>
-<li><p><strong>主管 &#x2F; 总监面试（部分公司有）</strong></p>
-<ul>
-<li>技术负责人或高层领导考察 <strong>宏观思维、团队协作、职业稳定性</strong>。</li>
-<li>战略思维：针对高级职位，考察对公司业务的理解和战略思考。</li>
-<li>领导能力：评估团队管理和领导潜力。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="🔍-技术面试的主要考察方向"><a href="#🔍-技术面试的主要考察方向" class="headerlink" title="🔍 技术面试的主要考察方向"></a><strong>🔍 技术面试的主要考察方向</strong></h2><p>技术面试一般从以下几个方面提问：</p>
-<h3 id="1️⃣-计算机基础（必考）"><a href="#1️⃣-计算机基础（必考）" class="headerlink" title="1️⃣ 计算机基础（必考）"></a><strong>1️⃣ 计算机基础（必考）</strong></h3><p>主要考察 <strong>计算机科学核心知识</strong>，包括：</p>
-<ul>
-<li><p><strong>数据结构与算法</strong></p>
-<ul>
-<li>常见数据结构（数组、链表、栈、队列、哈希表、树、图等）。</li>
-<li>算法：排序、查找、递归、动态规划、贪心算法、回溯等。</li>
-<li>复杂度分析（时间复杂度 &amp; 空间复杂度）。</li>
-</ul>
-</li>
-<li><p><strong>操作系统</strong></p>
-<ul>
-<li>进程 vs 线程、线程同步、死锁、内存管理（分页&#x2F;分段）、I&#x2F;O、多线程并发。</li>
-</ul>
-</li>
-<li><p><strong>计算机网络</strong></p>
-<ul>
-<li>TCP vs UDP，三次握手 &amp; 四次挥手，HTTP&#x2F;HTTPS，DNS解析，Socket 编程。</li>
-</ul>
-</li>
-<li><p><strong>数据库</strong></p>
-<ul>
-<li>SQL（增删改查、索引、事务、锁机制）。</li>
-<li>NoSQL（MongoDB、Redis 等）。</li>
-<li>数据库优化 &amp; 事务 ACID 原理。</li>
-</ul>
-</li>
-</ul>
-<p><strong>💡 面试官关注点：</strong></p>
-<ul>
-<li><strong>你的计算机基础是否扎实？</strong></li>
-<li><strong>是否能合理优化代码，解决性能问题？</strong></li>
-<li><strong>是否理解底层原理，而不是单纯调用 API？</strong></li>
-</ul>
-<hr>
-<h3 id="2️⃣-编程能力-代码风格"><a href="#2️⃣-编程能力-代码风格" class="headerlink" title="2️⃣ 编程能力 &amp; 代码风格"></a><strong>2️⃣ 编程能力 &amp; 代码风格</strong></h3><p><strong>典型问题：</strong></p>
-<ul>
-<li><strong>手写算法题</strong>（如：二叉树遍历、链表反转、字符串处理）。</li>
-<li><strong>写一个类，设计合适的数据结构，保证高效查询、插入、删除等操作</strong>。</li>
-<li><strong>多线程编程：如何实现线程安全的单例模式？如何避免死锁？</strong></li>
-</ul>
-<p><strong>💡 面试官关注点：</strong></p>
-<ul>
-<li><strong>代码是否简洁、可读、可维护？</strong></li>
-<li><strong>是否能用高效的方式解决问题？</strong></li>
-<li><strong>是否具备良好的编码习惯？（命名规范、异常处理、边界情况等）</strong></li>
-</ul>
-<hr>
-<h3 id="3️⃣-框架-语言特性"><a href="#3️⃣-框架-语言特性" class="headerlink" title="3️⃣ 框架 &#x2F; 语言特性"></a><strong>3️⃣ 框架 &#x2F; 语言特性</strong></h3><p>根据职位方向，考察对应的技术栈：</p>
-<ul>
-<li><p><strong>前端开发（React &#x2F; Vue &#x2F; TypeScript）</strong></p>
-<ul>
-<li>虚拟 DOM、Diff 算法、前端性能优化。</li>
-<li>Webpack、Vite、组件化开发、前端工程化。</li>
-<li>跨域问题、前端安全（XSS、CSRF）。</li>
-</ul>
-</li>
-<li><p><strong>后端开发（Java &#x2F; C# &#x2F; Python &#x2F; Node.js）</strong></p>
-<ul>
-<li>线程 &amp; 进程、内存管理、垃圾回收机制。</li>
-<li>高并发 &amp; 分布式架构（如：微服务、RPC）。</li>
-<li>设计模式（单例、工厂、观察者、策略模式等）。</li>
-</ul>
-</li>
-<li><p><strong>游戏开发（Unity &#x2F; Unreal &#x2F; C++）</strong></p>
-<ul>
-<li>游戏引擎架构、渲染管线、物理系统、动画系统。</li>
-<li>ECS（实体组件系统）、Unity Shader &#x2F; UE 蓝图。</li>
-<li>资源管理、性能优化、内存管理。</li>
-</ul>
-</li>
-</ul>
-<p><strong>💡 面试官关注点：</strong></p>
-<ul>
-<li><strong>你对框架&#x2F;工具是否熟练？能否写出高效代码？</strong></li>
-<li><strong>是否理解底层原理，而不是只会使用？</strong></li>
-<li><strong>是否有解决复杂问题的能力？</strong></li>
-</ul>
-<hr>
-<h3 id="4️⃣-系统设计-架构"><a href="#4️⃣-系统设计-架构" class="headerlink" title="4️⃣ 系统设计 &amp; 架构"></a><strong>4️⃣ 系统设计 &amp; 架构</strong></h3><p>针对 <strong>中高级工程师</strong>，考察：</p>
-<ul>
-<li><strong>如何设计一个高可用的系统？</strong></li>
-<li><strong>如何优化数据库查询，避免性能瓶颈？</strong></li>
-<li><strong>微服务 vs 单体架构的优缺点？</strong></li>
-<li><strong>如何设计一个缓存系统，防止缓存击穿？</strong></li>
-</ul>
-<p><strong>💡 面试官关注点：</strong></p>
-<ul>
-<li><strong>你是否有全局思维，能设计可扩展的架构？</strong></li>
-<li><strong>能否平衡性能、稳定性和成本？</strong></li>
-<li><strong>是否有大型项目经验？</strong></li>
-</ul>
-<hr>
-<h3 id="5️⃣-项目经验-解决问题能力"><a href="#5️⃣-项目经验-解决问题能力" class="headerlink" title="5️⃣ 项目经验 &amp; 解决问题能力"></a><strong>5️⃣ 项目经验 &amp; 解决问题能力</strong></h3><p><strong>可能的问题：</strong></p>
-<ul>
-<li>介绍你做过的项目，遇到哪些挑战？如何解决？</li>
-<li>你在项目中负责什么？团队如何协作？</li>
-<li>你的代码优化思路是什么？</li>
-</ul>
-<p><strong>💡 面试官关注点：</strong></p>
-<ul>
-<li><strong>你是否能独立解决问题？</strong></li>
-<li><strong>是否真正理解项目架构？</strong></li>
-<li><strong>是否具备团队合作能力？</strong></li>
-</ul>
-<hr>
-<h3 id="6️⃣-软技能-团队合作"><a href="#6️⃣-软技能-团队合作" class="headerlink" title="6️⃣ 软技能 &amp; 团队合作"></a><strong>6️⃣ 软技能 &amp; 团队合作</strong></h3><p><strong>常见问题</strong></p>
-<ul>
-<li>你遇到过最难的问题是什么？如何解决？</li>
-<li>你如何处理团队冲突？</li>
-<li>你的职业规划是什么？</li>
-</ul>
-<p><strong>💡 面试官关注点：</strong></p>
-<ul>
-<li><strong>你的沟通能力如何？</strong></li>
-<li><strong>是否愿意学习新技术？</strong></li>
-<li><strong>是否适合团队文化？</strong></li>
-</ul>
-<hr>
-<h2 id="🎯-面试官希望得到的信息"><a href="#🎯-面试官希望得到的信息" class="headerlink" title="🎯 面试官希望得到的信息"></a><strong>🎯 面试官希望得到的信息</strong></h2><table>
-<thead>
-<tr>
-<th>面试维度</th>
-<th>期望信息</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>技术能力</strong></td>
-<td>是否具备扎实的计算机基础和编程能力？</td>
-</tr>
-<tr>
-<td><strong>解决问题能力</strong></td>
-<td>是否能高效解决复杂问题？</td>
-</tr>
-<tr>
-<td><strong>项目经验</strong></td>
-<td>过去的项目经历是否和岗位匹配？</td>
-</tr>
-<tr>
-<td><strong>团队合作</strong></td>
-<td>是否善于沟通、协作？</td>
-</tr>
-<tr>
-<td><strong>学习能力</strong></td>
-<td>是否愿意学习新技术？是否具备成长潜力？</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="📌-总结"><a href="#📌-总结" class="headerlink" title="📌 总结"></a><strong>📌 总结</strong></h2><ol>
-<li><strong>面试一般有 3~5 轮</strong>（技术面 + 综合面 + HR 面）。</li>
-<li><strong>核心考察点：计算机基础、编程能力、项目经验、架构设计、团队合作</strong>。</li>
-<li><strong>面试官希望了解你的问题解决能力、代码质量、技术深度以及成长潜力</strong>。</li>
-</ol>
-<p>🎯 <strong>如果你能在技术 + 项目 + 软技能方面表现出色，就能顺利通过面试！</strong> 🚀</p>
-<h2 id="HR问离职原因的初衷"><a href="#HR问离职原因的初衷" class="headerlink" title="HR问离职原因的初衷"></a>HR问离职原因的初衷</h2><p>HR在面试中询问<strong>离职原因</strong>，主要是为了从多个维度了解候选人，评估其是否适合公司和岗位。以下是HR提问离职原因的<strong>初衷</strong>和<strong>关注点</strong>：</p>
-<hr>
-<h3 id="1-了解候选人的职业动机"><a href="#1-了解候选人的职业动机" class="headerlink" title="1. 了解候选人的职业动机"></a>1. <strong>了解候选人的职业动机</strong></h3><ul>
-<li><strong>初衷</strong>：HR希望通过离职原因了解候选人的职业追求和价值观。</li>
-<li><strong>关注点</strong>：<ul>
-<li>候选人是否因为缺乏成长机会而离职？</li>
-<li>是否因为对工作内容或公司文化不满？</li>
-<li>是否因为薪资、福利或职业发展受限？</li>
-</ul>
-</li>
-<li><strong>目的</strong>：判断候选人的职业目标是否与公司提供的机会匹配。</li>
-</ul>
-<hr>
-<h3 id="2-评估候选人的稳定性"><a href="#2-评估候选人的稳定性" class="headerlink" title="2. 评估候选人的稳定性"></a>2. <strong>评估候选人的稳定性</strong></h3><ul>
-<li><strong>初衷</strong>：HR希望了解候选人的离职是否合理，是否存在频繁跳槽的倾向。</li>
-<li><strong>关注点</strong>：<ul>
-<li>候选人是否因为短期问题（如人际关系、压力）轻易离职？</li>
-<li>是否因为对公司或岗位缺乏深入了解而频繁更换工作？</li>
-</ul>
-</li>
-<li><strong>目的</strong>：判断候选人是否能在公司长期发展，降低招聘成本。</li>
-</ul>
-<hr>
-<h3 id="3-了解候选人的工作态度"><a href="#3-了解候选人的工作态度" class="headerlink" title="3. 了解候选人的工作态度"></a>3. <strong>了解候选人的工作态度</strong></h3><ul>
-<li><strong>初衷</strong>：HR希望通过离职原因了解候选人对工作的态度和责任感。</li>
-<li><strong>关注点</strong>：<ul>
-<li>候选人是否因为逃避问题（如压力、挑战）而离职？</li>
-<li>是否因为与团队或上级关系不佳而离职？</li>
-</ul>
-</li>
-<li><strong>目的</strong>：判断候选人是否具备积极的工作态度和团队合作精神。</li>
-</ul>
-<hr>
-<h3 id="4-排除潜在风险"><a href="#4-排除潜在风险" class="headerlink" title="4. 排除潜在风险"></a>4. <strong>排除潜在风险</strong></h3><ul>
-<li><strong>初衷</strong>：HR希望排除候选人可能带来的潜在风险。</li>
-<li><strong>关注点</strong>：<ul>
-<li>候选人是否因为绩效问题被辞退？</li>
-<li>是否因为违反公司规定或职业道德而离职？</li>
-</ul>
-</li>
-<li><strong>目的</strong>：确保候选人没有隐藏的不良记录或行为。</li>
-</ul>
-<hr>
-<h3 id="5-判断候选人与公司文化的契合度"><a href="#5-判断候选人与公司文化的契合度" class="headerlink" title="5. 判断候选人与公司文化的契合度"></a>5. <strong>判断候选人与公司文化的契合度</strong></h3><ul>
-<li><strong>初衷</strong>：HR希望通过离职原因了解候选人对公司文化的偏好。</li>
-<li><strong>关注点</strong>：<ul>
-<li>候选人是否因为不适应前公司的文化而离职？</li>
-<li>是否因为希望寻找更符合自己价值观的工作环境？</li>
-</ul>
-</li>
-<li><strong>目的</strong>：判断候选人是否适合当前公司的文化和团队氛围。</li>
-</ul>
-<hr>
-<h3 id="6-为候选人提供更好的机会"><a href="#6-为候选人提供更好的机会" class="headerlink" title="6. 为候选人提供更好的机会"></a>6. <strong>为候选人提供更好的机会</strong></h3><ul>
-<li><strong>初衷</strong>：HR希望通过了解离职原因，为候选人提供更适合的岗位或发展机会。</li>
-<li><strong>关注点</strong>：<ul>
-<li>候选人是否因为缺乏挑战或发展空间而离职？</li>
-<li>是否因为对某些工作条件（如远程办公、弹性时间）有特殊需求？</li>
-</ul>
-</li>
-<li><strong>目的</strong>：确保公司能够满足候选人的需求，提升招聘成功率。</li>
-</ul>
-<hr>
-<h3 id="HR希望听到的回答："><a href="#HR希望听到的回答：" class="headerlink" title="HR希望听到的回答："></a>HR希望听到的回答：</h3><ol>
-<li><strong>积极正面的原因</strong>：<ul>
-<li>寻求更好的职业发展机会。</li>
-<li>希望尝试新的领域或挑战。</li>
-<li>前公司发展方向与个人职业规划不一致。</li>
-</ul>
-</li>
-<li><strong>客观合理的原因</strong>：<ul>
-<li>公司裁员或业务调整。</li>
-<li>地理位置或家庭原因。</li>
-<li>合同到期或项目结束。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="HR不希望听到的回答："><a href="#HR不希望听到的回答：" class="headerlink" title="HR不希望听到的回答："></a>HR不希望听到的回答：</h3><ol>
-<li><strong>消极负面的原因</strong>：<ul>
-<li>抱怨前公司或同事。</li>
-<li>因为人际关系问题离职。</li>
-<li>因为工作压力大或任务繁重而逃避。</li>
-</ul>
-</li>
-<li><strong>模糊或不真实的原因</strong>：<ul>
-<li>说不清离职原因。</li>
-<li>隐瞒真实原因，显得不够坦诚。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="如何回答离职原因："><a href="#如何回答离职原因：" class="headerlink" title="如何回答离职原因："></a>如何回答离职原因：</h3><ol>
-<li><strong>保持积极态度</strong>：避免批评前公司或同事，专注于个人成长和发展。</li>
-<li><strong>突出职业规划</strong>：强调你希望寻找更好的发展机会，与新岗位的目标一致。</li>
-<li><strong>简洁明了</strong>：不要过度解释，点到为止，保持真诚。</li>
-</ol>
-<p><strong>示例回答</strong>：</p>
-<ul>
-<li>“我在前公司学到了很多，但希望寻找一个更具挑战性的岗位，能够更好地发挥我的技术优势。”</li>
-<li>“前公司因为业务调整，我的职业发展方向与公司规划不一致，所以选择寻找新的机会。”</li>
-<li>“我希望在一个更注重创新和团队合作的环境中工作，这与贵公司的文化非常契合。”</li>
-</ul>
-<hr>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>HR提问离职原因，主要是为了评估候选人的职业动机、稳定性、工作态度和与公司文化的契合度。通过积极、合理的回答，你可以展现自己的职业素养和发展潜力，增加面试成功率。</p>
 ]]></content>
   </entry>
   <entry>
@@ -7796,37 +7839,6 @@
       </tags>
   </entry>
   <entry>
-    <title>团结引擎</title>
-    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
-    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
-<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
-<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
-<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
-<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
-<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
-<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
-<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
-<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
-<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
-<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
-<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
-<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
-<li><p>专为中国开发者定制</p>
-<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
-</li>
-<li><p>本土科技生态支持</p>
-<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
-</li>
-<li><p>微信小游戏解决方案</p>
-<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
-</li>
-<li><p>车机定制编辑器</p>
-<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>文件树状层级图生成</title>
     <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
@@ -7866,6 +7878,94 @@
 </ul>
 <h1 id="Popper"><a href="#Popper" class="headerlink" title="Popper"></a>Popper</h1><p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
+    <title>笔记本拓展屏+平板</title>
+    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
+    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br><a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
+<h2 id="Spacedesk-版本介绍"><a href="#Spacedesk-版本介绍" class="headerlink" title="Spacedesk 版本介绍"></a>Spacedesk 版本介绍</h2><p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
+<hr>
+<h3 id="免费功能："><a href="#免费功能：" class="headerlink" title="免费功能："></a><strong>免费功能</strong>：</h3><ol>
+<li><p><strong>基本屏幕扩展</strong>：</p>
+<ul>
+<li>支持将平板或手机作为电脑的扩展显示器。</li>
+<li>支持 Wi-Fi 和 USB 连接。</li>
+</ul>
+</li>
+<li><p><strong>多设备连接</strong>：</p>
+<ul>
+<li>可以同时连接多个设备作为扩展屏幕。</li>
+</ul>
+</li>
+<li><p><strong>跨平台支持</strong>：</p>
+<ul>
+<li>支持 Windows 电脑与 Android&#x2F;iOS 设备连接。</li>
+</ul>
+</li>
+<li><p><strong>基本分辨率支持</strong>：</p>
+<ul>
+<li>提供足够的分辨率用于日常办公和娱乐。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="可能收费或需要捐赠的功能："><a href="#可能收费或需要捐赠的功能：" class="headerlink" title="可能收费或需要捐赠的功能："></a><strong>可能收费或需要捐赠的功能</strong>：</h3><ol>
+<li><p><strong>更高分辨率和刷新率</strong>：</p>
+<ul>
+<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
+</ul>
+</li>
+<li><p><strong>高级功能</strong>：</p>
+<ul>
+<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
+</ul>
+</li>
+<li><p><strong>商业用途</strong>：</p>
+<ul>
+<li>如果用于商业环境，可能需要购买许可证。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="捐赠支持："><a href="#捐赠支持：" class="headerlink" title="捐赠支持："></a><strong>捐赠支持</strong>：</h3><ul>
+<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
+</ul>
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
+<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
+</ul>
+<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
+<h2 id="将电脑屏幕投射到平板电脑"><a href="#将电脑屏幕投射到平板电脑" class="headerlink" title="将电脑屏幕投射到平板电脑"></a>将电脑屏幕投射到平板电脑</h2><p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
+<h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><ol>
+<li><p><strong>下载软件</strong>：</p>
+<ul>
+<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
+<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
+</ul>
+</li>
+<li><p><strong>确保设备在同一网络</strong>：</p>
+<ul>
+<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
+</ul>
+</li>
+</ol>
+<h4 id="在平板电脑上："><a href="#在平板电脑上：" class="headerlink" title="在平板电脑上："></a>在平板电脑上：</h4><ol>
+<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
+<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
+<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
+</ol>
+<p><img src="https://mr-liu-cheng.github.io/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/image.png"><br>注意：</p>
+<ul>
+<li>WiFi连接需要同在一个局域网下</li>
+<li>WiFi有延迟</li>
+<li>USB需要打开显示器设备的开发者选项的调试模式</li>
+<li>Local Area Network： WiFi连接开关</li>
+<li>USB Cable Android：USB连接开关</li>
+<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
+<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>游戏资源服部署</title>
@@ -8277,94 +8377,6 @@
 </ul>
 <hr>
 <p><strong>总结</strong><br><strong>如果关闭 Clash 后 Unity 可以正常请求网络，那问题就是 Clash 代理影响了 Unity 的请求。</strong><br>你可以尝试 <strong>关闭 Clash 或者排除 Unity 进程不走代理</strong> 来解决问题。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>笔记本拓展屏+平板</title>
-    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
-    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br><a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
-<h2 id="Spacedesk-版本介绍"><a href="#Spacedesk-版本介绍" class="headerlink" title="Spacedesk 版本介绍"></a>Spacedesk 版本介绍</h2><p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
-<hr>
-<h3 id="免费功能："><a href="#免费功能：" class="headerlink" title="免费功能："></a><strong>免费功能</strong>：</h3><ol>
-<li><p><strong>基本屏幕扩展</strong>：</p>
-<ul>
-<li>支持将平板或手机作为电脑的扩展显示器。</li>
-<li>支持 Wi-Fi 和 USB 连接。</li>
-</ul>
-</li>
-<li><p><strong>多设备连接</strong>：</p>
-<ul>
-<li>可以同时连接多个设备作为扩展屏幕。</li>
-</ul>
-</li>
-<li><p><strong>跨平台支持</strong>：</p>
-<ul>
-<li>支持 Windows 电脑与 Android&#x2F;iOS 设备连接。</li>
-</ul>
-</li>
-<li><p><strong>基本分辨率支持</strong>：</p>
-<ul>
-<li>提供足够的分辨率用于日常办公和娱乐。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="可能收费或需要捐赠的功能："><a href="#可能收费或需要捐赠的功能：" class="headerlink" title="可能收费或需要捐赠的功能："></a><strong>可能收费或需要捐赠的功能</strong>：</h3><ol>
-<li><p><strong>更高分辨率和刷新率</strong>：</p>
-<ul>
-<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
-</ul>
-</li>
-<li><p><strong>高级功能</strong>：</p>
-<ul>
-<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
-</ul>
-</li>
-<li><p><strong>商业用途</strong>：</p>
-<ul>
-<li>如果用于商业环境，可能需要购买许可证。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="捐赠支持："><a href="#捐赠支持：" class="headerlink" title="捐赠支持："></a><strong>捐赠支持</strong>：</h3><ul>
-<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
-</ul>
-<hr>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
-<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
-</ul>
-<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
-<h2 id="将电脑屏幕投射到平板电脑"><a href="#将电脑屏幕投射到平板电脑" class="headerlink" title="将电脑屏幕投射到平板电脑"></a>将电脑屏幕投射到平板电脑</h2><p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
-<h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><ol>
-<li><p><strong>下载软件</strong>：</p>
-<ul>
-<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
-<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
-</ul>
-</li>
-<li><p><strong>确保设备在同一网络</strong>：</p>
-<ul>
-<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
-</ul>
-</li>
-</ol>
-<h4 id="在平板电脑上："><a href="#在平板电脑上：" class="headerlink" title="在平板电脑上："></a>在平板电脑上：</h4><ol>
-<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
-<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
-<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
-</ol>
-<p><img src="https://mr-liu-cheng.github.io/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/image.png"><br>注意：</p>
-<ul>
-<li>WiFi连接需要同在一个局域网下</li>
-<li>WiFi有延迟</li>
-<li>USB需要打开显示器设备的开发者选项的调试模式</li>
-<li>Local Area Network： WiFi连接开关</li>
-<li>USB Cable Android：USB连接开关</li>
-<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
-<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
-</ul>
 ]]></content>
   </entry>
   <entry>
