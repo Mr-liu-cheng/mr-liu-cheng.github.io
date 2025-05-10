@@ -7,6 +7,10 @@ categories:
 keywords:
 description:
 ---
+文档：
+- [Luatos](https://wiki.luatos.com/index.html)
+- [参考手册](https://wiki.luatos.com/_static/lua53doc/contents.html)
+
 在 Unity 开发中，使用 Lua 进行代码热更新和补丁的方式主要有以下两种：  
 
 ### **方式 1：使用 Lua 修复 C# 代码中的 Bug**
@@ -673,6 +677,153 @@ try {
 
 总的来说，**Lua 更轻量、灵活，C# 更强大、结构化**。
 
+
+# 正则表达式
+
+Lua 使用 `string.gsub`、`string.find`、`string.match` 等函数支持**模式匹配（Pattern Matching）**，这类似于正则表达式，但 Lua 使用的是**独特的模式匹配规则**，并不完全兼容标准正则表达式。  
+
+---
+
+## **1. 基本字符匹配规则**
+Lua 的模式匹配支持以下特殊字符：
+| 符号 | 作用 |
+|------|------|
+| `.`  | 匹配任意单个字符（换行符 `\n` 除外） |
+| `%a` | 匹配任意字母（A-Z, a-z） |
+| `%d` | 匹配任意数字（0-9） |
+| `%l` | 匹配小写字母（a-z） |
+| `%u` | 匹配大写字母（A-Z） |
+| `%s` | 匹配空白字符（空格、制表符、换行） |
+| `%w` | 匹配字母+数字（A-Z, a-z, 0-9） |
+| `%x` | 匹配十六进制字符（0-9, A-F, a-f） |
+| `%c` | 匹配控制字符（如 `\n`、`\t`） |
+| `%p` | 匹配标点符号（如 `.,!?`） |
+| `%z` | 匹配 `\0`（null 字符） |
+| `%f[set]` | 匹配 `set` 定义的**边界** |
+
+**示例**
+```lua
+print(string.match("hello 123", "%a+"))  --> hello
+print(string.match("hello 123", "%d+"))  --> 123
+```
+
+---
+
+## **2. 转义特殊字符**
+Lua 使用 `%` 作为转义符，而不是 `\`：
+| 符号 | 作用 |
+|------|------|
+| `%.` | 匹配 `.` |
+| `%+` | 匹配 `+` |
+| `%*` | 匹配 `*` |
+| `%?` | 匹配 `?` |
+| `%(`, `%)` | 匹配 `()` |
+| `%[` , `%]` | 匹配 `[]` |
+| `%^` | 匹配 `^` |
+| `%$` | 匹配 `$` |
+
+**示例**
+```lua
+print(string.match("3+2=5", "%d+%+%d+"))  --> 3+2
+```
+
+---
+
+## **3. 量词匹配**
+| 量词 | 作用 |
+|------|------|
+| `+` | **匹配 1 次或多次** |
+| `*` | **匹配 0 次或多次** |
+| `?` | **匹配 0 次或 1 次** |
+| `{n,m}` | **匹配 n 到 m 次（Lua 不支持）** |
+
+**示例**
+```lua
+print(string.match("abc123xyz", "%a+"))  --> abc
+print(string.match("abc123xyz", "%d*"))  --> （空字符串）
+print(string.match("abc123xyz", "%d+"))  --> 123
+```
+
+---
+
+## **4. 定义字符集**
+| 符号 | 作用 |
+|------|------|
+| `[xyz]` | 匹配 `x`、`y` 或 `z` |
+| `[^xyz]` | **匹配非** `x`、`y`、`z` 的字符 |
+| `[a-z]` | **匹配 a-z 之间的字符** |
+| `[A-Z0-9]` | **匹配大写字母或数字** |
+
+**示例**
+```lua
+print(string.match("Lua 5.4", "[0-9]+"))  --> 5
+print(string.match("Hello!", "[^aeiou]+"))  --> H
+```
+
+---
+
+## **5. 捕获（提取匹配部分）**
+| 规则 | 作用 |
+|------|------|
+| `(pattern)` | **捕获**匹配的内容 |
+
+**示例**
+```lua
+local word, number = string.match("abc123", "(%a+)(%d+)")
+print(word, number)  --> abc 123
+```
+
+---
+
+## **6. 搜索与替换**
+Lua 提供 `string.gsub` 进行替换：
+```lua
+local s = "Hello 123 Lua 456"
+print(string.gsub(s, "%d+", "#"))  --> Hello # Lua #
+```
+
+---
+
+## **7. 锚点匹配**
+| 符号 | 作用 |
+|------|------|
+| `^` | **匹配字符串开头** |
+| `$` | **匹配字符串结尾** |
+
+**示例**
+```lua
+print(string.match("Hello World", "^Hello"))  --> Hello
+print(string.match("Hello World", "World$"))  --> World
+```
+
+---
+
+## **8. `string.find`、`string.match`、`string.gsub` 区别**
+| 方法 | 作用 |
+|------|------|
+| `string.find(s, pattern)` | **查找匹配的位置** |
+| `string.match(s, pattern)` | **提取第一个匹配** |
+| `string.gsub(s, pattern, replace)` | **替换** |
+
+**示例**
+```lua
+local s = "Hello Lua 123"
+
+print(string.find(s, "%a+"))  --> 1 5 （返回匹配位置）
+print(string.match(s, "%a+"))  --> Hello （返回匹配文本）
+print(string.gsub(s, "%a+", "#"))  --> # # 123
+```
+
+---
+
+## **总结**
+- **Lua 的模式匹配类似正则表达式，但不是标准正则**，常用于字符串查找、替换等操作。
+- **不支持 `{n,m}` 这样的精确匹配**，但可以用 `string.rep` 变通实现。
+- **使用 `()` 进行捕获，用 `string.gsub` 进行替换**，效率较高。
+- **不支持 `\d` 这样的正则格式，而是 `%d` 代替**。
+
+如果需要更强的正则功能，可以结合 **PCRE（Lua 正则库）** 进行扩展。
+
 # 笔记
 
 - 默认变量是全局变量
@@ -705,7 +856,7 @@ try {
 - Lua 函数不需要声明返回值类型和参数类型
 - 没有类和对象的原生概念，但可以用 table + metatable 实现
 - 最好不要使用下划线加大写字母的标识符，因为Lua的保留字也是这样的。
-- 表：标识符可以使用 . 或 [""] 访问，如果标识符包含特殊字符（如空格），必须用 [""] 访问
+- 表：标识符可以使用` . `或` [""] `访问，如果标识符包含特殊字符（如空格），必须用 `[""]` 访问。整数作为下标、字符串作为下标
   
     local person = {
         name = "Alice",
@@ -721,8 +872,167 @@ try {
   - if elseif else then end	条件判断
   - for while repeat until	循环结构
   - function return	定义函数、返回值
-  - local	变量作用域
+  - local	变量作用域  用于代码块中
   - nil true false	变量值
   - do end	代码块
   - goto	代码跳转
-- 
+- 数组
+  1. nil会中断数组下标和长度吗？
+  2. for循环不能遍历小于等于零的索引
+  3. 不能遍历到不连续索引
+  4. 数组下标开始值为1
+  5. #获取数组长度
+- for循环中 index值不能修改
+  
+    for i=10,1,-1 do 
+
+    print(i)
+
+    end
+- _G全局表：存放全局变量
+- 0为ture
+- 只有nil 和false 为假
+- 不支持自增自减操作
+
+- 不等于：~=     等于：==
+- 交换  a,b=b,a
+- 函数：
+  1. 不支持重载,支持重写
+  2. 函数变长参数…需要内部用表接收｛…｝才能使用
+  3. 闭包 函数嵌套 外层函数的参数被嵌套的函数使用时,延长生命周期
+    ``` lua
+    a=function ()
+    print("hello")
+    end
+    --等价
+    function Showa()
+    print("hello")
+    end
+    ```
+- return  可以返回多个值用逗号隔开
+- Lua 中有 8 个基本类型分别为：nil、boolean、number、string、userdata、function、thread 和 table。
+  - userdata	表示任意存储在变量中的C数据结构
+  - number	表示双精度类型的实浮点数
+- 文件调用：require("路径.文件名")
+  - 不带拓展名  
+  - 只会调用一次，**即使多次调用都是返回的第一次调用的值**
+  - 从package.path中查找，我们可以提前使用字符串拼接，将新路径加载到该字段中，调用时就不用指定路径了
+  - Package.loaded(xx)判断require加载的文件是否被夹在.  Package.loaded(xx)=nil卸载资源
+- loadstring / load 只是编译代码，不会立即执行。**需要显式调用返回的函数才能执行代码**。
+  - 每次调用 load，都会创建新的函数对象，**即便代码相同，返回的函数也是不同的**。
+- dofile 直接加载并执行一个 Lua 文件，**相当于 loadfile + 调用**。
+  - 代码运行在全局作用域，所以 dofile 执行的脚本可以定义全局变量和函数。
+  - dofile 每次都会执行文件，不会缓存结果。
+  - **如果 执行的 Lua 文件定义了全局变量参与计算返回值，会影响后续 dofile 调用返回值**。
+
+- 字符串
+  - 第一个从1开始，倒数 第一个是-1
+  - 语法糖调用方法： 可以是用字符串变量：字符串函数（）
+- 正则表达式
+  - Lua 使用 % 作为转义符，而不是 \
+  -  **+**	匹配 1 次或多次
+  -  `*`	匹配 0 次或多次
+  -  ?	匹配 0 次或 1 次
+  -  {n,m}	匹配 n 到 m 次（Lua 不支持）
+    - .	匹配任意单个字符（换行符 \n 除外）
+    - %a	匹配任意字母（A-Z, a-z）
+    - %d	匹配任意数字（0-9）
+    - %l	匹配小写字母（a-z）
+    - %u	匹配大写字母（A-Z）
+    - %s	匹配空白字符（空格、制表符、换行）
+    - %w	匹配字母+数字（A-Z, a-z, 0-9）
+    - %x	匹配十六进制字符（0-9, A-F, a-f）
+    - %c	匹配控制字符（如 \n、\t）
+    - %p	匹配标点符号（如 .,!?）
+    - %z	匹配 \0（null 字符）
+    - %f[set]	匹配 set 定义的边界
+    - (pattern)	捕获匹配的内容
+    - ^	匹配字符串开头
+    - $	匹配字符串结尾
+
+- 元表（表的爸爸）   当我们子表中进行一些`特定操作`时会执行元表中的内容
+  ``` lua
+    meta={}
+    myTable={}
+    setmetatable(myTable,meta)  第一个参数：子表   第二个参数：原表（爸爸）
+  ```
+  - 表默认没有继承、没有元行为，但可以使用**元表（metatable）**扩展它的功能。
+  - 元表本身也是一个普通的表，但它的作用是“控制”另一个表的行为。
+  - 通过 setmetatable(t, mt) 将元表 mt 绑定到表 t 上。
+  - 元表可以定义特殊的元方法（metamethod），比如 __index、__newindex、__add、__tostring 等。
+  - `特定操作`
+    - __call 让表可以被当作函数调用。当子表被当做一个函数来使用时 会默认调用这个 ca11中的内容，当希望传参数时 一定要记住 默认第一个参数 是调用者自己
+    - __index 允许一个表在访问不存在的字段时，从元表中查找。
+      - _Index存在于？
+		1. 作为函数，传递的索引经过函数筛选判断返回一个值
+		2. 作为表，返回表种元素
+    - __newindex 控制给表中不存在的字段赋值时的行为。
+    - __tostring 子表要被当做字符串使用时 会默认调用这个元表中的tostring方法
+  - 
+  - 面向对象
+    -  使用 table 作为对象，函数 作为方法，并通过 self 访问成员变量。
+    -  有构造函数
+    -  继承机制
+    -  没有 override 关键字，但可以手动重写方法实现多态
+    -  类
+		1. 用表来实现，获取方式更像是c#中的静态类
+		2. 可以在表内声明和表外声明成员
+		3. 函数在表 外部声明
+			1. class.fucname = function ()
+			2. function class.fucname ()
+		4. 在表内部函数中调用表本身属性或方法
+			1. 前缀一定要指明是谁的属性或方法，指定拥有者，不能直接写变量名，直接写的变量名代表的是全局变量与表中的变量是没有任何关系的
+			2. 在函数内部调用自己属性或者方法，需要把自己作为一个参数传进来在内部访问，lua 没有参数类型,所以可以看成是范型
+				1. class.fucname(class)
+				2. class:fucname() ：调用方法会默认把调用者作为第一个参数传入方法中
+		5. :使用
+			1. 函数外部调用，表示默认传入一个参数是自己
+			2. 函数外部声明，表示默认有一个参数是自己，函数内部获取这个参数需要用self表示默认传入的第一个参数
+
+
+1. 垃圾回收(置空nil)-主动回收释放内存-切换场景/内存达到瓶颈
+	1. collectgarbage(“count”)lua 占用内存
+	2. collectgarbage(“collect”)回收垃圾
+2. os.time()时间s 系统时间
+	1. os.date()获取时间的表，年月日时分秒
+3. math.abs()
+	1.math.randomseed(os.time)
+	math.random
+
+	
+4. 迭代器
+	1.  小于等于零的所有找不到
+	2. pairs比impairs强大，可以遍历所有成员包括小于等于零的索引(不规则的表)
+	3. 可以只遍历key
+	4. ipairs 数字下标不连续会中断，pairs 所有通用（使用next函数实现）
+	5. next函数可以用于判断表是否为空
+5. 字典
+	1. 访问方式a[“key”]or a.key 
+	2. 遍历好像字典一定要用pairs
+
+6. 表
+	- Insert 
+	- Remove 
+	- Sort 
+	- Concat
+7. 短路运算 
+	1. and有真则真 
+	2. or有假则假
+	3. 可以使用 and or  构成三元运算符，返回结果对应的值或者bool值，短路求值：
+        - and 在 第一个值为 false 或 nil 时，直接返回第一个值；否则，返回第二个值。
+        - or 在 第一个值为 false 或 nil 时，返回第二个值；否则，直接返回第一个值。
+  
+                print(10>11 and "yes" or "no")
+
+8. 协程 coroutine
+   1. 创建
+      1. co=coroutine.create(fuc) 返回的是协程（线程）
+         1. 调用：coroutine.resume(co)   该函数返回值第一个为协程执行成功的与否
+      2. cor=coroutine.wrap(fuc)  返回的是函数
+         1. 调用：cor()
+   2. 挂起 coroutine.yield()  每次调用执行都会继续协程  ，yield(yieldReturn)，coroutine.resume的第二个返回值就是它  `isSucc ，yieldReturn = coroutine.wrap(fuc)`
+   3. 状态 coroutine.status
+      1. dead  没有挂起的协程
+      2. suspended 暂停  挂起的协程
+      3. running   只能在协程内获取该状态    coroutine.running()可以得到当前正在运行的协程的编号
+9.  Person.sayHello() ≈ 静态函数   p1:sayHello() ≈ 成员函数
