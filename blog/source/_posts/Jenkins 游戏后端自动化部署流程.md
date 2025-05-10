@@ -1,3 +1,12 @@
+---
+title: Jenkins 游戏后端自动化部署流程
+date: 2025-05-09 11:20:13
+updated: 2025-05-09 11:20:13
+tags: Jenkins
+categories: Jenkins
+keywords: Jenkins
+description:
+---
 ### **Jenkins 游戏后端自动化部署流程（以微服务/分布式架构为例）**  
 游戏后端通常采用 **多模块、微服务架构**（如登录服、战斗服、匹配服），Jenkins 可以实现 **代码构建 → 打包 → 测试 → 部署到服务器/K8s** 的全流程自动化。  
 

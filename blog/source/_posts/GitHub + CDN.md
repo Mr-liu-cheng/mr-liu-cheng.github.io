@@ -1,3 +1,12 @@
+---
+title: GitHub + CDN
+date: 2025-05-08 14:16:02
+updated: 2025-01-08 14:16:02
+tags: GitHub,CDN
+categories: GitHub,CDN
+keywords: GitHub,CDN
+description:
+---
 使用 **GitHub + CDN** 作为游戏下载官网的试水方案，是一种**低成本、易上手**的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：
 
 ---

@@ -1,3 +1,12 @@
+---
+title: GitHub Actions部署流程
+date: 2025-05-08 14:16:02
+updated: 2025-01-08 14:16:02
+tags: GitHub Actions
+categories: GitHub Actions
+keywords: GitHub Actions
+description:
+---
 我们来逐步**解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本**，帮助你理解每一步在干什么、为什么需要它：
 
 ---

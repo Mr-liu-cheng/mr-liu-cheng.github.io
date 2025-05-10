@@ -1,3 +1,12 @@
+---
+title: Jenkins 游戏打包部署流程
+date: 2025-05-08 14:16:02
+updated: 2025-01-08 14:16:02
+tags: Jenkins
+categories: Jenkins
+keywords: Jenkins
+description:
+---
 ### **Jenkins 游戏打包部署流程（以 Unity 游戏为例）**
 以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 **代码拉取、Unity 打包、测试、部署到服务器** 等关键步骤。
 
