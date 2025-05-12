@@ -3,14 +3,13 @@ name: Deploy Hexo Blog to GitHub Pages
 on:
   push:
     branches:
-      - master  # 当你推送到 master 分支时触发构建
+      - master  # 你是用 master 而不是 main 分支
 
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -22,19 +21,20 @@ jobs:
       - name: Install Hexo CLI
         run: npm install -g hexo-cli
 
-      #- name: Setup working directory
-       # run: cd blog
-        #working-directory: blog
-
       - name: Install dependencies
         run: npm install
         working-directory: blog
 
+      - name: Clean old files
+        run: hexo clean
+        working-directory: blog
+
       - name: Generate static files
         run: hexo generate
+        working-directory: blog
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./blog/public
