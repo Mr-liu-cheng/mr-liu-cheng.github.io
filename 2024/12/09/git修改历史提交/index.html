@@ -1,0 +1,524 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>git修改历史提交 | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="reset">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git修改历史提交">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="reset">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2024-12-09T20:06:23.000Z">
+<meta property="article:modified_time" content="2024-12-25T14:28:12.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'git修改历史提交',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">git修改历史提交</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">git修改历史提交</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-09T20:06:23.000Z" title="发表于 2024-12-09 20:06:23">2024-12-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-25T14:28:12.000Z" title="更新于 2024-12-25 14:28:12">2024-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/git/">git</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><h1 id="git-reset命令"><a href="#git-reset命令" class="headerlink" title="git reset命令"></a>git reset命令</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft 29f9bbd77da69902335cad77a12eac7b022b9f63</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.io//image-1.png"><br><code>git reset --soft</code> 命令是 Git 中的一个强大工具，它可以用于回退到某个特定的提交，同时保留文件的修改内容。这里是对该命令的详细解释：</p>
+<h2 id="命令结构"><a href="#命令结构" class="headerlink" title="命令结构"></a>命令结构</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft &lt;commit-hash&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>git reset</code> 是 Git 的一个基本命令，用于将当前的分支回退到指定的提交，并调整索引和工作目录中的内容。</li>
+<li><code>--soft</code> 是 <code>git reset</code> 的一个选项，决定了在回退时如何处理文件的状态。<code>--soft</code> 会将 <code>HEAD</code> 移动到指定的 commit，但 <strong>不会修改工作目录</strong>  和 <strong>索引</strong> （也就是暂存区），因此你仍然可以看到文件的修改。</li>
+</ul>
+<p><strong>各部分的解释：</strong></p>
+<ol>
+<li><strong><code>&lt;commit-hash&gt;</code></strong> ：</li>
+</ol>
+<ul>
+<li><code>&lt;commit-hash&gt;</code> 是你想回退到的 commit 的哈希值。可以是一个完整的哈希（如 <code>29f9bbd77da69902335cad77a12eac7b022b9f63</code>）或者它的前几位字符（例如，<code>29f9bbd</code>）。<code>git log</code> 可以帮助你查找这个哈希值。</li>
+</ul>
+<ol start="2">
+<li><strong><code>--soft</code> 选项</strong> ：</li>
+</ol>
+<ul>
+<li><code>--soft</code> 选项使得 Git <strong>只移动 HEAD</strong> ，即将当前分支指针（HEAD）回退到指定的 commit，但 <strong>保留工作目录和暂存区的内容不变</strong> 。换句话说，你的文件更改不会丢失，修改内容仍然会保留在暂存区。</li>
+<li>如果你有一些修改没有提交，<code>git reset --soft</code> 会将这些修改<strong>保留</strong> ，并将它们放回暂存区，让你可以再次提交。</li>
+</ul>
+<p><strong>具体的效果：</strong></p>
+<ol>
+<li><strong><code>HEAD</code> 会回退</strong> ：这会将当前分支的 HEAD 指针（即当前正在工作的提交）指向指定的 commit。</li>
+<li><strong>工作目录不变</strong> ：你的工作目录中的文件不会被修改，意味着所有修改都会被保留，你的文件内容依然存在。</li>
+<li><strong>暂存区不变</strong> ：所有已暂存的文件也会被保留，意味着如果你之前用 <code>git add</code> 添加了修改，那么这些修改依然会保留在暂存区。</li>
+</ol>
+<p><strong>举个例子：</strong></p>
+<p>假设你有如下提交历史：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">commit</span> a1b2c3d <span class="operator">-</span> 最新的提交</span><br><span class="line"><span class="keyword">commit</span> <span class="number">29</span>f9bbd <span class="operator">-</span> 需要回退到的提交</span><br><span class="line"><span class="keyword">commit</span> d4e5f6g <span class="operator">-</span> 更早的提交</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果你执行 <code>git reset --soft 29f9bbd77da69902335cad77a12eac7b022b9f63</code>，这会发生以下变化：<ul>
+<li><strong><code>HEAD</code></strong>  会指向 <code>29f9bbd</code> 提交，即回到你指定的提交。</li>
+<li><strong>工作目录</strong>  保持不变，你的文件内容依然会保留。</li>
+<li><strong>暂存区</strong>  也保持不变，你之前 <code>git add</code> 的修改仍然会保留。</li>
+</ul>
+</li>
+</ul>
+<p>这样，你就可以修改代码并重新提交，而不丢失之前的修改。</p>
+<p><strong>常见的用法：</strong></p>
+<ul>
+<li><strong>撤销最近的提交并保留修改</strong> ：假设你做了一个提交，但发现需要修改其中的内容，你可以使用 <code>git reset --soft HEAD^</code>（<code>HEAD^</code> 是指上一个提交）。这会撤销最近的提交，并保留你工作目录和暂存区的内容，允许你重新修改并提交。</li>
+</ul>
+<p><strong>总结：</strong></p>
+<ul>
+<li><code>git reset --soft &lt;commit-hash&gt;</code> 会将 <code>HEAD</code> 回退到指定的 commit，但 <strong>保留文件内容和暂存区的修改</strong> 。这适用于想要撤销某个提交，但又不希望丢失工作进度的情况。</li>
+<li>使用此命令时，你可以修改或更新暂存区的文件，再次进行提交。</li>
+</ul>
+<h2 id="reset-三种模式"><a href="#reset-三种模式" class="headerlink" title="reset 三种模式"></a><code>reset</code> <a target="_blank" rel="noopener" href="https://x.zhixing.co/devops/the-differences-and-usages-of-3-modes-git-reset/">三种模式</a></h2><p>分别是 <code>--soft</code>、<code>--mixed</code> 和 <code>--hard</code>，它们的作用和影响不同。下面是对每种模式的详细讲解：<br><img src="/.io//image.png"></p>
+<ol>
+<li><strong><code>git reset --soft &lt;commit&gt;</code></strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong> ：将 <code>HEAD</code> 指针回退到指定的 commit，但 <strong>不更改工作目录和暂存区</strong> 。</li>
+<li><strong>效果</strong> ：<ul>
+<li><code>HEAD</code> 回退到指定的提交，即当前分支指针会指向指定的提交。</li>
+<li><strong>工作目录（Working Directory）</strong>  不变，文件的内容保留不变。</li>
+<li><strong>暂存区（Staging Area）</strong>  保持不变，之前已经暂存的文件仍然存在于暂存区。</li>
+</ul>
+</li>
+<li><strong>使用场景</strong> ：<ul>
+<li>用于撤销最后一次提交并修改其中的内容，但保留文件更改和暂存区内容。适合你想重新提交修改内容时使用。</li>
+</ul>
+</li>
+<li><strong>示例</strong> ：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --soft HEAD~1</span><br></pre></td></tr></table></figure>
+
+<p>这个命令将 HEAD 回退到上一个提交（<code>HEAD~1</code>），但是保留当前工作目录和暂存区中的修改。你可以编辑文件、重新暂存并提交。</p>
+<ol start="2">
+<li><strong><code>git reset --mixed &lt;commit&gt;</code></strong>  （默认选项）</li>
+</ol>
+<ul>
+<li><strong>作用</strong> ：将 <code>HEAD</code> 回退到指定的 commit，并且 <strong>更新暂存区</strong> （即撤销暂存），但 <strong>不更改工作目录</strong> 。</li>
+<li><strong>效果</strong> ：<ul>
+<li><code>HEAD</code> 回退到指定的提交。</li>
+<li><strong>工作目录</strong>  不变，文件内容保留不变。</li>
+<li><strong>暂存区（Staging Area）</strong>  被更新为与指定 commit 的内容一致。也就是说，撤销所有已经 <code>git add</code> 的文件，将它们从暂存区中移除，但文件内容仍然保持在工作目录中。</li>
+</ul>
+</li>
+<li><strong>使用场景</strong> ：<ul>
+<li>用于撤销提交并取消暂存文件，但你仍然想保留文件修改。适用于需要修改代码但不想保留当前暂存区修改的场景。</li>
+</ul>
+</li>
+<li><strong>示例</strong> ：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --mixed HEAD~1</span><br></pre></td></tr></table></figure>
+
+<p>这个命令将 HEAD 回退到上一个提交，并且从暂存区移除修改，但文件内容仍然保留。相当于撤销最近的 <code>git add</code> 操作。</p>
+<ol start="3">
+<li><strong><code>git reset --hard &lt;commit&gt;</code></strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong> ：将 <code>HEAD</code>、<strong>暂存区</strong>  和 <strong>工作目录</strong>  都回退到指定的 commit。</li>
+<li><strong>效果</strong> ：<ul>
+<li><code>HEAD</code> 回退到指定的提交。</li>
+<li><strong>工作目录</strong>  会被重置为指定 commit 的内容，所有未提交的修改（无论是暂存区的还是工作目录的）都会被丢弃。</li>
+<li><strong>暂存区</strong>  也会被重置，撤销所有已暂存的文件。</li>
+</ul>
+</li>
+<li><strong>使用场景</strong> ：<ul>
+<li>用于彻底放弃当前的修改，回到某个提交状态。适用于你想完全撤销修改并且不保留任何更改时使用。</li>
+</ul>
+</li>
+<li><strong>示例</strong> ：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git reset --hard HEAD~1</span><br></pre></td></tr></table></figure>
+
+<p>这个命令会将 HEAD 回退到上一个提交，并且<strong>彻底丢弃</strong> 工作目录和暂存区中的所有修改。<strong>注意</strong> ：此操作无法恢复，慎重使用！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>HEAD</th>
+<th>工作目录</th>
+<th>暂存区</th>
+<th>应用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>soft</td>
+<td>回退到指定 commit</td>
+<td>保持不变</td>
+<td>保持不变</td>
+<td>用于撤销提交并重新提交，保留修改和暂存区内容</td>
+</tr>
+<tr>
+<td>mixed</td>
+<td>回退到指定 commit</td>
+<td>保持不变</td>
+<td>更新为指定 commit 内容</td>
+<td>用于撤销提交并取消暂存，保留工作目录的内容</td>
+</tr>
+<tr>
+<td>hard</td>
+<td>回退到指定 commit</td>
+<td>重置为指定 commit 内容</td>
+<td>重置为指定 commit 内容</td>
+<td>用于彻底丢弃修改，回到某个 commit 状态</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th><img src="/.io//image-2.png"></th>
+<th><img src="/.io//image-3.png"></th>
+<th><img src="/.io//image-4.png"></th>
+</tr>
+</thead>
+</table>
+<p><strong>适用场景举例：</strong></p>
+<ul>
+<li><strong><code>--soft</code></strong> ：你想撤销最近的提交，但不丢失文件修改，准备重新提交。</li>
+<li><strong><code>--mixed</code></strong> ：你想撤销提交并取消暂存，但仍然保留修改，进行后续编辑。</li>
+<li><strong><code>--hard</code></strong> ：你想丢弃所有本地的修改并回到某个提交的状态，彻底放弃当前修改。</li>
+</ul>
+<p><code>每个选项的影响不同，选择时需要根据实际需求来决定。</code></p>
+<p><strong>git reset</strong> 会改变提交历史，建议不要在公共分支使用，如果在公共分支撤销提交可以使用 <strong>git revert</strong> ，它会保留记录。在前端开发中，如果修改只存在于本地，并且你确定不需要这些修改，可以使用 git reset 来快速清理。但如果修改已经推送到远程分支，或者你只是想撤销某个特定的提交，为了避免影响团队协作和代码历史的完整性，强烈建议使用 git revert。 尤其是在多人协作的项目中，revert 更安全可靠。</p>
+<p><strong>hard</strong> 模式不仅会丢失已提交的改动，还可能丢失本地未提交的改动，要慎重使用。</p>
+<h1 id="git-revert"><a href="#git-revert" class="headerlink" title="git revert"></a>git revert</h1><p>git revert是用于“反做”某一个版本，以达到撤销该版本的修改的目的。比如，我们commit了三个版本（版本一、版本二、 版本三），突然发现版本二不行（如：有bug），想要撤销版本二，但又不想影响撤销版本三的提交，就可以用 git revert 命令来反做版本二，生成新的版本四，这个版本四里会保留版本三的东西，但撤销了版本二的东西(test2)<br><img src="/.io//image-6.png"></p>
+<h1 id="revert-vs-reset"><a href="#revert-vs-reset" class="headerlink" title="revert vs reset"></a>revert vs reset</h1><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>git reset</th>
+<th>git revert</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>修改历史</td>
+<td>会修改分支历史</td>
+<td>不会修改分支历史，而是创建一个新的提交</td>
+</tr>
+<tr>
+<td>应用场景</td>
+<td>本地开发，未推送的修改</td>
+<td>已经推送的提交</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>相对低，可能会丢失提交</td>
+<td>相对高，保留完整的提交历史</td>
+</tr>
+<tr>
+<td>精确度</td>
+<td>可以回退到任意提交</td>
+<td>可以精确撤销某个提交的更改</td>
+</tr>
+<tr>
+<td>应用场景</td>
+<td>1.本地开发，还未推送: 当你提交了一些错误的更改，或者想放弃一些本地的修改，可以使用 reset 来撤销这些更改。2.修改提交历史: 例如，合并多个提交为一个，或者修改某个提交的message。3.放弃合并: 如果你在合并分支时遇到冲突，并且决定放弃合并，可以使用 reset 回到合并前的状态。</td>
+<td>1.已经推送的提交: 当你需要撤销一个已经推送到远程仓库的提交时，应该使用 revert，因为它不会修改已有的提交历史，避免了团队协作中的混乱。2.只想撤销某个特定提交: revert 可以精确地撤销某个提交的更改，而不会影响其他提交。</td>
+</tr>
+</tbody></table>
+<p>推荐：</p>
+<p><a target="_blank" rel="noopener" href="https://x.zhixing.co/devops/the-differences-and-usages-of-git-merge-rebase/">Git merge &amp; rebase 区别和用法</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/">https://mr-liu-cheng.github.io/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/git/">git</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/" title="hexo 路径表示"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">hexo 路径表示</div></div><div class="info-2"><div class="info-item-1">hexo 路径表示(绝对路径和相对路径)</div></div></div></a><a class="pagination-related" href="/2024/12/11/git%E5%AD%A6%E4%B9%A0/" title="git学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">git学习</div></div><div class="info-2"><div class="info-item-1">流程图  git文件的三种状态已修改(modified)已经修改了工作区的某些文件。 已暂存(staged)已经执行了add操作，但还没有提交，只是暂存在提交清单里。 已提交(commited)已经提交到本地仓库里，但还没push到远端仓库。参考资料 </div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/12/11/git%E5%AD%A6%E4%B9%A0/" title="git学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-11</div><div class="info-item-2">git学习</div></div><div class="info-2"><div class="info-item-1">流程图  git文件的三种状态已修改(modified)已经修改了工作区的某些文件。 已暂存(staged)已经执行了add操作，但还没有提交，只是暂存在提交清单里。 已提交(commited)已经提交到本地仓库里，但还没push到远端仓库。参考资料 </div></div></div></a><a class="pagination-related" href="/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/" title="git无法访问外网"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-31</div><div class="info-item-2">git无法访问外网</div></div><div class="info-2"><div class="info-item-1">事情经过使用vscode git 提交代码和 hexo d时 莫名其妙出现 github ssh 22端口无法访问的情况： 尝试过切换成443端口使用https访问远程，但是github客户端可以访问 怀疑是网络问题，没添加代理： 给vscode添加代理给git添加代理 怀疑clash for windows 没开系统代理或者规则错误： 开启 system proxy启用 global 规则 使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。 使用git bash clone 远程仓库一般都是没问题的，但是还是失败了， 致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置， 找到罪魁祸首是：tun mode  Clash for Windows 的 TUN 模式是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明： 什么是 TUN 模式？TUN...</div></div></div></a><a class="pagination-related" href="/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="自建git服务器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-08</div><div class="info-item-2">自建git服务器</div></div><div class="info-2"><div class="info-item-1">自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab/Gitea）和简单搭建裸仓库。</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#git-reset%E5%91%BD%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">git reset命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">命令结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reset-%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">reset 三种模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#git-revert"><span class="toc-number">2.</span> <span class="toc-text">git revert</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#revert-vs-reset"><span class="toc-number">3.</span> <span class="toc-text">revert vs reset</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/12/GitHub%20action%20%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/" title="GitHub action 自动发布博客">GitHub action 自动发布博客</a><time datetime="2025-05-12T14:16:02.000Z" title="发表于 2025-05-12 14:16:02">2025-05-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/" title="Jenkins 游戏后端自动化部署流程">Jenkins 游戏后端自动化部署流程</a><time datetime="2025-05-09T11:20:13.000Z" title="发表于 2025-05-09 11:20:13">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/" title="Markdown 语法">Markdown 语法</a><time datetime="2025-05-09T11:20:13.000Z" title="发表于 2025-05-09 11:20:13">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/08/GitHub%20+%20CDN/" title="GitHub + CDN">GitHub + CDN</a><time datetime="2025-05-08T14:16:02.000Z" title="发表于 2025-05-08 14:16:02">2025-05-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/" title="GitHub Actions 没有触发的核心原因">GitHub Actions 没有触发的核心原因</a><time datetime="2025-05-08T14:16:02.000Z" title="发表于 2025-05-08 14:16:02">2025-05-08</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'e18a89befc8d02f7a1d3d4417bfa443e'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

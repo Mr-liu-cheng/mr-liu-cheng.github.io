@@ -1,0 +1,787 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Game Framework流程 | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="Game Framework 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下： 教程：  花桑GameFramework解析 烟雨迷离半世殇GF教程 烟雨迷离半世殇GF视频教程 GF API 手册 常见问题 源码分析  参考项目：  GF官方（包涵GameFrameWork 源码，UnityGameFrame">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Game Framework流程">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="Game Framework 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下： 教程：  花桑GameFramework解析 烟雨迷离半世殇GF教程 烟雨迷离半世殇GF视频教程 GF API 手册 常见问题 源码分析  参考项目：  GF官方（包涵GameFrameWork 源码，UnityGameFrame">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2025-02-05T10:09:39.000Z">
+<meta property="article:modified_time" content="2025-02-05T10:09:39.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Game Framework流程',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Game Framework流程</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Game Framework流程</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-02-05T10:09:39.000Z" title="发表于 2025-02-05 10:09:39">2025-02-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-02-05T10:09:39.000Z" title="更新于 2025-02-05 10:09:39">2025-02-05</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p> <a target="_blank" rel="noopener" href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
+<p><strong>教程：</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/426136370">花桑GameFramework解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.lfzxb.top/gameframework-all/">烟雨迷离半世殇GF教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/medialist/detail/ml759678145">烟雨迷离半世殇GF视频教程</a></li>
+<li><a target="_blank" rel="noopener" href="https://gameframework.cn/api/index.html">GF API 手册</a></li>
+<li><a target="_blank" rel="noopener" href="https://gameframework.cn/faq/">常见问题</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_26999509/article/details/102758769?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522f6a6e8709f22cf67742712f866f9e7f4%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=f6a6e8709f22cf67742712f866f9e7f4&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-102758769-null-null.nonecase&utm_term=gameframework&spm=1018.2226.3001.4450">源码分析</a></li>
+</ul>
+<p><strong>参考项目：</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/EllanJiang">GF官方</a>（包涵GameFrameWork 源码，UnityGameFrameWork Package， StarForce 示例工程）</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo?tab=readme-ov-file">花桑塔防游戏</a></li>
+</ul>
+<p><strong>导入插件：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/EllanJiang/UnityGameFramework">下载</a></li>
+<li>解压到游戏 <code>Assets 父级</code>目录下，避免污染 Assets,文件中的框架被封装成dll如下<img src="/.io//image-1.png">要想阅读源码<a target="_blank" rel="noopener" href="https://github.com/EllanJiang/GameFramework/">跳转至此</a></li>
+<li>手动修改 package.json 为”version”: “1.0.0” ，否则会报错：<br>导入插件报错：Cannot perform upm operation: Unable to add package， version 字段不符合 Semantic Versioning（语义化版本） 规范。</li>
+<li>保存文件，然后重新尝试导入。</li>
+</ol>
+<p><strong>源码导入：</strong></p>
+<blockquote>
+<p>Q：如何把 GameFramework.dll 换成源码调试和运行？</p>
+</blockquote>
+<blockquote>
+<p>A：首先，强烈建议保持 GameFramework.dll 的现状而不是更换为代码，以防止开发过程中错误的进行修改。如果是想调试其中的代码，可以考虑使用源码自行编译 dll，并连同 pdb 文件覆盖到原有目录，即可跳转进入 dll 内的函数。</p>
+</blockquote>
+<p>如果一定要更换源码，按以下步骤进行：</p>
+<ul>
+<li>请先删除掉原来的 GameFramework.dll</li>
+<li>将 Game Framework 源码目录拷贝至GameFramework.dll所在的目录下，并在此目录中增加 GameFramework.asmdef 文件（注意需要勾选unsafe选项）。</li>
+<li>然后让 UnityGameFramework.Runtime.asmdef 依赖 GameFramework.asmdef，让 UnityGameFramework.Editor.asmdef 同时依赖 GameFramework.asmdef 和 UnityGameFramework.Runtime.asmdef 即可。Runtime.asmdef 文件通常位于 UnityGameFramework&#x2F;Scripts&#x2F;Runtime 目录下，而 UnityGameFramework.Editor.asmdef 文件通常位于 UnityGameFramework&#x2F;Scripts&#x2F;Editor 目录下。</li>
+</ul>
+<h2 id="Game-Framework-由哪几部分组成？"><a href="#Game-Framework-由哪几部分组成？" class="headerlink" title="Game Framework 由哪几部分组成？"></a>Game Framework 由哪几部分组成？</h2><p>完整的 Game Framework 包含三部分：</p>
+<ul>
+<li>GameFramework – 封装基础游戏逻辑，如数据管理、资源管理、文件系统、对象池、有限状态机、本地化、事件、实体、网络、界面、声音等，此部分逻辑实现不依赖于 Unity 引擎，以程序集的形式提供。</li>
+<li>UnityGameFramework.Runtime – 依赖 UnityEngine.dll 进行对 GameFramework.dll 的补充实现。为了方便兼容 Unity 的各个版本，此部分已经以代码的形式包含在 Unity 插件中。</li>
+<li>UnityGameFramework.Editor – 依赖 UnityEditor.dll 进行对工具、Inspector 的实现。为了方便兼容 Unity 的各个版本，此部分已经以代码的形式包含在 Unity 插件中。</li>
+</ul>
+<h2 id="Game-Framework-框架流程"><a href="#Game-Framework-框架流程" class="headerlink" title="Game Framework 框架流程"></a><strong>Game Framework 框架流程</strong></h2><h3 id="1-启动流程"><a href="#1-启动流程" class="headerlink" title="1. 启动流程"></a><strong>1. 启动流程</strong></h3><ol>
+<li><p><strong>入口方法</strong>  </p>
+<ul>
+<li><code>GameEntry.cs</code> 作为游戏的入口，初始化各个核心模块。</li>
+<li>通常在 <code>Awake()</code> 方法中完成框架初始化。</li>
+</ul>
+</li>
+<li><p><strong>初始化框架</strong>  </p>
+<ul>
+<li><code>GameFramework.Init()</code>，内部初始化各个子模块：<ul>
+<li><strong>日志系统</strong></li>
+<li><strong>事件系统</strong></li>
+<li><strong>数据表管理</strong></li>
+<li><strong>资源管理</strong></li>
+<li><strong>网络管理</strong></li>
+<li><strong>UI管理</strong></li>
+<li><strong>音频管理</strong></li>
+<li><strong>实体管理</strong></li>
+<li><strong>场景管理</strong></li>
+<li><strong>配置管理</strong></li>
+<li><strong>本地化管理</strong></li>
+</ul>
+</li>
+<li>这些模块通常继承 <code>GameFrameworkModule</code>，在 <code>GameEntry</code> 中注册。</li>
+</ul>
+</li>
+<li><p><strong>加载配置</strong></p>
+<ul>
+<li>读取本地配置文件（如 <code>Config.json</code>），设置游戏基本参数。</li>
+<li>可能从 <code>PlayerPrefs</code> 或服务器拉取用户数据。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="2-资源管理"><a href="#2-资源管理" class="headerlink" title="2. 资源管理"></a><strong>2. 资源管理</strong></h3><ol>
+<li><p><strong>加载资源</strong></p>
+<ul>
+<li>依赖 <code>ResourceComponent</code> 进行加载，支持：<ul>
+<li><strong>本地 AssetBundle</strong></li>
+<li><strong>远程下载</strong></li>
+</ul>
+</li>
+<li>采用异步加载，防止主线程卡顿：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ResourceComponent.LoadAssetAsync(<span class="string">&quot;path/to/asset&quot;</span>, OnLoadComplete);</span><br></pre></td></tr></table></figure></li>
+<li>支持 <strong>热更新</strong>（可与 <code>VersionCheckComponent</code> 结合）。</li>
+</ul>
+</li>
+<li><p><strong>对象池管理</strong></p>
+<ul>
+<li><strong>UI 界面</strong>、<strong>实体</strong>、<strong>特效</strong>等资源可通过 <strong>对象池</strong> 管理，提高性能：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.ObjectPool.Spawn(<span class="string">&quot;Enemy&quot;</span>);</span><br><span class="line">GameEntry.ObjectPool.Despawn(enemy);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-游戏场景管理"><a href="#3-游戏场景管理" class="headerlink" title="3. 游戏场景管理"></a><strong>3. 游戏场景管理</strong></h3><ol>
+<li><p><strong>场景加载</strong></p>
+<ul>
+<li><code>GameEntry.Scene.LoadScene(&quot;MainScene&quot;);</code></li>
+<li>可异步加载 <code>AsyncOperation</code>，防止卡顿：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Scene.LoadSceneAsync(<span class="string">&quot;BattleScene&quot;</span>, OnSceneLoaded);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>切换场景</strong></p>
+<ul>
+<li>场景切换前可触发 <strong>存档</strong>、<strong>释放资源</strong>、<strong>播放过场动画</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="4-UI管理"><a href="#4-UI管理" class="headerlink" title="4. UI管理"></a><strong>4. UI管理</strong></h3><ol>
+<li><p><strong>打开 UI</strong></p>
+<ul>
+<li>通过 <code>UIComponent</code> 加载 UI 预制体：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.UI.OpenUIForm(UIFormId.MainMenu);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>关闭 UI</strong></p>
+<ul>
+<li><code>GameEntry.UI.CloseUIForm(mainMenuForm);</code></li>
+<li>UI 通过 <code>EventComponent</code> 监听数据变更，支持 MVC 结构。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="5-事件与消息系统"><a href="#5-事件与消息系统" class="headerlink" title="5. 事件与消息系统"></a><strong>5. 事件与消息系统</strong></h3><ol>
+<li><p><strong>订阅事件</strong></p>
+<ul>
+<li>采用 <strong>事件驱动</strong> 模式，减少组件间耦合：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Event.Subscribe(EventId.PlayerDead, OnPlayerDead);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>触发事件</strong></p>
+<ul>
+<li>组件间通过事件通信：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Event.Fire(<span class="keyword">this</span>, <span class="keyword">new</span> PlayerDeadEventArgs());</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>消息传递</strong></p>
+<ul>
+<li>适用于 <strong>网络同步</strong>，例如：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Network.Send(<span class="keyword">new</span> PlayerMovePacket());</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="6-实体（角色、怪物）管理"><a href="#6-实体（角色、怪物）管理" class="headerlink" title="6. 实体（角色、怪物）管理"></a><strong>6. 实体（角色、怪物）管理</strong></h3><ol>
+<li><p><strong>创建实体</strong></p>
+<ul>
+<li>通过 <code>EntityComponent</code> 生成角色、敌人、NPC 等：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Entity.ShowEntity(EntityId.Player, <span class="string">&quot;Assets/Player.prefab&quot;</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>实体回收</strong></p>
+<ul>
+<li><code>GameEntry.Entity.HideEntity(player);</code></li>
+<li>结合对象池减少资源消耗。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="7-数据存储"><a href="#7-数据存储" class="headerlink" title="7. 数据存储"></a><strong>7. 数据存储</strong></h3><ol>
+<li><p><strong>本地存储</strong></p>
+<ul>
+<li>采用 <code>PlayerPrefs</code> 存储 <strong>简单数据</strong>：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PlayerPrefs.SetInt(<span class="string">&quot;HighScore&quot;</span>, <span class="number">1000</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>存档管理</strong></p>
+<ul>
+<li>复杂数据采用 <code>SaveComponent</code> 或 <code>Json</code> 文件存储：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Save.SaveToFile(<span class="string">&quot;save.json&quot;</span>, saveData);</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="8-音效与BGM管理"><a href="#8-音效与BGM管理" class="headerlink" title="8. 音效与BGM管理"></a><strong>8. 音效与BGM管理</strong></h3><ol>
+<li><p><strong>播放音效</strong></p>
+<ul>
+<li><code>GameEntry.Sound.PlaySound(&quot;Sound/Click&quot;);</code></li>
+</ul>
+</li>
+<li><p><strong>背景音乐</strong></p>
+<ul>
+<li><code>GameEntry.Sound.PlayMusic(&quot;Music/BattleTheme&quot;);</code></li>
+</ul>
+</li>
+<li><p><strong>音量控制</strong></p>
+<ul>
+<li><code>GameEntry.Sound.SetVolume(0.5f);</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="9-热更新（可选）"><a href="#9-热更新（可选）" class="headerlink" title="9. 热更新（可选）"></a><strong>9. 热更新（可选）</strong></h3><ol>
+<li><p><strong>检查版本</strong></p>
+<ul>
+<li><code>GameEntry.Version.CheckUpdate();</code></li>
+<li>若有更新，则下载新的资源并热加载。</li>
+</ul>
+</li>
+<li><p><strong>更新资源</strong></p>
+<ul>
+<li>采用 <strong>AssetBundle 或 Addressables</strong>：<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GameEntry.Resource.UpdateResources();</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="10-退出游戏"><a href="#10-退出游戏" class="headerlink" title="10. 退出游戏"></a><strong>10. 退出游戏</strong></h3><ol>
+<li><p><strong>游戏暂停</strong></p>
+<ul>
+<li><code>Time.timeScale = 0;</code></li>
+</ul>
+</li>
+<li><p><strong>存档并退出</strong></p>
+<ul>
+<li><code>GameEntry.Save.SaveAll();</code></li>
+<li><code>Application.Quit();</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>Game Framework 框架提供了一套完整的游戏开发流程：</p>
+<ol>
+<li><strong>初始化框架</strong></li>
+<li><strong>加载配置</strong></li>
+<li><strong>资源管理</strong></li>
+<li><strong>UI管理</strong></li>
+<li><strong>事件驱动</strong></li>
+<li><strong>实体管理</strong></li>
+<li><strong>数据存储</strong></li>
+<li><strong>音效管理</strong></li>
+<li><strong>热更新</strong></li>
+<li><strong>游戏退出</strong></li>
+</ol>
+<p>整个流程以 <strong>模块化架构</strong> 运行，降低耦合，提高开发效率。在实际项目中，可以根据需求扩展新的 <strong>组件（Component）</strong>，如 <strong>AI 系统</strong>、<strong>战斗系统</strong>、<strong>成就系统</strong> 等。</p>
+<p>如果你需要具体的代码实现，或者对某个模块有深入的问题，可以继续交流！😊</p>
+<h2 id="内置模块"><a href="#内置模块" class="headerlink" title="内置模块"></a>内置模块</h2><p>Game Framework，字面意思是游戏框架，基于Unity游戏引擎，将开发过程中常用的游戏模块封装起来，很大程度上规范了流程，提升了开发速度，保证了产品质量。</p>
+<p>游戏框架提供了以下19个内置模块，后续还将开发更多模块供游戏开发者使用。： </p>
+<ol>
+<li><p><strong>Config</strong>——保存一些全局的只读游戏配置，比如玩家的初始速度，游戏的初始音量等。  </p>
+</li>
+<li><p><strong>数据节点</strong>——在树结构中保存任意类型的数据，以便在游戏运行时管理各种数据。  </p>
+</li>
+<li><p><strong>数据表</strong>——用于以预配置表格（如 Microsoft Excel 表格）的形式调用游戏数据。表格的格式可以自定义。  </p>
+</li>
+<li><p><strong>调试器</strong>——在 Unity 编辑器或开发版本中运行游戏时显示调试器窗口，以方便查看运行时日志和调试消息。用户可以将自己的功能注册到调试器窗口并方便地使用它们。  </p>
+</li>
+<li><p><strong>下载</strong>——提供下载文件的功能。用户可以自由设置同时使用多少个下载器。  </p>
+</li>
+<li><p><strong>实体</strong>——提供管理实体和实体组的能力，其中实体定义为游戏场景中动态创建的任何对象。它显示或隐藏实体，将一个实体附加到另一个实体（例如武器、马匹或抢夺另一个实体）。实体可以避免在使用后立即被销毁，因此可以回收再利用。  </p>
+</li>
+<li><p><strong>事件</strong>——为游戏逻辑提供触发或观察事件的机制。游戏框架中的许多模块在操作后都会触发事件，观察这些事件将在很大程度上解耦游戏逻辑模块。用户也可以定义自己的游戏逻辑事件。  </p>
+</li>
+<li><p><strong>文件系统</strong>——基于磁盘概念的虚拟文件系统，将分散的文件集中管理，优化资源加载时的内存分配，甚至可以分段加载资源，大大提升资源加载的性能。  </p>
+</li>
+<li><p><strong>FSM</strong>——提供创建、使用和销毁有限状态机的能力。对于某些类似状态机的游戏逻辑来说，使用此模块是个不错的选择。  </p>
+</li>
+<li><p><strong>本地化</strong>——提供游戏本地化的能力。游戏框架不仅支持文本的本地化，还支持各种资产的本地化。例如，游戏中的烟花效果可以本地化为各种版本，这样玩家在中文版中会看到“新年好”的效果，而在英文版中则会看到“Happy New Year”的效果。  </p>
+</li>
+<li><p><strong>网络</strong>——提供套接字连接，目前支持 TCP，并且 IPv4 和 IPv6 均有效。用户可以同时与不同的服务器建立多个连接。例如，用户可以连接到普通游戏服务器和另一个用于语音聊天的服务器。如果用户想要使用 ProtoBuf 等协议库，则可以继承并实现“Packet”类。  </p>
+</li>
+<li><p><strong>对象池</strong>——提供将对象缓存在池中的能力。避免频繁创建和销毁游戏对象，从而提高游戏性能。游戏框架本身使用对象池，用户可以方便地创建和管理自己的池。  </p>
+</li>
+<li><p><strong>程序</strong>——实际上是游戏整个生命周期的 FSM。通过程序来解耦不同的游戏状态是一个很好的习惯。对于网络游戏，你可能需要检查资源、更新资源、检查服务器列表、选择服务器、登录服务器和创建头像的程序。对于独立游戏，你可能需要在菜单和实际游戏玩法之间切换。用户可以通过简单地子类化和实现“ProcedureBase”类来添加程序。  </p>
+</li>
+<li><p><strong>Resource</strong>——只提供异步接口来加载资源。为了更好的游戏体验，我们不推荐使用同步方式，Game Framework 本身也使用了一套完整的异步资源加载体系。我们异步加载所有内容，包括简单的数据表、本地化文本，以及复杂的实体、场景、UI 等。同时，Game Framework 提供了默认的内存管理策略（当然，您也可以定义自己的策略）。大多数情况下，在使用 GameObject 实例时，您甚至不需要调用“Instantiate”或“Destroy”。  </p>
+</li>
+<li><p><strong>场景</strong>——提供管理场景的功能。它支持同时加载多个场景，并且允许用户随时卸载场景。因此可以轻松实现场景的部分加载&#x2F;卸载。  </p>
+</li>
+<li><p><strong>设置</strong>——通过封装 UnityEngine.PlayerPrefs 或将数据直接保存到磁盘，将玩家数据存储在键值对中。  </p>
+</li>
+<li><p><strong>声音</strong>——提供管理声音和声音组的功能。用户可以设置音频剪辑的属性，例如音量、剪辑是 2D 还是 3D，甚至可以将剪辑绑定到某个实体以跟随其位置。  </p>
+</li>
+<li><p><strong>UI</strong>——提供管理用户界面和 UI 组的功能，例如显示或隐藏、激活或停用以及深度更改。无论用户使用 Unity 内置的 uGUI 还是其他 UI 插件（例如 NGUI），他只需子类化“UIFormLogic”并实现自己的 UI 逻辑。UI 可以避免在使用后立即被销毁，从而被回收再利用。  </p>
+</li>
+<li><p><strong>Web请求</strong>——提供短连接特性，支持 GET 和 POST 方法向服务器发送请求并获取响应数据，并允许用户同时向不同的服务器发送请求。</p>
+</li>
+</ol>
+<h2 id="流程模块"><a href="#流程模块" class="headerlink" title="流程模块"></a>流程模块</h2><p><img src="/.io//image.png"></p>
+<p>这些类文件是 <strong>Unity Game Framework (UGF)</strong> 中的 <strong>Procedure</strong>（流程）模块，通常用于管理游戏的状态和流程控制。以下是每个类的大致作用：</p>
+<ol>
+<li><p><strong>ProcedureBase.cs</strong>  </p>
+<ul>
+<li>流程基类，定义所有流程的基础行为和接口。  </li>
+<li>包含流程的初始化、进入、更新、离开等生命周期方法。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureChangeScene.cs</strong>  </p>
+<ul>
+<li>处理场景切换的流程。  </li>
+<li>常用于在游戏关卡或场景间切换时，加载新场景或卸载旧场景。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureCheckResources.cs</strong>  </p>
+<ul>
+<li>检查游戏资源的完整性和可用性。  </li>
+<li>通常在启动游戏时进行资源校验，以确保游戏能正常运行。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureCheckVersion.cs</strong>  </p>
+<ul>
+<li>检查游戏版本的流程。  </li>
+<li>用于版本更新检测，如与服务器进行版本对比，提示用户更新。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureInitResources.cs</strong>  </p>
+<ul>
+<li>初始化资源的流程。  </li>
+<li>在游戏启动时，预加载或初始化必要的资源。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureLaunch.cs</strong>  </p>
+<ul>
+<li>启动流程。  </li>
+<li>通常是游戏开始的第一个流程，进行基础环境设置，如读取配置、初始化日志等。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureMain.cs</strong>  </p>
+<ul>
+<li>主游戏流程。  </li>
+<li>控制游戏主逻辑的入口，如游戏运行、暂停、恢复等。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureMenu.cs</strong>  </p>
+<ul>
+<li>菜单流程。  </li>
+<li>用于管理游戏主菜单的显示、隐藏及其交互逻辑。</li>
+</ul>
+</li>
+<li><p><strong>ProcedurePreload.cs</strong>  </p>
+<ul>
+<li>预加载流程。  </li>
+<li>提前加载一些常用的资源或场景，以减少游戏中的加载等待时间。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureSplash.cs</strong>  </p>
+<ul>
+<li>启动画面流程。  </li>
+<li>控制启动画面的显示，如 Logo、版权信息等。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureUpdateResources.cs</strong>  </p>
+<ul>
+<li>资源更新流程。  </li>
+<li>检查并下载资源更新包，支持热更新。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureUpdateVersion.cs</strong>  </p>
+<ul>
+<li>版本更新流程。  </li>
+<li>处理游戏版本的更新，如强制更新、下载新版本等。</li>
+</ul>
+</li>
+<li><p><strong>ProcedureVerifyResources.cs</strong>  </p>
+<ul>
+<li>资源验证流程。  </li>
+<li>验证本地资源的完整性，如 MD5 校验，确保资源未被篡改。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="典型使用场景"><a href="#典型使用场景" class="headerlink" title="典型使用场景"></a><strong>典型使用场景</strong></h3><ol>
+<li><strong>游戏启动</strong>  <ul>
+<li>ProcedureLaunch → ProcedureCheckVersion → ProcedureUpdateVersion</li>
+</ul>
+</li>
+<li><strong>资源准备</strong>  <ul>
+<li>ProcedureCheckResources → ProcedureInitResources → ProcedurePreload</li>
+</ul>
+</li>
+<li><strong>主菜单</strong>  <ul>
+<li>ProcedureSplash → ProcedureMenu</li>
+</ul>
+</li>
+<li><strong>游戏过程</strong>  <ul>
+<li>ProcedureMain → ProcedureChangeScene → ProcedureMain</li>
+</ul>
+</li>
+<li><strong>资源更新</strong>  <ul>
+<li>ProcedureCheckResources → ProcedureUpdateResources → ProcedureVerifyResources</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>Procedure 模块</strong> 是 UGF 的核心，用于管理游戏的各个状态和流程，提供了一种解耦的方式来处理复杂的游戏逻辑。每个流程都可以单独编写、调试和维护，从而提高了开发效率和代码可维护性。</p>
+<h1 id="C-热更新与资源热更新的对应关系。"><a href="#C-热更新与资源热更新的对应关系。" class="headerlink" title="C# 热更新与资源热更新的对应关系。"></a><strong>C# 热更新与资源热更新的对应关系</strong>。</h1><p>下面我将详细说明如何通过 <strong>HybridCLR</strong> 和 <strong>UnityGameFramework</strong> 完整实现 <strong>C# 热更新与资源热更新的下载与加载</strong>，以及它们如何对应和协调工作。</p>
+<h3 id="1-C-热更新和资源热更新如何下载："><a href="#1-C-热更新和资源热更新如何下载：" class="headerlink" title="1. C# 热更新和资源热更新如何下载："></a><strong>1. C# 热更新和资源热更新如何下载：</strong></h3><h4 id="1-1-C-热更新的下载与加载"><a href="#1-1-C-热更新的下载与加载" class="headerlink" title="1.1 C# 热更新的下载与加载"></a><strong>1.1 C# 热更新的下载与加载</strong></h4><ol>
+<li><p><strong>下载新的程序集：</strong></p>
+<ul>
+<li><p>C# 代码热更新是通过更新程序集来实现的。新的程序集通常存储在服务器上，并且可以通过 <strong>HTTP 请求</strong> 来下载。</p>
+</li>
+<li><p>你可以使用 Unity 的 <code>UnityWebRequest</code> 来下载更新的程序集。</p>
+</li>
+</ul>
+<p>示例代码：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> HybridCLR;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotfixManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> hotfixAssemblyUrl = <span class="string">&quot;https://your-server.com/hotfix/HotfixAssembly.dll&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载热更新的程序集</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DownloadHotfixAssembly</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(hotfixAssemblyUrl);</span><br><span class="line">        request.SendWebRequest().completed += (asyncOp) =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">byte</span>[] assemblyBytes = request.downloadHandler.data;</span><br><span class="line">                LoadHotfixAssembly(assemblyBytes);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to download assembly: &quot;</span> + request.error);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加载热更新的程序集</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LoadHotfixAssembly</span>(<span class="params"><span class="built_in">byte</span>[] assemblyBytes</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 使用 HybridCLR 加载新的程序集</span></span><br><span class="line">        RuntimeLoader.LoadAssembly(assemblyBytes);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这段代码中，<code>DownloadHotfixAssembly</code> 方法使用 <code>UnityWebRequest.Get</code> 从服务器下载更新的程序集，下载完成后会将程序集的字节数据传递给 <code>LoadHotfixAssembly</code> 方法，使用 <strong>HybridCLR</strong> 的 <code>RuntimeLoader.LoadAssembly</code> 方法加载新的程序集。</li>
+</ul>
+</li>
+<li><p><strong>程序集加载后的代码更新：</strong></p>
+<ul>
+<li>下载并加载新的程序集后，你就可以跳转到新版本的 C# 代码并执行相应的热更新逻辑。此时，游戏中的运行时逻辑会被新的程序集替换。</li>
+</ul>
+</li>
+</ol>
+<h4 id="1-2-资源热更新的下载与加载"><a href="#1-2-资源热更新的下载与加载" class="headerlink" title="1.2 资源热更新的下载与加载"></a><strong>1.2 资源热更新的下载与加载</strong></h4><p>资源热更新的过程与 C# 热更新类似，也是通过下载新版本的资源文件来实现。资源可以通过 <strong>AssetBundles</strong>、<strong>Addressables</strong> 或自定义资源包的方式进行管理。</p>
+<ol>
+<li><p><strong>资源更新包下载：</strong></p>
+<ul>
+<li><p>通常资源热更新是基于版本控制的，在资源文件夹中会有一个 <code>version.txt</code> 或者 <code>resource_version.dat</code> 文件，记录着最新的资源版本。资源包会根据版本来下载。</p>
+</li>
+<li><p>使用 <code>UnityWebRequest</code> 下载新的资源包，并且使用 <code>AssetBundle</code> 或其他方法加载更新的资源。</p>
+</li>
+</ul>
+<p>示例代码：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ResourceManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> resourceUpdateUrl = <span class="string">&quot;https://your-server.com/updates/ResourcePack.assetbundle&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载更新的资源包</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DownloadResourcePack</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(resourceUpdateUrl);</span><br><span class="line">        request.SendWebRequest().completed += (asyncOp) =&gt;</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">byte</span>[] assetBundleData = request.downloadHandler.data;</span><br><span class="line">                LoadResource(assetBundleData);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to download resource pack: &quot;</span> + request.error);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加载下载的资源包</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LoadResource</span>(<span class="params"><span class="built_in">byte</span>[] assetBundleData</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        AssetBundle assetBundle = AssetBundle.LoadFromMemory(assetBundleData);</span><br><span class="line">        <span class="keyword">if</span> (assetBundle != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 加载资源</span></span><br><span class="line">            <span class="keyword">var</span> asset = assetBundle.LoadAsset&lt;GameObject&gt;(<span class="string">&quot;UpdatedResource&quot;</span>);</span><br><span class="line">            Instantiate(asset);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load asset bundle.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>加载资源包：</strong></p>
+<ul>
+<li><code>DownloadResourcePack</code> 方法下载最新版本的资源包（例如 <code>.assetbundle</code> 文件），然后通过 <code>AssetBundle.LoadFromMemory</code> 将其加载到内存中。</li>
+<li>使用 <code>assetBundle.LoadAsset&lt;T&gt;()</code> 来加载和实例化资源（比如新的模型或贴图）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="2-C-热更新与资源热更新的对应关系："><a href="#2-C-热更新与资源热更新的对应关系：" class="headerlink" title="2. C# 热更新与资源热更新的对应关系："></a><strong>2. C# 热更新与资源热更新的对应关系：</strong></h3><h4 id="2-1-如何保持-C-代码和资源的一致性："><a href="#2-1-如何保持-C-代码和资源的一致性：" class="headerlink" title="2.1 如何保持 C# 代码和资源的一致性："></a><strong>2.1 如何保持 C# 代码和资源的一致性：</strong></h4><ol>
+<li><p><strong>版本控制同步：</strong></p>
+<ul>
+<li>当你更新 C# 代码时，可能需要更新与之相关的资源（例如 UI 的新版本，新的场景或新模型）。同样，更新资源时也可能需要配套更新代码（如新的脚本逻辑或组件绑定）。</li>
+<li>你可以通过 <strong>版本号同步</strong> 来确保 C# 代码和资源的版本一致。通常，<strong>版本控制文件</strong>（例如 <code>version.txt</code> 或 <code>manifest.json</code>）会记录 C# 代码和资源的版本。</li>
+<li>在下载 C# 代码和资源时，首先检查当前版本和最新版本是否一致，如果不一致，则一起更新它们。</li>
+</ul>
+</li>
+<li><p><strong>热更新资源与代码的时序控制：</strong></p>
+<ul>
+<li>例如，在更新某个资源（如 <code>GameObject</code> 或 <code>UI</code>）时，可能需要相应的 C# 代码来支持这些资源的逻辑。通过在资源包中包含 <strong>资源版本和代码版本</strong>，确保这两者始终同步更新。</li>
+<li>在资源下载完成后，下载相应的 C# 热更新程序集，并应用到运行时。</li>
+</ul>
+</li>
+</ol>
+<h4 id="2-2-示例流程："><a href="#2-2-示例流程：" class="headerlink" title="2.2 示例流程："></a><strong>2.2 示例流程：</strong></h4><ol>
+<li><p><strong>检查版本：</strong></p>
+<ul>
+<li>客户端首先通过 <code>version.txt</code> 或类似文件检查当前的版本与服务器上资源和 C# 代码的版本。</li>
+<li>如果有更新，首先下载新的资源包。</li>
+</ul>
+</li>
+<li><p><strong>下载和加载 C# 热更新代码：</strong></p>
+<ul>
+<li>下载最新版本的 C# 热更新程序集（通过 HybridCLR），并加载到运行时。</li>
+</ul>
+</li>
+<li><p><strong>更新资源：</strong></p>
+<ul>
+<li>在加载了新的 C# 程序集后，下载新的资源包并加载更新后的资源。</li>
+</ul>
+</li>
+<li><p><strong>同步执行：</strong></p>
+<ul>
+<li>确保 <strong>C# 代码</strong> 和 <strong>资源</strong> 的版本是相互匹配的。比如，更新了一个 UI 组件的资源时，对应的 C# 脚本也需要同时更新，以保证逻辑正确。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-总结："><a href="#3-总结：" class="headerlink" title="3. 总结："></a><strong>3. 总结：</strong></h3><ul>
+<li><strong>C# 热更新</strong>：通过 HybridCLR 下载和加载更新的程序集，确保新的逻辑和功能生效。</li>
+<li><strong>资源热更新</strong>：通过下载并加载新的资源包（如 AssetBundle 或自定义资源格式），并将更新后的资源加载到游戏中。</li>
+<li><strong>同步更新</strong>：使用版本控制确保 <strong>C# 代码</strong> 和 <strong>资源</strong> 版本的一致性，避免因版本不匹配而导致的逻辑错误或资源问题。</li>
+</ul>
+<p>通过这种方式，你可以实现 <strong>灵活的热更新系统</strong>，无论是 <strong>C# 代码</strong> 还是 <strong>游戏资源</strong>，都能够根据需要动态更新，并确保两者的匹配和协调工作。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/">https://mr-liu-cheng.github.io/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/01/23/unity-%E6%89%93AB%E5%8C%85%E6%B5%81%E7%A8%8B/" title="unity 打AB包流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">unity 打AB包流程</div></div><div class="info-2"><div class="info-item-1">下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。  1. 打包流程概述 配置资源文件：  将需要打包的资源组织到指定目录中。 设置每个资源的 AssetBundle 名称。   打包 AssetBundles：  使用 Unity 提供的 BuildPipeline.BuildAssetBundles 方法，将资源打包成 .ab 文件。   生成版本文件：  记录所有打包生成的 .ab 文件及其校验值（MD5 或 SHA256）。 生成一个 JSON 格式的版本文件，包含版本号、资源文件名及校验值。   上传资源和版本文件：  将打包好的 .ab 文件和版本文件上传到服务器。     2. 实现步骤Step 1: 配置资源文件在 Unity 中为资源设置 AssetBundle 名称：  选中需要打包的资源（例如：Prefab、Texture）。 在 Inspector 面板中，设置 AssetBundle...</div></div></div></a><a class="pagination-related" href="/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/" title="unity插件导入方式"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">unity插件导入方式</div></div><div class="info-2"><div class="info-item-1">Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣在 Unity 中导入插件主要有两种方式：    UPM（Unity Package Manager）形式导入   传统 Package 形式（直接拷贝到 Assets/ 目录）  它们各有优势和适用场景，下面详细对比一下。    🔹 UPM 形式导入（Unity Package Manager）✅ 优势： 版本管理：可以通过 Packages/manifest.json 直接管理插件版本，方便回退和升级。   依赖管理：UPM 会自动解析插件的依赖项，避免手动安装额外的库或 DLL 文件。   项目更整洁：导入的插件存放在 Packages/ 目录下，不会污染 Assets/ 目录，使项目结构更清晰。   便捷更新：可以直接从 Unity Registry、Git 或本地路径安装和更新插件，不需要手动替换文件。   团队协作：Git 版本控制时，只需要提交 manifest.json，无需提交整个插件代码，减少代码库体积。  ❌ 缺点： 离线访问受限：如果插件是从 Unity Registry...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">52</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">14</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Game-Framework-%E7%94%B1%E5%93%AA%E5%87%A0%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">Game Framework 由哪几部分组成？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Game-Framework-%E6%A1%86%E6%9E%B6%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">Game Framework 框架流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">1. 启动流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">2. 资源管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%B8%B8%E6%88%8F%E5%9C%BA%E6%99%AF%E7%AE%A1%E7%90%86"><span class="toc-number">2.3.</span> <span class="toc-text">3. 游戏场景管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-UI%E7%AE%A1%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">4. UI管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%BA%8B%E4%BB%B6%E4%B8%8E%E6%B6%88%E6%81%AF%E7%B3%BB%E7%BB%9F"><span class="toc-number">2.5.</span> <span class="toc-text">5. 事件与消息系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%AE%9E%E4%BD%93%EF%BC%88%E8%A7%92%E8%89%B2%E3%80%81%E6%80%AA%E7%89%A9%EF%BC%89%E7%AE%A1%E7%90%86"><span class="toc-number">2.6.</span> <span class="toc-text">6. 实体（角色、怪物）管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-number">2.7.</span> <span class="toc-text">7. 数据存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E9%9F%B3%E6%95%88%E4%B8%8EBGM%E7%AE%A1%E7%90%86"><span class="toc-number">2.8.</span> <span class="toc-text">8. 音效与BGM管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-%E7%83%AD%E6%9B%B4%E6%96%B0%EF%BC%88%E5%8F%AF%E9%80%89%EF%BC%89"><span class="toc-number">2.9.</span> <span class="toc-text">9. 热更新（可选）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E9%80%80%E5%87%BA%E6%B8%B8%E6%88%8F"><span class="toc-number">2.10.</span> <span class="toc-text">10. 退出游戏</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%AE%E6%A8%A1%E5%9D%97"><span class="toc-number">4.</span> <span class="toc-text">内置模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E6%A8%A1%E5%9D%97"><span class="toc-number">5.</span> <span class="toc-text">流程模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">5.1.</span> <span class="toc-text">典型使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93-1"><span class="toc-number">5.2.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#C-%E7%83%AD%E6%9B%B4%E6%96%B0%E4%B8%8E%E8%B5%84%E6%BA%90%E7%83%AD%E6%9B%B4%E6%96%B0%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB%E3%80%82"><span class="toc-number"></span> <span class="toc-text">C# 热更新与资源热更新的对应关系。</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-C-%E7%83%AD%E6%9B%B4%E6%96%B0%E5%92%8C%E8%B5%84%E6%BA%90%E7%83%AD%E6%9B%B4%E6%96%B0%E5%A6%82%E4%BD%95%E4%B8%8B%E8%BD%BD%EF%BC%9A"><span class="toc-number">0.1.</span> <span class="toc-text">1. C# 热更新和资源热更新如何下载：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-C-%E7%83%AD%E6%9B%B4%E6%96%B0%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%8A%A0%E8%BD%BD"><span class="toc-number">0.1.1.</span> <span class="toc-text">1.1 C# 热更新的下载与加载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-%E8%B5%84%E6%BA%90%E7%83%AD%E6%9B%B4%E6%96%B0%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%8A%A0%E8%BD%BD"><span class="toc-number">0.1.2.</span> <span class="toc-text">1.2 资源热更新的下载与加载</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-C-%E7%83%AD%E6%9B%B4%E6%96%B0%E4%B8%8E%E8%B5%84%E6%BA%90%E7%83%AD%E6%9B%B4%E6%96%B0%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB%EF%BC%9A"><span class="toc-number">0.2.</span> <span class="toc-text">2. C# 热更新与资源热更新的对应关系：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-%E5%A6%82%E4%BD%95%E4%BF%9D%E6%8C%81-C-%E4%BB%A3%E7%A0%81%E5%92%8C%E8%B5%84%E6%BA%90%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7%EF%BC%9A"><span class="toc-number">0.2.1.</span> <span class="toc-text">2.1 如何保持 C# 代码和资源的一致性：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-%E7%A4%BA%E4%BE%8B%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="toc-number">0.2.2.</span> <span class="toc-text">2.2 示例流程：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">0.3.</span> <span class="toc-text">3. 总结：</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/12/GitHub%20action%20%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/" title="GitHub action 自动发布博客">GitHub action 自动发布博客</a><time datetime="2025-05-12T14:16:02.000Z" title="发表于 2025-05-12 14:16:02">2025-05-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/" title="Jenkins 游戏后端自动化部署流程">Jenkins 游戏后端自动化部署流程</a><time datetime="2025-05-09T11:20:13.000Z" title="发表于 2025-05-09 11:20:13">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/" title="Markdown 语法">Markdown 语法</a><time datetime="2025-05-09T11:20:13.000Z" title="发表于 2025-05-09 11:20:13">2025-05-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/08/GitHub%20+%20CDN/" title="GitHub + CDN">GitHub + CDN</a><time datetime="2025-05-08T14:16:02.000Z" title="发表于 2025-05-08 14:16:02">2025-05-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/" title="GitHub Actions 没有触发的核心原因">GitHub Actions 没有触发的核心原因</a><time datetime="2025-05-08T14:16:02.000Z" title="发表于 2025-05-08 14:16:02">2025-05-08</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'a3b010fea414a70323005076eee05d48'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
