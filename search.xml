@@ -3949,7 +3949,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#x2e;&#x75;&#x6e;&#105;&#116;&#121;&#x2e;&#99;&#111;&#x6c;&#108;&#x61;&#98;&#x2d;&#x70;&#114;&#111;&#120;&#121;&#x40;&#50;&#x2e;&#x36;&#x2e;&#x30;">&#x63;&#111;&#109;&#x2e;&#x75;&#x6e;&#105;&#116;&#121;&#x2e;&#99;&#111;&#x6c;&#108;&#x61;&#98;&#x2d;&#x70;&#114;&#111;&#120;&#121;&#x40;&#50;&#x2e;&#x36;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#46;&#117;&#110;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#x6c;&#108;&#x61;&#98;&#x2d;&#112;&#x72;&#x6f;&#120;&#x79;&#x40;&#50;&#46;&#54;&#x2e;&#x30;">&#x63;&#111;&#109;&#46;&#117;&#110;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#x6c;&#108;&#x61;&#98;&#x2d;&#112;&#x72;&#x6f;&#120;&#x79;&#x40;&#50;&#46;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -4364,96 +4364,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 托管代码与非托管代码</title>
-    <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
-<h3 id="1-托管代码（Managed-Code）"><a href="#1-托管代码（Managed-Code）" class="headerlink" title="1. 托管代码（Managed Code）"></a>1. <strong>托管代码（Managed Code）</strong></h3><p><strong>托管代码</strong> 是由 .NET 运行时（如 <strong>CLR</strong>，即公共语言运行时）托管和管理的代码。也就是说，托管代码的执行是在 <strong>CLR 环境中</strong>进行的，CLR 提供了内存管理、异常处理、垃圾回收、安全性等功能。这意味着开发者无需自己管理内存分配和释放，CLR 会负责这些操作。</p>
-<h4 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h4><ul>
-<li><strong>内存管理</strong>：托管代码的内存管理是由垃圾回收器（GC，Garbage Collector）自动处理的。</li>
-<li><strong>类型安全</strong>：CLR 会确保类型的安全性，例如防止类型转换错误、非法内存访问等。</li>
-<li><strong>自动垃圾回收</strong>：CLR 会定期回收不再使用的内存空间，避免内存泄漏。</li>
-<li><strong>安全性</strong>：CLR 会进行代码的安全检查，确保代码不会执行恶意操作。</li>
-<li><strong>平台独立性</strong>：托管代码一般是通过 <strong>中间语言（IL，Intermediate Language）</strong> 编译的，这样可以通过不同平台上的 CLR 实现执行。</li>
-</ul>
-<p>托管代码的一个例子就是 <strong>C#</strong> 中编写的代码，它会被编译成 <strong>中间语言（IL）</strong>，然后在 .NET 环境中运行。</p>
-<p><strong>例如</strong>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Hello, World!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的代码就是托管代码，它会被 C# 编译器编译为中间语言（IL），然后通过 CLR 执行。</p>
-<h3 id="2-非托管代码（Unmanaged-Code）"><a href="#2-非托管代码（Unmanaged-Code）" class="headerlink" title="2. 非托管代码（Unmanaged Code）"></a>2. <strong>非托管代码（Unmanaged Code）</strong></h3><p><strong>非托管代码</strong> 是指不由 CLR 或类似的运行时环境管理的代码。这类代码直接与操作系统交互，开发者必须手动管理内存、资源和安全性等问题。非托管代码通常是用 <strong>C++<strong>、</strong>C</strong> 或其他低级语言编写的。</p>
-<h4 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h4><ul>
-<li><strong>手动内存管理</strong>：开发者需要自己负责分配和释放内存，容易出现内存泄漏问题。</li>
-<li><strong>直接访问硬件</strong>：非托管代码能够直接操作硬件，进行系统级别的操作。</li>
-<li><strong>无垃圾回收</strong>：没有像 CLR 那样的垃圾回收机制，必须手动释放资源。</li>
-<li><strong>性能优势</strong>：由于没有运行时环境的管理，非托管代码通常比托管代码更加高效，尤其是在对性能要求极高的场景下。</li>
-</ul>
-<p>非托管代码通常被编译为机器码并直接运行在操作系统上。</p>
-<p><strong>例如</strong>：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的 C++ 代码是非托管代码，它被编译为机器代码，直接在操作系统中执行。</p>
-<h3 id="3-托管代码与非托管代码的区别"><a href="#3-托管代码与非托管代码的区别" class="headerlink" title="3. 托管代码与非托管代码的区别"></a>3. <strong>托管代码与非托管代码的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th>托管代码</th>
-<th>非托管代码</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>执行环境</td>
-<td>运行在 <strong>CLR</strong>（公共语言运行时）中</td>
-<td>直接运行在操作系统上</td>
-</tr>
-<tr>
-<td>内存管理</td>
-<td>自动由 <strong>垃圾回收器（GC）</strong> 管理</td>
-<td>需要开发者手动管理内存</td>
-</tr>
-<tr>
-<td>类型安全</td>
-<td>自动进行类型检查，防止类型错误</td>
-<td>可能会发生类型错误，必须手动管理</td>
-</tr>
-<tr>
-<td>安全性</td>
-<td>CLR 进行安全检查，防止恶意代码执行</td>
-<td>代码可能没有安全性保障，易受攻击</td>
-</tr>
-<tr>
-<td>性能</td>
-<td>性能较低，因为有垃圾回收等运行时开销</td>
-<td>性能较高，因为没有运行时环境的开销</td>
-</tr>
-<tr>
-<td>示例语言</td>
-<td>C#、VB.NET、F# 等</td>
-<td>C、C++ 等</td>
-</tr>
-<tr>
-<td>可移植性</td>
-<td>通过中间语言（IL）可以跨平台运行</td>
-<td>必须针对每个平台进行编译</td>
-</tr>
-</tbody></table>
-<h3 id="4-托管代码与非托管代码的交互"><a href="#4-托管代码与非托管代码的交互" class="headerlink" title="4. 托管代码与非托管代码的交互"></a>4. <strong>托管代码与非托管代码的交互</strong></h3><p>虽然托管代码和非托管代码有很多差异，但在实际应用中，它们经常需要互相交互，特别是在需要访问系统底层或与已有的非托管代码库集成时。通常有几种方式来实现托管代码与非托管代码的交互：</p>
-<ul>
-<li><p><strong>P&#x2F;Invoke（平台调用）</strong>：托管代码可以通过 <strong>P&#x2F;Invoke</strong> 调用非托管的 API（例如 Windows API）。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, CharSet = CharSet.Auto)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> IntPtr <span class="title">GetConsoleWindow</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        IntPtr hwnd = GetConsoleWindow();</span><br><span class="line">        Console.WriteLine(hwnd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上是通过 <strong>P&#x2F;Invoke</strong> 调用 Windows 的非托管函数 <code>GetConsoleWindow</code>。</p>
-</li>
-<li><p><strong>C++&#x2F;CLI（C++ 和托管代码混合）</strong>：C++&#x2F;CLI 是一种可以同时操作托管代码和非托管代码的语言，可以方便地在同一项目中混合使用 C++（非托管代码）和 C#（托管代码）。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#using <span class="string">&lt;System.dll&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ref <span class="keyword">class</span> <span class="title class_">ManagedClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PrintMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Console::<span class="built_in">WriteLine</span>(<span class="string">&quot;Hello from C++/CLI!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>COM（组件对象模型）</strong>：通过 COM 机制，非托管代码可以通过 COM 接口与托管代码进行交互。</p>
-</li>
-</ul>
-<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. <strong>总结</strong></h3><ul>
-<li><strong>托管代码</strong> 是由 .NET 运行时管理的代码，它具有内存管理、安全性和平台独立性的优势。常见的托管语言包括 C# 和 VB.NET。</li>
-<li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
-<li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 开发非游戏应用</title>
     <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
@@ -4597,6 +4507,96 @@
 </ol>
 <hr>
 <p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 托管代码与非托管代码</title>
+    <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
+<h3 id="1-托管代码（Managed-Code）"><a href="#1-托管代码（Managed-Code）" class="headerlink" title="1. 托管代码（Managed Code）"></a>1. <strong>托管代码（Managed Code）</strong></h3><p><strong>托管代码</strong> 是由 .NET 运行时（如 <strong>CLR</strong>，即公共语言运行时）托管和管理的代码。也就是说，托管代码的执行是在 <strong>CLR 环境中</strong>进行的，CLR 提供了内存管理、异常处理、垃圾回收、安全性等功能。这意味着开发者无需自己管理内存分配和释放，CLR 会负责这些操作。</p>
+<h4 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h4><ul>
+<li><strong>内存管理</strong>：托管代码的内存管理是由垃圾回收器（GC，Garbage Collector）自动处理的。</li>
+<li><strong>类型安全</strong>：CLR 会确保类型的安全性，例如防止类型转换错误、非法内存访问等。</li>
+<li><strong>自动垃圾回收</strong>：CLR 会定期回收不再使用的内存空间，避免内存泄漏。</li>
+<li><strong>安全性</strong>：CLR 会进行代码的安全检查，确保代码不会执行恶意操作。</li>
+<li><strong>平台独立性</strong>：托管代码一般是通过 <strong>中间语言（IL，Intermediate Language）</strong> 编译的，这样可以通过不同平台上的 CLR 实现执行。</li>
+</ul>
+<p>托管代码的一个例子就是 <strong>C#</strong> 中编写的代码，它会被编译成 <strong>中间语言（IL）</strong>，然后在 .NET 环境中运行。</p>
+<p><strong>例如</strong>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Hello, World!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码就是托管代码，它会被 C# 编译器编译为中间语言（IL），然后通过 CLR 执行。</p>
+<h3 id="2-非托管代码（Unmanaged-Code）"><a href="#2-非托管代码（Unmanaged-Code）" class="headerlink" title="2. 非托管代码（Unmanaged Code）"></a>2. <strong>非托管代码（Unmanaged Code）</strong></h3><p><strong>非托管代码</strong> 是指不由 CLR 或类似的运行时环境管理的代码。这类代码直接与操作系统交互，开发者必须手动管理内存、资源和安全性等问题。非托管代码通常是用 <strong>C++<strong>、</strong>C</strong> 或其他低级语言编写的。</p>
+<h4 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h4><ul>
+<li><strong>手动内存管理</strong>：开发者需要自己负责分配和释放内存，容易出现内存泄漏问题。</li>
+<li><strong>直接访问硬件</strong>：非托管代码能够直接操作硬件，进行系统级别的操作。</li>
+<li><strong>无垃圾回收</strong>：没有像 CLR 那样的垃圾回收机制，必须手动释放资源。</li>
+<li><strong>性能优势</strong>：由于没有运行时环境的管理，非托管代码通常比托管代码更加高效，尤其是在对性能要求极高的场景下。</li>
+</ul>
+<p>非托管代码通常被编译为机器码并直接运行在操作系统上。</p>
+<p><strong>例如</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 C++ 代码是非托管代码，它被编译为机器代码，直接在操作系统中执行。</p>
+<h3 id="3-托管代码与非托管代码的区别"><a href="#3-托管代码与非托管代码的区别" class="headerlink" title="3. 托管代码与非托管代码的区别"></a>3. <strong>托管代码与非托管代码的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>托管代码</th>
+<th>非托管代码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>执行环境</td>
+<td>运行在 <strong>CLR</strong>（公共语言运行时）中</td>
+<td>直接运行在操作系统上</td>
+</tr>
+<tr>
+<td>内存管理</td>
+<td>自动由 <strong>垃圾回收器（GC）</strong> 管理</td>
+<td>需要开发者手动管理内存</td>
+</tr>
+<tr>
+<td>类型安全</td>
+<td>自动进行类型检查，防止类型错误</td>
+<td>可能会发生类型错误，必须手动管理</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>CLR 进行安全检查，防止恶意代码执行</td>
+<td>代码可能没有安全性保障，易受攻击</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>性能较低，因为有垃圾回收等运行时开销</td>
+<td>性能较高，因为没有运行时环境的开销</td>
+</tr>
+<tr>
+<td>示例语言</td>
+<td>C#、VB.NET、F# 等</td>
+<td>C、C++ 等</td>
+</tr>
+<tr>
+<td>可移植性</td>
+<td>通过中间语言（IL）可以跨平台运行</td>
+<td>必须针对每个平台进行编译</td>
+</tr>
+</tbody></table>
+<h3 id="4-托管代码与非托管代码的交互"><a href="#4-托管代码与非托管代码的交互" class="headerlink" title="4. 托管代码与非托管代码的交互"></a>4. <strong>托管代码与非托管代码的交互</strong></h3><p>虽然托管代码和非托管代码有很多差异，但在实际应用中，它们经常需要互相交互，特别是在需要访问系统底层或与已有的非托管代码库集成时。通常有几种方式来实现托管代码与非托管代码的交互：</p>
+<ul>
+<li><p><strong>P&#x2F;Invoke（平台调用）</strong>：托管代码可以通过 <strong>P&#x2F;Invoke</strong> 调用非托管的 API（例如 Windows API）。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, CharSet = CharSet.Auto)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> IntPtr <span class="title">GetConsoleWindow</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        IntPtr hwnd = GetConsoleWindow();</span><br><span class="line">        Console.WriteLine(hwnd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上是通过 <strong>P&#x2F;Invoke</strong> 调用 Windows 的非托管函数 <code>GetConsoleWindow</code>。</p>
+</li>
+<li><p><strong>C++&#x2F;CLI（C++ 和托管代码混合）</strong>：C++&#x2F;CLI 是一种可以同时操作托管代码和非托管代码的语言，可以方便地在同一项目中混合使用 C++（非托管代码）和 C#（托管代码）。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#using <span class="string">&lt;System.dll&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ref <span class="keyword">class</span> <span class="title class_">ManagedClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PrintMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Console::<span class="built_in">WriteLine</span>(<span class="string">&quot;Hello from C++/CLI!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>COM（组件对象模型）</strong>：通过 COM 机制，非托管代码可以通过 COM 接口与托管代码进行交互。</p>
+</li>
+</ul>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. <strong>总结</strong></h3><ul>
+<li><strong>托管代码</strong> 是由 .NET 运行时管理的代码，它具有内存管理、安全性和平台独立性的优势。常见的托管语言包括 C# 和 VB.NET。</li>
+<li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
+<li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
+</ul>
 ]]></content>
   </entry>
   <entry>
@@ -5030,6 +5030,22 @@
 ]]></content>
   </entry>
   <entry>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git修改历史提交</title>
     <url>/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/</url>
     <content><![CDATA[<h1 id="git-reset命令"><a href="#git-reset命令" class="headerlink" title="git reset命令"></a>git reset命令</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --soft 29f9bbd77da69902335cad77a12eac7b022b9f63</span><br></pre></td></tr></table></figure>
@@ -5231,22 +5247,6 @@
 </tbody></table>
 <p>推荐：</p>
 <p><a href="https://x.zhixing.co/devops/the-differences-and-usages-of-git-merge-rebase/">Git merge &amp; rebase 区别和用法</a></p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -7583,108 +7583,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>vs隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
-<li><p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li><p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li><p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
-<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li><p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li><p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1 id="Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣"><a href="#Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣" class="headerlink" title="Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣"></a><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1><p>在 Unity 中导入插件主要有两种方式：  </p>
@@ -7897,6 +7795,108 @@
 <hr>
 <h3 id="结论："><a href="#结论：" class="headerlink" title="结论："></a><strong>结论：</strong></h3><p>将 <strong>UnityGameFramework 插件</strong> 直接放入 <code>Assets/</code> 父级目录并通过 Git 管理，适合 <strong>小型项目</strong> 或 <strong>定制化需求高的项目</strong>，但对于 <strong>长期维护、多个项目使用的框架</strong>，使用 <strong>UPM</strong> 或 <strong>Git Submodule</strong> 等更合适，因为它们能够更好地管理框架版本、提高代码的可维护性并支持多个项目之间的共享。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>vs隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
+<li><p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li><p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li><p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
+<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li><p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li><p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
   </entry>
   <entry>
     <title>医保</title>
