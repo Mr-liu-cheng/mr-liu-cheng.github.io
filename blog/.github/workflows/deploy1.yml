@@ -1,48 +1,40 @@
-name: Deploy Hexo to GitHub Pages
+name: Deploy Hexo Blog to GitHub Pages
 
 on:
   push:
-    paths:
-      - 'source/_posts/**'  # 仅当文章文件夹有改动时触发
-      - '_config.yml'       # 如果配置文件改了也重新部署
-      - 'themes/**'         # 主题改动也触发部署
     branches:
-      - master
+      - master  # 你是用 master 而不是 main 分支
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
 
-      - name: Install Dependencies
+      - name: Install Hexo CLI
+        run: npm install -g hexo-cli
+
+      - name: Install dependencies
         run: npm install
+        working-directory: blog
 
-      - name: Install Hexo CLI and Deployer
-        run: |
-          npm install hexo-cli -g
-          npm install hexo-deployer-git --save
+      - name: Clean old files
+        run: hexo clean
+        working-directory: blog
 
-      - name: Generate Static Files
-        run: |
-          hexo clean
-          hexo generate
+      - name: Generate static files
+        run: hexo generate
+        working-directory: blog
 
       - name: Deploy to GitHub Pages
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          cd public
-          git init
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Deploy Hexo site - $(date +'%Y-%m-%d %H:%M:%S')"
-          git push --force https://${{ secrets.GH_TOKEN }}@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git master:gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./blog/public
