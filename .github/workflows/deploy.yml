@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup working directory
-        run: cd blog
-        working-directory: blog
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,6 +21,10 @@ jobs:
 
       - name: Install Hexo CLI
         run: npm install -g hexo-cli
+
+      - name: Setup working directory
+        run: cd blog
+        working-directory: blog
 
       - name: Install dependencies
         run: npm install
