@@ -14,6 +14,9 @@ description:
 - token方式  ，推荐使用GITHUB_TOKEN
 - 分支
 - 相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它
+- 只要你把 GitHub Actions 的 .yml 文件放在 .github/workflows/ 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。
+
+
 
 
 
