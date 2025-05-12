@@ -22,16 +22,19 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+        working-directory: blog
 
       - name: Install Hexo Git Deployer
         run: |
           npm install hexo-deployer-git --save
           npm install hexo-cli -g
+        working-directory: blog
 
       - name: Clean and Generate Static Files
         run: |
           hexo clean
           hexo generate
+        working-directory: blog
 
       - name: Configure Git
         run: |
