@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -32,6 +34,9 @@ jobs:
       - name: Generate static files
         run: hexo generate
         working-directory: blog
+
+      - name: List public output
+        run: ls -R blog/public
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
