@@ -1,10 +1,13 @@
 ---
-title: hexo  github 部署脚本
+title: Github-Hexo 部署脚本
 date: 2025-05-12 14:16:02
 updated: 2025-05-12 14:16:02
-tags: GitHub Actions
-categories: GitHub Actions
-keywords: GitHub Actions
+tags: GitHub-Actions,Hexo
+categories: 
+  - Hexo
+  - GitHub
+    - Actions
+keywords: GitHub-Actions,Hexo
 description:
 ---
 
