@@ -5,6 +5,7 @@ updated: 2025-05-12 14:16:02
 tags: GitHub-Actions,Hexo
 categories: 
   - Hexo
+  - [GitHub, Actions]
   - GitHub
     - Actions
 keywords: GitHub-Actions,Hexo
