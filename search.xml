@@ -1824,6 +1824,222 @@ Hexo 中分类的层级关系完全由 方括号 [] 决定：</p>
       </tags>
   </entry>
   <entry>
+    <title>Jenkins 游戏后端自动化部署流程</title>
+    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><strong>Jenkins 游戏后端自动化部署流程（以微服务/分布式架构为例）</strong></h3>
+<p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器/K8s</strong> 的全流程自动化。</p>
+<hr>
+<h2 id="1-环境准备"><strong>1. 环境准备</strong></h2>
+<table>
+<thead>
+<tr>
+<th>工具/环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Jenkins</strong></td>
+<td>CI/CD 核心调度平台</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>代码版本管理（GitHub/GitLab）</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>容器化部署（可选）</td>
+</tr>
+<tr>
+<td><strong>Kubernetes (K8s)</strong></td>
+<td>容器编排（适用于分布式后端）</td>
+</tr>
+<tr>
+<td><strong>构建工具</strong></td>
+<td>Maven/Gradle（Java）、Go Build、Python 虚拟环境等</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>物理服务器/云主机/K8s 集群</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-Jenkins-配置"><strong>2. Jenkins 配置</strong></h2>
+<h3 id="1-安装必要插件"><strong>(1) 安装必要插件</strong></h3>
+<table>
+<thead>
+<tr>
+<th>插件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Docker Plugin</strong></td>
+<td>构建 Docker 镜像</td>
+</tr>
+<tr>
+<td><strong>Kubernetes Plugin</strong></td>
+<td>部署到 K8s</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>定义 CI/CD 流程</td>
+</tr>
+<tr>
+<td><strong>Publish Over SSH</strong></td>
+<td>远程服务器部署</td>
+</tr>
+<tr>
+<td><strong>SonarQube Scanner</strong></td>
+<td>代码质量检测（可选）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-配置凭据"><strong>(2) 配置凭据</strong></h3>
+<ul>
+<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
+<li><strong>Docker Hub/私有仓库</strong>（推送镜像权限）</li>
+<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+</ul>
+<hr>
+<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2>
+<p>在项目根目录创建 <strong><code>Jenkinsfile</code></strong>，定义多阶段构建：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="4-关键步骤详解"><strong>4. 关键步骤详解</strong></h2>
+<h3 id="1-代码构建（不同语言示例）"><strong>(1) 代码构建（不同语言示例）</strong></h3>
+<table>
+<thead>
+<tr>
+<th>语言</th>
+<th>构建命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Java (Maven)</strong></td>
+<td><code>mvn clean package -DskipTests</code></td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td><code>go build -o bin/server ./cmd/server</code></td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td><code>pip install -r requirements.txt</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-Docker-镜像构建"><strong>(2) Docker 镜像构建</strong></h3>
+<p>每个微服务需有自己的 <code>Dockerfile</code>，例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-部署方式选择"><strong>(3) 部署方式选择</strong></h3>
+<table>
+<thead>
+<tr>
+<th>部署方式</th>
+<th>适用场景</th>
+<th>Jenkins 配置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SSH 直接部署</strong></td>
+<td>传统服务器</td>
+<td>使用 <code>Publish Over SSH</code> 插件</td>
+</tr>
+<tr>
+<td><strong>Docker Swarm</strong></td>
+<td>小型集群</td>
+<td><code>docker stack deploy</code></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>生产级集群</td>
+<td><code>kubectl set image</code> 或 Helm</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-高级优化方案"><strong>5. 高级优化方案</strong></h2>
+<h3 id="1-蓝绿部署（Zero-Downtime）"><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-动态伸缩"><strong>(2) 动态伸缩</strong></h3>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-数据库迁移（Flyway-Liquibase）"><strong>(3) 数据库迁移（Flyway/Liquibase）</strong></h3>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="6-监控与回滚"><strong>6. 监控与回滚</strong></h2>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Prometheus + Grafana</strong></td>
+<td>监控服务性能</td>
+</tr>
+<tr>
+<td><strong>Kibana</strong></td>
+<td>日志分析</td>
+</tr>
+<tr>
+<td><strong>Jenkins 回滚脚本</strong></td>
+<td>快速回退到旧版本</td>
+</tr>
+</tbody>
+</table>
+<p><strong>回滚示例</strong>：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="7-完整流程图示"><strong>7. 完整流程图示</strong></h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="8-常见问题解决"><strong>8. 常见问题解决</strong></h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Docker 构建失败</strong></td>
+<td>检查 <code>Dockerfile</code> 和构建日志</td>
+</tr>
+<tr>
+<td><strong>K8s 部署超时</strong></td>
+<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+</tr>
+<tr>
+<td><strong>微服务通信异常</strong></td>
+<td>检查服务发现（Consul/Nacos）和网络策略</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。</li>
+<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。</li>
+<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+</ul>
+<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HybridCLR 笔记</title>
     <url>/2025/01/13/HybridCLR-%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h2 id="hybridclr-Package手册"><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/com.code-philosophy.hybridclr">hybridclr Package手册</a></h2>
@@ -3440,375 +3656,6 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
 ]]></content>
   </entry>
   <entry>
-    <title>Jenkins 游戏后端自动化部署流程</title>
-    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><strong>Jenkins 游戏后端自动化部署流程（以微服务/分布式架构为例）</strong></h3>
-<p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器/K8s</strong> 的全流程自动化。</p>
-<hr>
-<h2 id="1-环境准备"><strong>1. 环境准备</strong></h2>
-<table>
-<thead>
-<tr>
-<th>工具/环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Jenkins</strong></td>
-<td>CI/CD 核心调度平台</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>代码版本管理（GitHub/GitLab）</td>
-</tr>
-<tr>
-<td><strong>Docker</strong></td>
-<td>容器化部署（可选）</td>
-</tr>
-<tr>
-<td><strong>Kubernetes (K8s)</strong></td>
-<td>容器编排（适用于分布式后端）</td>
-</tr>
-<tr>
-<td><strong>构建工具</strong></td>
-<td>Maven/Gradle（Java）、Go Build、Python 虚拟环境等</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>物理服务器/云主机/K8s 集群</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="2-Jenkins-配置"><strong>2. Jenkins 配置</strong></h2>
-<h3 id="1-安装必要插件"><strong>(1) 安装必要插件</strong></h3>
-<table>
-<thead>
-<tr>
-<th>插件</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Docker Plugin</strong></td>
-<td>构建 Docker 镜像</td>
-</tr>
-<tr>
-<td><strong>Kubernetes Plugin</strong></td>
-<td>部署到 K8s</td>
-</tr>
-<tr>
-<td><strong>Pipeline</strong></td>
-<td>定义 CI/CD 流程</td>
-</tr>
-<tr>
-<td><strong>Publish Over SSH</strong></td>
-<td>远程服务器部署</td>
-</tr>
-<tr>
-<td><strong>SonarQube Scanner</strong></td>
-<td>代码质量检测（可选）</td>
-</tr>
-</tbody>
-</table>
-<h3 id="2-配置凭据"><strong>(2) 配置凭据</strong></h3>
-<ul>
-<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
-<li><strong>Docker Hub/私有仓库</strong>（推送镜像权限）</li>
-<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
-</ul>
-<hr>
-<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2>
-<p>在项目根目录创建 <strong><code>Jenkinsfile</code></strong>，定义多阶段构建：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="4-关键步骤详解"><strong>4. 关键步骤详解</strong></h2>
-<h3 id="1-代码构建（不同语言示例）"><strong>(1) 代码构建（不同语言示例）</strong></h3>
-<table>
-<thead>
-<tr>
-<th>语言</th>
-<th>构建命令</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Java (Maven)</strong></td>
-<td><code>mvn clean package -DskipTests</code></td>
-</tr>
-<tr>
-<td><strong>Go</strong></td>
-<td><code>go build -o bin/server ./cmd/server</code></td>
-</tr>
-<tr>
-<td><strong>Python</strong></td>
-<td><code>pip install -r requirements.txt</code></td>
-</tr>
-</tbody>
-</table>
-<h3 id="2-Docker-镜像构建"><strong>(2) Docker 镜像构建</strong></h3>
-<p>每个微服务需有自己的 <code>Dockerfile</code>，例如：</p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-部署方式选择"><strong>(3) 部署方式选择</strong></h3>
-<table>
-<thead>
-<tr>
-<th>部署方式</th>
-<th>适用场景</th>
-<th>Jenkins 配置</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>SSH 直接部署</strong></td>
-<td>传统服务器</td>
-<td>使用 <code>Publish Over SSH</code> 插件</td>
-</tr>
-<tr>
-<td><strong>Docker Swarm</strong></td>
-<td>小型集群</td>
-<td><code>docker stack deploy</code></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>生产级集群</td>
-<td><code>kubectl set image</code> 或 Helm</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="5-高级优化方案"><strong>5. 高级优化方案</strong></h2>
-<h3 id="1-蓝绿部署（Zero-Downtime）"><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="2-动态伸缩"><strong>(2) 动态伸缩</strong></h3>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="3-数据库迁移（Flyway-Liquibase）"><strong>(3) 数据库迁移（Flyway/Liquibase）</strong></h3>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="6-监控与回滚"><strong>6. 监控与回滚</strong></h2>
-<table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Prometheus + Grafana</strong></td>
-<td>监控服务性能</td>
-</tr>
-<tr>
-<td><strong>Kibana</strong></td>
-<td>日志分析</td>
-</tr>
-<tr>
-<td><strong>Jenkins 回滚脚本</strong></td>
-<td>快速回退到旧版本</td>
-</tr>
-</tbody>
-</table>
-<p><strong>回滚示例</strong>：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="7-完整流程图示"><strong>7. 完整流程图示</strong></h2>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="8-常见问题解决"><strong>8. 常见问题解决</strong></h2>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>排查方法</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Docker 构建失败</strong></td>
-<td>检查 <code>Dockerfile</code> 和构建日志</td>
-</tr>
-<tr>
-<td><strong>K8s 部署超时</strong></td>
-<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
-</tr>
-<tr>
-<td><strong>微服务通信异常</strong></td>
-<td>检查服务发现（Consul/Nacos）和网络策略</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h3 id="总结"><strong>总结</strong></h3>
-<ul>
-<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。</li>
-<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。</li>
-<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
-</ul>
-<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3>
-<p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><strong>1. 环境准备</strong></h2>
-<table>
-<thead>
-<tr>
-<th>工具/环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI/CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub/GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows/Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP/SSH/云存储（如阿里云 OSS）</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="2-Jenkins-配置"><strong>2. Jenkins 配置</strong></h2>
-<h3 id="1-安装必要插件"><strong>(1) 安装必要插件</strong></h3>
-<ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI/CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><strong>(2) 配置 Unity 环境</strong></h3>
-<ol>
-<li>
-<p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong></li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li>
-<p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><strong>3. 创建 Jenkins Pipeline</strong></h2>
-<p>在项目根目录创建 <strong><code>Jenkinsfile</code></strong>，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="4-Unity-构建脚本"><strong>4. Unity 构建脚本</strong></h2>
-<p>在 Unity 项目中创建 <strong><code>BuildScript.cs</code></strong>（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-触发构建"><strong>5. 触发构建</strong></h2>
-<h3 id="1-手动触发"><strong>(1) 手动触发</strong></h3>
-<ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><strong>(2) 自动触发（Git Webhook）</strong></h3>
-<ol>
-<li><strong>在 GitHub/GitLab 设置 Webhook</strong>：
-<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：
-<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><strong>6. 常见问题</strong></h2>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android/iOS 打包问题</strong></td>
-<td>配置 JDK/NDK/Xcode 环境</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="7-优化建议"><strong>7. 优化建议</strong></h2>
-<ol>
-<li><strong>使用 Docker 镜像</strong>：
-<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。</li>
-</ul>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><strong>并行构建多平台</strong>：
-<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win/Android/iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK/IPA</strong>：
-<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><strong>8. 最终效果</strong></h2>
-<ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong></li>
-<li><strong>团队收到构建成功/失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Jenkins 简介</title>
     <url>/2025/05/08/Jenkins/</url>
     <content><![CDATA[<h3 id="Jenkins-简介"><strong>Jenkins 简介</strong></h3>
@@ -4049,6 +3896,159 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
 <li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
 </ul>
 <p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3>
+<p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><strong>1. 环境准备</strong></h2>
+<table>
+<thead>
+<tr>
+<th>工具/环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI/CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub/GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows/Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP/SSH/云存储（如阿里云 OSS）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-Jenkins-配置"><strong>2. Jenkins 配置</strong></h2>
+<h3 id="1-安装必要插件"><strong>(1) 安装必要插件</strong></h3>
+<ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI/CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><strong>(2) 配置 Unity 环境</strong></h3>
+<ol>
+<li>
+<p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong></li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li>
+<p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><strong>3. 创建 Jenkins Pipeline</strong></h2>
+<p>在项目根目录创建 <strong><code>Jenkinsfile</code></strong>，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="4-Unity-构建脚本"><strong>4. Unity 构建脚本</strong></h2>
+<p>在 Unity 项目中创建 <strong><code>BuildScript.cs</code></strong>（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-触发构建"><strong>5. 触发构建</strong></h2>
+<h3 id="1-手动触发"><strong>(1) 手动触发</strong></h3>
+<ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><strong>(2) 自动触发（Git Webhook）</strong></h3>
+<ol>
+<li><strong>在 GitHub/GitLab 设置 Webhook</strong>：
+<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：
+<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><strong>6. 常见问题</strong></h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android/iOS 打包问题</strong></td>
+<td>配置 JDK/NDK/Xcode 环境</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-优化建议"><strong>7. 优化建议</strong></h2>
+<ol>
+<li><strong>使用 Docker 镜像</strong>：
+<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><strong>并行构建多平台</strong>：
+<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win/Android/iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK/IPA</strong>：
+<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><strong>8. 最终效果</strong></h2>
+<ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong></li>
+<li><strong>团队收到构建成功/失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -5805,19 +5805,6 @@ $$</p>
 ]]></content>
   </entry>
   <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>
-themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 程序集</title>
     <url>/2025/01/16/Unity-%E7%A8%8B%E5%BA%8F%E9%9B%86/</url>
     <content><![CDATA[<h2 id="常见的四种程序集">常见的四种程序集</h2>
@@ -6036,6 +6023,19 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
 <h2 id="Assembly-Definition-References">Assembly Definition References</h2>
 <p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>
+themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -9166,127 +9166,6 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
-    <title>vs隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3>
-<p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><strong>步骤：自定义插件的 Assembly Definition</strong></h4>
-<ol>
-<li>
-<p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li>
-<p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li>
-<p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><strong>方法 2：修改 Unity 编辑器设置</strong></h3>
-<p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li>
-<p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li>
-<p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3>
-<p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li>
-<p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li>
-<p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3>
-<p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><strong>具体步骤</strong></h4>
-<ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3>
-<p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><strong>步骤</strong></h4>
-<ol>
-<li>
-<p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li>
-<p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li>
-<p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><strong>注意事项</strong></h3>
-<ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1>
@@ -9569,6 +9448,127 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
+    <title>vs隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3>
+<p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><strong>步骤：自定义插件的 Assembly Definition</strong></h4>
+<ol>
+<li>
+<p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li>
+<p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li>
+<p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><strong>方法 2：修改 Unity 编辑器设置</strong></h3>
+<p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li>
+<p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li>
+<p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3>
+<p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li>
+<p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li>
+<p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3>
+<p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><strong>具体步骤</strong></h4>
+<ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3>
+<p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><strong>步骤</strong></h4>
+<ol>
+<li>
+<p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li>
+<p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li>
+<p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><strong>注意事项</strong></h3>
+<ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>医保</title>
     <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
     <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
@@ -9750,227 +9750,6 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 <h1>Popper</h1>
 <p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
-  </entry>
-  <entry>
-    <title>笔记本拓展屏+平板</title>
-    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
-    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br>
-<a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
-<h2 id="Spacedesk-版本介绍">Spacedesk 版本介绍</h2>
-<p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
-<hr>
-<h3 id="免费功能："><strong>免费功能</strong>：</h3>
-<ol>
-<li>
-<p><strong>基本屏幕扩展</strong>：</p>
-<ul>
-<li>支持将平板或手机作为电脑的扩展显示器。</li>
-<li>支持 Wi-Fi 和 USB 连接。</li>
-</ul>
-</li>
-<li>
-<p><strong>多设备连接</strong>：</p>
-<ul>
-<li>可以同时连接多个设备作为扩展屏幕。</li>
-</ul>
-</li>
-<li>
-<p><strong>跨平台支持</strong>：</p>
-<ul>
-<li>支持 Windows 电脑与 Android/iOS 设备连接。</li>
-</ul>
-</li>
-<li>
-<p><strong>基本分辨率支持</strong>：</p>
-<ul>
-<li>提供足够的分辨率用于日常办公和娱乐。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="可能收费或需要捐赠的功能："><strong>可能收费或需要捐赠的功能</strong>：</h3>
-<ol>
-<li>
-<p><strong>更高分辨率和刷新率</strong>：</p>
-<ul>
-<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
-</ul>
-</li>
-<li>
-<p><strong>高级功能</strong>：</p>
-<ul>
-<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
-</ul>
-</li>
-<li>
-<p><strong>商业用途</strong>：</p>
-<ul>
-<li>如果用于商业环境，可能需要购买许可证。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="捐赠支持："><strong>捐赠支持</strong>：</h3>
-<ul>
-<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
-</ul>
-<hr>
-<h3 id="总结："><strong>总结</strong>：</h3>
-<ul>
-<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
-<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
-</ul>
-<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
-<h2 id="将电脑屏幕投射到平板电脑">将电脑屏幕投射到平板电脑</h2>
-<p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
-<h3 id="准备工作：">准备工作：</h3>
-<ol>
-<li>
-<p><strong>下载软件</strong>：</p>
-<ul>
-<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
-<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
-</ul>
-</li>
-<li>
-<p><strong>确保设备在同一网络</strong>：</p>
-<ul>
-<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
-</ul>
-</li>
-</ol>
-<h4 id="在平板电脑上：">在平板电脑上：</h4>
-<ol>
-<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
-<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
-<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
-</ol>
-<p><img src="/.io//image.png" alt><br>
-注意：</p>
-<ul>
-<li>WiFi连接需要同在一个局域网下</li>
-<li>WiFi有延迟</li>
-<li>USB需要打开显示器设备的开发者选项的调试模式</li>
-<li>Local Area Network： WiFi连接开关</li>
-<li>USB Cable Android：USB连接开关</li>
-<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
-<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>算法脑筋急转弯</title>
-    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
-    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？">四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2>
-<p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
-<h3 id="步骤："><strong>步骤</strong>：</h3>
-<ol>
-<li>
-<p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
-</li>
-<li>
-<p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
-<ul>
-<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
-<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
-<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
-<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
-</ul>
-</li>
-<li>
-<p><strong>称重</strong>：</p>
-<ul>
-<li>假设正常药片的重量为 ( w )，</li>
-<li>过期药片的重量为 ( w + 1 )。</li>
-<li>如果所有药片都是正常的，总重量应为：<br>
-[<br>
-1w + 2w + 3w + 4w = 10w<br>
-]</li>
-<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
-</ul>
-</li>
-<li>
-<p><strong>分析结果</strong>：</p>
-<ul>
-<li>设称得的总重量为 ( S )，</li>
-<li>计算超出的重量：<br>
-[<br>
-S - 10w<br>
-]</li>
-<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
-</ul>
-</li>
-</ol>
-<h3 id="示例："><strong>示例</strong>：</h3>
-<p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
-<ul>
-<li>取样药片总数：( 1 + 2 + 3 + 4 = 10 ) 片，</li>
-<li>理论总重量：( 10w )，</li>
-<li>实际称重：( 10w + 3 )，</li>
-<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
-</ul>
-<p><strong>结论</strong>：<br>
-通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
-<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？">现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2>
-<p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
-<h3 id="步骤：-2"><strong>步骤</strong>：</h3>
-<ol>
-<li>
-<p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
-</li>
-<li>
-<p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
-</li>
-<li>
-<p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
-<ul>
-<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
-<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
-</ul>
-</li>
-</ol>
-<h3 id="结论："><strong>结论</strong>：</h3>
-<p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
-<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？">有两个容器分别是5L与6L,如何精准得到3L的水？</h2>
-<p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。</p>
-<hr>
-<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3>
-<ol>
-<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
-<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
-<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
-<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
-<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
-<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。
-<ul>
-<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3>
-<ol>
-<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
-<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。
-<ul>
-<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
-</ul>
-</li>
-<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
-<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
-</ol>
-<hr>
-<h3 id="总结"><strong>总结</strong></h3>
-<ul>
-<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
-<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
-</ul>
-<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
-]]></content>
   </entry>
   <entry>
     <title>游戏资源服部署</title>
@@ -10481,6 +10260,227 @@ S - 10w<br>
 ]]></content>
   </entry>
   <entry>
+    <title>笔记本拓展屏+平板</title>
+    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
+    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br>
+<a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
+<h2 id="Spacedesk-版本介绍">Spacedesk 版本介绍</h2>
+<p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
+<hr>
+<h3 id="免费功能："><strong>免费功能</strong>：</h3>
+<ol>
+<li>
+<p><strong>基本屏幕扩展</strong>：</p>
+<ul>
+<li>支持将平板或手机作为电脑的扩展显示器。</li>
+<li>支持 Wi-Fi 和 USB 连接。</li>
+</ul>
+</li>
+<li>
+<p><strong>多设备连接</strong>：</p>
+<ul>
+<li>可以同时连接多个设备作为扩展屏幕。</li>
+</ul>
+</li>
+<li>
+<p><strong>跨平台支持</strong>：</p>
+<ul>
+<li>支持 Windows 电脑与 Android/iOS 设备连接。</li>
+</ul>
+</li>
+<li>
+<p><strong>基本分辨率支持</strong>：</p>
+<ul>
+<li>提供足够的分辨率用于日常办公和娱乐。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="可能收费或需要捐赠的功能："><strong>可能收费或需要捐赠的功能</strong>：</h3>
+<ol>
+<li>
+<p><strong>更高分辨率和刷新率</strong>：</p>
+<ul>
+<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
+</ul>
+</li>
+<li>
+<p><strong>高级功能</strong>：</p>
+<ul>
+<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
+</ul>
+</li>
+<li>
+<p><strong>商业用途</strong>：</p>
+<ul>
+<li>如果用于商业环境，可能需要购买许可证。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="捐赠支持："><strong>捐赠支持</strong>：</h3>
+<ul>
+<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
+</ul>
+<hr>
+<h3 id="总结："><strong>总结</strong>：</h3>
+<ul>
+<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
+<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
+</ul>
+<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
+<h2 id="将电脑屏幕投射到平板电脑">将电脑屏幕投射到平板电脑</h2>
+<p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
+<h3 id="准备工作：">准备工作：</h3>
+<ol>
+<li>
+<p><strong>下载软件</strong>：</p>
+<ul>
+<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
+<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
+</ul>
+</li>
+<li>
+<p><strong>确保设备在同一网络</strong>：</p>
+<ul>
+<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
+</ul>
+</li>
+</ol>
+<h4 id="在平板电脑上：">在平板电脑上：</h4>
+<ol>
+<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
+<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
+<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
+</ol>
+<p><img src="/.io//image.png" alt><br>
+注意：</p>
+<ul>
+<li>WiFi连接需要同在一个局域网下</li>
+<li>WiFi有延迟</li>
+<li>USB需要打开显示器设备的开发者选项的调试模式</li>
+<li>Local Area Network： WiFi连接开关</li>
+<li>USB Cable Android：USB连接开关</li>
+<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
+<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>算法脑筋急转弯</title>
+    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
+    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？">四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2>
+<p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
+<h3 id="步骤："><strong>步骤</strong>：</h3>
+<ol>
+<li>
+<p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
+</li>
+<li>
+<p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
+<ul>
+<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
+<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
+<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
+<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>称重</strong>：</p>
+<ul>
+<li>假设正常药片的重量为 ( w )，</li>
+<li>过期药片的重量为 ( w + 1 )。</li>
+<li>如果所有药片都是正常的，总重量应为：<br>
+[<br>
+1w + 2w + 3w + 4w = 10w<br>
+]</li>
+<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>分析结果</strong>：</p>
+<ul>
+<li>设称得的总重量为 ( S )，</li>
+<li>计算超出的重量：<br>
+[<br>
+S - 10w<br>
+]</li>
+<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
+</ul>
+</li>
+</ol>
+<h3 id="示例："><strong>示例</strong>：</h3>
+<p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
+<ul>
+<li>取样药片总数：( 1 + 2 + 3 + 4 = 10 ) 片，</li>
+<li>理论总重量：( 10w )，</li>
+<li>实际称重：( 10w + 3 )，</li>
+<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
+</ul>
+<p><strong>结论</strong>：<br>
+通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
+<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？">现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2>
+<p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
+<h3 id="步骤：-2"><strong>步骤</strong>：</h3>
+<ol>
+<li>
+<p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
+</li>
+<li>
+<p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
+</li>
+<li>
+<p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
+<ul>
+<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
+<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="结论："><strong>结论</strong>：</h3>
+<p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
+<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？">有两个容器分别是5L与6L,如何精准得到3L的水？</h2>
+<p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。</p>
+<hr>
+<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3>
+<ol>
+<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
+<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
+<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
+<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
+<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
+<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。
+<ul>
+<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3>
+<ol>
+<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
+<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。
+<ul>
+<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
+</ul>
+</li>
+<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
+<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
+</ol>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
+<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
+</ul>
+<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
+]]></content>
+  </entry>
+  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab/Gitea）和简单搭建裸仓库。</p>
@@ -10766,6 +10766,139 @@ S - 10w<br>
 <li>获客成本</li>
 <li></li>
 </ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>软件、工具推荐</title>
+    <url>/2025/05/01/%E8%BD%AF%E4%BB%B6%E3%80%81%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
+    <content><![CDATA[<h1>电脑软件</h1>
+<p>开发软件</p>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>软件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Markdown Monster</td>
+<td>Markdown文本编辑器</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FileZilla</td>
+<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
+</tr>
+</tbody>
+</table>
+<p>系统软件</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>软件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>WinDirStat</td>
+<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Snipaste</td>
+<td>截图贴图软件</td>
+</tr>
+</tbody>
+</table>
+<p>开源工程</p>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>工程</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>TEngine</td>
+<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>UnityGameFramework</td>
+<td>EllanJiang<a href="https://gameframework.cn/">官网</a>,<a href="https://github.com/EllanJiang/UnityGameFramework">git</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>WebGLInput</td>
+<td><a href="https://github.com/kou-yeung/WebGLInput">支持TMP,支持“复制粘贴”支持“tab”和“shift+tab”切换焦点到其他InputField支持移动设备</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>TowerDefense-GameFramework</td>
+<td><a href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo">花桑</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>StarForce</td>
+<td><a href="https://github.com/EllanJiang/StarForce">EllanJiang游戏演示</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>QFramework</td>
+<td><a href="https://github.com/liangxiegame/QFramework">凉鞋</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hybridclr_unity</td>
+<td><a href="https://github.com/focus-creative-games/hybridclr_unity">华佗</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hybridclr_trial</td>
+<td><a href="https://github.com/focus-creative-games/hybridclr_trial">框架</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>GameFramework</td>
+<td>框架工程<a href="https://github.com/EllanJiang/GameFramework">EllanJiang</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>ET-release9.0</td>
+<td><a href="https://github.com/egametang/ET">egametang</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Deer_GameFramework_Wolong</td>
+<td>wolong热更新框架 <a href="https://github.com/It-Life/Deer_GameFramework_Wolong">基于GameFrame+HybridCLR</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>HybridCLR</td>
+<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LuaFramework_UGUI</td>
+<td><a href="https://github.com/jarjin/LuaFramework_UGUI">lua开源框架</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>GameFramework-Next</td>
+<td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
+</tr>
+</tbody>
+</table>
 ]]></content>
   </entry>
   <entry>
@@ -11177,139 +11310,6 @@ S - 10w<br>
 <li>行业分析可找行业报告通读</li>
 <li>产品可找行业头部，腰部，或新颖的产品做分析</li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>软件、工具推荐</title>
-    <url>/2025/05/01/%E8%BD%AF%E4%BB%B6%E3%80%81%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
-    <content><![CDATA[<h1>电脑软件</h1>
-<p>开发软件</p>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>软件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>Markdown Monster</td>
-<td>Markdown文本编辑器</td>
-</tr>
-<tr>
-<td>2</td>
-<td>FileZilla</td>
-<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
-</tr>
-</tbody>
-</table>
-<p>系统软件</p>
-<hr>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>软件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>WinDirStat</td>
-<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Snipaste</td>
-<td>截图贴图软件</td>
-</tr>
-</tbody>
-</table>
-<p>开源工程</p>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>工程</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>TEngine</td>
-<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
-</tr>
-<tr>
-<td>2</td>
-<td>UnityGameFramework</td>
-<td>EllanJiang<a href="https://gameframework.cn/">官网</a>,<a href="https://github.com/EllanJiang/UnityGameFramework">git</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>WebGLInput</td>
-<td><a href="https://github.com/kou-yeung/WebGLInput">支持TMP,支持“复制粘贴”支持“tab”和“shift+tab”切换焦点到其他InputField支持移动设备</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>TowerDefense-GameFramework</td>
-<td><a href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo">花桑</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>StarForce</td>
-<td><a href="https://github.com/EllanJiang/StarForce">EllanJiang游戏演示</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>QFramework</td>
-<td><a href="https://github.com/liangxiegame/QFramework">凉鞋</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>hybridclr_unity</td>
-<td><a href="https://github.com/focus-creative-games/hybridclr_unity">华佗</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>hybridclr_trial</td>
-<td><a href="https://github.com/focus-creative-games/hybridclr_trial">框架</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>GameFramework</td>
-<td>框架工程<a href="https://github.com/EllanJiang/GameFramework">EllanJiang</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>ET-release9.0</td>
-<td><a href="https://github.com/egametang/ET">egametang</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>Deer_GameFramework_Wolong</td>
-<td>wolong热更新框架 <a href="https://github.com/It-Life/Deer_GameFramework_Wolong">基于GameFrame+HybridCLR</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>HybridCLR</td>
-<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
-</tr>
-<tr>
-<td>2</td>
-<td>LuaFramework_UGUI</td>
-<td><a href="https://github.com/jarjin/LuaFramework_UGUI">lua开源框架</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>GameFramework-Next</td>
-<td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
-</tr>
-</tbody>
-</table>
 ]]></content>
   </entry>
 </search>
