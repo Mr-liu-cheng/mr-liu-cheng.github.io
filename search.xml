@@ -1429,6 +1429,8 @@
 ]]></content>
       <categories>
         <category>Hexo</category>
+        <category>GitHub</category>
+        <category>Actions</category>
         <category>GitHub - Actions</category>
       </categories>
       <tags>
@@ -2762,136 +2764,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Jenkins 游戏后端自动化部署流程</title>
     <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
@@ -3076,6 +2948,136 @@
 <li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
 </ul>
 <p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -3409,100 +3411,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Markdown 语法</title>
-    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
-<hr>
-<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
-<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
-<ul>
-<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
-<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
-<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
-</ul>
-<h3 id="PPT-预览"><a href="#PPT-预览" class="headerlink" title="PPT 预览"></a>PPT 预览</h3><p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
-<hr>
-<h2 id="什么是-Markdown"><a href="#什么是-Markdown" class="headerlink" title="什么是 Markdown"></a>什么是 Markdown</h2><p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
-<hr>
-<h3 id="1-制作待办事宜-Todo-列表"><a href="#1-制作待办事宜-Todo-列表" class="headerlink" title="1. 制作待办事宜 Todo 列表"></a>1. 制作待办事宜 <code>Todo</code> 列表</h3><ul>
-<li><input checked disabled type="checkbox"> 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
-<li><input checked disabled type="checkbox"> 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
-<li><input checked disabled type="checkbox"> 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
-<li><input checked disabled type="checkbox"> 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
-<li><input checked disabled type="checkbox"> 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
-<li><input checked disabled type="checkbox"> 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
-<li><input checked disabled type="checkbox"> 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
-<li><input checked disabled type="checkbox"> ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
-<li><input checked disabled type="checkbox"> ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
-<li><input checked disabled type="checkbox"> 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
-<li><input checked disabled type="checkbox"> 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
-<li><input checked disabled type="checkbox"> 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
-</ul>
-<hr>
-<h3 id="2-书写一个质能守恒公式-LaTeX"><a href="#2-书写一个质能守恒公式-LaTeX" class="headerlink" title="2. 书写一个质能守恒公式[^LaTeX]"></a>2. 书写一个质能守恒公式[^LaTeX]</h3><p>$$<br>E&#x3D;mc^2<br>$$</p>
-<hr>
-<h3 id="3-高亮一段代码-code"><a href="#3-高亮一段代码-code" class="headerlink" title="3. 高亮一段代码[^code]"></a>3. 高亮一段代码[^code]</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="4-高效绘制流程图"><a href="#4-高效绘制流程图" class="headerlink" title="4. 高效绘制流程图"></a>4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户请求] --&gt; B[语义解析]</span><br><span class="line">    B --&gt; C[RAG检索]</span><br><span class="line">    </span><br><span class="line">    C --&gt;|✅ 知识库匹配| D[上下文增强]</span><br><span class="line">    C --&gt;|❌ 无匹配| E[任务分解]</span><br><span class="line">    </span><br><span class="line">    D --&gt; E</span><br><span class="line">    </span><br><span class="line">    E --&gt; F&#123;工具选择&#125;</span><br><span class="line">    </span><br><span class="line">    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;</span><br><span class="line">    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;</span><br><span class="line">    </span><br><span class="line">    G --&gt;|✏️ 文件操作| I[读写/替换]</span><br><span class="line">    G --&gt;|🖥️ 系统命令执行| J[执行命令]</span><br><span class="line">    G --&gt;|🔍 代码分析| K[代码分析]</span><br><span class="line">    </span><br><span class="line">    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]</span><br><span class="line">    H --&gt;|📦 访问MCP资源| M[访问MCP资源]</span><br><span class="line">    </span><br><span class="line">    I --&gt; N[结果验证]</span><br><span class="line">    J --&gt; N</span><br><span class="line">    K --&gt; N</span><br><span class="line">    L --&gt; N</span><br><span class="line">    M --&gt; N</span><br><span class="line">    </span><br><span class="line">    N --&gt; O&#123;完成判断&#125;</span><br><span class="line">    </span><br><span class="line">    O --&gt;|✅| P[提交最终结果]</span><br><span class="line">    O --&gt;|❌| E</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="5-高效绘制序列图"><a href="#5-高效绘制序列图" class="headerlink" title="5. 高效绘制序列图"></a>5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">  participant Alice</span><br><span class="line">  participant Bob</span><br><span class="line">  Alice-&gt;John: Hello John, how are you?</span><br><span class="line">  loop Healthcheck</span><br><span class="line">      John-&gt;John: Fight against hypochondria</span><br><span class="line">  end</span><br><span class="line">  Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">  John--&gt;Alice: Great!</span><br><span class="line">  John-&gt;Bob: How about you?</span><br><span class="line">  Bob--&gt;John: Jolly good!</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="6-高效绘制甘特图"><a href="#6-高效绘制甘特图" class="headerlink" title="6. 高效绘制甘特图"></a>6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3><blockquote>
-<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gantt</span><br><span class="line">  title 项目开发流程</span><br><span class="line">  section 项目确定</span><br><span class="line">    需求分析       :a1, 2019-06-22, 3d</span><br><span class="line">    可行性报告     :after a1, 5d</span><br><span class="line">    概念验证       : 5d</span><br><span class="line">  section 项目实施</span><br><span class="line">    概要设计      :2019-07-05  , 5d</span><br><span class="line">    详细设计      :2019-07-08, 10d</span><br><span class="line">    编码          :2019-07-15, 10d</span><br><span class="line">    测试          :2019-07-22, 5d</span><br><span class="line">  section 发布验收</span><br><span class="line">    发布: 2d</span><br><span class="line">    验收: 3d</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="8-绘制表格"><a href="#8-绘制表格" class="headerlink" title="8. 绘制表格"></a>8. 绘制表格</h3><table>
-<thead>
-<tr>
-<th align="left">作品名称</th>
-<th align="left">在线地址</th>
-<th align="center">上线日期</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">逍遥自在轩</td>
-<td align="left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
-<td align="center">2024-04-26</td>
-</tr>
-<tr>
-<td align="left">玉桃文飨轩</td>
-<td align="left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
-<td align="center">2022-08-26</td>
-</tr>
-<tr>
-<td align="left">缘知随心庭</td>
-<td align="left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
-<td align="center">2022-02-26</td>
-</tr>
-<tr>
-<td align="left">静轩之别苑</td>
-<td align="left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
-<td align="center">2019-01-12</td>
-</tr>
-<tr>
-<td align="left">晚晴幽草轩</td>
-<td align="left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
-<td align="center">2014-09-20</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="9-更详细语法说明"><a href="#9-更详细语法说明" class="headerlink" title="9. 更详细语法说明"></a>9. 更详细语法说明</h3><p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
-<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
-<p>最新更新于 2025.04.16</p>
-]]></content>
-      <categories>
-        <category>Markdown</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 环境安装</title>
     <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<h1 id="unity-模块添加"><a href="#unity-模块添加" class="headerlink" title="unity 模块添加"></a>unity 模块添加</h1><p><a href="https://discussions.unity.com/t/unable-to-add-modules-to-installation-in-unity-hub-3-7-0/935934/12">官方解释</a></p>
@@ -3655,6 +3563,100 @@
 <hr>
 <p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Markdown 语法</title>
+    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
+<hr>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
+<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
+<ul>
+<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
+<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
+<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
+</ul>
+<h3 id="PPT-预览"><a href="#PPT-预览" class="headerlink" title="PPT 预览"></a>PPT 预览</h3><p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
+<hr>
+<h2 id="什么是-Markdown"><a href="#什么是-Markdown" class="headerlink" title="什么是 Markdown"></a>什么是 Markdown</h2><p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
+<hr>
+<h3 id="1-制作待办事宜-Todo-列表"><a href="#1-制作待办事宜-Todo-列表" class="headerlink" title="1. 制作待办事宜 Todo 列表"></a>1. 制作待办事宜 <code>Todo</code> 列表</h3><ul>
+<li><input checked disabled type="checkbox"> 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
+<li><input checked disabled type="checkbox"> 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
+<li><input checked disabled type="checkbox"> 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
+<li><input checked disabled type="checkbox"> 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
+<li><input checked disabled type="checkbox"> 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
+<li><input checked disabled type="checkbox"> 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
+<li><input checked disabled type="checkbox"> 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
+<li><input checked disabled type="checkbox"> ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
+<li><input checked disabled type="checkbox"> ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
+<li><input checked disabled type="checkbox"> 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
+<li><input checked disabled type="checkbox"> 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
+<li><input checked disabled type="checkbox"> 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
+</ul>
+<hr>
+<h3 id="2-书写一个质能守恒公式-LaTeX"><a href="#2-书写一个质能守恒公式-LaTeX" class="headerlink" title="2. 书写一个质能守恒公式[^LaTeX]"></a>2. 书写一个质能守恒公式[^LaTeX]</h3><p>$$<br>E&#x3D;mc^2<br>$$</p>
+<hr>
+<h3 id="3-高亮一段代码-code"><a href="#3-高亮一段代码-code" class="headerlink" title="3. 高亮一段代码[^code]"></a>3. 高亮一段代码[^code]</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-高效绘制流程图"><a href="#4-高效绘制流程图" class="headerlink" title="4. 高效绘制流程图"></a>4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户请求] --&gt; B[语义解析]</span><br><span class="line">    B --&gt; C[RAG检索]</span><br><span class="line">    </span><br><span class="line">    C --&gt;|✅ 知识库匹配| D[上下文增强]</span><br><span class="line">    C --&gt;|❌ 无匹配| E[任务分解]</span><br><span class="line">    </span><br><span class="line">    D --&gt; E</span><br><span class="line">    </span><br><span class="line">    E --&gt; F&#123;工具选择&#125;</span><br><span class="line">    </span><br><span class="line">    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;</span><br><span class="line">    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;</span><br><span class="line">    </span><br><span class="line">    G --&gt;|✏️ 文件操作| I[读写/替换]</span><br><span class="line">    G --&gt;|🖥️ 系统命令执行| J[执行命令]</span><br><span class="line">    G --&gt;|🔍 代码分析| K[代码分析]</span><br><span class="line">    </span><br><span class="line">    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]</span><br><span class="line">    H --&gt;|📦 访问MCP资源| M[访问MCP资源]</span><br><span class="line">    </span><br><span class="line">    I --&gt; N[结果验证]</span><br><span class="line">    J --&gt; N</span><br><span class="line">    K --&gt; N</span><br><span class="line">    L --&gt; N</span><br><span class="line">    M --&gt; N</span><br><span class="line">    </span><br><span class="line">    N --&gt; O&#123;完成判断&#125;</span><br><span class="line">    </span><br><span class="line">    O --&gt;|✅| P[提交最终结果]</span><br><span class="line">    O --&gt;|❌| E</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-高效绘制序列图"><a href="#5-高效绘制序列图" class="headerlink" title="5. 高效绘制序列图"></a>5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">  participant Alice</span><br><span class="line">  participant Bob</span><br><span class="line">  Alice-&gt;John: Hello John, how are you?</span><br><span class="line">  loop Healthcheck</span><br><span class="line">      John-&gt;John: Fight against hypochondria</span><br><span class="line">  end</span><br><span class="line">  Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">  John--&gt;Alice: Great!</span><br><span class="line">  John-&gt;Bob: How about you?</span><br><span class="line">  Bob--&gt;John: Jolly good!</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="6-高效绘制甘特图"><a href="#6-高效绘制甘特图" class="headerlink" title="6. 高效绘制甘特图"></a>6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3><blockquote>
+<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gantt</span><br><span class="line">  title 项目开发流程</span><br><span class="line">  section 项目确定</span><br><span class="line">    需求分析       :a1, 2019-06-22, 3d</span><br><span class="line">    可行性报告     :after a1, 5d</span><br><span class="line">    概念验证       : 5d</span><br><span class="line">  section 项目实施</span><br><span class="line">    概要设计      :2019-07-05  , 5d</span><br><span class="line">    详细设计      :2019-07-08, 10d</span><br><span class="line">    编码          :2019-07-15, 10d</span><br><span class="line">    测试          :2019-07-22, 5d</span><br><span class="line">  section 发布验收</span><br><span class="line">    发布: 2d</span><br><span class="line">    验收: 3d</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="8-绘制表格"><a href="#8-绘制表格" class="headerlink" title="8. 绘制表格"></a>8. 绘制表格</h3><table>
+<thead>
+<tr>
+<th align="left">作品名称</th>
+<th align="left">在线地址</th>
+<th align="center">上线日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">逍遥自在轩</td>
+<td align="left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
+<td align="center">2024-04-26</td>
+</tr>
+<tr>
+<td align="left">玉桃文飨轩</td>
+<td align="left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
+<td align="center">2022-08-26</td>
+</tr>
+<tr>
+<td align="left">缘知随心庭</td>
+<td align="left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
+<td align="center">2022-02-26</td>
+</tr>
+<tr>
+<td align="left">静轩之别苑</td>
+<td align="left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
+<td align="center">2019-01-12</td>
+</tr>
+<tr>
+<td align="left">晚晴幽草轩</td>
+<td align="left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
+<td align="center">2014-09-20</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="9-更详细语法说明"><a href="#9-更详细语法说明" class="headerlink" title="9. 更详细语法说明"></a>9. 更详细语法说明</h3><p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
+<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
+<p>最新更新于 2025.04.16</p>
+]]></content>
+      <categories>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
   </entry>
   <entry>
     <title>Unity Jobs System</title>
@@ -4021,7 +4023,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#x2e;&#x75;&#110;&#105;&#116;&#x79;&#46;&#x63;&#111;&#108;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#48;">&#x63;&#111;&#x6d;&#x2e;&#x75;&#110;&#105;&#116;&#x79;&#46;&#x63;&#111;&#108;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#46;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#111;&#108;&#108;&#x61;&#98;&#x2d;&#x70;&#114;&#111;&#x78;&#x79;&#64;&#50;&#x2e;&#x36;&#46;&#x30;">&#x63;&#x6f;&#x6d;&#46;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#111;&#108;&#108;&#x61;&#98;&#x2d;&#x70;&#114;&#111;&#x78;&#x79;&#64;&#50;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5312,6 +5314,109 @@
       </tags>
   </entry>
   <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li><p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
+</li>
+<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
+<li><p>打开 Clash for Windows。</p>
+</li>
+<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong>  </p>
+<ol>
+<li><p>确保规则优先级正确：</p>
+<p>  例如： </p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li><p>测试网络连接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong> </p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git学习</title>
     <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
@@ -5521,109 +5626,6 @@
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
-<ul>
-<li><p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
-</li>
-<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
-</li>
-<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
-<li><p>打开 Clash for Windows。</p>
-</li>
-<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong>  </p>
-<ol>
-<li><p>确保规则优先级正确：</p>
-<p>  例如： </p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li><p>测试网络连接：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-</li>
-</ol>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong> </p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
   </entry>
   <entry>
     <title>hexo 图片加载方案</title>
@@ -7069,6 +7071,208 @@
 <h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
   </entry>
   <entry>
+    <title>unity 插件工具</title>
+    <url>/2025/01/06/unity-%E6%8F%92%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<p><a href="https://blog.csdn.net/weixin_43705303/article/details/126761956">Unity常见插件汇总 csdn</a><br><a href="https://zhuanlan.zhihu.com/p/62471100">知乎</a><br><a href="https://blog.csdn.net/u014361280/article/details/122806834">详细</a><br><a href="https://www.gcores.com/articles/191584#nopop_e204c">cato 使用的20个插件</a></p>
+<h1 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h1><ol>
+<li><strong>Amplify Shader Editor</strong>：图形化着色器编辑器，提供直观的界面和强大的自定义功能，帮助开发者轻松创建复杂的着色器。  </li>
+<li><strong>Asset Hunter PRO</strong>：优化Unity项目资源的工具，帮助检测和删除未使用的资产，提升项目性能和减少包体积。  </li>
+<li><strong>AssetBundleManager</strong>：用于高效管理和加载Unity AssetBundle的工具，简化资源打包与加载的流程。  </li>
+<li><strong>Build Manager + Version</strong>：一体化构建管理工具，支持版本控制、构建配置和自动化构建流程，提升开发效率。  </li>
+<li><strong>Build Report Tool</strong>：生成Unity构建报告，提供详细的构建过程分析，帮助优化构建时间和资源使用。  </li>
+<li><strong>DOTween</strong>：高效的动画和时间控制库，支持平滑的UI和物体动画，适用于各种2D&#x2F;3D动画。  </li>
+<li><strong>DOTween Pro</strong>：DOTween的增强版，提供更多高级动画功能，如路径动画和复杂的事件管理。  </li>
+<li><strong>Editor Console Pro</strong>：改进Unity控制台工具，增强日志查看、错误过滤和调试功能，提升开发体验。  </li>
+<li><strong>Easy Editor</strong>：简化Unity编辑器界面的插件，提供自定义的编辑器窗口、属性面板和快捷操作。  </li>
+<li><strong>Easy Save 3</strong>：用于Unity中保存和加载数据的工具，支持序列化、加密和云存储功能。  </li>
+<li><strong>Easy Touch Controls</strong>：提供易于实现的触摸控制系统，适合移动平台游戏的开发。  </li>
+<li><strong>EasyJoystick</strong>：简化虚拟摇杆控制系统，支持自定义输入和响应式设计，适合手机游戏。  </li>
+<li><strong>FX Maker</strong>：为Unity提供强大且易用的特效创建工具，支持粒子系统、光影效果和自定义动画。  </li>
+<li><strong>GameFlow</strong>：无代码游戏编程工具，提供可视化流程图，方便设计师和程序员创建游戏逻辑。  </li>
+<li><strong>Graphy</strong>：可视化图表工具，支持创建动态图表、数据分析和UI设计，适合数据驱动的游戏。  </li>
+<li><strong>Graph And Chart</strong>：强大的图表库，支持多种类型的图表和数据展示，适用于分析类游戏。  </li>
+<li><strong>InGame Debug Console</strong>：游戏内调试控制台，允许开发者在运行时查看日志、执行命令和调试数据。  </li>
+<li><strong>LeanTouch</strong>：简化触摸输入处理的工具，支持多点触控、拖动、缩放等操作，适用于移动设备游戏。  </li>
+<li><strong>LeanTween</strong>：轻量级动画库，专注于高效的时间控制与UI动画，适用于各种类型的游戏。  </li>
+<li><strong>Odin Inspector</strong>：强大的Unity编辑器扩展，提升Inspector窗口功能，支持自定义属性面板和增强的可视化工具。  </li>
+<li><strong>Playmaker</strong>：可视化编程工具，使用状态机设计游戏逻辑，无需编写代码即可实现复杂功能。  </li>
+<li><strong>PoolManager</strong>：对象池管理工具，优化游戏中对象的实例化与回收，减少性能开销。  </li>
+<li><strong>ProBuilder</strong>：Unity内建的3D建模工具，支持快速创建和编辑3D模型，适用于关卡设计和原型制作。  </li>
+<li><strong>Pro Camera 2D</strong>：2D相机插件，提供视差滚动、镜头特效和摄像机控制，适用于2D游戏项目。  </li>
+<li><strong>QHierarchy</strong>：增强Unity层次面板的工具，提供快捷操作和自定义视图，提升开发效率。  </li>
+<li><strong>SRDebugger</strong>：实时调试工具，支持游戏内调试、实时修改游戏参数，适合实时监控和调试游戏状态。  </li>
+<li><strong>Stan’s Assets</strong>：提供多个Unity工具集，包括优化、UI、特效和其他增强功能，支持多种游戏开发需求。  </li>
+<li><strong>Toolbar Extender</strong>：自定义Unity工具栏的插件，允许开发者自定义快捷按钮和操作，提高工作效率。  </li>
+<li><strong>UnIDE</strong>：一款集成开发环境，支持C#代码编写、调试、版本控制等功能，适合Unity开发者。  </li>
+<li><strong>UniTask</strong>：异步编程工具，基于C# Task的优化版本，提升Unity项目的异步执行效率。  </li>
+<li><strong>UniWebView</strong>：轻量级WebView插件，支持Unity中嵌入网页，适用于集成Web内容和互动。  </li>
+<li><strong>UVS</strong>：用于生成和管理纹理UV映射的工具，简化3D模型的UV操作和纹理映射过程。</li>
+</ol>
+<h1 id="UI-交互"><a href="#UI-交互" class="headerlink" title="UI &amp; 交互"></a>UI &amp; 交互</h1><ol>
+<li><strong>2D Toolkit</strong>：强大的2D游戏开发工具包，提供精灵管理、网格生成、物理支持和动态字体渲染功能，适合高效创建2D游戏内容。  </li>
+<li><strong>Curved UI</strong>：UI曲面插件，用于将Unity的UI组件贴合到弧形、球形或其他曲面上，适合VR、AR和特殊UI需求项目。  </li>
+<li><strong>Doozy UI Manager</strong>：UI管理框架，支持动画控制、导航逻辑和事件系统，可快速创建复杂的用户界面。  </li>
+<li><strong>Dialogue System for Unity</strong>：对话系统插件，支持分支对话、任务管理和多语言功能，适合RPG、冒险或叙事类游戏。  </li>
+<li><strong>FairyGUI</strong>：跨平台UI开发框架，支持动态UI设计、动画和与外部工具的无缝集成，适合复杂的UI项目。  </li>
+<li><strong>Highlighting System</strong>：物体高亮插件，提供动态边缘描边和高光效果，用于突出选中或交互对象。  </li>
+<li><strong>I2 Localization</strong>：本地化管理工具，支持多语言文本、语音和资源切换，简化全球化开发过程。  </li>
+<li><strong>Inventory Pro</strong>：全面的库存管理系统，支持物品分类、装备、交易和任务物品管理，适合RPG和冒险类游戏。  </li>
+<li><strong>UGUI MiniMap</strong>：迷你地图插件，支持实时更新、标记和动态缩放功能，提升游戏导航体验。  </li>
+<li><strong>Text Animator for Unity</strong>：文本动画插件，提供类型机效果、渐显和抖动等动态文字展示，增强UI互动性和视觉效果。</li>
+</ol>
+<h1 id="渲染-特效"><a href="#渲染-特效" class="headerlink" title="渲染 &amp; 特效"></a>渲染 &amp; 特效</h1><ol>
+<li><strong>All In 1 Vfx Toolkit</strong>：多功能视觉特效工具包，涵盖粒子、爆炸、烟雾等特效，适合多种类型游戏的VFX需求，支持高性能和可定制化。  </li>
+<li><strong>Amplify Shader Pack</strong>：高性能的着色器集合，支持复杂材质效果，包括PBR、水体、光照和自定义Shader，适合视觉增强和图形优化。  </li>
+<li><strong>Best HTTP&#x2F;2</strong>：强大的HTTP和WebSocket库，支持HTTP&#x2F;2协议，提供快速、稳定的网络连接，适合多人在线游戏或实时服务。  </li>
+<li><strong>BIG Environment Pack Vol.2</strong>：环境美术资源包，包括地形、树木、岩石等自然元素，适合开放世界、RPG或生存类游戏的场景设计。  </li>
+<li><strong>Card Effect Shader</strong>：用于卡牌游戏的着色器，支持动态光效、渐变和发光等效果，提升卡牌外观和视觉表现力。  </li>
+<li><strong>Cartoon FX 2 Remaster</strong>：卡通风格的粒子特效包，包括爆炸、火焰、魔法等特效，适合风格化游戏项目。  </li>
+<li><strong>Colorful FX</strong>：后处理特效工具，提供色彩校正、饱和度调整和滤镜效果，提升画面质量和视觉风格。  </li>
+<li><strong>Combu 3</strong>：多人游戏后端解决方案，支持玩家管理、存档、排行榜和云存储功能，方便创建联网游戏。  </li>
+<li><strong>Final IK</strong>：强大的反向动力学插件，用于实现角色的自然动作和动态动画调整，支持全身和局部IK。  </li>
+<li><strong>Fingers - Touch Gestures for Unity</strong>：触控手势插件，支持拖动、缩放和旋转等常见手势，适合移动设备交互开发。  </li>
+<li><strong>Mobile Fast Shadow</strong>：专为移动设备优化的快速阴影插件，提供高性能的实时阴影渲染，适合移动游戏场景。  </li>
+<li><strong>Next-Gen Soft-Shadows</strong>：高级软阴影插件，支持动态光照和逼真的阴影模糊效果，提升画面真实感。  </li>
+<li><strong>Stylized Water Shader</strong>：高性能风格化水体着色器，提供实时波纹、反射和颜色渐变效果，适合卡通或低多边形风格游戏。  </li>
+<li><strong>Toon Shader</strong>：卡通渲染着色器，支持边缘描边、高光和渐变效果，用于风格化渲染项目。  </li>
+<li><strong>Volumetric Fog &amp; Mist</strong>：体积雾和烟雾效果插件，提供动态光照、深度感和雾气模拟，增强环境氛围表现。  </li>
+<li><strong>Water 2D Tool</strong>：二维水体模拟工具，支持波纹、流动和物理互动效果，适合2D游戏的水体表现。  </li>
+<li><strong>Fast Shadows</strong>：轻量级阴影解决方案，适用于低性能设备的快速渲染，提供基础阴影支持而不影响性能。</li>
+</ol>
+<h1 id="动画-物理"><a href="#动画-物理" class="headerlink" title="动画 &amp; 物理"></a>动画 &amp; 物理</h1><ol>
+<li><strong>Dynamic Bone</strong>：为角色模型的骨骼创建逼真的物理效果插件，可用于实现头发、衣物和尾巴等部位的动态运动，支持实时调整和高效计算。  </li>
+<li><strong>Edy’s Vehicle Physics</strong>：专业级车辆物理引擎，支持真实车辆操控、碰撞和悬挂模拟，适合赛车、模拟驾驶和开放世界项目开发。  </li>
+<li><strong>Emerald AI</strong>：多功能AI系统，支持敌人和NPC的智能行为，提供状态机、导航、战斗和动态反应功能，易于集成到各种游戏中。  </li>
+<li><strong>Final IK</strong>：强大的反向动力学（IK）插件，支持全身IK、手部IK和LookAt等多种功能，用于实现角色的自然动作和动态动画调整。  </li>
+<li><strong>Fingers - Touch Gestures for Unity</strong>：多点触控手势识别插件，支持捏合、拖拽、旋转等常见手势，适合移动端开发，易于集成和扩展。  </li>
+<li><strong>PuppetMaster</strong>：高级角色布娃娃物理插件，通过动态模拟角色受力和碰撞行为，提供真实的互动效果，可与Final IK配合使用。  </li>
+<li><strong>Tail Animator</strong>：为角色的尾巴、触角和其他附属部分提供动态动画效果的工具，支持物理模拟和自动运动，适合增加生物角色的表现力。  </li>
+<li><strong>UMotion Pro - Animation Editor</strong>：强大的动画编辑器，支持直接在Unity中创建和修改动画，提供时间轴编辑、关键帧设置和骨骼调整功能。  </li>
+<li><strong>Smooth Sync</strong>：高效的网络同步工具，减少多人游戏中位置和旋转的同步延迟，提供平滑的物理和动画效果，提升网络性能。  </li>
+<li><strong>Spine Animator</strong>：为骨骼动画创建逼真的动态效果，支持自动摆动、柔性移动和物理模拟，增强角色动画的表现力。</li>
+</ol>
+<h1 id="路径规划-AI"><a href="#路径规划-AI" class="headerlink" title="路径规划 &amp; AI"></a>路径规划 &amp; AI</h1><ol>
+<li><em><em>A</em> Pathfinding Project Pro</em><em>：功能强大的路径寻路工具，基于A</em>算法，支持网格、点和导航网等多种寻路模式，适用于复杂场景的AI移动路径规划。  </li>
+<li><strong>Behavior Designer - Behavior Trees for Everyone</strong>：行为树设计工具，帮助开发者为AI角色设计复杂的行为逻辑，支持直观的可视化编辑和灵活的扩展。  </li>
+<li><strong>Behavior Designer - Movement Pack</strong>：Behavior Designer的扩展包，提供多种预定义的AI运动行为，例如跟随、逃避、巡逻等，便于快速实现AI控制。  </li>
+<li><strong>Corgi Engine</strong>：高性能2D&#x2F;2.5D游戏引擎，提供丰富的功能和模板，适合开发平台跳跃、动作冒险和射击游戏，支持物理交互和动画。  </li>
+<li><strong>Emerald AI</strong>：先进的AI解决方案，支持敌人、动物和NPC的行为设计，具有状态机、动态导航、战斗系统等功能，易于集成到任何游戏中。  </li>
+<li><strong>Rex Engine: Classic 2D Platformer Engine</strong>：经典的2D平台游戏引擎，提供物理控制、角色动画和关卡编辑功能，适合快速创建复古风格的游戏项目。  </li>
+<li><strong>GameFlow</strong>：通用的可视化逻辑编辑工具，无需编程即可实现复杂的游戏逻辑和交互，适用于快速原型设计和小型项目开发。</li>
+</ol>
+<h1 id="网络-多人游戏"><a href="#网络-多人游戏" class="headerlink" title="网络 &amp; 多人游戏"></a>网络 &amp; 多人游戏</h1><ol>
+<li><strong>Agora Video SDK for Unity</strong>：用于在Unity项目中实现高质量视频通话与实时直播的开发工具，支持跨平台低延迟通信，适合多人互动和视频协作应用。  </li>
+<li><strong>Blockchain SDK by Enjin</strong>：区块链集成工具，支持创建和管理NFT、数字资产交易等，适用于游戏资产的区块链化和玩家经济生态系统建设。  </li>
+<li><strong>CodeGuard</strong>：代码保护工具，通过混淆、加密和其他安全措施防止逆向工程和代码泄露，增强Unity项目的安全性。  </li>
+<li><strong>Photon PUN+ Classic</strong>：经典的多人联网解决方案，提供可靠的同步和实时通信功能，适用于快速构建中小型在线多人游戏。  </li>
+<li><strong>PUN 2 - FREE</strong>：Photon Unity Networking 2免费版，支持高效的实时同步，易于上手，适用于开发在线多人游戏和实时互动应用。  </li>
+<li><strong>Rewired</strong>：高级输入系统，支持多种控制设备与平台，提供精确的输入映射和自定义选项，是Unity游戏开发的高效输入解决方案。  </li>
+<li><strong>WebRTC Video Chat</strong>：基于WebRTC协议的实时视频聊天插件，支持点对点音视频通信，适用于社交应用、虚拟会议和在线教育项目。</li>
+</ol>
+<h1 id="音频"><a href="#音频" class="headerlink" title="音频"></a>音频</h1><ol>
+<li><strong>Koreographer Professional Edition</strong>：高级音乐同步工具，通过精准的节奏事件触发游戏行为，实现音频与游戏场景的深度互动，适用于音乐游戏和节奏驱动项目。  </li>
+<li><strong>Master Audio</strong>：强大的音频管理系统，支持多通道混音、音效动态管理和3D音频，适合构建复杂的游戏音效环境和优化音频性能。  </li>
+<li><strong>RT-Voice PRO</strong>：实时文本转语音插件，支持多种语言和语音合成选项，适用于动态内容生成的游戏、教育软件和虚拟助手开发。  </li>
+<li><strong>SALSA LipSync Suite</strong>：高效的实时嘴型同步工具，支持语音音频或文本输入，实现角色嘴部动画与音频的精确匹配，适用于对话驱动的游戏和动画项目。</li>
+</ol>
+<h1 id="AR-VR"><a href="#AR-VR" class="headerlink" title="AR&#x2F;VR"></a>AR&#x2F;VR</h1><ol>
+<li><strong>AR + GPS Location</strong>：提供基于GPS位置的增强现实功能，支持地理标记和实时场景交互，适用于位置驱动的AR应用和游戏开发。  </li>
+<li><strong>AR Camera Lite — AR Engine — Gyroscope &amp; Accelerometer — Augmented Reality</strong>：轻量级AR引擎，利用陀螺仪和加速度计实现设备追踪和增强现实效果，适合快速开发基础AR功能的应用。  </li>
+<li><strong>AR Foundation Remote</strong>：为AR Foundation项目提供远程调试功能，可以实时查看AR场景在不同设备上的效果，加快开发和测试过程。  </li>
+<li><strong>Vuforia Core Samples</strong>：Vuforia增强现实引擎的示例项目，展示了物体追踪、图像识别和空间映射等核心功能，适合学习和快速实现AR项目。  </li>
+<li><strong>VR Easy</strong>：简化VR开发流程的插件，提供直观的交互工具和组件，帮助开发者快速构建沉浸式虚拟现实体验。  </li>
+<li><strong>VR Interaction Framework</strong>：全面的VR交互框架，支持抓取、投掷和按钮交互等常见功能，适用于开发高交互性的VR应用。  </li>
+<li><strong>VR Panorama 360 PRO Renderer</strong>：用于生成高质量360度全景图像和视频的工具，适合VR电影、场景展示和虚拟旅游项目。  </li>
+<li><strong>VR UIKit</strong>：VR界面构建工具，提供预制组件和样式模板，帮助开发者快速设计和实现直观的VR用户界面。</li>
+</ol>
+<h1 id="场景-地图"><a href="#场景-地图" class="headerlink" title="场景 &amp; 地图"></a>场景 &amp; 地图</h1><ol>
+<li><strong>Gaia Pro 2021</strong>：功能强大的地形生成工具，支持程序化生成、实时编辑和场景优化，适用于快速创建高质量的游戏世界与环境场景。  </li>
+<li><strong>MapMagic World Generator</strong>：动态地形生成工具，支持程序化地形、无限世界扩展和实时编辑，适合开放世界和动态加载场景的游戏开发。  </li>
+<li><strong>Terrain Composer</strong>：地形生成和编辑插件，提供多层级地形控制和批量操作功能，可快速生成复杂地形，优化大规模场景的制作流程。  </li>
+<li><strong>The Vegetation Engine</strong>：植被着色系统，支持动态风力效果、季节变化和材质优化，适用于创建高性能且美观的自然环境。  </li>
+<li><strong>GO Map - 3D Map for AR Gaming</strong>：一款适用于AR游戏的3D地图生成插件，支持与地理信息数据的集成，适合开发基于真实地理位置的AR场景。  </li>
+<li><strong>Fantasy Environment</strong>：提供奇幻风格环境的资源包，包括植被、地形材质和建筑模型，适用于构建魔幻主题的游戏场景。  </li>
+<li><strong>Cemetery Starter Pack</strong>：墓地主题的环境资源包，包含墓碑、雕像和植被等，适合制作恐怖、哥特风格或黑暗主题的游戏场景。  </li>
+<li><strong>Polyquest Worlds Full Pack Vol.1</strong>：低多边形风格的环境资源包，包含地形、植被和建筑素材，适合开发轻量化和卡通风格的游戏项目。</li>
+</ol>
+<h1 id="模型-材质处理"><a href="#模型-材质处理" class="headerlink" title="模型 &amp; 材质处理"></a>模型 &amp; 材质处理</h1><ol>
+<li><strong>AnyPortrait</strong>：一款2D角色动画制作工具，支持骨骼动画、网格变形和物理模拟，适用于快速创建高质量的2D游戏角色动画。  </li>
+<li><strong>FBX Utilities</strong>：提供强大的FBX文件导入、导出和优化工具，支持模型格式转换和自动调整，适用于处理外部3D资产的项目需求。  </li>
+<li><strong>Mega-Fiers</strong>：模型变形插件，支持网格扭曲、变形动画和骨骼绑定优化，适用于创建独特的3D效果和动态变形场景。  </li>
+<li><strong>Mesh Baker</strong>：高效的网格和纹理合并工具，可减少绘制调用和优化性能，适合处理复杂场景中的多个模型和贴图。  </li>
+<li><strong>Paint in 3D</strong>：支持在3D模型表面直接绘画的工具，提供多种笔刷效果和实时预览功能，适用于创建贴图和手绘风格的材质。  </li>
+<li><strong>UModeler - Model your World</strong>：集建模和关卡设计于一体的插件，支持在Unity内创建和编辑3D模型，适合快速迭代场景与原型设计。  </li>
+<li><strong>Surforge</strong>：高效的PBR材质制作工具，支持在3D模型上直接绘制和调整材质细节，适用于快速生成游戏所需的高质量贴图。  </li>
+<li><strong>Stylized Water Shader</strong>：水体特效材质插件，支持卡通风格的动态水流、反射和折射效果，适用于增强游戏场景的视觉表现力。  </li>
+<li><strong>Shape</strong>：UI设计和动画工具，支持创建复杂的矢量图形、几何动画和路径效果，适用于2D游戏中的UI界面和动态效果设计。</li>
+</ol>
+<h1 id="杂项功能"><a href="#杂项功能" class="headerlink" title="杂项功能"></a>杂项功能</h1><ol>
+<li><strong>Anti-Cheat Toolkit</strong>：提供全面的防作弊工具集，检测并防止各种游戏作弊行为，包括速度修改、内存篡改和无敌模式等，适合保障多人在线游戏的公平性。  </li>
+<li><strong>Asset Hunter PRO</strong>：扫描并清理未使用的资源，帮助开发者减少项目体积，提高构建效率，同时避免不必要的资源浪费，适用于优化大型Unity项目。  </li>
+<li><strong>CodeGuard</strong>：为Unity项目提供代码保护功能，通过加密和混淆技术防止代码反编译和逆向工程，保护知识产权和项目安全性。  </li>
+<li><strong>Obfuscator</strong>：代码混淆工具，通过打乱代码结构和变量命名，增加反编译的难度，适用于保护Unity C#代码免受未经授权的修改和泄露。  </li>
+<li><strong>SG Patcher - Update your game easily</strong>：提供内置更新功能，支持热更新和增量更新，方便玩家无需重新下载整个游戏即可获得最新内容。  </li>
+<li><strong>Simple LOD</strong>：自动生成简化模型的工具，支持多边形优化和动态LOD切换，适合提升大规模场景渲染性能并减少内存占用。  </li>
+<li><strong>Smart Library</strong>：资源管理插件，提供快速搜索、分类和组织功能，帮助开发者更高效地管理和使用项目资源库中的内容。  </li>
+<li><strong>Stratis Unity SDK</strong>：为Unity集成区块链技术的开发工具，支持智能合约交互、加密货币支付和去中心化应用开发，适用于区块链游戏项目。  </li>
+<li><strong>UEvent</strong>：轻量级事件管理系统，支持松耦合的事件订阅与发布，简化项目逻辑并提高代码的可维护性和可扩展性。  </li>
+<li><strong>UFPS: Ultimate FPS</strong>：第一人称射击游戏开发工具，包含角色控制、武器系统和物理模拟，提供快速创建高品质FPS游戏的解决方案。  </li>
+<li><strong>UMMORPG</strong>：多功能MMORPG框架，提供角色管理、任务系统、技能树和多人网络功能，适合快速开发大型多人在线角色扮演游戏。  </li>
+<li><strong>UMOBA</strong>：多人在线战斗竞技游戏框架，支持角色控制、技能释放和服务器管理，帮助开发者快速搭建MOBA游戏的核心功能。  </li>
+<li><strong>Voxel Master</strong>：体素建模与场景生成工具，支持体素化地形编辑、动态破坏和实时渲染，适用于沙盒类游戏和体素艺术创作。</li>
+</ol>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ol>
+<li><strong>3D WebView</strong>：在Unity中嵌入3D场景中的网页浏览器插件，支持多平台使用，包括VR和移动设备，适用于展示网页内容、流媒体播放及Web功能交互，集成简单且高性能。  </li>
+<li><strong>Adventure Creator</strong>：强大的无代码冒险游戏开发工具，适合创建2D、3D冒险游戏，提供场景管理、对话设计、角色控制等功能，支持快速开发和跨平台发布。  </li>
+<li><strong>ChainSafe Gaming SDK</strong>：提供Web3区块链功能集成，包括NFT、智能合约和加密货币交易支持，专为区块链游戏开发者设计，助力创建创新的去中心化游戏体验。  </li>
+<li><strong>Cross Platform Replay Kit</strong>：录制和分享游戏回放的工具，支持iOS和Android平台，包含视频剪辑和存储功能，增强社交传播能力并提升用户黏性。  </li>
+<li><strong>DOOZY UI Manager</strong>：专业UI管理解决方案，支持复杂动画、状态机逻辑和UI组件的快速开发，提升游戏和应用界面的动态表现力与用户体验。  </li>
+<li><strong>Dynamic Bone</strong>：为角色的头发、衣物等附加动态物理效果，模拟逼真的动作反馈，适用于增强角色动画的真实感和细腻表现。  </li>
+<li><strong>Enviro - Sky and Weather</strong>：一款环境系统插件，提供真实的天气模拟、昼夜循环及环境光效，适合构建沉浸式开放世界和动态环境变化的场景。  </li>
+<li><strong>EPO</strong>：粒子效果优化工具，提供高效渲染、复杂视觉效果增强及性能提升功能，适用于需要高质量粒子特效的游戏项目。  </li>
+<li><strong>Explosion Sound Effects</strong>：高质量的爆炸音效资源包，适合动作、战争和科幻类游戏场景，包含多种音效组合，为游戏提供强烈的听觉冲击力。  </li>
+<li><strong>Feel</strong>：为游戏添加震动、动画和反馈效果的工具，提供预设效果和自定义支持，显著提升游戏互动的精致度和用户沉浸体验。  </li>
+<li><strong>Fps Graph Analyzer</strong>：帧率监测与性能分析工具，可实时显示游戏帧率波动、资源消耗数据，帮助开发者定位性能瓶颈并优化流畅性。  </li>
+<li><strong>Fullscreen Editor</strong>：提供Unity编辑器全屏模式，减少界面干扰，提升开发专注度和效率，适合在大屏幕或多显示器环境下开发项目。  </li>
+<li><strong>Highlighting System</strong>：为游戏对象添加高亮效果，支持动态和静态对象处理，增强交互提示的视觉表现，适用于各种类型的游戏交互设计。  </li>
+<li><strong>Hierarchy 2</strong>：增强Unity层级视图管理的插件，支持对象分组、颜色标记和快捷导航，显著提升复杂项目中对象管理和组织效率。  </li>
+<li><strong>Lean Touch</strong>：多点触控和手势交互解决方案，支持移动设备缩放、旋转等操作，适用于增强用户体验的移动游戏和AR&#x2F;VR项目。  </li>
+<li><strong>Loxodon Framework Bundle</strong>：提供数据绑定、资源管理、UI框架等模块化开发工具，简化Unity项目架构设计，适用于跨平台游戏开发。  </li>
+<li><strong>Lua Framework</strong>：为Unity集成Lua脚本支持，提供动态逻辑实现与热更新功能，适合快速开发、更新频繁或需要扩展性的游戏项目。  </li>
+<li><strong>Mega-Fiers</strong>：强大的模型变形工具，支持复杂的几何变换、动画和顶点编辑，适用于制作特效、动画和独特的视觉效果。  </li>
+<li><strong>Mobile Fast Shadow</strong>：针对移动设备优化的实时阴影工具，提供低性能消耗的光影效果，适合需要高性能运行的移动端游戏。  </li>
+<li><strong>Nice Vibration</strong>：添加触觉反馈功能的插件，支持Android和iOS设备，增强玩家与设备的交互感受，适合休闲游戏和应用开发。  </li>
+<li><strong>Octave3D-Level Design</strong>：快速搭建3D场景工具，支持模块化场景设计和精确布局编辑，加速关卡和场景的开发过程。  </li>
+<li><strong>Platformer PRO 2</strong>：2D平台游戏开发工具，提供物理、角色控制和敌人AI系统，适合快速开发具有复杂关卡的横版动作游戏。  </li>
+<li><strong>Rainbow Folders 2</strong>：为Unity项目文件夹添加颜色和图标标记功能，改善可视化管理，提高项目文件夹的可读性与组织效率。  </li>
+<li><strong>Rainbow Hierarchy 2</strong>：增强Unity层级视图的管理工具，支持自定义颜色标记和图标，提升复杂项目中对象的分类管理效率。  </li>
+<li><strong>Race Track Generator</strong>：赛道生成工具，支持曲线定制和地形编辑，快速创建竞速游戏场景并优化玩家驾驶体验。  </li>
+<li><strong>Rewired</strong>：专业的输入管理插件，支持多种设备输入配置和自定义，适用于需要复杂操作支持的游戏项目。  </li>
+<li><strong>RPG Character Mecanim Animation Pack</strong>：丰富的角色动画资源包，涵盖战斗、休息、互动动作，适合RPG和冒险类游戏的角色设计。  </li>
+<li><strong>RPG Map Editor</strong>：RPG地图编辑器，提供地形创建、物体放置和路径规划功能，适合快速生成RPG游戏场景地图。  </li>
+<li><strong>Shape</strong>：支持几何形状创建和动画编辑，适合制作独特视觉效果的游戏开发者和艺术创作者。  </li>
+<li><strong>Smooth Sync</strong>：网络位置同步插件，提供高效的多人游戏物体同步，确保联机游戏中的位置和旋转平滑更新。  </li>
+<li><strong>Spine Animator</strong>：为Spine骨骼动画添加动态物理效果的插件，提升角色动作表现的自然性和生动感。  </li>
+<li><strong>Stan’s Assets</strong>：移动开发工具集，整合广告、插件和本地化服务，适合跨平台移动游戏开发项目。  </li>
+<li><strong>Surforge</strong>：高效PBR纹理生成工具，支持实时纹理绘制、材质生成和模型贴图，适合高质量美术资源制作。  </li>
+<li><strong>Terrain Composer</strong>：地形生成工具，支持多层次编辑、噪声控制和场景优化，适用于快速设计大型开放世界地形。  </li>
+<li><strong>Text Animator for Unity</strong>：为文本添加动画效果的工具，支持多种字体和特效，显著提升UI的动态视觉表现力。  </li>
+<li><strong>Toon Shader</strong>：卡通风格着色工具，支持非真实感渲染和动态阴影设置，适合制作动画、卡通类游戏或美术项目。</li>
+</ol>
+<h1 id="SDK"><a href="#SDK" class="headerlink" title="SDK"></a>SDK</h1><ol>
+<li><p><a href="/2025/01/08/Lean-Cloud/">LeanCloud</a></p>
+<p> LeanCloud 是一个 后端即服务（BaaS，Backend as a Service） 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity 面试总结</title>
     <url>/2025/02/20/unity-%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h1 id="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"><a href="#IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？" class="headerlink" title="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"></a>IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？</h1><p>IT 技术类岗位的面试通常包括多个环节，具体的面试轮次、问题类型和考察重点取决于 <strong>公司规模、职位级别（初级&#x2F;中级&#x2F;高级）、技术方向（前端&#x2F;后端&#x2F;全栈&#x2F;算法&#x2F;架构&#x2F;游戏开发等）</strong>。以下是 <strong>一般 IT 技术岗面试流程、可能的问题类型、考察点以及面试官的期望</strong>。  </p>
@@ -7381,208 +7585,6 @@
 <hr>
 <h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>HR提问离职原因，主要是为了评估候选人的职业动机、稳定性、工作态度和与公司文化的契合度。通过积极、合理的回答，你可以展现自己的职业素养和发展潜力，增加面试成功率。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>unity 插件工具</title>
-    <url>/2025/01/06/unity-%E6%8F%92%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
-    <content><![CDATA[<p><a href="https://blog.csdn.net/weixin_43705303/article/details/126761956">Unity常见插件汇总 csdn</a><br><a href="https://zhuanlan.zhihu.com/p/62471100">知乎</a><br><a href="https://blog.csdn.net/u014361280/article/details/122806834">详细</a><br><a href="https://www.gcores.com/articles/191584#nopop_e204c">cato 使用的20个插件</a></p>
-<h1 id="开发工具"><a href="#开发工具" class="headerlink" title="开发工具"></a>开发工具</h1><ol>
-<li><strong>Amplify Shader Editor</strong>：图形化着色器编辑器，提供直观的界面和强大的自定义功能，帮助开发者轻松创建复杂的着色器。  </li>
-<li><strong>Asset Hunter PRO</strong>：优化Unity项目资源的工具，帮助检测和删除未使用的资产，提升项目性能和减少包体积。  </li>
-<li><strong>AssetBundleManager</strong>：用于高效管理和加载Unity AssetBundle的工具，简化资源打包与加载的流程。  </li>
-<li><strong>Build Manager + Version</strong>：一体化构建管理工具，支持版本控制、构建配置和自动化构建流程，提升开发效率。  </li>
-<li><strong>Build Report Tool</strong>：生成Unity构建报告，提供详细的构建过程分析，帮助优化构建时间和资源使用。  </li>
-<li><strong>DOTween</strong>：高效的动画和时间控制库，支持平滑的UI和物体动画，适用于各种2D&#x2F;3D动画。  </li>
-<li><strong>DOTween Pro</strong>：DOTween的增强版，提供更多高级动画功能，如路径动画和复杂的事件管理。  </li>
-<li><strong>Editor Console Pro</strong>：改进Unity控制台工具，增强日志查看、错误过滤和调试功能，提升开发体验。  </li>
-<li><strong>Easy Editor</strong>：简化Unity编辑器界面的插件，提供自定义的编辑器窗口、属性面板和快捷操作。  </li>
-<li><strong>Easy Save 3</strong>：用于Unity中保存和加载数据的工具，支持序列化、加密和云存储功能。  </li>
-<li><strong>Easy Touch Controls</strong>：提供易于实现的触摸控制系统，适合移动平台游戏的开发。  </li>
-<li><strong>EasyJoystick</strong>：简化虚拟摇杆控制系统，支持自定义输入和响应式设计，适合手机游戏。  </li>
-<li><strong>FX Maker</strong>：为Unity提供强大且易用的特效创建工具，支持粒子系统、光影效果和自定义动画。  </li>
-<li><strong>GameFlow</strong>：无代码游戏编程工具，提供可视化流程图，方便设计师和程序员创建游戏逻辑。  </li>
-<li><strong>Graphy</strong>：可视化图表工具，支持创建动态图表、数据分析和UI设计，适合数据驱动的游戏。  </li>
-<li><strong>Graph And Chart</strong>：强大的图表库，支持多种类型的图表和数据展示，适用于分析类游戏。  </li>
-<li><strong>InGame Debug Console</strong>：游戏内调试控制台，允许开发者在运行时查看日志、执行命令和调试数据。  </li>
-<li><strong>LeanTouch</strong>：简化触摸输入处理的工具，支持多点触控、拖动、缩放等操作，适用于移动设备游戏。  </li>
-<li><strong>LeanTween</strong>：轻量级动画库，专注于高效的时间控制与UI动画，适用于各种类型的游戏。  </li>
-<li><strong>Odin Inspector</strong>：强大的Unity编辑器扩展，提升Inspector窗口功能，支持自定义属性面板和增强的可视化工具。  </li>
-<li><strong>Playmaker</strong>：可视化编程工具，使用状态机设计游戏逻辑，无需编写代码即可实现复杂功能。  </li>
-<li><strong>PoolManager</strong>：对象池管理工具，优化游戏中对象的实例化与回收，减少性能开销。  </li>
-<li><strong>ProBuilder</strong>：Unity内建的3D建模工具，支持快速创建和编辑3D模型，适用于关卡设计和原型制作。  </li>
-<li><strong>Pro Camera 2D</strong>：2D相机插件，提供视差滚动、镜头特效和摄像机控制，适用于2D游戏项目。  </li>
-<li><strong>QHierarchy</strong>：增强Unity层次面板的工具，提供快捷操作和自定义视图，提升开发效率。  </li>
-<li><strong>SRDebugger</strong>：实时调试工具，支持游戏内调试、实时修改游戏参数，适合实时监控和调试游戏状态。  </li>
-<li><strong>Stan’s Assets</strong>：提供多个Unity工具集，包括优化、UI、特效和其他增强功能，支持多种游戏开发需求。  </li>
-<li><strong>Toolbar Extender</strong>：自定义Unity工具栏的插件，允许开发者自定义快捷按钮和操作，提高工作效率。  </li>
-<li><strong>UnIDE</strong>：一款集成开发环境，支持C#代码编写、调试、版本控制等功能，适合Unity开发者。  </li>
-<li><strong>UniTask</strong>：异步编程工具，基于C# Task的优化版本，提升Unity项目的异步执行效率。  </li>
-<li><strong>UniWebView</strong>：轻量级WebView插件，支持Unity中嵌入网页，适用于集成Web内容和互动。  </li>
-<li><strong>UVS</strong>：用于生成和管理纹理UV映射的工具，简化3D模型的UV操作和纹理映射过程。</li>
-</ol>
-<h1 id="UI-交互"><a href="#UI-交互" class="headerlink" title="UI &amp; 交互"></a>UI &amp; 交互</h1><ol>
-<li><strong>2D Toolkit</strong>：强大的2D游戏开发工具包，提供精灵管理、网格生成、物理支持和动态字体渲染功能，适合高效创建2D游戏内容。  </li>
-<li><strong>Curved UI</strong>：UI曲面插件，用于将Unity的UI组件贴合到弧形、球形或其他曲面上，适合VR、AR和特殊UI需求项目。  </li>
-<li><strong>Doozy UI Manager</strong>：UI管理框架，支持动画控制、导航逻辑和事件系统，可快速创建复杂的用户界面。  </li>
-<li><strong>Dialogue System for Unity</strong>：对话系统插件，支持分支对话、任务管理和多语言功能，适合RPG、冒险或叙事类游戏。  </li>
-<li><strong>FairyGUI</strong>：跨平台UI开发框架，支持动态UI设计、动画和与外部工具的无缝集成，适合复杂的UI项目。  </li>
-<li><strong>Highlighting System</strong>：物体高亮插件，提供动态边缘描边和高光效果，用于突出选中或交互对象。  </li>
-<li><strong>I2 Localization</strong>：本地化管理工具，支持多语言文本、语音和资源切换，简化全球化开发过程。  </li>
-<li><strong>Inventory Pro</strong>：全面的库存管理系统，支持物品分类、装备、交易和任务物品管理，适合RPG和冒险类游戏。  </li>
-<li><strong>UGUI MiniMap</strong>：迷你地图插件，支持实时更新、标记和动态缩放功能，提升游戏导航体验。  </li>
-<li><strong>Text Animator for Unity</strong>：文本动画插件，提供类型机效果、渐显和抖动等动态文字展示，增强UI互动性和视觉效果。</li>
-</ol>
-<h1 id="渲染-特效"><a href="#渲染-特效" class="headerlink" title="渲染 &amp; 特效"></a>渲染 &amp; 特效</h1><ol>
-<li><strong>All In 1 Vfx Toolkit</strong>：多功能视觉特效工具包，涵盖粒子、爆炸、烟雾等特效，适合多种类型游戏的VFX需求，支持高性能和可定制化。  </li>
-<li><strong>Amplify Shader Pack</strong>：高性能的着色器集合，支持复杂材质效果，包括PBR、水体、光照和自定义Shader，适合视觉增强和图形优化。  </li>
-<li><strong>Best HTTP&#x2F;2</strong>：强大的HTTP和WebSocket库，支持HTTP&#x2F;2协议，提供快速、稳定的网络连接，适合多人在线游戏或实时服务。  </li>
-<li><strong>BIG Environment Pack Vol.2</strong>：环境美术资源包，包括地形、树木、岩石等自然元素，适合开放世界、RPG或生存类游戏的场景设计。  </li>
-<li><strong>Card Effect Shader</strong>：用于卡牌游戏的着色器，支持动态光效、渐变和发光等效果，提升卡牌外观和视觉表现力。  </li>
-<li><strong>Cartoon FX 2 Remaster</strong>：卡通风格的粒子特效包，包括爆炸、火焰、魔法等特效，适合风格化游戏项目。  </li>
-<li><strong>Colorful FX</strong>：后处理特效工具，提供色彩校正、饱和度调整和滤镜效果，提升画面质量和视觉风格。  </li>
-<li><strong>Combu 3</strong>：多人游戏后端解决方案，支持玩家管理、存档、排行榜和云存储功能，方便创建联网游戏。  </li>
-<li><strong>Final IK</strong>：强大的反向动力学插件，用于实现角色的自然动作和动态动画调整，支持全身和局部IK。  </li>
-<li><strong>Fingers - Touch Gestures for Unity</strong>：触控手势插件，支持拖动、缩放和旋转等常见手势，适合移动设备交互开发。  </li>
-<li><strong>Mobile Fast Shadow</strong>：专为移动设备优化的快速阴影插件，提供高性能的实时阴影渲染，适合移动游戏场景。  </li>
-<li><strong>Next-Gen Soft-Shadows</strong>：高级软阴影插件，支持动态光照和逼真的阴影模糊效果，提升画面真实感。  </li>
-<li><strong>Stylized Water Shader</strong>：高性能风格化水体着色器，提供实时波纹、反射和颜色渐变效果，适合卡通或低多边形风格游戏。  </li>
-<li><strong>Toon Shader</strong>：卡通渲染着色器，支持边缘描边、高光和渐变效果，用于风格化渲染项目。  </li>
-<li><strong>Volumetric Fog &amp; Mist</strong>：体积雾和烟雾效果插件，提供动态光照、深度感和雾气模拟，增强环境氛围表现。  </li>
-<li><strong>Water 2D Tool</strong>：二维水体模拟工具，支持波纹、流动和物理互动效果，适合2D游戏的水体表现。  </li>
-<li><strong>Fast Shadows</strong>：轻量级阴影解决方案，适用于低性能设备的快速渲染，提供基础阴影支持而不影响性能。</li>
-</ol>
-<h1 id="动画-物理"><a href="#动画-物理" class="headerlink" title="动画 &amp; 物理"></a>动画 &amp; 物理</h1><ol>
-<li><strong>Dynamic Bone</strong>：为角色模型的骨骼创建逼真的物理效果插件，可用于实现头发、衣物和尾巴等部位的动态运动，支持实时调整和高效计算。  </li>
-<li><strong>Edy’s Vehicle Physics</strong>：专业级车辆物理引擎，支持真实车辆操控、碰撞和悬挂模拟，适合赛车、模拟驾驶和开放世界项目开发。  </li>
-<li><strong>Emerald AI</strong>：多功能AI系统，支持敌人和NPC的智能行为，提供状态机、导航、战斗和动态反应功能，易于集成到各种游戏中。  </li>
-<li><strong>Final IK</strong>：强大的反向动力学（IK）插件，支持全身IK、手部IK和LookAt等多种功能，用于实现角色的自然动作和动态动画调整。  </li>
-<li><strong>Fingers - Touch Gestures for Unity</strong>：多点触控手势识别插件，支持捏合、拖拽、旋转等常见手势，适合移动端开发，易于集成和扩展。  </li>
-<li><strong>PuppetMaster</strong>：高级角色布娃娃物理插件，通过动态模拟角色受力和碰撞行为，提供真实的互动效果，可与Final IK配合使用。  </li>
-<li><strong>Tail Animator</strong>：为角色的尾巴、触角和其他附属部分提供动态动画效果的工具，支持物理模拟和自动运动，适合增加生物角色的表现力。  </li>
-<li><strong>UMotion Pro - Animation Editor</strong>：强大的动画编辑器，支持直接在Unity中创建和修改动画，提供时间轴编辑、关键帧设置和骨骼调整功能。  </li>
-<li><strong>Smooth Sync</strong>：高效的网络同步工具，减少多人游戏中位置和旋转的同步延迟，提供平滑的物理和动画效果，提升网络性能。  </li>
-<li><strong>Spine Animator</strong>：为骨骼动画创建逼真的动态效果，支持自动摆动、柔性移动和物理模拟，增强角色动画的表现力。</li>
-</ol>
-<h1 id="路径规划-AI"><a href="#路径规划-AI" class="headerlink" title="路径规划 &amp; AI"></a>路径规划 &amp; AI</h1><ol>
-<li><em><em>A</em> Pathfinding Project Pro</em><em>：功能强大的路径寻路工具，基于A</em>算法，支持网格、点和导航网等多种寻路模式，适用于复杂场景的AI移动路径规划。  </li>
-<li><strong>Behavior Designer - Behavior Trees for Everyone</strong>：行为树设计工具，帮助开发者为AI角色设计复杂的行为逻辑，支持直观的可视化编辑和灵活的扩展。  </li>
-<li><strong>Behavior Designer - Movement Pack</strong>：Behavior Designer的扩展包，提供多种预定义的AI运动行为，例如跟随、逃避、巡逻等，便于快速实现AI控制。  </li>
-<li><strong>Corgi Engine</strong>：高性能2D&#x2F;2.5D游戏引擎，提供丰富的功能和模板，适合开发平台跳跃、动作冒险和射击游戏，支持物理交互和动画。  </li>
-<li><strong>Emerald AI</strong>：先进的AI解决方案，支持敌人、动物和NPC的行为设计，具有状态机、动态导航、战斗系统等功能，易于集成到任何游戏中。  </li>
-<li><strong>Rex Engine: Classic 2D Platformer Engine</strong>：经典的2D平台游戏引擎，提供物理控制、角色动画和关卡编辑功能，适合快速创建复古风格的游戏项目。  </li>
-<li><strong>GameFlow</strong>：通用的可视化逻辑编辑工具，无需编程即可实现复杂的游戏逻辑和交互，适用于快速原型设计和小型项目开发。</li>
-</ol>
-<h1 id="网络-多人游戏"><a href="#网络-多人游戏" class="headerlink" title="网络 &amp; 多人游戏"></a>网络 &amp; 多人游戏</h1><ol>
-<li><strong>Agora Video SDK for Unity</strong>：用于在Unity项目中实现高质量视频通话与实时直播的开发工具，支持跨平台低延迟通信，适合多人互动和视频协作应用。  </li>
-<li><strong>Blockchain SDK by Enjin</strong>：区块链集成工具，支持创建和管理NFT、数字资产交易等，适用于游戏资产的区块链化和玩家经济生态系统建设。  </li>
-<li><strong>CodeGuard</strong>：代码保护工具，通过混淆、加密和其他安全措施防止逆向工程和代码泄露，增强Unity项目的安全性。  </li>
-<li><strong>Photon PUN+ Classic</strong>：经典的多人联网解决方案，提供可靠的同步和实时通信功能，适用于快速构建中小型在线多人游戏。  </li>
-<li><strong>PUN 2 - FREE</strong>：Photon Unity Networking 2免费版，支持高效的实时同步，易于上手，适用于开发在线多人游戏和实时互动应用。  </li>
-<li><strong>Rewired</strong>：高级输入系统，支持多种控制设备与平台，提供精确的输入映射和自定义选项，是Unity游戏开发的高效输入解决方案。  </li>
-<li><strong>WebRTC Video Chat</strong>：基于WebRTC协议的实时视频聊天插件，支持点对点音视频通信，适用于社交应用、虚拟会议和在线教育项目。</li>
-</ol>
-<h1 id="音频"><a href="#音频" class="headerlink" title="音频"></a>音频</h1><ol>
-<li><strong>Koreographer Professional Edition</strong>：高级音乐同步工具，通过精准的节奏事件触发游戏行为，实现音频与游戏场景的深度互动，适用于音乐游戏和节奏驱动项目。  </li>
-<li><strong>Master Audio</strong>：强大的音频管理系统，支持多通道混音、音效动态管理和3D音频，适合构建复杂的游戏音效环境和优化音频性能。  </li>
-<li><strong>RT-Voice PRO</strong>：实时文本转语音插件，支持多种语言和语音合成选项，适用于动态内容生成的游戏、教育软件和虚拟助手开发。  </li>
-<li><strong>SALSA LipSync Suite</strong>：高效的实时嘴型同步工具，支持语音音频或文本输入，实现角色嘴部动画与音频的精确匹配，适用于对话驱动的游戏和动画项目。</li>
-</ol>
-<h1 id="AR-VR"><a href="#AR-VR" class="headerlink" title="AR&#x2F;VR"></a>AR&#x2F;VR</h1><ol>
-<li><strong>AR + GPS Location</strong>：提供基于GPS位置的增强现实功能，支持地理标记和实时场景交互，适用于位置驱动的AR应用和游戏开发。  </li>
-<li><strong>AR Camera Lite — AR Engine — Gyroscope &amp; Accelerometer — Augmented Reality</strong>：轻量级AR引擎，利用陀螺仪和加速度计实现设备追踪和增强现实效果，适合快速开发基础AR功能的应用。  </li>
-<li><strong>AR Foundation Remote</strong>：为AR Foundation项目提供远程调试功能，可以实时查看AR场景在不同设备上的效果，加快开发和测试过程。  </li>
-<li><strong>Vuforia Core Samples</strong>：Vuforia增强现实引擎的示例项目，展示了物体追踪、图像识别和空间映射等核心功能，适合学习和快速实现AR项目。  </li>
-<li><strong>VR Easy</strong>：简化VR开发流程的插件，提供直观的交互工具和组件，帮助开发者快速构建沉浸式虚拟现实体验。  </li>
-<li><strong>VR Interaction Framework</strong>：全面的VR交互框架，支持抓取、投掷和按钮交互等常见功能，适用于开发高交互性的VR应用。  </li>
-<li><strong>VR Panorama 360 PRO Renderer</strong>：用于生成高质量360度全景图像和视频的工具，适合VR电影、场景展示和虚拟旅游项目。  </li>
-<li><strong>VR UIKit</strong>：VR界面构建工具，提供预制组件和样式模板，帮助开发者快速设计和实现直观的VR用户界面。</li>
-</ol>
-<h1 id="场景-地图"><a href="#场景-地图" class="headerlink" title="场景 &amp; 地图"></a>场景 &amp; 地图</h1><ol>
-<li><strong>Gaia Pro 2021</strong>：功能强大的地形生成工具，支持程序化生成、实时编辑和场景优化，适用于快速创建高质量的游戏世界与环境场景。  </li>
-<li><strong>MapMagic World Generator</strong>：动态地形生成工具，支持程序化地形、无限世界扩展和实时编辑，适合开放世界和动态加载场景的游戏开发。  </li>
-<li><strong>Terrain Composer</strong>：地形生成和编辑插件，提供多层级地形控制和批量操作功能，可快速生成复杂地形，优化大规模场景的制作流程。  </li>
-<li><strong>The Vegetation Engine</strong>：植被着色系统，支持动态风力效果、季节变化和材质优化，适用于创建高性能且美观的自然环境。  </li>
-<li><strong>GO Map - 3D Map for AR Gaming</strong>：一款适用于AR游戏的3D地图生成插件，支持与地理信息数据的集成，适合开发基于真实地理位置的AR场景。  </li>
-<li><strong>Fantasy Environment</strong>：提供奇幻风格环境的资源包，包括植被、地形材质和建筑模型，适用于构建魔幻主题的游戏场景。  </li>
-<li><strong>Cemetery Starter Pack</strong>：墓地主题的环境资源包，包含墓碑、雕像和植被等，适合制作恐怖、哥特风格或黑暗主题的游戏场景。  </li>
-<li><strong>Polyquest Worlds Full Pack Vol.1</strong>：低多边形风格的环境资源包，包含地形、植被和建筑素材，适合开发轻量化和卡通风格的游戏项目。</li>
-</ol>
-<h1 id="模型-材质处理"><a href="#模型-材质处理" class="headerlink" title="模型 &amp; 材质处理"></a>模型 &amp; 材质处理</h1><ol>
-<li><strong>AnyPortrait</strong>：一款2D角色动画制作工具，支持骨骼动画、网格变形和物理模拟，适用于快速创建高质量的2D游戏角色动画。  </li>
-<li><strong>FBX Utilities</strong>：提供强大的FBX文件导入、导出和优化工具，支持模型格式转换和自动调整，适用于处理外部3D资产的项目需求。  </li>
-<li><strong>Mega-Fiers</strong>：模型变形插件，支持网格扭曲、变形动画和骨骼绑定优化，适用于创建独特的3D效果和动态变形场景。  </li>
-<li><strong>Mesh Baker</strong>：高效的网格和纹理合并工具，可减少绘制调用和优化性能，适合处理复杂场景中的多个模型和贴图。  </li>
-<li><strong>Paint in 3D</strong>：支持在3D模型表面直接绘画的工具，提供多种笔刷效果和实时预览功能，适用于创建贴图和手绘风格的材质。  </li>
-<li><strong>UModeler - Model your World</strong>：集建模和关卡设计于一体的插件，支持在Unity内创建和编辑3D模型，适合快速迭代场景与原型设计。  </li>
-<li><strong>Surforge</strong>：高效的PBR材质制作工具，支持在3D模型上直接绘制和调整材质细节，适用于快速生成游戏所需的高质量贴图。  </li>
-<li><strong>Stylized Water Shader</strong>：水体特效材质插件，支持卡通风格的动态水流、反射和折射效果，适用于增强游戏场景的视觉表现力。  </li>
-<li><strong>Shape</strong>：UI设计和动画工具，支持创建复杂的矢量图形、几何动画和路径效果，适用于2D游戏中的UI界面和动态效果设计。</li>
-</ol>
-<h1 id="杂项功能"><a href="#杂项功能" class="headerlink" title="杂项功能"></a>杂项功能</h1><ol>
-<li><strong>Anti-Cheat Toolkit</strong>：提供全面的防作弊工具集，检测并防止各种游戏作弊行为，包括速度修改、内存篡改和无敌模式等，适合保障多人在线游戏的公平性。  </li>
-<li><strong>Asset Hunter PRO</strong>：扫描并清理未使用的资源，帮助开发者减少项目体积，提高构建效率，同时避免不必要的资源浪费，适用于优化大型Unity项目。  </li>
-<li><strong>CodeGuard</strong>：为Unity项目提供代码保护功能，通过加密和混淆技术防止代码反编译和逆向工程，保护知识产权和项目安全性。  </li>
-<li><strong>Obfuscator</strong>：代码混淆工具，通过打乱代码结构和变量命名，增加反编译的难度，适用于保护Unity C#代码免受未经授权的修改和泄露。  </li>
-<li><strong>SG Patcher - Update your game easily</strong>：提供内置更新功能，支持热更新和增量更新，方便玩家无需重新下载整个游戏即可获得最新内容。  </li>
-<li><strong>Simple LOD</strong>：自动生成简化模型的工具，支持多边形优化和动态LOD切换，适合提升大规模场景渲染性能并减少内存占用。  </li>
-<li><strong>Smart Library</strong>：资源管理插件，提供快速搜索、分类和组织功能，帮助开发者更高效地管理和使用项目资源库中的内容。  </li>
-<li><strong>Stratis Unity SDK</strong>：为Unity集成区块链技术的开发工具，支持智能合约交互、加密货币支付和去中心化应用开发，适用于区块链游戏项目。  </li>
-<li><strong>UEvent</strong>：轻量级事件管理系统，支持松耦合的事件订阅与发布，简化项目逻辑并提高代码的可维护性和可扩展性。  </li>
-<li><strong>UFPS: Ultimate FPS</strong>：第一人称射击游戏开发工具，包含角色控制、武器系统和物理模拟，提供快速创建高品质FPS游戏的解决方案。  </li>
-<li><strong>UMMORPG</strong>：多功能MMORPG框架，提供角色管理、任务系统、技能树和多人网络功能，适合快速开发大型多人在线角色扮演游戏。  </li>
-<li><strong>UMOBA</strong>：多人在线战斗竞技游戏框架，支持角色控制、技能释放和服务器管理，帮助开发者快速搭建MOBA游戏的核心功能。  </li>
-<li><strong>Voxel Master</strong>：体素建模与场景生成工具，支持体素化地形编辑、动态破坏和实时渲染，适用于沙盒类游戏和体素艺术创作。</li>
-</ol>
-<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><ol>
-<li><strong>3D WebView</strong>：在Unity中嵌入3D场景中的网页浏览器插件，支持多平台使用，包括VR和移动设备，适用于展示网页内容、流媒体播放及Web功能交互，集成简单且高性能。  </li>
-<li><strong>Adventure Creator</strong>：强大的无代码冒险游戏开发工具，适合创建2D、3D冒险游戏，提供场景管理、对话设计、角色控制等功能，支持快速开发和跨平台发布。  </li>
-<li><strong>ChainSafe Gaming SDK</strong>：提供Web3区块链功能集成，包括NFT、智能合约和加密货币交易支持，专为区块链游戏开发者设计，助力创建创新的去中心化游戏体验。  </li>
-<li><strong>Cross Platform Replay Kit</strong>：录制和分享游戏回放的工具，支持iOS和Android平台，包含视频剪辑和存储功能，增强社交传播能力并提升用户黏性。  </li>
-<li><strong>DOOZY UI Manager</strong>：专业UI管理解决方案，支持复杂动画、状态机逻辑和UI组件的快速开发，提升游戏和应用界面的动态表现力与用户体验。  </li>
-<li><strong>Dynamic Bone</strong>：为角色的头发、衣物等附加动态物理效果，模拟逼真的动作反馈，适用于增强角色动画的真实感和细腻表现。  </li>
-<li><strong>Enviro - Sky and Weather</strong>：一款环境系统插件，提供真实的天气模拟、昼夜循环及环境光效，适合构建沉浸式开放世界和动态环境变化的场景。  </li>
-<li><strong>EPO</strong>：粒子效果优化工具，提供高效渲染、复杂视觉效果增强及性能提升功能，适用于需要高质量粒子特效的游戏项目。  </li>
-<li><strong>Explosion Sound Effects</strong>：高质量的爆炸音效资源包，适合动作、战争和科幻类游戏场景，包含多种音效组合，为游戏提供强烈的听觉冲击力。  </li>
-<li><strong>Feel</strong>：为游戏添加震动、动画和反馈效果的工具，提供预设效果和自定义支持，显著提升游戏互动的精致度和用户沉浸体验。  </li>
-<li><strong>Fps Graph Analyzer</strong>：帧率监测与性能分析工具，可实时显示游戏帧率波动、资源消耗数据，帮助开发者定位性能瓶颈并优化流畅性。  </li>
-<li><strong>Fullscreen Editor</strong>：提供Unity编辑器全屏模式，减少界面干扰，提升开发专注度和效率，适合在大屏幕或多显示器环境下开发项目。  </li>
-<li><strong>Highlighting System</strong>：为游戏对象添加高亮效果，支持动态和静态对象处理，增强交互提示的视觉表现，适用于各种类型的游戏交互设计。  </li>
-<li><strong>Hierarchy 2</strong>：增强Unity层级视图管理的插件，支持对象分组、颜色标记和快捷导航，显著提升复杂项目中对象管理和组织效率。  </li>
-<li><strong>Lean Touch</strong>：多点触控和手势交互解决方案，支持移动设备缩放、旋转等操作，适用于增强用户体验的移动游戏和AR&#x2F;VR项目。  </li>
-<li><strong>Loxodon Framework Bundle</strong>：提供数据绑定、资源管理、UI框架等模块化开发工具，简化Unity项目架构设计，适用于跨平台游戏开发。  </li>
-<li><strong>Lua Framework</strong>：为Unity集成Lua脚本支持，提供动态逻辑实现与热更新功能，适合快速开发、更新频繁或需要扩展性的游戏项目。  </li>
-<li><strong>Mega-Fiers</strong>：强大的模型变形工具，支持复杂的几何变换、动画和顶点编辑，适用于制作特效、动画和独特的视觉效果。  </li>
-<li><strong>Mobile Fast Shadow</strong>：针对移动设备优化的实时阴影工具，提供低性能消耗的光影效果，适合需要高性能运行的移动端游戏。  </li>
-<li><strong>Nice Vibration</strong>：添加触觉反馈功能的插件，支持Android和iOS设备，增强玩家与设备的交互感受，适合休闲游戏和应用开发。  </li>
-<li><strong>Octave3D-Level Design</strong>：快速搭建3D场景工具，支持模块化场景设计和精确布局编辑，加速关卡和场景的开发过程。  </li>
-<li><strong>Platformer PRO 2</strong>：2D平台游戏开发工具，提供物理、角色控制和敌人AI系统，适合快速开发具有复杂关卡的横版动作游戏。  </li>
-<li><strong>Rainbow Folders 2</strong>：为Unity项目文件夹添加颜色和图标标记功能，改善可视化管理，提高项目文件夹的可读性与组织效率。  </li>
-<li><strong>Rainbow Hierarchy 2</strong>：增强Unity层级视图的管理工具，支持自定义颜色标记和图标，提升复杂项目中对象的分类管理效率。  </li>
-<li><strong>Race Track Generator</strong>：赛道生成工具，支持曲线定制和地形编辑，快速创建竞速游戏场景并优化玩家驾驶体验。  </li>
-<li><strong>Rewired</strong>：专业的输入管理插件，支持多种设备输入配置和自定义，适用于需要复杂操作支持的游戏项目。  </li>
-<li><strong>RPG Character Mecanim Animation Pack</strong>：丰富的角色动画资源包，涵盖战斗、休息、互动动作，适合RPG和冒险类游戏的角色设计。  </li>
-<li><strong>RPG Map Editor</strong>：RPG地图编辑器，提供地形创建、物体放置和路径规划功能，适合快速生成RPG游戏场景地图。  </li>
-<li><strong>Shape</strong>：支持几何形状创建和动画编辑，适合制作独特视觉效果的游戏开发者和艺术创作者。  </li>
-<li><strong>Smooth Sync</strong>：网络位置同步插件，提供高效的多人游戏物体同步，确保联机游戏中的位置和旋转平滑更新。  </li>
-<li><strong>Spine Animator</strong>：为Spine骨骼动画添加动态物理效果的插件，提升角色动作表现的自然性和生动感。  </li>
-<li><strong>Stan’s Assets</strong>：移动开发工具集，整合广告、插件和本地化服务，适合跨平台移动游戏开发项目。  </li>
-<li><strong>Surforge</strong>：高效PBR纹理生成工具，支持实时纹理绘制、材质生成和模型贴图，适合高质量美术资源制作。  </li>
-<li><strong>Terrain Composer</strong>：地形生成工具，支持多层次编辑、噪声控制和场景优化，适用于快速设计大型开放世界地形。  </li>
-<li><strong>Text Animator for Unity</strong>：为文本添加动画效果的工具，支持多种字体和特效，显著提升UI的动态视觉表现力。  </li>
-<li><strong>Toon Shader</strong>：卡通风格着色工具，支持非真实感渲染和动态阴影设置，适合制作动画、卡通类游戏或美术项目。</li>
-</ol>
-<h1 id="SDK"><a href="#SDK" class="headerlink" title="SDK"></a>SDK</h1><ol>
-<li><p><a href="/2025/01/08/Lean-Cloud/">LeanCloud</a></p>
-<p> LeanCloud 是一个 后端即服务（BaaS，Backend as a Service） 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
   </entry>
   <entry>
     <title>unity插件导入方式</title>
