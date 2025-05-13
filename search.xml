@@ -537,6 +537,129 @@
 ]]></content>
   </entry>
   <entry>
+    <title>C# CLR</title>
+    <url>/2025/01/20/C-CLR/</url>
+    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、<a href="http://VB.NET">VB.NET</a>、F# 等）编写的程序。</p>
+<h3 id="CLR-的主要功能：">CLR 的主要功能：</h3>
+<ol>
+<li>
+<p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
+</li>
+<li>
+<p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
+</li>
+<li>
+<p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
+</li>
+<li>
+<p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
+</li>
+<li>
+<p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 <a href="http://VB.NET">VB.NET</a> 编写的类和方法。</p>
+</li>
+<li>
+<p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
+</li>
+</ol>
+<h3 id="CLR-主要包含的部分：">CLR 主要包含的部分：</h3>
+<ul>
+<li>
+<p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
+</li>
+<li>
+<p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
+</li>
+<li>
+<p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
+</li>
+<li>
+<p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
+</li>
+</ul>
+<h3 id="CLR-与其他技术的关系：">CLR 与其他技术的关系：</h3>
+<ul>
+<li>
+<p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
+</li>
+<li>
+<p><strong>.NET Core 和 .NET 5/6+</strong>：随着 .NET Core 和后来的统一平台 .NET 5/6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
+</li>
+</ul>
+<h3 id="CLR-的作用：">CLR 的作用：</h3>
+<ul>
+<li>
+<p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
+</li>
+<li>
+<p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
+</li>
+</ul>
+<h3 id="小结：">小结：</h3>
+<p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
+<h2 id="跨平台">跨平台</h2>
+<p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5/6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
+<h3 id="CLR-如何实现跨平台支持：">CLR 如何实现跨平台支持：</h3>
+<ol>
+<li>
+<p><strong>平台无关性</strong>：</p>
+<ul>
+<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
+<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
+</ul>
+</li>
+<li>
+<p><strong>跨语言互操作性</strong>：</p>
+<ul>
+<li>CLR 支持多种编程语言（例如 C#、F#、<a href="http://VB.NET">VB.NET</a> 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
+</ul>
+</li>
+<li>
+<p><strong>运行时环境的适配</strong>：</p>
+<ul>
+<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：
+<ul>
+<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
+<li><strong>.NET Core / .NET 5+</strong>：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>垃圾回收与内存管理</strong>：</p>
+<ul>
+<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
+</ul>
+</li>
+<li>
+<p><strong>平台特定实现</strong>：</p>
+<ul>
+<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
+</ul>
+</li>
+<li>
+<p><strong>移植和兼容性</strong>：</p>
+<ul>
+<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
+</ul>
+</li>
+</ol>
+<h3 id="CLR-与-Unity-的跨平台能力：">CLR 与 Unity 的跨平台能力：</h3>
+<p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
+<ul>
+<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
+<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
+</ul>
+<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
+<h3 id="总结："><strong>总结</strong>：</h3>
+<ul>
+<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
+<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
+<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
+</ul>
+<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p><a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1118,135 +1241,16 @@
 ]]></content>
   </entry>
   <entry>
-    <title>C# CLR</title>
-    <url>/2025/01/20/C-CLR/</url>
-    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、<a href="http://VB.NET">VB.NET</a>、F# 等）编写的程序。</p>
-<h3 id="CLR-的主要功能：">CLR 的主要功能：</h3>
-<ol>
-<li>
-<p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
-</li>
-<li>
-<p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
-</li>
-<li>
-<p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
-</li>
-<li>
-<p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
-</li>
-<li>
-<p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 <a href="http://VB.NET">VB.NET</a> 编写的类和方法。</p>
-</li>
-<li>
-<p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
-</li>
-</ol>
-<h3 id="CLR-主要包含的部分：">CLR 主要包含的部分：</h3>
-<ul>
-<li>
-<p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
-</li>
-<li>
-<p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
-</li>
-<li>
-<p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
-</li>
-<li>
-<p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
-</li>
-</ul>
-<h3 id="CLR-与其他技术的关系：">CLR 与其他技术的关系：</h3>
-<ul>
-<li>
-<p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
-</li>
-<li>
-<p><strong>.NET Core 和 .NET 5/6+</strong>：随着 .NET Core 和后来的统一平台 .NET 5/6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
-</li>
-</ul>
-<h3 id="CLR-的作用：">CLR 的作用：</h3>
-<ul>
-<li>
-<p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
-</li>
-<li>
-<p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
-</li>
-</ul>
-<h3 id="小结：">小结：</h3>
-<p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
-<h2 id="跨平台">跨平台</h2>
-<p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5/6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
-<h3 id="CLR-如何实现跨平台支持：">CLR 如何实现跨平台支持：</h3>
-<ol>
-<li>
-<p><strong>平台无关性</strong>：</p>
-<ul>
-<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
-<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
-</ul>
-</li>
-<li>
-<p><strong>跨语言互操作性</strong>：</p>
-<ul>
-<li>CLR 支持多种编程语言（例如 C#、F#、<a href="http://VB.NET">VB.NET</a> 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
-</ul>
-</li>
-<li>
-<p><strong>运行时环境的适配</strong>：</p>
-<ul>
-<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：
-<ul>
-<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
-<li><strong>.NET Core / .NET 5+</strong>：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>垃圾回收与内存管理</strong>：</p>
-<ul>
-<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
-</ul>
-</li>
-<li>
-<p><strong>平台特定实现</strong>：</p>
-<ul>
-<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
-</ul>
-</li>
-<li>
-<p><strong>移植和兼容性</strong>：</p>
-<ul>
-<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
-</ul>
-</li>
-</ol>
-<h3 id="CLR-与-Unity-的跨平台能力：">CLR 与 Unity 的跨平台能力：</h3>
-<p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
-<ul>
-<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
-<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
-</ul>
-<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
-<h3 id="总结："><strong>总结</strong>：</h3>
-<ul>
-<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
-<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
-<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
-</ul>
-<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>GitHub + CDN</title>
     <url>/2025/05/08/GitHub%20+%20CDN/</url>
     <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
 <hr>
 <h3 id="1-核心架构"><strong>1. 核心架构</strong></h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph LR</span><br><span class="line">   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]</span><br><span class="line">   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]</span><br><span class="line">   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]</span><br><span class="line">   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph LR
+   玩家 -->|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages -->|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases -->|大文件| CDN[CDN缓存]
+   CDN -->|回源| 对象存储[Backblaze B2/AWS S3]</pre>
 <ul>
 <li><strong>GitHub Pages</strong>：托管静态官网（HTML/CSS/JS）。</li>
 <li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。</li>
@@ -4252,16 +4256,69 @@ $$</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <hr>
 <h3 id="4-高效绘制流程图">4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    A[用户请求] --&gt; B[语义解析]</span><br><span class="line">    B --&gt; C[RAG检索]</span><br><span class="line">    </span><br><span class="line">    C --&gt;|✅ 知识库匹配| D[上下文增强]</span><br><span class="line">    C --&gt;|❌ 无匹配| E[任务分解]</span><br><span class="line">    </span><br><span class="line">    D --&gt; E</span><br><span class="line">    </span><br><span class="line">    E --&gt; F&#123;工具选择&#125;</span><br><span class="line">    </span><br><span class="line">    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;</span><br><span class="line">    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;</span><br><span class="line">    </span><br><span class="line">    G --&gt;|✏️ 文件操作| I[读写/替换]</span><br><span class="line">    G --&gt;|🖥️ 系统命令执行| J[执行命令]</span><br><span class="line">    G --&gt;|🔍 代码分析| K[代码分析]</span><br><span class="line">    </span><br><span class="line">    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]</span><br><span class="line">    H --&gt;|📦 访问MCP资源| M[访问MCP资源]</span><br><span class="line">    </span><br><span class="line">    I --&gt; N[结果验证]</span><br><span class="line">    J --&gt; N</span><br><span class="line">    K --&gt; N</span><br><span class="line">    L --&gt; N</span><br><span class="line">    M --&gt; N</span><br><span class="line">    </span><br><span class="line">    N --&gt; O&#123;完成判断&#125;</span><br><span class="line">    </span><br><span class="line">    O --&gt;|✅| P[提交最终结果]</span><br><span class="line">    O --&gt;|❌| E</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">graph TD
+    A[用户请求] --> B[语义解析]
+    B --> C[RAG检索]
+    
+    C -->|✅ 知识库匹配| D[上下文增强]
+    C -->|❌ 无匹配| E[任务分解]
+    
+    D --> E
+    
+    E --> F{工具选择}
+    
+    F -->|🛠️ 核心工具| G{基础操作}
+    F -->|🔌 MCP扩展服务| H{MCP操作}
+    
+    G -->|✏️ 文件操作| I[读写/替换]
+    G -->|🖥️ 系统命令执行| J[执行命令]
+    G -->|🔍 代码分析| K[代码分析]
+    
+    H -->|⚙️ 使用MCP工具| L[使用MCP工具]
+    H -->|📦 访问MCP资源| M[访问MCP资源]
+    
+    I --> N[结果验证]
+    J --> N
+    K --> N
+    L --> N
+    M --> N
+    
+    N --> O{完成判断}
+    
+    O -->|✅| P[提交最终结果]
+    O -->|❌| E</pre>
 <hr>
 <h3 id="5-高效绘制序列图">5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sequenceDiagram</span><br><span class="line">  participant Alice</span><br><span class="line">  participant Bob</span><br><span class="line">  Alice-&gt;John: Hello John, how are you?</span><br><span class="line">  loop Healthcheck</span><br><span class="line">      John-&gt;John: Fight against hypochondria</span><br><span class="line">  end</span><br><span class="line">  Note right of John: Rational thoughts &lt;br/&gt;prevail...</span><br><span class="line">  John--&gt;Alice: Great!</span><br><span class="line">  John-&gt;Bob: How about you?</span><br><span class="line">  Bob--&gt;John: Jolly good!</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice->John: Hello John, how are you?
+  loop Healthcheck
+      John->John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts <br>prevail...
+  John-->Alice: Great!
+  John->Bob: How about you?
+  Bob-->John: Jolly good!</pre>
 <hr>
 <h3 id="6-高效绘制甘特图">6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3>
 <blockquote>
 <p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
 </blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gantt</span><br><span class="line">  title 项目开发流程</span><br><span class="line">  section 项目确定</span><br><span class="line">    需求分析       :a1, 2019-06-22, 3d</span><br><span class="line">    可行性报告     :after a1, 5d</span><br><span class="line">    概念验证       : 5d</span><br><span class="line">  section 项目实施</span><br><span class="line">    概要设计      :2019-07-05  , 5d</span><br><span class="line">    详细设计      :2019-07-08, 10d</span><br><span class="line">    编码          :2019-07-15, 10d</span><br><span class="line">    测试          :2019-07-22, 5d</span><br><span class="line">  section 发布验收</span><br><span class="line">    发布: 2d</span><br><span class="line">    验收: 3d</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">gantt
+  title 项目开发流程
+  section 项目确定
+    需求分析       :a1, 2019-06-22, 3d
+    可行性报告     :after a1, 5d
+    概念验证       : 5d
+  section 项目实施
+    概要设计      :2019-07-05  , 5d
+    详细设计      :2019-07-08, 10d
+    编码          :2019-07-15, 10d
+    测试          :2019-07-22, 5d
+  section 发布验收
+    发布: 2d
+    验收: 3d</pre>
 <hr>
 <h3 id="8-绘制表格">8. 绘制表格</h3>
 <table>
@@ -5748,6 +5805,19 @@ $$</p>
 ]]></content>
   </entry>
   <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>
+themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 程序集</title>
     <url>/2025/01/16/Unity-%E7%A8%8B%E5%BA%8F%E9%9B%86/</url>
     <content><![CDATA[<h2 id="常见的四种程序集">常见的四种程序集</h2>
@@ -5968,17 +6038,198 @@ $$</p>
 ]]></content>
   </entry>
   <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>
-themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
+    <title>git submodule</title>
+    <url>/2025/02/06/git-submodule/</url>
+    <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
+<h3 id="Git-Submodule-的版本管理和开发分支"><strong>Git Submodule 的版本管理和开发分支</strong></h3>
+<ol>
+<li>
+<p><strong>独立版本管理：</strong></p>
+<ul>
+<li>每个子模块（例如 Game Framework 插件）有自己的 Git 仓库，使用自己独立的版本号和提交记录。</li>
+<li>当你将子模块添加到主项目时，Git 会记录子模块的<strong>当前提交版本</strong>，并将该信息存储在主项目的 <code>.gitmodules</code> 文件和 <code>.git/config</code> 配置文件中。</li>
+<li>例如，当你添加一个子模块时，Git 会记录子模块在主项目中的具体版本（即该子模块的某个提交ID）。</li>
+</ul>
+</li>
+<li>
+<p><strong>子模块的分支管理：</strong></p>
+<ul>
+<li>每个子模块都有自己的分支管理方式，你可以在子模块内创建、切换和管理分支，就像处理主项目中的分支一样。</li>
+<li>当你执行 <code>git submodule update --remote</code> 命令时，Git 会将子模块的代码更新为子模块远程仓库的默认分支（通常是 <code>master</code> 或 <code>main</code>，但你也可以设置其他分支）。</li>
+</ul>
+</li>
+<li>
+<p><strong>管理子模块的版本：</strong></p>
+<ul>
+<li>子模块的版本控制非常灵活，可以选择将子模块固定在某个版本（提交哈希）或某个分支的最新提交。</li>
+<li>在主项目中，如果你想更新子模块到最新版本，只需进入子模块目录并执行：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch-name&gt;  <span class="comment"># 切换到需要的分支</span></span><br><span class="line">git pull origin &lt;branch-name&gt;  <span class="comment"># 拉取最新代码</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>然后在主项目目录中，使用以下命令提交子模块的新版本：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;submodule-directory&gt;</span><br><span class="line">git commit -m <span class="string">&quot;Update submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>子模块的分支切换：</strong></p>
+<ul>
+<li>如果你想切换子模块的分支，可以进入子模块目录，使用 <code>git checkout &lt;branch&gt;</code> 来切换分支：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> Packages/GameFramework  <span class="comment"># 进入子模块目录</span></span><br><span class="line">git checkout develop  <span class="comment"># 切换到开发分支</span></span><br><span class="line">git pull origin develop  <span class="comment"># 更新子模块到开发分支的最新代码</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>切换完成后，记得回到主项目目录并提交子模块的更新：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Switch submodule to develop branch&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="如何管理子模块的版本"><strong>如何管理子模块的版本</strong></h3>
+<ul>
+<li>
+<p><strong>固定子模块版本：</strong><br>
+如果你希望将子模块固定在特定版本（例如某个提交哈希），可以通过以下命令将子模块指向特定的提交：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+<p>这将确保子模块锁定在特定的提交哈希，而不是拉取该分支的最新版本。</p>
+</li>
+<li>
+<p><strong>更新子模块到最新提交：</strong><br>
+如果你想将子模块更新为其远程仓库的最新提交（通常是远程 <code>master</code> 或 <code>main</code> 分支），可以使用以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>子模块版本管理文件：</strong><br>
+子模块的提交信息被保存在主项目的 <code>.gitmodules</code> 和 <code>.git/config</code> 文件中。你可以手动编辑这些文件来指定子模块的 URL 和分支信息，也可以使用 Git 命令行工具来管理。</p>
+</li>
+</ul>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><strong>独立版本和分支管理</strong>：每个子模块有自己的版本历史和分支，你可以独立管理子模块的版本和分支，不会影响主项目。</li>
+<li><strong>灵活的更新和切换</strong>：你可以选择将子模块固定在某个版本，或者随时更新到远程仓库的最新提交。</li>
+<li><strong>主项目和子模块的分离</strong>：主项目和子模块是相互独立的 Git 仓库，便于独立管理和协作开发。</li>
+</ul>
+<p>如果你需要更具体的操作示例或遇到任何问题，随时告诉我！我会帮助你更好地管理子模块。</p>
+<h2 id="🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？"><strong>🔹 为什么使用 Git Submodule 导入 Game Framework 插件？</strong></h2>
+<p>使用 <strong>Git Submodule</strong> 方式导入 <strong>Game Framework 插件</strong> 也是一个非常不错的选择，尤其是在团队协作或者需要频繁更新插件代码的情况下。它的优势和适用场景如下：</p>
+<h3 id="✅-优势："><strong>✅ 优势：</strong></h3>
+<ol>
+<li>
+<p><strong>版本控制和更新管理：</strong></p>
+<ul>
+<li>Git Submodule 允许你将 <strong>Game Framework 插件的 Git 仓库</strong> 作为子模块引入主项目，这样你就可以单独管理插件的版本。</li>
+<li>如果插件有更新，只需在主项目中执行 <code>git submodule update --remote</code> 来拉取插件的最新版本。</li>
+</ul>
+</li>
+<li>
+<p><strong>保持项目结构清晰：</strong></p>
+<ul>
+<li>插件代码会作为子模块独立存在于特定文件夹（如 <code>Packages/GameFramework</code>），不会和主项目代码混在一起，保持项目结构的整洁。</li>
+</ul>
+</li>
+<li>
+<p><strong>便于团队协作：</strong></p>
+<ul>
+<li>你可以将子模块添加到 Git 仓库中，团队成员可以同步子模块版本，确保大家使用相同版本的插件。</li>
+<li>团队成员可以通过 <code>git submodule update --init</code> 拉取最新插件，避免了手动导入和更新插件的麻烦。</li>
+</ul>
+</li>
+<li>
+<p><strong>灵活的自定义：</strong></p>
+<ul>
+<li>如果你需要修改框架的代码，直接进入子模块目录，进行修改，不会影响主项目的其他部分。</li>
+<li>你可以将 Game Framework 插件单独进行版本管理，并与主项目的版本控制隔离开。</li>
+</ul>
+</li>
+<li>
+<p><strong>保持一致性：</strong></p>
+<ul>
+<li>使用 Git Submodule 确保每次从版本库拉取时，插件和主项目的版本一致，避免了手动复制和拖动导致的版本错乱。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="❌-可能的缺点："><strong>❌ 可能的缺点：</strong></h3>
+<ol>
+<li>
+<p><strong>稍微复杂的操作：</strong></p>
+<ul>
+<li>子模块需要一些额外的 Git 命令支持，比如初始化子模块、更新子模块等。</li>
+<li>如果团队成员不熟悉 Git Submodule，可能需要一些培训。</li>
+</ul>
+</li>
+<li>
+<p><strong>子模块更新需要显式操作：</strong></p>
+<ul>
+<li>在子模块更新时，开发者需要显式执行 <code>git submodule update</code> 命令来拉取插件的最新代码，而不像 UPM 那样自动处理版本更新。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？"><strong>🔹 如何使用 Git Submodule 导入 Game Framework 插件？</strong></h2>
+<h3 id="步骤-1：初始化子模块"><strong>步骤 1：初始化子模块</strong></h3>
+<p>首先，假设你已经有一个主项目，接下来将 Game Framework 插件作为子模块添加到你的项目中。</p>
+<ol>
+<li>
+<p><strong>进入主项目目录：</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>添加 Game Framework 插件作为子模块：</strong><br>
+假设你要使用的 Game Framework 插件在 GitHub 上，你可以使用以下命令将插件仓库添加为子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule add https://github.com/YourUsername/UnityGameFramework.git Packages/GameFramework</span><br></pre></td></tr></table></figure>
+<p>这个命令会将 Game Framework 插件添加到 <code>Packages/GameFramework</code> 目录，并将其作为 Git 子模块加入到主项目中。</p>
+</li>
+<li>
+<p><strong>初始化子模块：</strong><br>
+如果你是第一次使用子模块，需要执行以下命令初始化它：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>提交主项目的变化：</strong><br>
+完成子模块添加后，你需要将 <code>git submodule</code> 的变动提交到主项目中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Add UnityGameFramework as a submodule&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<h3 id="步骤-2：更新子模块"><strong>步骤 2：更新子模块</strong></h3>
+<p>当插件更新时，你可以通过以下步骤更新子模块：</p>
+<ol>
+<li>
+<p><strong>更新子模块到最新版本：</strong><br>
+如果 Game Framework 插件有更新，可以执行以下命令拉取最新代码：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>提交更新后的子模块：</strong><br>
+更新完成后，你需要提交主项目对子模块的更新：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>推送更新：</strong><br>
+更新完成后，推送到远程 Git 仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<h3 id="步骤-3：团队协作中使用子模块"><strong>步骤 3：团队协作中使用子模块</strong></h3>
+<ol>
+<li>
+<p><strong>克隆主项目时包含子模块：</strong><br>
+当团队成员从 Git 仓库克隆主项目时，需要添加 <code>--recurse-submodules</code> 参数来同步子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/YourUsername/YourUnityProject.git</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><strong>更新子模块：</strong><br>
+如果已经克隆过主项目，可以使用以下命令更新子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<hr>
+<h2 id="🔹-适用场景"><strong>🔹 适用场景</strong></h2>
+<ul>
+<li><strong>长期维护的项目</strong>：如果你使用的 <strong>Game Framework 插件是外部维护的</strong>，Git Submodule 是一个好选择，因为你可以方便地控制插件的版本，避免插件代码直接嵌入到主项目中导致的混乱。</li>
+<li><strong>需要修改框架代码</strong>：如果你需要在项目中修改 <strong>Game Framework 插件的代码</strong>，Git Submodule 使得代码独立且可控，避免了直接修改 <code>Assets/</code> 目录中的框架代码。</li>
+<li><strong>多人协作开发</strong>：在团队开发中，子模块保证了每个开发者都在使用相同版本的框架，避免了版本不一致导致的错误。</li>
+</ul>
+<hr>
+<h2 id="🔹-总结"><strong>🔹 总结</strong></h2>
+<p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
+<p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
+]]></content>
   </entry>
   <entry>
     <title>github 作为热更新服</title>
@@ -6277,200 +6528,6 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
       <tags>
         <tag>git</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>git submodule</title>
-    <url>/2025/02/06/git-submodule/</url>
-    <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
-<h3 id="Git-Submodule-的版本管理和开发分支"><strong>Git Submodule 的版本管理和开发分支</strong></h3>
-<ol>
-<li>
-<p><strong>独立版本管理：</strong></p>
-<ul>
-<li>每个子模块（例如 Game Framework 插件）有自己的 Git 仓库，使用自己独立的版本号和提交记录。</li>
-<li>当你将子模块添加到主项目时，Git 会记录子模块的<strong>当前提交版本</strong>，并将该信息存储在主项目的 <code>.gitmodules</code> 文件和 <code>.git/config</code> 配置文件中。</li>
-<li>例如，当你添加一个子模块时，Git 会记录子模块在主项目中的具体版本（即该子模块的某个提交ID）。</li>
-</ul>
-</li>
-<li>
-<p><strong>子模块的分支管理：</strong></p>
-<ul>
-<li>每个子模块都有自己的分支管理方式，你可以在子模块内创建、切换和管理分支，就像处理主项目中的分支一样。</li>
-<li>当你执行 <code>git submodule update --remote</code> 命令时，Git 会将子模块的代码更新为子模块远程仓库的默认分支（通常是 <code>master</code> 或 <code>main</code>，但你也可以设置其他分支）。</li>
-</ul>
-</li>
-<li>
-<p><strong>管理子模块的版本：</strong></p>
-<ul>
-<li>子模块的版本控制非常灵活，可以选择将子模块固定在某个版本（提交哈希）或某个分支的最新提交。</li>
-<li>在主项目中，如果你想更新子模块到最新版本，只需进入子模块目录并执行：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch-name&gt;  <span class="comment"># 切换到需要的分支</span></span><br><span class="line">git pull origin &lt;branch-name&gt;  <span class="comment"># 拉取最新代码</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>然后在主项目目录中，使用以下命令提交子模块的新版本：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;submodule-directory&gt;</span><br><span class="line">git commit -m <span class="string">&quot;Update submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>子模块的分支切换：</strong></p>
-<ul>
-<li>如果你想切换子模块的分支，可以进入子模块目录，使用 <code>git checkout &lt;branch&gt;</code> 来切换分支：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> Packages/GameFramework  <span class="comment"># 进入子模块目录</span></span><br><span class="line">git checkout develop  <span class="comment"># 切换到开发分支</span></span><br><span class="line">git pull origin develop  <span class="comment"># 更新子模块到开发分支的最新代码</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>切换完成后，记得回到主项目目录并提交子模块的更新：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Switch submodule to develop branch&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ol>
-<h3 id="如何管理子模块的版本"><strong>如何管理子模块的版本</strong></h3>
-<ul>
-<li>
-<p><strong>固定子模块版本：</strong><br>
-如果你希望将子模块固定在特定版本（例如某个提交哈希），可以通过以下命令将子模块指向特定的提交：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-<p>这将确保子模块锁定在特定的提交哈希，而不是拉取该分支的最新版本。</p>
-</li>
-<li>
-<p><strong>更新子模块到最新提交：</strong><br>
-如果你想将子模块更新为其远程仓库的最新提交（通常是远程 <code>master</code> 或 <code>main</code> 分支），可以使用以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><strong>子模块版本管理文件：</strong><br>
-子模块的提交信息被保存在主项目的 <code>.gitmodules</code> 和 <code>.git/config</code> 文件中。你可以手动编辑这些文件来指定子模块的 URL 和分支信息，也可以使用 Git 命令行工具来管理。</p>
-</li>
-</ul>
-<h3 id="总结"><strong>总结</strong></h3>
-<ul>
-<li><strong>独立版本和分支管理</strong>：每个子模块有自己的版本历史和分支，你可以独立管理子模块的版本和分支，不会影响主项目。</li>
-<li><strong>灵活的更新和切换</strong>：你可以选择将子模块固定在某个版本，或者随时更新到远程仓库的最新提交。</li>
-<li><strong>主项目和子模块的分离</strong>：主项目和子模块是相互独立的 Git 仓库，便于独立管理和协作开发。</li>
-</ul>
-<p>如果你需要更具体的操作示例或遇到任何问题，随时告诉我！我会帮助你更好地管理子模块。</p>
-<h2 id="🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？"><strong>🔹 为什么使用 Git Submodule 导入 Game Framework 插件？</strong></h2>
-<p>使用 <strong>Git Submodule</strong> 方式导入 <strong>Game Framework 插件</strong> 也是一个非常不错的选择，尤其是在团队协作或者需要频繁更新插件代码的情况下。它的优势和适用场景如下：</p>
-<h3 id="✅-优势："><strong>✅ 优势：</strong></h3>
-<ol>
-<li>
-<p><strong>版本控制和更新管理：</strong></p>
-<ul>
-<li>Git Submodule 允许你将 <strong>Game Framework 插件的 Git 仓库</strong> 作为子模块引入主项目，这样你就可以单独管理插件的版本。</li>
-<li>如果插件有更新，只需在主项目中执行 <code>git submodule update --remote</code> 来拉取插件的最新版本。</li>
-</ul>
-</li>
-<li>
-<p><strong>保持项目结构清晰：</strong></p>
-<ul>
-<li>插件代码会作为子模块独立存在于特定文件夹（如 <code>Packages/GameFramework</code>），不会和主项目代码混在一起，保持项目结构的整洁。</li>
-</ul>
-</li>
-<li>
-<p><strong>便于团队协作：</strong></p>
-<ul>
-<li>你可以将子模块添加到 Git 仓库中，团队成员可以同步子模块版本，确保大家使用相同版本的插件。</li>
-<li>团队成员可以通过 <code>git submodule update --init</code> 拉取最新插件，避免了手动导入和更新插件的麻烦。</li>
-</ul>
-</li>
-<li>
-<p><strong>灵活的自定义：</strong></p>
-<ul>
-<li>如果你需要修改框架的代码，直接进入子模块目录，进行修改，不会影响主项目的其他部分。</li>
-<li>你可以将 Game Framework 插件单独进行版本管理，并与主项目的版本控制隔离开。</li>
-</ul>
-</li>
-<li>
-<p><strong>保持一致性：</strong></p>
-<ul>
-<li>使用 Git Submodule 确保每次从版本库拉取时，插件和主项目的版本一致，避免了手动复制和拖动导致的版本错乱。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="❌-可能的缺点："><strong>❌ 可能的缺点：</strong></h3>
-<ol>
-<li>
-<p><strong>稍微复杂的操作：</strong></p>
-<ul>
-<li>子模块需要一些额外的 Git 命令支持，比如初始化子模块、更新子模块等。</li>
-<li>如果团队成员不熟悉 Git Submodule，可能需要一些培训。</li>
-</ul>
-</li>
-<li>
-<p><strong>子模块更新需要显式操作：</strong></p>
-<ul>
-<li>在子模块更新时，开发者需要显式执行 <code>git submodule update</code> 命令来拉取插件的最新代码，而不像 UPM 那样自动处理版本更新。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？"><strong>🔹 如何使用 Git Submodule 导入 Game Framework 插件？</strong></h2>
-<h3 id="步骤-1：初始化子模块"><strong>步骤 1：初始化子模块</strong></h3>
-<p>首先，假设你已经有一个主项目，接下来将 Game Framework 插件作为子模块添加到你的项目中。</p>
-<ol>
-<li>
-<p><strong>进入主项目目录：</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><strong>添加 Game Framework 插件作为子模块：</strong><br>
-假设你要使用的 Game Framework 插件在 GitHub 上，你可以使用以下命令将插件仓库添加为子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule add https://github.com/YourUsername/UnityGameFramework.git Packages/GameFramework</span><br></pre></td></tr></table></figure>
-<p>这个命令会将 Game Framework 插件添加到 <code>Packages/GameFramework</code> 目录，并将其作为 Git 子模块加入到主项目中。</p>
-</li>
-<li>
-<p><strong>初始化子模块：</strong><br>
-如果你是第一次使用子模块，需要执行以下命令初始化它：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><strong>提交主项目的变化：</strong><br>
-完成子模块添加后，你需要将 <code>git submodule</code> 的变动提交到主项目中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Add UnityGameFramework as a submodule&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<hr>
-<h3 id="步骤-2：更新子模块"><strong>步骤 2：更新子模块</strong></h3>
-<p>当插件更新时，你可以通过以下步骤更新子模块：</p>
-<ol>
-<li>
-<p><strong>更新子模块到最新版本：</strong><br>
-如果 Game Framework 插件有更新，可以执行以下命令拉取最新代码：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><strong>提交更新后的子模块：</strong><br>
-更新完成后，你需要提交主项目对子模块的更新：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><strong>推送更新：</strong><br>
-更新完成后，推送到远程 Git 仓库：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<hr>
-<h3 id="步骤-3：团队协作中使用子模块"><strong>步骤 3：团队协作中使用子模块</strong></h3>
-<ol>
-<li>
-<p><strong>克隆主项目时包含子模块：</strong><br>
-当团队成员从 Git 仓库克隆主项目时，需要添加 <code>--recurse-submodules</code> 参数来同步子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/YourUsername/YourUnityProject.git</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><strong>更新子模块：</strong><br>
-如果已经克隆过主项目，可以使用以下命令更新子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<hr>
-<h2 id="🔹-适用场景"><strong>🔹 适用场景</strong></h2>
-<ul>
-<li><strong>长期维护的项目</strong>：如果你使用的 <strong>Game Framework 插件是外部维护的</strong>，Git Submodule 是一个好选择，因为你可以方便地控制插件的版本，避免插件代码直接嵌入到主项目中导致的混乱。</li>
-<li><strong>需要修改框架代码</strong>：如果你需要在项目中修改 <strong>Game Framework 插件的代码</strong>，Git Submodule 使得代码独立且可控，避免了直接修改 <code>Assets/</code> 目录中的框架代码。</li>
-<li><strong>多人协作开发</strong>：在团队开发中，子模块保证了每个开发者都在使用相同版本的框架，避免了版本不一致导致的错误。</li>
-</ul>
-<hr>
-<h2 id="🔹-总结"><strong>🔹 总结</strong></h2>
-<p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
-<p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
-]]></content>
   </entry>
   <entry>
     <title>git学习</title>
@@ -9109,6 +9166,127 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
+    <title>vs隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3>
+<p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><strong>步骤：自定义插件的 Assembly Definition</strong></h4>
+<ol>
+<li>
+<p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li>
+<p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li>
+<p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><strong>方法 2：修改 Unity 编辑器设置</strong></h3>
+<p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li>
+<p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li>
+<p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3>
+<p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li>
+<p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li>
+<p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3>
+<p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><strong>具体步骤</strong></h4>
+<ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3>
+<p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><strong>步骤</strong></h4>
+<ol>
+<li>
+<p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li>
+<p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li>
+<p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><strong>注意事项</strong></h3>
+<ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1>
@@ -9391,127 +9569,6 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
-    <title>vs隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3>
-<p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><strong>步骤：自定义插件的 Assembly Definition</strong></h4>
-<ol>
-<li>
-<p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li>
-<p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li>
-<p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><strong>方法 2：修改 Unity 编辑器设置</strong></h3>
-<p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li>
-<p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li>
-<p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3>
-<p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li>
-<p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li>
-<p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3>
-<p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><strong>具体步骤</strong></h4>
-<ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3>
-<p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><strong>步骤</strong></h4>
-<ol>
-<li>
-<p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li>
-<p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li>
-<p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><strong>注意事项</strong></h3>
-<ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>医保</title>
     <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
     <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
@@ -9693,6 +9750,227 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 <h1>Popper</h1>
 <p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
+    <title>笔记本拓展屏+平板</title>
+    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
+    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br>
+<a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
+<h2 id="Spacedesk-版本介绍">Spacedesk 版本介绍</h2>
+<p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
+<hr>
+<h3 id="免费功能："><strong>免费功能</strong>：</h3>
+<ol>
+<li>
+<p><strong>基本屏幕扩展</strong>：</p>
+<ul>
+<li>支持将平板或手机作为电脑的扩展显示器。</li>
+<li>支持 Wi-Fi 和 USB 连接。</li>
+</ul>
+</li>
+<li>
+<p><strong>多设备连接</strong>：</p>
+<ul>
+<li>可以同时连接多个设备作为扩展屏幕。</li>
+</ul>
+</li>
+<li>
+<p><strong>跨平台支持</strong>：</p>
+<ul>
+<li>支持 Windows 电脑与 Android/iOS 设备连接。</li>
+</ul>
+</li>
+<li>
+<p><strong>基本分辨率支持</strong>：</p>
+<ul>
+<li>提供足够的分辨率用于日常办公和娱乐。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="可能收费或需要捐赠的功能："><strong>可能收费或需要捐赠的功能</strong>：</h3>
+<ol>
+<li>
+<p><strong>更高分辨率和刷新率</strong>：</p>
+<ul>
+<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
+</ul>
+</li>
+<li>
+<p><strong>高级功能</strong>：</p>
+<ul>
+<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
+</ul>
+</li>
+<li>
+<p><strong>商业用途</strong>：</p>
+<ul>
+<li>如果用于商业环境，可能需要购买许可证。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="捐赠支持："><strong>捐赠支持</strong>：</h3>
+<ul>
+<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
+</ul>
+<hr>
+<h3 id="总结："><strong>总结</strong>：</h3>
+<ul>
+<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
+<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
+</ul>
+<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
+<h2 id="将电脑屏幕投射到平板电脑">将电脑屏幕投射到平板电脑</h2>
+<p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
+<h3 id="准备工作：">准备工作：</h3>
+<ol>
+<li>
+<p><strong>下载软件</strong>：</p>
+<ul>
+<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
+<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
+</ul>
+</li>
+<li>
+<p><strong>确保设备在同一网络</strong>：</p>
+<ul>
+<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
+</ul>
+</li>
+</ol>
+<h4 id="在平板电脑上：">在平板电脑上：</h4>
+<ol>
+<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
+<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
+<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
+</ol>
+<p><img src="/.io//image.png" alt><br>
+注意：</p>
+<ul>
+<li>WiFi连接需要同在一个局域网下</li>
+<li>WiFi有延迟</li>
+<li>USB需要打开显示器设备的开发者选项的调试模式</li>
+<li>Local Area Network： WiFi连接开关</li>
+<li>USB Cable Android：USB连接开关</li>
+<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
+<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>算法脑筋急转弯</title>
+    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
+    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？">四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2>
+<p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
+<h3 id="步骤："><strong>步骤</strong>：</h3>
+<ol>
+<li>
+<p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
+</li>
+<li>
+<p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
+<ul>
+<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
+<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
+<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
+<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>称重</strong>：</p>
+<ul>
+<li>假设正常药片的重量为 ( w )，</li>
+<li>过期药片的重量为 ( w + 1 )。</li>
+<li>如果所有药片都是正常的，总重量应为：<br>
+[<br>
+1w + 2w + 3w + 4w = 10w<br>
+]</li>
+<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>分析结果</strong>：</p>
+<ul>
+<li>设称得的总重量为 ( S )，</li>
+<li>计算超出的重量：<br>
+[<br>
+S - 10w<br>
+]</li>
+<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
+</ul>
+</li>
+</ol>
+<h3 id="示例："><strong>示例</strong>：</h3>
+<p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
+<ul>
+<li>取样药片总数：( 1 + 2 + 3 + 4 = 10 ) 片，</li>
+<li>理论总重量：( 10w )，</li>
+<li>实际称重：( 10w + 3 )，</li>
+<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
+</ul>
+<p><strong>结论</strong>：<br>
+通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
+<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？">现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2>
+<p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
+<h3 id="步骤：-2"><strong>步骤</strong>：</h3>
+<ol>
+<li>
+<p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
+</li>
+<li>
+<p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
+</li>
+<li>
+<p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
+<ul>
+<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
+<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="结论："><strong>结论</strong>：</h3>
+<p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
+<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？">有两个容器分别是5L与6L,如何精准得到3L的水？</h2>
+<p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。</p>
+<hr>
+<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3>
+<ol>
+<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
+<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
+<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
+<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
+<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
+<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。
+<ul>
+<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3>
+<ol>
+<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
+<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。
+<ul>
+<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
+</ul>
+</li>
+<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
+<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
+</ol>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
+<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
+</ul>
+<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
+]]></content>
   </entry>
   <entry>
     <title>游戏资源服部署</title>
@@ -10200,227 +10478,6 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 <p><strong>总结</strong><br>
 <strong>如果关闭 Clash 后 Unity 可以正常请求网络，那问题就是 Clash 代理影响了 Unity 的请求。</strong><br>
 你可以尝试 <strong>关闭 Clash 或者排除 Unity 进程不走代理</strong> 来解决问题。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>笔记本拓展屏+平板</title>
-    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
-    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br>
-<a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
-<h2 id="Spacedesk-版本介绍">Spacedesk 版本介绍</h2>
-<p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
-<hr>
-<h3 id="免费功能："><strong>免费功能</strong>：</h3>
-<ol>
-<li>
-<p><strong>基本屏幕扩展</strong>：</p>
-<ul>
-<li>支持将平板或手机作为电脑的扩展显示器。</li>
-<li>支持 Wi-Fi 和 USB 连接。</li>
-</ul>
-</li>
-<li>
-<p><strong>多设备连接</strong>：</p>
-<ul>
-<li>可以同时连接多个设备作为扩展屏幕。</li>
-</ul>
-</li>
-<li>
-<p><strong>跨平台支持</strong>：</p>
-<ul>
-<li>支持 Windows 电脑与 Android/iOS 设备连接。</li>
-</ul>
-</li>
-<li>
-<p><strong>基本分辨率支持</strong>：</p>
-<ul>
-<li>提供足够的分辨率用于日常办公和娱乐。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="可能收费或需要捐赠的功能："><strong>可能收费或需要捐赠的功能</strong>：</h3>
-<ol>
-<li>
-<p><strong>更高分辨率和刷新率</strong>：</p>
-<ul>
-<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
-</ul>
-</li>
-<li>
-<p><strong>高级功能</strong>：</p>
-<ul>
-<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
-</ul>
-</li>
-<li>
-<p><strong>商业用途</strong>：</p>
-<ul>
-<li>如果用于商业环境，可能需要购买许可证。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="捐赠支持："><strong>捐赠支持</strong>：</h3>
-<ul>
-<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
-</ul>
-<hr>
-<h3 id="总结："><strong>总结</strong>：</h3>
-<ul>
-<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
-<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
-</ul>
-<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
-<h2 id="将电脑屏幕投射到平板电脑">将电脑屏幕投射到平板电脑</h2>
-<p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
-<h3 id="准备工作：">准备工作：</h3>
-<ol>
-<li>
-<p><strong>下载软件</strong>：</p>
-<ul>
-<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
-<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
-</ul>
-</li>
-<li>
-<p><strong>确保设备在同一网络</strong>：</p>
-<ul>
-<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
-</ul>
-</li>
-</ol>
-<h4 id="在平板电脑上：">在平板电脑上：</h4>
-<ol>
-<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
-<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
-<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
-</ol>
-<p><img src="/.io//image.png" alt><br>
-注意：</p>
-<ul>
-<li>WiFi连接需要同在一个局域网下</li>
-<li>WiFi有延迟</li>
-<li>USB需要打开显示器设备的开发者选项的调试模式</li>
-<li>Local Area Network： WiFi连接开关</li>
-<li>USB Cable Android：USB连接开关</li>
-<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
-<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>算法脑筋急转弯</title>
-    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
-    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？">四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2>
-<p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
-<h3 id="步骤："><strong>步骤</strong>：</h3>
-<ol>
-<li>
-<p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
-</li>
-<li>
-<p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
-<ul>
-<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
-<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
-<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
-<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
-</ul>
-</li>
-<li>
-<p><strong>称重</strong>：</p>
-<ul>
-<li>假设正常药片的重量为 ( w )，</li>
-<li>过期药片的重量为 ( w + 1 )。</li>
-<li>如果所有药片都是正常的，总重量应为：<br>
-[<br>
-1w + 2w + 3w + 4w = 10w<br>
-]</li>
-<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
-</ul>
-</li>
-<li>
-<p><strong>分析结果</strong>：</p>
-<ul>
-<li>设称得的总重量为 ( S )，</li>
-<li>计算超出的重量：<br>
-[<br>
-S - 10w<br>
-]</li>
-<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
-</ul>
-</li>
-</ol>
-<h3 id="示例："><strong>示例</strong>：</h3>
-<p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
-<ul>
-<li>取样药片总数：( 1 + 2 + 3 + 4 = 10 ) 片，</li>
-<li>理论总重量：( 10w )，</li>
-<li>实际称重：( 10w + 3 )，</li>
-<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
-</ul>
-<p><strong>结论</strong>：<br>
-通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
-<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？">现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2>
-<p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
-<h3 id="步骤：-2"><strong>步骤</strong>：</h3>
-<ol>
-<li>
-<p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
-</li>
-<li>
-<p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
-</li>
-<li>
-<p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
-<ul>
-<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
-<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
-</ul>
-</li>
-</ol>
-<h3 id="结论："><strong>结论</strong>：</h3>
-<p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
-<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？">有两个容器分别是5L与6L,如何精准得到3L的水？</h2>
-<p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。</p>
-<hr>
-<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3>
-<ol>
-<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
-<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
-<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
-<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
-<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
-<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。
-<ul>
-<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3>
-<ol>
-<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
-<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。
-<ul>
-<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
-</ul>
-</li>
-<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
-<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
-</ol>
-<hr>
-<h3 id="总结"><strong>总结</strong></h3>
-<ul>
-<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
-<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
-</ul>
-<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
 ]]></content>
   </entry>
   <entry>
