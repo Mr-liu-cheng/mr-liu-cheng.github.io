@@ -72,10 +72,7 @@ $$
 ---
 
 ### 4. 高效绘制[流程图](https://github.com/knsv/mermaid#flowchart)
-{% mermaid %}
-graph LR
-A --> B
-{% endmermaid %}
+
 ```mermaid
 graph TD
     A[用户请求] --> B[语义解析]
