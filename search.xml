@@ -1,542 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Assetbundle</title>
-    <url>/2025/01/20/Assetbundle/</url>
-    <content><![CDATA[<h2 id="了解什么是Assetbundle">了解什么是Assetbundle</h2>
-<p>严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:</p>
-<table>
-<thead>
-<tr>
-<th><strong>特性</strong></th>
-<th><strong>AssetBundle</strong></th>
-<th><strong>直接使用 Asset</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>资源按需加载，支持加载和卸载，减少内存占用</td>
-<td>所有资源在场景启动时加载，无法按需卸载，内存占用大</td>
-</tr>
-<tr>
-<td><strong>加载性能</strong></td>
-<td>通过按需加载，可以加载所需资源，减少初次加载时间</td>
-<td>所有资源在启动时一次性加载，可能导致加载延迟和卡顿</td>
-</tr>
-<tr>
-<td><strong>资源的依赖关系</strong></td>
-<td>支持自动管理资源依赖，通过 Manifest 文件解决依赖关系</td>
-<td>需要手动管理资源的依赖关系，容易导致丢失依赖</td>
-</tr>
-<tr>
-<td><strong>更新与热更新</strong></td>
-<td>支持热更新，通过增量更新机制可以减少更新数据量</td>
-<td>不支持热更新，更新时必须重新打包整个项目</td>
-</tr>
-<tr>
-<td><strong>包体大小</strong></td>
-<td>可以对 Asset 进行压缩，减小包体大小</td>
-<td>资源不压缩，包体较大</td>
-</tr>
-<tr>
-<td><strong>跨平台支持</strong></td>
-<td>可以为不同平台打包不同的 AssetBundle</td>
-<td>所有平台共享相同的资源，可能导致不必要的资源浪费</td>
-</tr>
-<tr>
-<td><strong>网络加载</strong></td>
-<td>可以通过网络加载 AssetBundle，支持按需下载</td>
-<td>只能通过本地文件访问，无法通过网络动态加载资源</td>
-</tr>
-<tr>
-<td><strong>调试与编辑</strong></td>
-<td>加载后无法直接在编辑器中查看资源，调试较为复杂</td>
-<td>直接通过 <code>Inspector</code> 视图可以查看和修改资源</td>
-</tr>
-<tr>
-<td><strong>文件管理</strong></td>
-<td><code>AssetBundle</code> 文件可以单独管理，支持多版本和增量更新</td>
-<td>所有资源文件都在 <code>Resources</code> 文件夹内，管理较为复杂</td>
-</tr>
-<tr>
-<td><strong>打包与构建</strong></td>
-<td>需要额外的打包过程和配置，增加构建时间</td>
-<td>无需额外的打包过程，直接将资源嵌入到应用中</td>
-</tr>
-<tr>
-<td><strong>使用场景</strong></td>
-<td>适合资源量大、需要分阶段加载和更新的项目</td>
-<td>适合小型项目或对资源需求不大的应用</td>
-</tr>
-<tr>
-<td><strong>加载的灵活性</strong></td>
-<td>加载的方式灵活，可以指定加载单个资源，减少不必要的加载</td>
-<td>资源一旦加载就固定，无法动态调整</td>
-</tr>
-<tr>
-<td><strong>依赖问题</strong></td>
-<td>自动解决依赖关系，减少开发者手动管理的负担</td>
-<td>依赖关系需要开发者手动管理，容易出错</td>
-</tr>
-</tbody>
-</table>
-<h3 id="可以按需加载卸载">可以按需加载卸载</h3>
-<p>Unity 中的 按需加载和卸载 AssetBundle 的机制，结合了以下几个关键设计：</p>
-<ul>
-<li>资源分离：头部和内容体分开，按需加载。</li>
-<li>内存管理：通过 <strong>PersistentManager</strong> 管理资源生命周期，避免内存泄漏。PersistentManager 负责管理与 AssetBundle 相关的对象及其生命周期，包括跟踪哪些资源被加载到内存中，哪些需要被释放。</li>
-<li>依赖关系：通过 Manifest 文件和链式加载/卸载管理资源依赖。</li>
-<li>增量更新：通过哈希值或 CRC 检查资源的变化，避免不必要的更新。</li>
-<li>异步加载：支持异步加载以减少卡顿，提高性能。</li>
-<li>清理机制：通过 UnloadUnusedAssets 清理不再使用的资源。</li>
-</ul>
-<p><strong>为什么场景的ab和资源的ab不能同时打包进同一个ab内?</strong></p>
-<ul>
-<li>加载方式和生命周期管理不同，容易引发加载和卸载冲突。</li>
-<li>场景的修改会导致整个 <code>AssetBundle</code> 重新打包，影响增量更新和资源优化。</li>
-<li>场景和资源的内存管理不同，可能导致不必要的内存占用。</li>
-</ul>
-<h2 id="AssetBundle的打包参数">AssetBundle的打包参数</h2>
-<p>当我们调用Unity的API去打AssetBundle的时候，实际上有很多的参数可以供我们选择。如果没有选择合适的参数，就可能会导致在包体，内存以及加载时间等方面造成很多的浪费。</p>
-<ul>
-<li>
-<p>ChunkBasedCompression：这个参数是压缩AssetBundle的用的。前面提到Android的StreamingAssets是不压缩的。为了减小包体大小，可以使用该参数对AssetBundle进行压缩。它实际上是一个由Unity改良过的LZ4，使它的算法更符合Unity的使用方式。</p>
-</li>
-<li>
-<p>DisableWriteTypetree：这个其实是会被很多开发者忽略的一个参数，它非常有用，可以帮我们减小AssetBundle包体的大小，同时也可以减小内存，以及减少我们加载这个AssetBundle时的CPU时间。</p>
-</li>
-</ul>
-<h3 id="Typetree为了给Unity跨版本之间做兼容性用的，确定使用同一个版本开发游戏的时候，可以关闭这个选项来增加打包速度和优化占用和加载性能"><strong>Typetree为了给Unity跨版本之间做兼容性用的，确定使用同一个版本开发游戏的时候，可以关闭这个选项来增加打包速度和优化占用和加载性能</strong></h3>
-<h4 id="热更新场景下："><strong>热更新场景下：</strong></h4>
-<ul>
-<li><strong>如果热更新的资源是使用与线上版本相同的 Unity 版本打包的</strong>，并且游戏 <strong>没有进行过大版本的升级</strong>，则可以通过关闭 <code>Typetree</code> 来减少包体和加载时的内存占用。</li>
-<li><strong>如果热更新的资源包含跨版本的更新，或者 Unity 版本发生变化</strong>，就必须开启 <code>Typetree</code>，以确保不同版本的 Unity 可以正确加载这些资源，并且能够兼容较早版本的数据。</li>
-</ul>
-<h4 id="整体项目升级-Unity-版本的影响："><strong>整体项目升级 Unity 版本的影响：</strong></h4>
-<ul>
-<li>如果你 <strong>整体升级了 Unity 版本</strong>，并且整个项目迁移到了新的 Unity 版本，那么 <code>Typetree</code> 会有影响，具体表现为：
-<ul>
-<li>如果开启了 <code>Typetree</code>，它会保证在不同版本的 Unity 下的兼容性，使得在新版本 Unity 中加载旧版本的资源时不会出错。</li>
-<li>如果 <strong>关闭 <code>Typetree</code></strong>，在升级 Unity 版本后，可能会导致在加载旧版本打包的资源时出现兼容性问题，尤其是当类型定义发生变化时（比如类的字段顺序、类型名称等发生变化）。</li>
-</ul>
-</li>
-</ul>
-<p>为了避免影响 <code>Typetree</code>，在进行热更新时，以下是可以做和不能做的操作。</p>
-<table>
-<thead>
-<tr>
-<th><strong>可以做的操作</strong></th>
-<th><strong>不能做的操作</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>新增脚本类和资源</td>
-<td>修改现有脚本类的字段名称、类型、顺序</td>
-</tr>
-<tr>
-<td>新增 AssetBundle</td>
-<td>删除字段、方法或资源</td>
-</tr>
-<tr>
-<td>修改资源加载方式</td>
-<td>修改资源的结构或依赖关系</td>
-</tr>
-<tr>
-<td>增加新的字段或方法</td>
-<td>修改现有资源的字段类型或顺序</td>
-</tr>
-<tr>
-<td>修改 AssetBundle 的压缩格式（不改变资源结构）</td>
-<td>修改 AssetBundle 内部资源的组织方式或压缩方式</td>
-</tr>
-</tbody>
-</table>
-<p>在进行热更新时，保持资源和脚本的兼容性非常重要，尤其是确保 <strong>现有资源的结构和字段保持不变</strong>，这样可以避免因不兼容导致的加载失败和数据丢失。如果需要进行大的修改，最好考虑全新的资源和模块，而不是修改已有的内容。</p>
-<p>DisableLoadAssetByFileName，DisableLoadAssetByFileNameWithExtension：当我们加载好一个AssetBundle然后使用LoadAsset加载Asset的时候，需要传递Asset的路径名称。这个名称有三种写法，分别是Asset的文件名，Asset的文件名+扩展名，Asset的全路径，如下：</p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">AssetBundle ab = AssetBundle.LoadFromFile(Path.Combine</span><br><span class="line">(Application.streamingAssetsPath, <span class="string">&quot;sphere&quot;</span>));</span><br><span class="line"><span class="comment">// 第一种和第二种比较慢的，因为它AssetBundle被加载成功后产生的</span></span><br><span class="line">Instantiate(ab.LoadAsset(<span class="string">&quot;Sphere&quot;</span>));</span><br><span class="line">Instantiate(ab.LoadAsset(<span class="string">&quot;Sphere.prefab&quot;</span>));</span><br><span class="line">Instantiate(ab.LoadAsset(<span class="string">&quot;Assets/Sphere.prefab&quot;</span>));</span><br></pre></td></tr></table></figure>
-<p>当我们没有Disable打AssetBundle的时候，实际上是算了一个Hash进去的，当通过文件名去找Asset的时候，它会去生成这个文件名的原路径，然后去对比。 如果我们确定我们的加载Asset的方式是用全路径加载的话，那么就可以把它关闭掉</p>
-<h2 id="怎么实现增量更新">怎么实现增量更新</h2>
-<h3 id="AssetBundle增量更新的实现原理"><strong>AssetBundle增量更新的实现原理</strong></h3>
-<p>在Unity中，增量更新的目的是使得用户在每次更新时只下载那些确实发生变化的资源，从而减少下载量和节省带宽。</p>
-<p>增量更新的核心思想是对比当前版本和上一版本的AssetBundle内容，找出其中的差异，然后仅下载发生变化的部分。具体来说，增量更新通常依赖于以下几种方式来判断哪些资源发生了变化。</p>
-<h3 id="判断增量更新的依据"><strong>判断增量更新的依据</strong></h3>
-<h4 id="1-文件的MD5值（哈希值）">1. <strong>文件的MD5值（哈希值）</strong></h4>
-<ul>
-<li><strong>原理</strong>：通过计算两个版本的 <code>AssetBundle</code> 文件的MD5值（或其他哈希算法），如果值不同，则表示文件内容发生了变化。可以用这个方式来判断 <code>AssetBundle</code> 是否需要更新。</li>
-<li><strong>适用场景</strong>：适用于当 <code>AssetBundle</code> 中的资源内容发生了变化时，计算文件的哈希值可以直接比较两个版本的 <code>AssetBundle</code> 内容。</li>
-<li><strong>问题</strong>：如果AssetBundle中有细微变化（如小幅修改），但整体资源内容没变，MD5值依然会不同，这就导致每次修改都会进行完整的资源更新。</li>
-</ul>
-<h4 id="2-通过-manifest-文件进行比对">2. <strong>通过 <code>.manifest</code> 文件进行比对</strong></h4>
-<ul>
-<li><strong>原理</strong>：在打包时，Unity会生成一个 <code>.manifest</code> 文件，该文件包含了 <code>AssetBundle</code> 文件的元数据（如文件的依赖关系、哈希值等）。通过比较新旧版本的 <code>.manifest</code> 文件，可以判断哪些资源发生了变化。</li>
-<li><strong>适用场景</strong>：通过计算 <code>.manifest</code> 中每个资源文件的哈希值或者CRC值，来判断资源是否发生变化。这种方式通常比较准确，可以追踪到哪些具体资源发生了变化。</li>
-<li><strong>操作步骤</strong>：
-<ol>
-<li>在热更新时，获取上一个版本的 <code>.manifest</code> 文件的内容。</li>
-<li>比较新旧版本 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 字段，找出哪些文件发生变化。</li>
-<li>对比新旧版本的资源，更新改变的部分。</li>
-</ol>
-</li>
-</ul>
-<h4 id="3-资源的-AssetFileHash（文件哈希）">3. <strong>资源的 <code>AssetFileHash</code>（文件哈希）</strong></h4>
-<ul>
-<li><strong>原理</strong>：Unity的 <code>.manifest</code> 文件中记录了每个资源的 <code>AssetFileHash</code>。该字段是每个资源的内容的哈希值，可以用来判断资源本身是否发生了变化。</li>
-<li><strong>适用场景</strong>：特别适合跟踪资源文件的变化，如脚本、纹理、模型、音频等。</li>
-<li><strong>操作步骤</strong>：
-<ol>
-<li>每次打包时计算每个资源的哈希值，并记录在 <code>.manifest</code> 文件中。</li>
-<li>在更新过程中，通过比较两次打包的 <code>AssetFileHash</code> 判断哪些资源内容发生了变化。</li>
-<li>如果某个资源的哈希值发生变化，则表明该资源内容更新了，可以下载新的 <code>AssetBundle</code>。</li>
-</ol>
-</li>
-</ul>
-<h4 id="4-资源的依赖关系">4. <strong>资源的依赖关系</strong></h4>
-<ul>
-<li><strong>原理</strong>：AssetBundle之间可能会有依赖关系。当某个资源或 <code>AssetBundle</code> 的内容发生变化时，可能会影响依赖该资源或 <code>AssetBundle</code> 的其他资源。通过检查这些依赖关系，可以判断哪些 <code>AssetBundle</code> 必须被更新。</li>
-<li><strong>适用场景</strong>：适用于有复杂依赖关系的场景，或者多个资源之间有链接依赖的情况（如材质、模型、动画等）。</li>
-<li><strong>操作步骤</strong>：
-<ol>
-<li>在 <code>.manifest</code> 文件中检查资源的依赖关系。</li>
-<li>如果某个资源的依赖发生变化，则该资源及其依赖的 <code>AssetBundle</code> 都需要进行更新。</li>
-<li>通过检查依赖链来找出需要更新的 <code>AssetBundle</code>。</li>
-</ol>
-</li>
-</ul>
-<h3 id="实现增量更新的步骤"><strong>实现增量更新的步骤</strong></h3>
-<ol>
-<li>
-<p><strong>生成和保存 <code>AssetBundle</code> 的 <code>.manifest</code> 文件</strong><br>
-每次打包时，Unity会生成一个 <code>.manifest</code> 文件，记录了打包资源的元数据。确保在热更新过程中可以访问和保存该文件，以便后续对比。</p>
-</li>
-<li>
-<p><strong>比对 <code>.manifest</code> 文件</strong><br>
-在新版本打包后，比较新旧版本 <code>.manifest</code> 文件中的资源 <code>AssetFileHash</code> 字段，判断哪些资源发生了变化。</p>
-</li>
-<li>
-<p><strong>计算变化的资源</strong><br>
-如果某个资源的 <code>AssetFileHash</code> 不同，说明该资源发生了变化。这些变化的资源会被打包成新的 <code>AssetBundle</code>。</p>
-</li>
-<li>
-<p><strong>仅下载变化的资源</strong><br>
-在客户端进行更新时，只下载发生变化的 <code>AssetBundle</code>。这样可以大大减小更新的下载量。</p>
-</li>
-<li>
-<p><strong>管理依赖关系</strong><br>
-如果某个资源的依赖发生了变化，需要更新依赖该资源的 <code>AssetBundle</code>。因此，依赖链的管理是增量更新的重要部分。</p>
-</li>
-<li>
-<p><strong>应用新的 <code>AssetBundle</code></strong><br>
-客户端加载更新后的 <code>AssetBundle</code>，并加载其中的资源。</p>
-</li>
-</ol>
-<h3 id="增量更新最佳方案">增量更新最佳方案</h3>
-<p>确保 <strong>准确性</strong> 和 <strong>高效性</strong>，并避免不必要的资源重新加载，<strong>提高增量更新精度</strong> 的最优方法是：</p>
-<blockquote>
-<p><strong>使用 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段来判断资源是否发生变化</strong></p>
-</blockquote>
-<p>这个方法结合了 <strong>准确性</strong> 和 <strong>高效性</strong>，且避免了不必要的资源重新加载。</p>
-<h4 id="为什么最优？"><strong>为什么最优？</strong></h4>
-<ol>
-<li>
-<p><strong>准确性</strong>：</p>
-<ul>
-<li><code>.manifest</code> 文件中的 <code>AssetFileHash</code> 字段是直接用于标识资源内容是否发生变化的哈希值，它非常精确，能确保只有在资源的内容发生变化时才会被标记为更新。</li>
-<li>通过 <code>CRC</code> (Cyclic Redundancy Check) 字段，还可以进一步确保资源的完整性，避免因文件损坏或传输错误导致错误的更新。</li>
-</ul>
-</li>
-<li>
-<p><strong>高效性</strong>：</p>
-<ul>
-<li><code>.manifest</code> 文件相对较小，且它记录了所有资源的变化信息，因此与直接计算 <code>AssetBundle</code> 或 <code>.meta</code> 文件的哈希值相比，它的性能开销更低，能够快速判断资源变化。</li>
-<li>在增量更新时，基于 <code>.manifest</code> 文件的判断方式可以避免每次重新计算整个 <code>AssetBundle</code> 的哈希，从而减少了计算和网络传输的开销。</li>
-</ul>
-</li>
-<li>
-<p><strong>避免不必要的资源重新加载</strong>：</p>
-<ul>
-<li>通过 <code>AssetFileHash</code> 和 <code>CRC</code> 的对比，只在资源真正发生变化时才进行更新，这样避免了对未修改的资源进行重新加载和下载，节省了带宽和设备的资源。</li>
-</ul>
-</li>
-</ol>
-<h4 id="增量更新的流程："><strong>增量更新的流程：</strong></h4>
-<ol>
-<li>
-<p><strong>首次发布时</strong>：</p>
-<ul>
-<li>在初次构建 <code>AssetBundle</code> 时，生成 <code>AssetBundle</code> 的 <code>.manifest</code> 文件，记录每个资源的 <code>AssetFileHash</code> 和 <code>CRC</code> 信息。</li>
-<li>发布 <code>AssetBundle</code> 和 <code>.manifest</code> 文件，并确保客户端获取到这些文件。</li>
-</ul>
-</li>
-<li>
-<p><strong>后续更新时</strong>：</p>
-<ul>
-<li>在每次更新 <code>AssetBundle</code> 时，重新生成 <code>.manifest</code> 文件，并计算其中每个资源的 <code>AssetFileHash</code> 和 <code>CRC</code>。</li>
-<li>客户端通过下载新的 <code>.manifest</code> 文件，并与本地存储的 <code>.manifest</code> 进行对比。如果 <code>AssetFileHash</code> 或 <code>CRC</code> 值不同，说明该资源已发生变化，需要下载新的 <code>AssetBundle</code>。</li>
-<li>对于没有变化的资源，可以跳过下载和加载，避免不必要的资源重新加载。</li>
-</ul>
-</li>
-<li>
-<p><strong>优势</strong>：</p>
-<ul>
-<li>使用 <code>.manifest</code> 文件避免了每次都要遍历和检查整个 <code>AssetBundle</code>，大大减少了计算量。</li>
-<li>通过 <code>CRC</code> 和 <code>AssetFileHash</code> 判断文件变化，精确到资源级别，确保增量更新的精度。</li>
-<li>能有效控制资源加载的时机，只有需要更新的资源才会被重新加载，优化了内存和存储的使用。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p><strong>总结：</strong><br>
-最优的增量更新方法是 <strong>基于 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段判断资源变化</strong>。它既能保证更新的精确性，又具备较高的效率，避免了不必要的资源重新加载和带宽浪费，适用于大多数的热更新场景。</p>
-<hr>
-<h3 id="增量更新的优缺点"><strong>增量更新的优缺点</strong></h3>
-<table>
-<thead>
-<tr>
-<th>优点</th>
-<th>缺点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>节省带宽：只更新变化的部分，而不是整个 <code>AssetBundle</code>，可以大大减少下载的文件大小。</td>
-<td>依赖性复杂：如果多个 <code>AssetBundle</code> 之间有复杂的依赖关系，增量更新可能会变得复杂。</td>
-</tr>
-<tr>
-<td>加速下载：用户只需要下载新更新的资源，更新速度更快。</td>
-<td>需要额外的逻辑：需要实现文件哈希比对、资源依赖关系的检查等。</td>
-</tr>
-<tr>
-<td>减少内存占用：避免了不必要的资源加载和占用，提升了性能。</td>
-<td>不适用于小变化：对于频繁的小变化，每次都更新可能会带来一定的性能开销。</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<p><strong>总结</strong></p>
-<p>增量更新的核心在于通过比对 <code>AssetBundle</code> 的哈希值、<code>manifest</code> 文件或资源的 <code>AssetFileHash</code> 来判断哪些资源发生了变化，然后只下载那些变化的资源。通过这种方式，减少了更新时的带宽占用和下载时间，同时提高了用户体验。不过，这要求开发者能够管理好资源之间的依赖关系，并能够处理增量更新中的各种逻辑细节。</p>
-<h2 id="增量更新实现逻辑">增量更新实现逻辑</h2>
-<p>要实现增量更新的机制，使用 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段来判断资源变化，并确保只有变更的资源进行下载和更新，以下是一个基础的代码示例，展示了如何通过比对 <code>.manifest</code> 文件中的哈希值来判断哪些资源需要更新。</p>
-<h3 id="基本步骤">基本步骤</h3>
-<ol>
-<li>获取服务器上的 <code>AssetBundle</code> 和 <code>.manifest</code> 文件。</li>
-<li>下载 <code>.manifest</code> 文件，解析出其中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段。</li>
-<li>与本地缓存的 <code>.manifest</code> 进行对比，检查哪些资源发生了变化。</li>
-<li>仅下载发生变化的 <code>AssetBundle</code> 文件，并更新本地缓存。</li>
-</ol>
-<h3 id="代码示例">代码示例</h3>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleUpdater</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 本地存储路径</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localAssetBundleFolder = <span class="string">&quot;Assets/AssetBundles&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localManifestFile = <span class="string">&quot;Assets/AssetBundles/assetbundle.manifest&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 服务器资源的 URL</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> remoteAssetBundleUrl = <span class="string">&quot;https://example.com/assetbundles&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> remoteManifestUrl = <span class="string">&quot;https://example.com/assetbundles/assetbundle.manifest&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载 AssetBundle 和 Manifest 文件</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Step 1: 下载远程的 manifest 文件</span></span><br><span class="line">        UnityWebRequest manifestRequest = UnityWebRequest.Get(remoteManifestUrl);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> manifestRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (manifestRequest.isHttpError || manifestRequest.isNetworkError)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download manifest.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Step 2: 解析远程 manifest 文件</span></span><br><span class="line">        AssetBundleManifest remoteManifest = ParseManifest(manifestRequest.downloadHandler.text);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Step 3: 加载本地 manifest 文件并与远程 manifest 文件对比</span></span><br><span class="line">        <span class="keyword">if</span> (File.Exists(localManifestFile))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localManifestText = File.ReadAllText(localManifestFile);</span><br><span class="line">            AssetBundleManifest localManifest = ParseManifest(localManifestText);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Step 4: 对比两个 manifest 文件，找出有变化的资源</span></span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> remoteAsset <span class="keyword">in</span> remoteManifest.GetAllAssetBundles())</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">string</span> localHash = GetAssetHash(localManifest, remoteAsset);</span><br><span class="line">                <span class="built_in">string</span> remoteHash = remoteManifest.GetAssetFileHash(remoteAsset);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (localHash != remoteHash) <span class="comment">// 如果文件的 hash 值不同，则需要下载更新</span></span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.Log(<span class="string">$&quot;AssetBundle <span class="subst">&#123;remoteAsset&#125;</span> has changed, updating...&quot;</span>);</span><br><span class="line">                    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAssetBundle(remoteAsset</span>))</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 本地没有 manifest 文件，执行全量更新</span></span><br><span class="line">            Debug.Log(<span class="string">&quot;No local manifest found, performing full update...&quot;</span>);</span><br><span class="line">            <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAllAssetBundles(remoteManifest</span>))</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存新的 manifest 文件到本地</span></span><br><span class="line">        File.WriteAllText(localManifestFile, manifestRequest.downloadHandler.text);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析 Manifest 文件，获取其中的 AssetFileHash 和 CRC 字段</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> AssetBundleManifest <span class="title">ParseManifest</span>(<span class="params"><span class="built_in">string</span> manifestText</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 自定义解析方式，解析 AssetBundleManifest 文件</span></span><br><span class="line">        <span class="comment">// 假设 AssetBundleManifest 是 JSON 格式</span></span><br><span class="line">        <span class="comment">// 请根据实际情况替换为你们的解析方法</span></span><br><span class="line">        <span class="keyword">return</span> JsonUtility.FromJson&lt;AssetBundleManifest&gt;(manifestText);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取资源的 Hash 值</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetAssetHash</span>(<span class="params">AssetBundleManifest manifest, <span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 返回本地 AssetBundle 的 hash 值</span></span><br><span class="line">        <span class="keyword">return</span> manifest.GetAssetFileHash(assetName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载更新的 AssetBundle 文件</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(<span class="string">$&quot;<span class="subst">&#123;remoteAssetBundleUrl&#125;</span>/<span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.isHttpError || request.isNetworkError)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;Failed to download asset bundle: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将更新后的 AssetBundle 保存到本地缓存中</span></span><br><span class="line">        <span class="built_in">string</span> localPath = Path.Combine(localAssetBundleFolder, assetName);</span><br><span class="line">        File.WriteAllBytes(localPath, request.downloadHandler.data);</span><br><span class="line"></span><br><span class="line">        Debug.Log(<span class="string">$&quot;Successfully downloaded and cached asset bundle: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载所有的 AssetBundle 文件（全量更新）</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">DownloadAllAssetBundles</span>(<span class="params">AssetBundleManifest manifest</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> assetBundleName <span class="keyword">in</span> manifest.GetAllAssetBundles())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAssetBundle(assetBundleName</span>))</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManifest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 这里的结构体是根据你们实际的 manifest 文件格式进行调整的</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span>[] assetBundles;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取所有 AssetBundle 名称</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span>[] <span class="title">GetAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> assetBundles;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取资源的 Hash</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">GetAssetFileHash</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 需要从 .manifest 文件中读取文件的 Hash</span></span><br><span class="line">        <span class="comment">// 你需要根据实际的 manifest 文件结构来修改此方法</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;somehash&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="说明：">说明：</h3>
-<ol>
-<li>
-<p><strong>Manifest 文件解析</strong>：</p>
-<ul>
-<li>代码示例中的 <code>AssetBundleManifest</code> 类是根据假设的 JSON 格式解析的，你需要根据你们实际的 <code>.manifest</code> 文件格式来修改这个部分。</li>
-<li>如果你们的 <code>.manifest</code> 文件是 XML 格式，或者有自定义结构，你可以使用 <code>XmlUtility</code> 或手动解析来获取资源的 <code>AssetFileHash</code> 和 <code>CRC</code>。</li>
-</ul>
-</li>
-<li>
-<p><strong>增量更新逻辑</strong>：</p>
-<ul>
-<li>首先下载远程的 <code>manifest</code> 文件，并解析它。</li>
-<li>然后读取本地的 <code>manifest</code> 文件，并对比两个文件中的资源哈希（<code>AssetFileHash</code>）。</li>
-<li>如果发现远程的资源文件哈希值与本地不一致（即资源发生了变化），就下载对应的 <code>AssetBundle</code>。</li>
-<li>如果本地没有 <code>manifest</code> 文件（例如首次更新或清理后的情况），则执行全量更新，下载所有的资源包。</li>
-</ul>
-</li>
-<li>
-<p><strong>本地缓存与下载</strong>：</p>
-<ul>
-<li>每次更新完成后，将新的 <code>AssetBundle</code> 保存到本地缓存中，这样可以避免重复下载相同的资源。</li>
-<li>更新完成后，将新的 <code>manifest</code> 文件保存到本地，以便下次更新时使用。</li>
-</ul>
-</li>
-</ol>
-<h3 id="注意事项：">注意事项：</h3>
-<ul>
-<li><code>manifest</code> 文件通常会包含资源文件的所有信息，所以它的大小会比 <code>AssetBundle</code> 小很多。</li>
-<li>增量更新的关键是根据哈希对比资源的变化，而不是直接对比文件内容，因为 <code>AssetBundle</code> 打包后每次可能会有轻微的不同。</li>
-<li>使用这种方法时需要确保客户端和服务器的 <code>manifest</code> 文件结构一致。</li>
-</ul>
-<p>总结：<br>
-这种方法通过基于 <code>AssetBundleManifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段判断资源变化，只更新发生变化的资源，能显著提高增量更新的效率，减少不必要的资源重新加载。</p>
-<h2 id="AssetBundle的加载到内存方式">AssetBundle的加载到内存方式</h2>
-<p>在 Unity 中，<code>AssetBundle</code> 可以通过多种方式加载，具体的加载方式根据不同的需求（如从磁盘加载、从网络加载、从内存加载等）来选择。以下是所有常见的 <code>AssetBundle</code> 加载方式，包括同步和异步加载方式：</p>
-<p>以下是删除了示例代码和卸载方式列后的 Unity AssetBundle 加载方法对比表：</p>
-<table>
-<thead>
-<tr>
-<th>加载方法</th>
-<th>说明</th>
-<th>适用场景</th>
-<th>特点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong><code>AssetBundle.LoadFromFile</code></strong></td>
-<td>从指定路径加载 AssetBundle 文件</td>
-<td>加载本地存储的 AssetBundle 文件</td>
-<td>适用于文件路径已知的本地资源加载。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadFromMemory</code></strong></td>
-<td>从内存中加载 AssetBundle 数据</td>
-<td>当 AssetBundle 数据已经加载到内存时使用</td>
-<td>可以避免文件IO操作，适用于已有内存数据。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadFromStream</code></strong></td>
-<td>从流式数据中加载 AssetBundle</td>
-<td>当 AssetBundle 是通过流式数据传输时使用</td>
-<td>可用于网络加载流数据。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadAsset</code></strong></td>
-<td>加载 AssetBundle 中的指定资源</td>
-<td>加载 AssetBundle 中单个资源</td>
-<td>加载特定资源，常用于内存中加载资源。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadAssetAsync</code></strong></td>
-<td>异步加载 AssetBundle 中的指定资源</td>
-<td>加载 AssetBundle 中资源时不阻塞主线程</td>
-<td>异步操作，避免主线程卡顿。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadAllAssets</code></strong></td>
-<td>加载 AssetBundle 中所有资源</td>
-<td>加载整个 AssetBundle 内所有资源</td>
-<td>适用于需要加载所有资源的情况。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadAllAssetsAsync</code></strong></td>
-<td>异步加载 AssetBundle 中所有资源</td>
-<td>加载整个 AssetBundle 内所有资源时不阻塞主线程</td>
-<td>异步加载整个资源包。</td>
-</tr>
-<tr>
-<td><strong><code>AssetBundle.LoadAssetWithSubAssets</code></strong></td>
-<td>加载主资源及其附带的资源</td>
-<td>加载主资源及其附带的子资源</td>
-<td>加载一个资源以及其所有相关子资源。</td>
-</tr>
-<tr>
-<td><strong><code>WWW</code>（已废弃）</strong></td>
-<td>通过 WWW 类加载网络上的 AssetBundle</td>
-<td>用于较老版本的 Unity 中加载网络资源</td>
-<td>已废弃，推荐使用 <code>UnityWebRequest</code>。</td>
-</tr>
-<tr>
-<td><strong><code>UnityWebRequestAssetBundle</code></strong></td>
-<td>通过 <code>UnityWebRequest</code> 加载网络上的 AssetBundle</td>
-<td>用于加载远程服务器上的 AssetBundle</td>
-<td>推荐使用网络请求加载资源，性能更好。</td>
-</tr>
-</tbody>
-</table>
-<h2 id="CRC-校验">CRC 校验</h2>
-<p>在 Unity 中，<code>CRC 校验</code> 是在加载 <code>AssetBundle</code> 的过程中进行的，用于确保加载的 <code>AssetBundle</code> 文件没有被篡改或损坏。具体来说，CRC 校验是在 <strong>AssetBundle 文件加载的过程中</strong>，由 Unity 在解析 <code>AssetBundle</code> 文件时自动进行的，通常不需要开发者手动干预。</p>
-<h3 id="CRC-校验发生的阶段">CRC 校验发生的阶段</h3>
-<p>CRC 校验是在 <code>AssetBundle</code> 加载过程中的文件解析阶段进行的。具体而言，CRC 校验会在以下几个步骤中进行：</p>
-<ol>
-<li>
-<p><strong>文件解析阶段</strong>：<br>
-当使用 <code>AssetBundle.LoadFromFile()</code> 或 <code>UnityWebRequestAssetBundle.GetAssetBundle()</code> 等加载方法时，Unity 会先读取并解析 <code>AssetBundle</code> 文件的头信息和内容。在这个阶段，Unity 会根据文件头信息中的 CRC 值与实际加载的内容进行比对。</p>
-</li>
-<li>
-<p><strong>自动校验</strong>：<br>
-在解析完 <code>AssetBundle</code> 文件的头信息后，Unity 会自动计算并验证该文件的 CRC 值（CRC32）。如果该值与 <code>AssetBundle</code> 文件头中记录的 CRC 值匹配，则表示文件完整，否则会抛出错误，提示文件损坏或不匹配。</p>
-</li>
-<li>
-<p><strong>加载资源阶段</strong>：<br>
-一旦 CRC 校验通过，Unity 会继续加载 <code>AssetBundle</code> 中的具体资源。在这个过程中，如果文件本身没有损坏，资源将被加载到内存中供后续使用。</p>
-</li>
-</ol>
-<h3 id="使用-CRC-校验的函数">使用 CRC 校验的函数</h3>
-<ul>
-<li><strong>AssetBundle.LoadFromFile()</strong>：加载文件时会进行 CRC 校验。</li>
-<li><strong>AssetBundle.LoadFromMemory()</strong>：在内存加载时也会进行 CRC 校验，确保加载的内存数据与 <code>AssetBundle</code> 文件的校验值一致。</li>
-<li><strong>UnityWebRequestAssetBundle.GetAssetBundle()</strong>：使用 <code>UnityWebRequest</code> 下载 <code>AssetBundle</code> 时，CRC 校验也会在文件下载并解析后进行。</li>
-</ul>
-<h3 id="代码示例-2">代码示例</h3>
-<p>如果使用 <code>UnityWebRequestAssetBundle</code> 来下载并加载资源时，你可以传入一个 <code>CRC</code> 值来确保文件的完整性。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleLoader</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> url = <span class="string">&quot;https://example.com/assetbundle&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest www = UnityWebRequestAssetBundle.GetAssetBundle(url, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> www.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (www.result != UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Error downloading AssetBundle: &quot;</span> + www.error);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 加载成功，获取 AssetBundle</span></span><br><span class="line">            AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(www);</span><br><span class="line">            <span class="keyword">if</span> (bundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="是否总是需要-CRC-校验？">是否总是需要 CRC 校验？</h3>
-<p>CRC 校验是确保数据完整性的一种手段，通常会在以下场景下启用：</p>
-<ul>
-<li><strong>网络传输时</strong>：下载的 <code>AssetBundle</code> 文件可能会被损坏，启用 CRC 校验可以验证文件是否在传输过程中发生了变化。</li>
-<li><strong>本地文件校验</strong>：通过文件系统读取的 <code>AssetBundle</code> 也需要 CRC 校验，防止文件在磁盘上发生损坏或篡改。</li>
-</ul>
-<h3 id="结论">结论</h3>
-<p>CRC 校验是由 Unity 在加载 <code>AssetBundle</code> 时自动进行的，通常发生在文件解析和资源加载阶段。CRC 校验确保文件在加载前是完整且未损坏的。</p>
-<h2 id="AssetBundle-LoadAsset">AssetBundle.LoadAsset</h2>
-<blockquote>
-<p>是用于从已经加载到内存中的 AssetBundle 中加载具体的资源（如材质、纹理、Prefab 等）。它不会重新加载整个 AssetBundle 文件，而是提取文件中的单个资源。</p>
-</blockquote>
-<p>既然我们加载出来了AssetBundle，我们就会想和Resource.load那样去加载一个我们需要的资源出来实例化。</p>
-<p>其实，AssetBundle加载资源和Resource.load的加载流程是一样的了，通过Instanceid找全局内是否有该资源的对象，如果没有就通过PresistManager去加载并保存改对象，只不过对于AssetBundle的话，PresistManager保存的对象的标识符是指向包含这个对象的AssetBundle的。</p>
-<h2 id="AssetBundle的卸载">AssetBundle的卸载</h2>
-<p>在 Unity 中，AssetBundle 是一种用于将游戏资源打包并按需加载的机制。随着游戏开发中的资源管理变得更加复杂，正确地卸载 AssetBundle 变得至关重要，因为它会直接影响到内存的使用效率和性能。</p>
-<h3 id="1-AssetBundle-卸载方法">1. <strong>AssetBundle 卸载方法</strong></h3>
-<p>Unity 提供了 <code>AssetBundle.Unload(bool)</code> 方法来卸载已经加载的 AssetBundle。该方法有一个布尔参数 <code>bool unloadAllLoadedObjects</code>，决定是否将与该 AssetBundle 关联的所有资源对象一并卸载。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Unload</span>(<span class="params"><span class="built_in">bool</span> unloadAllLoadedObjects</span>)</span>;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>unloadAllLoadedObjects</strong>:
-<ul>
-<li><strong>true</strong>：表示卸载该 AssetBundle 以及所有与其关联的资源对象。</li>
-<li><strong>false</strong>：表示仅卸载 AssetBundle 文件的关联，而不卸载已经加载到内存中的资源对象。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-两种卸载模式的区别">2. <strong>两种卸载模式的区别</strong></h3>
-<h4 id="2-1-Unload-false">2.1 <strong>Unload(false)</strong></h4>
-<ul>
-<li><strong>作用</strong>：只会从 <code>PersistentManager</code> 中删除 AssetBundle 文件与内存中已加载的对象的关联，而不会删除这些资源对象本身。</li>
-<li><strong>影响</strong>：该对象的内存不会释放，因此，如果你只使用 <code>Unload(false)</code> 卸载，内存中会残留这些对象，并且后续若再次加载 AssetBundle，这些对象会被重新加载，导致内存中的重复数据。</li>
-</ul>
-<h4 id="2-2-Unload-true">2.2 <strong>Unload(true)</strong></h4>
-<ul>
-<li><strong>作用</strong>：不仅删除与 AssetBundle 文件相关联的对象，还会释放内存中所有与该 AssetBundle 相关联的对象（即资源对象），如材质、纹理、模型等。</li>
-<li><strong>影响</strong>：如果 AssetBundle 中的对象不再被其他部分引用，内存中会释放这些对象，帮助减少内存占用。</li>
-</ul>
-<h3 id="3-卸载时的注意事项">3. <strong>卸载时的注意事项</strong></h3>
-<h4 id="3-1-依赖关系">3.1 <strong>依赖关系</strong></h4>
-<p>在实际开发中，一个 AssetBundle 可能会依赖于另一个 AssetBundle。例如，A 包含了 B 包的资源。如果 A 被卸载，而 B 仍然被其他地方使用，<code>Unload(false)</code> 可能会导致 B 资源的内存泄漏。</p>
-<p>因此，卸载 AssetBundle 时需要确保它与其他 AssetBundle 之间的依赖关系被正确处理。理想情况下，应该先卸载所有不再需要的 AssetBundle，并确保没有任何资源正在被引用。</p>
-<h4 id="3-2-引用计数">3.2 <strong>引用计数</strong></h4>
-<p>Unity 使用引用计数机制来管理资源的生命周期。如果一个资源对象被多个 AssetBundle 引用，那么即使卸载了其中一个 AssetBundle，资源本身并不会立刻被卸载，直到所有引用该资源的 AssetBundle 都被卸载或没有其他对象再引用该资源。</p>
-<h4 id="3-3-资源的引用管理">3.3 <strong>资源的引用管理</strong></h4>
-<p>确保在卸载 AssetBundle 前，先销毁所有不再需要的引用。对于在场景中实例化的对象，应该显式销毁这些对象，否则它们可能会一直占用内存。</p>
-<p>例如：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Destroy(gameObject);  <span class="comment">// 销毁实例化的对象</span></span><br></pre></td></tr></table></figure>
-<p>然后，你可以调用 <code>Resources.UnloadUnusedAssets()</code> 来卸载所有不再使用的资源，进一步减少内存占用。</p>
-<h3 id="4-卸载与垃圾回收">4. <strong>卸载与垃圾回收</strong></h3>
-<p>卸载 AssetBundle 并不会立即触发垃圾回收。卸载操作会清除 AssetBundle 文件与内存中的对象的关联，但实际的内存释放可能会推迟，直到 Unity 的垃圾回收机制触发时。如果你希望立即释放内存，可以通过调用 <code>Resources.UnloadUnusedAssets()</code> 来帮助清理内存。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Resources.UnloadUnusedAssets();</span><br></pre></td></tr></table></figure>
-<p>该方法会强制清理不再使用的资源，并尝试减少内存占用，特别是在大量卸载资源后。</p>
-<h3 id="5-常见的-AssetBundle-卸载误区">5. <strong>常见的 AssetBundle 卸载误区</strong></h3>
-<ul>
-<li><strong>误区 1</strong>：只使用 <code>Unload(false)</code>，而不管理内存中的对象引用。会导致内存泄漏，虽然卸载了 AssetBundle，但内存中的资源对象仍然存在。</li>
-<li><strong>误区 2</strong>：在卸载 AssetBundle 后继续访问其中的资源对象。由于对象已经卸载，访问这些对象会导致错误或崩溃。</li>
-<li><strong>误区 3</strong>：频繁地加载和卸载 AssetBundle，而没有适当的资源管理策略。这样会导致不必要的内存占用和性能问题，应该避免频繁加载和卸载相同的资源。</li>
-</ul>
-<h3 id="6-示例：正确使用-AssetBundle-卸载">6. <strong>示例：正确使用 AssetBundle 卸载</strong></h3>
-<p>假设你在游戏中加载了一个 AssetBundle 并实例化了一些对象，接着需要卸载该 AssetBundle 以释放内存。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 加载 AssetBundle</span></span><br><span class="line">AssetBundle bundle = AssetBundle.LoadFromFile(<span class="string">&quot;path/to/assetbundle&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载并实例化资源</span></span><br><span class="line">GameObject prefab = bundle.LoadAsset&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>);</span><br><span class="line">GameObject obj = Instantiate(prefab);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 卸载 AssetBundle</span></span><br><span class="line"><span class="comment">// 先销毁对象引用</span></span><br><span class="line">Destroy(obj);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 卸载 AssetBundle，并释放内存</span></span><br><span class="line">bundle.Unload(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 强制卸载不再使用的资源</span></span><br><span class="line">Resources.UnloadUnusedAssets();</span><br></pre></td></tr></table></figure>
-<p><strong>总结</strong></p>
-<ul>
-<li>使用 <code>AssetBundle.Unload(true)</code> 可以完全卸载 AssetBundle 和其关联的所有资源对象，释放内存。</li>
-<li><code>AssetBundle.Unload(false)</code> 只会断开 AssetBundle 与内存中对象的关联，不会释放内存。</li>
-<li>在卸载 AssetBundle 时，必须处理好资源的引用计数和依赖关系，避免内存泄漏。</li>
-<li>为了确保内存的彻底释放，可以使用 <code>Resources.UnloadUnusedAssets()</code> 来进一步清理未使用的资源。</li>
-<li>request.dispose(): 对于 UnityWebRequestAssetBundle，使用 dispose() 来释放网络请求资源。</li>
-</ul>
-<p>正确管理 AssetBundle 的加载和卸载，不仅能够提高游戏的性能，减少内存占用，还能避免不必要的资源重复加载，保持游戏的流畅体验。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>C# CLR</title>
     <url>/2025/01/20/C-CLR/</url>
     <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、<a href="http://VB.NET">VB.NET</a>、F# 等）编写的程序。</p>
@@ -1238,6 +702,542 @@
 <li><strong>同步更新</strong>：使用版本控制确保 <strong>C# 代码</strong> 和 <strong>资源</strong> 版本的一致性，避免因版本不匹配而导致的逻辑错误或资源问题。</li>
 </ul>
 <p>通过这种方式，你可以实现 <strong>灵活的热更新系统</strong>，无论是 <strong>C# 代码</strong> 还是 <strong>游戏资源</strong>，都能够根据需要动态更新，并确保两者的匹配和协调工作。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Assetbundle</title>
+    <url>/2025/01/20/Assetbundle/</url>
+    <content><![CDATA[<h2 id="了解什么是Assetbundle">了解什么是Assetbundle</h2>
+<p>严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>AssetBundle</strong></th>
+<th><strong>直接使用 Asset</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>资源按需加载，支持加载和卸载，减少内存占用</td>
+<td>所有资源在场景启动时加载，无法按需卸载，内存占用大</td>
+</tr>
+<tr>
+<td><strong>加载性能</strong></td>
+<td>通过按需加载，可以加载所需资源，减少初次加载时间</td>
+<td>所有资源在启动时一次性加载，可能导致加载延迟和卡顿</td>
+</tr>
+<tr>
+<td><strong>资源的依赖关系</strong></td>
+<td>支持自动管理资源依赖，通过 Manifest 文件解决依赖关系</td>
+<td>需要手动管理资源的依赖关系，容易导致丢失依赖</td>
+</tr>
+<tr>
+<td><strong>更新与热更新</strong></td>
+<td>支持热更新，通过增量更新机制可以减少更新数据量</td>
+<td>不支持热更新，更新时必须重新打包整个项目</td>
+</tr>
+<tr>
+<td><strong>包体大小</strong></td>
+<td>可以对 Asset 进行压缩，减小包体大小</td>
+<td>资源不压缩，包体较大</td>
+</tr>
+<tr>
+<td><strong>跨平台支持</strong></td>
+<td>可以为不同平台打包不同的 AssetBundle</td>
+<td>所有平台共享相同的资源，可能导致不必要的资源浪费</td>
+</tr>
+<tr>
+<td><strong>网络加载</strong></td>
+<td>可以通过网络加载 AssetBundle，支持按需下载</td>
+<td>只能通过本地文件访问，无法通过网络动态加载资源</td>
+</tr>
+<tr>
+<td><strong>调试与编辑</strong></td>
+<td>加载后无法直接在编辑器中查看资源，调试较为复杂</td>
+<td>直接通过 <code>Inspector</code> 视图可以查看和修改资源</td>
+</tr>
+<tr>
+<td><strong>文件管理</strong></td>
+<td><code>AssetBundle</code> 文件可以单独管理，支持多版本和增量更新</td>
+<td>所有资源文件都在 <code>Resources</code> 文件夹内，管理较为复杂</td>
+</tr>
+<tr>
+<td><strong>打包与构建</strong></td>
+<td>需要额外的打包过程和配置，增加构建时间</td>
+<td>无需额外的打包过程，直接将资源嵌入到应用中</td>
+</tr>
+<tr>
+<td><strong>使用场景</strong></td>
+<td>适合资源量大、需要分阶段加载和更新的项目</td>
+<td>适合小型项目或对资源需求不大的应用</td>
+</tr>
+<tr>
+<td><strong>加载的灵活性</strong></td>
+<td>加载的方式灵活，可以指定加载单个资源，减少不必要的加载</td>
+<td>资源一旦加载就固定，无法动态调整</td>
+</tr>
+<tr>
+<td><strong>依赖问题</strong></td>
+<td>自动解决依赖关系，减少开发者手动管理的负担</td>
+<td>依赖关系需要开发者手动管理，容易出错</td>
+</tr>
+</tbody>
+</table>
+<h3 id="可以按需加载卸载">可以按需加载卸载</h3>
+<p>Unity 中的 按需加载和卸载 AssetBundle 的机制，结合了以下几个关键设计：</p>
+<ul>
+<li>资源分离：头部和内容体分开，按需加载。</li>
+<li>内存管理：通过 <strong>PersistentManager</strong> 管理资源生命周期，避免内存泄漏。PersistentManager 负责管理与 AssetBundle 相关的对象及其生命周期，包括跟踪哪些资源被加载到内存中，哪些需要被释放。</li>
+<li>依赖关系：通过 Manifest 文件和链式加载/卸载管理资源依赖。</li>
+<li>增量更新：通过哈希值或 CRC 检查资源的变化，避免不必要的更新。</li>
+<li>异步加载：支持异步加载以减少卡顿，提高性能。</li>
+<li>清理机制：通过 UnloadUnusedAssets 清理不再使用的资源。</li>
+</ul>
+<p><strong>为什么场景的ab和资源的ab不能同时打包进同一个ab内?</strong></p>
+<ul>
+<li>加载方式和生命周期管理不同，容易引发加载和卸载冲突。</li>
+<li>场景的修改会导致整个 <code>AssetBundle</code> 重新打包，影响增量更新和资源优化。</li>
+<li>场景和资源的内存管理不同，可能导致不必要的内存占用。</li>
+</ul>
+<h2 id="AssetBundle的打包参数">AssetBundle的打包参数</h2>
+<p>当我们调用Unity的API去打AssetBundle的时候，实际上有很多的参数可以供我们选择。如果没有选择合适的参数，就可能会导致在包体，内存以及加载时间等方面造成很多的浪费。</p>
+<ul>
+<li>
+<p>ChunkBasedCompression：这个参数是压缩AssetBundle的用的。前面提到Android的StreamingAssets是不压缩的。为了减小包体大小，可以使用该参数对AssetBundle进行压缩。它实际上是一个由Unity改良过的LZ4，使它的算法更符合Unity的使用方式。</p>
+</li>
+<li>
+<p>DisableWriteTypetree：这个其实是会被很多开发者忽略的一个参数，它非常有用，可以帮我们减小AssetBundle包体的大小，同时也可以减小内存，以及减少我们加载这个AssetBundle时的CPU时间。</p>
+</li>
+</ul>
+<h3 id="Typetree为了给Unity跨版本之间做兼容性用的，确定使用同一个版本开发游戏的时候，可以关闭这个选项来增加打包速度和优化占用和加载性能"><strong>Typetree为了给Unity跨版本之间做兼容性用的，确定使用同一个版本开发游戏的时候，可以关闭这个选项来增加打包速度和优化占用和加载性能</strong></h3>
+<h4 id="热更新场景下："><strong>热更新场景下：</strong></h4>
+<ul>
+<li><strong>如果热更新的资源是使用与线上版本相同的 Unity 版本打包的</strong>，并且游戏 <strong>没有进行过大版本的升级</strong>，则可以通过关闭 <code>Typetree</code> 来减少包体和加载时的内存占用。</li>
+<li><strong>如果热更新的资源包含跨版本的更新，或者 Unity 版本发生变化</strong>，就必须开启 <code>Typetree</code>，以确保不同版本的 Unity 可以正确加载这些资源，并且能够兼容较早版本的数据。</li>
+</ul>
+<h4 id="整体项目升级-Unity-版本的影响："><strong>整体项目升级 Unity 版本的影响：</strong></h4>
+<ul>
+<li>如果你 <strong>整体升级了 Unity 版本</strong>，并且整个项目迁移到了新的 Unity 版本，那么 <code>Typetree</code> 会有影响，具体表现为：
+<ul>
+<li>如果开启了 <code>Typetree</code>，它会保证在不同版本的 Unity 下的兼容性，使得在新版本 Unity 中加载旧版本的资源时不会出错。</li>
+<li>如果 <strong>关闭 <code>Typetree</code></strong>，在升级 Unity 版本后，可能会导致在加载旧版本打包的资源时出现兼容性问题，尤其是当类型定义发生变化时（比如类的字段顺序、类型名称等发生变化）。</li>
+</ul>
+</li>
+</ul>
+<p>为了避免影响 <code>Typetree</code>，在进行热更新时，以下是可以做和不能做的操作。</p>
+<table>
+<thead>
+<tr>
+<th><strong>可以做的操作</strong></th>
+<th><strong>不能做的操作</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新增脚本类和资源</td>
+<td>修改现有脚本类的字段名称、类型、顺序</td>
+</tr>
+<tr>
+<td>新增 AssetBundle</td>
+<td>删除字段、方法或资源</td>
+</tr>
+<tr>
+<td>修改资源加载方式</td>
+<td>修改资源的结构或依赖关系</td>
+</tr>
+<tr>
+<td>增加新的字段或方法</td>
+<td>修改现有资源的字段类型或顺序</td>
+</tr>
+<tr>
+<td>修改 AssetBundle 的压缩格式（不改变资源结构）</td>
+<td>修改 AssetBundle 内部资源的组织方式或压缩方式</td>
+</tr>
+</tbody>
+</table>
+<p>在进行热更新时，保持资源和脚本的兼容性非常重要，尤其是确保 <strong>现有资源的结构和字段保持不变</strong>，这样可以避免因不兼容导致的加载失败和数据丢失。如果需要进行大的修改，最好考虑全新的资源和模块，而不是修改已有的内容。</p>
+<p>DisableLoadAssetByFileName，DisableLoadAssetByFileNameWithExtension：当我们加载好一个AssetBundle然后使用LoadAsset加载Asset的时候，需要传递Asset的路径名称。这个名称有三种写法，分别是Asset的文件名，Asset的文件名+扩展名，Asset的全路径，如下：</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">AssetBundle ab = AssetBundle.LoadFromFile(Path.Combine</span><br><span class="line">(Application.streamingAssetsPath, <span class="string">&quot;sphere&quot;</span>));</span><br><span class="line"><span class="comment">// 第一种和第二种比较慢的，因为它AssetBundle被加载成功后产生的</span></span><br><span class="line">Instantiate(ab.LoadAsset(<span class="string">&quot;Sphere&quot;</span>));</span><br><span class="line">Instantiate(ab.LoadAsset(<span class="string">&quot;Sphere.prefab&quot;</span>));</span><br><span class="line">Instantiate(ab.LoadAsset(<span class="string">&quot;Assets/Sphere.prefab&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p>当我们没有Disable打AssetBundle的时候，实际上是算了一个Hash进去的，当通过文件名去找Asset的时候，它会去生成这个文件名的原路径，然后去对比。 如果我们确定我们的加载Asset的方式是用全路径加载的话，那么就可以把它关闭掉</p>
+<h2 id="怎么实现增量更新">怎么实现增量更新</h2>
+<h3 id="AssetBundle增量更新的实现原理"><strong>AssetBundle增量更新的实现原理</strong></h3>
+<p>在Unity中，增量更新的目的是使得用户在每次更新时只下载那些确实发生变化的资源，从而减少下载量和节省带宽。</p>
+<p>增量更新的核心思想是对比当前版本和上一版本的AssetBundle内容，找出其中的差异，然后仅下载发生变化的部分。具体来说，增量更新通常依赖于以下几种方式来判断哪些资源发生了变化。</p>
+<h3 id="判断增量更新的依据"><strong>判断增量更新的依据</strong></h3>
+<h4 id="1-文件的MD5值（哈希值）">1. <strong>文件的MD5值（哈希值）</strong></h4>
+<ul>
+<li><strong>原理</strong>：通过计算两个版本的 <code>AssetBundle</code> 文件的MD5值（或其他哈希算法），如果值不同，则表示文件内容发生了变化。可以用这个方式来判断 <code>AssetBundle</code> 是否需要更新。</li>
+<li><strong>适用场景</strong>：适用于当 <code>AssetBundle</code> 中的资源内容发生了变化时，计算文件的哈希值可以直接比较两个版本的 <code>AssetBundle</code> 内容。</li>
+<li><strong>问题</strong>：如果AssetBundle中有细微变化（如小幅修改），但整体资源内容没变，MD5值依然会不同，这就导致每次修改都会进行完整的资源更新。</li>
+</ul>
+<h4 id="2-通过-manifest-文件进行比对">2. <strong>通过 <code>.manifest</code> 文件进行比对</strong></h4>
+<ul>
+<li><strong>原理</strong>：在打包时，Unity会生成一个 <code>.manifest</code> 文件，该文件包含了 <code>AssetBundle</code> 文件的元数据（如文件的依赖关系、哈希值等）。通过比较新旧版本的 <code>.manifest</code> 文件，可以判断哪些资源发生了变化。</li>
+<li><strong>适用场景</strong>：通过计算 <code>.manifest</code> 中每个资源文件的哈希值或者CRC值，来判断资源是否发生变化。这种方式通常比较准确，可以追踪到哪些具体资源发生了变化。</li>
+<li><strong>操作步骤</strong>：
+<ol>
+<li>在热更新时，获取上一个版本的 <code>.manifest</code> 文件的内容。</li>
+<li>比较新旧版本 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 字段，找出哪些文件发生变化。</li>
+<li>对比新旧版本的资源，更新改变的部分。</li>
+</ol>
+</li>
+</ul>
+<h4 id="3-资源的-AssetFileHash（文件哈希）">3. <strong>资源的 <code>AssetFileHash</code>（文件哈希）</strong></h4>
+<ul>
+<li><strong>原理</strong>：Unity的 <code>.manifest</code> 文件中记录了每个资源的 <code>AssetFileHash</code>。该字段是每个资源的内容的哈希值，可以用来判断资源本身是否发生了变化。</li>
+<li><strong>适用场景</strong>：特别适合跟踪资源文件的变化，如脚本、纹理、模型、音频等。</li>
+<li><strong>操作步骤</strong>：
+<ol>
+<li>每次打包时计算每个资源的哈希值，并记录在 <code>.manifest</code> 文件中。</li>
+<li>在更新过程中，通过比较两次打包的 <code>AssetFileHash</code> 判断哪些资源内容发生了变化。</li>
+<li>如果某个资源的哈希值发生变化，则表明该资源内容更新了，可以下载新的 <code>AssetBundle</code>。</li>
+</ol>
+</li>
+</ul>
+<h4 id="4-资源的依赖关系">4. <strong>资源的依赖关系</strong></h4>
+<ul>
+<li><strong>原理</strong>：AssetBundle之间可能会有依赖关系。当某个资源或 <code>AssetBundle</code> 的内容发生变化时，可能会影响依赖该资源或 <code>AssetBundle</code> 的其他资源。通过检查这些依赖关系，可以判断哪些 <code>AssetBundle</code> 必须被更新。</li>
+<li><strong>适用场景</strong>：适用于有复杂依赖关系的场景，或者多个资源之间有链接依赖的情况（如材质、模型、动画等）。</li>
+<li><strong>操作步骤</strong>：
+<ol>
+<li>在 <code>.manifest</code> 文件中检查资源的依赖关系。</li>
+<li>如果某个资源的依赖发生变化，则该资源及其依赖的 <code>AssetBundle</code> 都需要进行更新。</li>
+<li>通过检查依赖链来找出需要更新的 <code>AssetBundle</code>。</li>
+</ol>
+</li>
+</ul>
+<h3 id="实现增量更新的步骤"><strong>实现增量更新的步骤</strong></h3>
+<ol>
+<li>
+<p><strong>生成和保存 <code>AssetBundle</code> 的 <code>.manifest</code> 文件</strong><br>
+每次打包时，Unity会生成一个 <code>.manifest</code> 文件，记录了打包资源的元数据。确保在热更新过程中可以访问和保存该文件，以便后续对比。</p>
+</li>
+<li>
+<p><strong>比对 <code>.manifest</code> 文件</strong><br>
+在新版本打包后，比较新旧版本 <code>.manifest</code> 文件中的资源 <code>AssetFileHash</code> 字段，判断哪些资源发生了变化。</p>
+</li>
+<li>
+<p><strong>计算变化的资源</strong><br>
+如果某个资源的 <code>AssetFileHash</code> 不同，说明该资源发生了变化。这些变化的资源会被打包成新的 <code>AssetBundle</code>。</p>
+</li>
+<li>
+<p><strong>仅下载变化的资源</strong><br>
+在客户端进行更新时，只下载发生变化的 <code>AssetBundle</code>。这样可以大大减小更新的下载量。</p>
+</li>
+<li>
+<p><strong>管理依赖关系</strong><br>
+如果某个资源的依赖发生了变化，需要更新依赖该资源的 <code>AssetBundle</code>。因此，依赖链的管理是增量更新的重要部分。</p>
+</li>
+<li>
+<p><strong>应用新的 <code>AssetBundle</code></strong><br>
+客户端加载更新后的 <code>AssetBundle</code>，并加载其中的资源。</p>
+</li>
+</ol>
+<h3 id="增量更新最佳方案">增量更新最佳方案</h3>
+<p>确保 <strong>准确性</strong> 和 <strong>高效性</strong>，并避免不必要的资源重新加载，<strong>提高增量更新精度</strong> 的最优方法是：</p>
+<blockquote>
+<p><strong>使用 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段来判断资源是否发生变化</strong></p>
+</blockquote>
+<p>这个方法结合了 <strong>准确性</strong> 和 <strong>高效性</strong>，且避免了不必要的资源重新加载。</p>
+<h4 id="为什么最优？"><strong>为什么最优？</strong></h4>
+<ol>
+<li>
+<p><strong>准确性</strong>：</p>
+<ul>
+<li><code>.manifest</code> 文件中的 <code>AssetFileHash</code> 字段是直接用于标识资源内容是否发生变化的哈希值，它非常精确，能确保只有在资源的内容发生变化时才会被标记为更新。</li>
+<li>通过 <code>CRC</code> (Cyclic Redundancy Check) 字段，还可以进一步确保资源的完整性，避免因文件损坏或传输错误导致错误的更新。</li>
+</ul>
+</li>
+<li>
+<p><strong>高效性</strong>：</p>
+<ul>
+<li><code>.manifest</code> 文件相对较小，且它记录了所有资源的变化信息，因此与直接计算 <code>AssetBundle</code> 或 <code>.meta</code> 文件的哈希值相比，它的性能开销更低，能够快速判断资源变化。</li>
+<li>在增量更新时，基于 <code>.manifest</code> 文件的判断方式可以避免每次重新计算整个 <code>AssetBundle</code> 的哈希，从而减少了计算和网络传输的开销。</li>
+</ul>
+</li>
+<li>
+<p><strong>避免不必要的资源重新加载</strong>：</p>
+<ul>
+<li>通过 <code>AssetFileHash</code> 和 <code>CRC</code> 的对比，只在资源真正发生变化时才进行更新，这样避免了对未修改的资源进行重新加载和下载，节省了带宽和设备的资源。</li>
+</ul>
+</li>
+</ol>
+<h4 id="增量更新的流程："><strong>增量更新的流程：</strong></h4>
+<ol>
+<li>
+<p><strong>首次发布时</strong>：</p>
+<ul>
+<li>在初次构建 <code>AssetBundle</code> 时，生成 <code>AssetBundle</code> 的 <code>.manifest</code> 文件，记录每个资源的 <code>AssetFileHash</code> 和 <code>CRC</code> 信息。</li>
+<li>发布 <code>AssetBundle</code> 和 <code>.manifest</code> 文件，并确保客户端获取到这些文件。</li>
+</ul>
+</li>
+<li>
+<p><strong>后续更新时</strong>：</p>
+<ul>
+<li>在每次更新 <code>AssetBundle</code> 时，重新生成 <code>.manifest</code> 文件，并计算其中每个资源的 <code>AssetFileHash</code> 和 <code>CRC</code>。</li>
+<li>客户端通过下载新的 <code>.manifest</code> 文件，并与本地存储的 <code>.manifest</code> 进行对比。如果 <code>AssetFileHash</code> 或 <code>CRC</code> 值不同，说明该资源已发生变化，需要下载新的 <code>AssetBundle</code>。</li>
+<li>对于没有变化的资源，可以跳过下载和加载，避免不必要的资源重新加载。</li>
+</ul>
+</li>
+<li>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>使用 <code>.manifest</code> 文件避免了每次都要遍历和检查整个 <code>AssetBundle</code>，大大减少了计算量。</li>
+<li>通过 <code>CRC</code> 和 <code>AssetFileHash</code> 判断文件变化，精确到资源级别，确保增量更新的精度。</li>
+<li>能有效控制资源加载的时机，只有需要更新的资源才会被重新加载，优化了内存和存储的使用。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p><strong>总结：</strong><br>
+最优的增量更新方法是 <strong>基于 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段判断资源变化</strong>。它既能保证更新的精确性，又具备较高的效率，避免了不必要的资源重新加载和带宽浪费，适用于大多数的热更新场景。</p>
+<hr>
+<h3 id="增量更新的优缺点"><strong>增量更新的优缺点</strong></h3>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>节省带宽：只更新变化的部分，而不是整个 <code>AssetBundle</code>，可以大大减少下载的文件大小。</td>
+<td>依赖性复杂：如果多个 <code>AssetBundle</code> 之间有复杂的依赖关系，增量更新可能会变得复杂。</td>
+</tr>
+<tr>
+<td>加速下载：用户只需要下载新更新的资源，更新速度更快。</td>
+<td>需要额外的逻辑：需要实现文件哈希比对、资源依赖关系的检查等。</td>
+</tr>
+<tr>
+<td>减少内存占用：避免了不必要的资源加载和占用，提升了性能。</td>
+<td>不适用于小变化：对于频繁的小变化，每次都更新可能会带来一定的性能开销。</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>总结</strong></p>
+<p>增量更新的核心在于通过比对 <code>AssetBundle</code> 的哈希值、<code>manifest</code> 文件或资源的 <code>AssetFileHash</code> 来判断哪些资源发生了变化，然后只下载那些变化的资源。通过这种方式，减少了更新时的带宽占用和下载时间，同时提高了用户体验。不过，这要求开发者能够管理好资源之间的依赖关系，并能够处理增量更新中的各种逻辑细节。</p>
+<h2 id="增量更新实现逻辑">增量更新实现逻辑</h2>
+<p>要实现增量更新的机制，使用 <code>.manifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段来判断资源变化，并确保只有变更的资源进行下载和更新，以下是一个基础的代码示例，展示了如何通过比对 <code>.manifest</code> 文件中的哈希值来判断哪些资源需要更新。</p>
+<h3 id="基本步骤">基本步骤</h3>
+<ol>
+<li>获取服务器上的 <code>AssetBundle</code> 和 <code>.manifest</code> 文件。</li>
+<li>下载 <code>.manifest</code> 文件，解析出其中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段。</li>
+<li>与本地缓存的 <code>.manifest</code> 进行对比，检查哪些资源发生了变化。</li>
+<li>仅下载发生变化的 <code>AssetBundle</code> 文件，并更新本地缓存。</li>
+</ol>
+<h3 id="代码示例">代码示例</h3>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleUpdater</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 本地存储路径</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localAssetBundleFolder = <span class="string">&quot;Assets/AssetBundles&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localManifestFile = <span class="string">&quot;Assets/AssetBundles/assetbundle.manifest&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 服务器资源的 URL</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> remoteAssetBundleUrl = <span class="string">&quot;https://example.com/assetbundles&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> remoteManifestUrl = <span class="string">&quot;https://example.com/assetbundles/assetbundle.manifest&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载 AssetBundle 和 Manifest 文件</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Step 1: 下载远程的 manifest 文件</span></span><br><span class="line">        UnityWebRequest manifestRequest = UnityWebRequest.Get(remoteManifestUrl);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> manifestRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (manifestRequest.isHttpError || manifestRequest.isNetworkError)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download manifest.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Step 2: 解析远程 manifest 文件</span></span><br><span class="line">        AssetBundleManifest remoteManifest = ParseManifest(manifestRequest.downloadHandler.text);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Step 3: 加载本地 manifest 文件并与远程 manifest 文件对比</span></span><br><span class="line">        <span class="keyword">if</span> (File.Exists(localManifestFile))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localManifestText = File.ReadAllText(localManifestFile);</span><br><span class="line">            AssetBundleManifest localManifest = ParseManifest(localManifestText);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Step 4: 对比两个 manifest 文件，找出有变化的资源</span></span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> remoteAsset <span class="keyword">in</span> remoteManifest.GetAllAssetBundles())</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">string</span> localHash = GetAssetHash(localManifest, remoteAsset);</span><br><span class="line">                <span class="built_in">string</span> remoteHash = remoteManifest.GetAssetFileHash(remoteAsset);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (localHash != remoteHash) <span class="comment">// 如果文件的 hash 值不同，则需要下载更新</span></span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.Log(<span class="string">$&quot;AssetBundle <span class="subst">&#123;remoteAsset&#125;</span> has changed, updating...&quot;</span>);</span><br><span class="line">                    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAssetBundle(remoteAsset</span>))</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 本地没有 manifest 文件，执行全量更新</span></span><br><span class="line">            Debug.Log(<span class="string">&quot;No local manifest found, performing full update...&quot;</span>);</span><br><span class="line">            <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAllAssetBundles(remoteManifest</span>))</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存新的 manifest 文件到本地</span></span><br><span class="line">        File.WriteAllText(localManifestFile, manifestRequest.downloadHandler.text);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析 Manifest 文件，获取其中的 AssetFileHash 和 CRC 字段</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> AssetBundleManifest <span class="title">ParseManifest</span>(<span class="params"><span class="built_in">string</span> manifestText</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 自定义解析方式，解析 AssetBundleManifest 文件</span></span><br><span class="line">        <span class="comment">// 假设 AssetBundleManifest 是 JSON 格式</span></span><br><span class="line">        <span class="comment">// 请根据实际情况替换为你们的解析方法</span></span><br><span class="line">        <span class="keyword">return</span> JsonUtility.FromJson&lt;AssetBundleManifest&gt;(manifestText);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取资源的 Hash 值</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetAssetHash</span>(<span class="params">AssetBundleManifest manifest, <span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 返回本地 AssetBundle 的 hash 值</span></span><br><span class="line">        <span class="keyword">return</span> manifest.GetAssetFileHash(assetName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载更新的 AssetBundle 文件</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(<span class="string">$&quot;<span class="subst">&#123;remoteAssetBundleUrl&#125;</span>/<span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.isHttpError || request.isNetworkError)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;Failed to download asset bundle: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将更新后的 AssetBundle 保存到本地缓存中</span></span><br><span class="line">        <span class="built_in">string</span> localPath = Path.Combine(localAssetBundleFolder, assetName);</span><br><span class="line">        File.WriteAllBytes(localPath, request.downloadHandler.data);</span><br><span class="line"></span><br><span class="line">        Debug.Log(<span class="string">$&quot;Successfully downloaded and cached asset bundle: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下载所有的 AssetBundle 文件（全量更新）</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">DownloadAllAssetBundles</span>(<span class="params">AssetBundleManifest manifest</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> assetBundleName <span class="keyword">in</span> manifest.GetAllAssetBundles())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAssetBundle(assetBundleName</span>))</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManifest</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 这里的结构体是根据你们实际的 manifest 文件格式进行调整的</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span>[] assetBundles;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取所有 AssetBundle 名称</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span>[] <span class="title">GetAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> assetBundles;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取资源的 Hash</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="built_in">string</span> <span class="title">GetAssetFileHash</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 需要从 .manifest 文件中读取文件的 Hash</span></span><br><span class="line">        <span class="comment">// 你需要根据实际的 manifest 文件结构来修改此方法</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;somehash&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="说明：">说明：</h3>
+<ol>
+<li>
+<p><strong>Manifest 文件解析</strong>：</p>
+<ul>
+<li>代码示例中的 <code>AssetBundleManifest</code> 类是根据假设的 JSON 格式解析的，你需要根据你们实际的 <code>.manifest</code> 文件格式来修改这个部分。</li>
+<li>如果你们的 <code>.manifest</code> 文件是 XML 格式，或者有自定义结构，你可以使用 <code>XmlUtility</code> 或手动解析来获取资源的 <code>AssetFileHash</code> 和 <code>CRC</code>。</li>
+</ul>
+</li>
+<li>
+<p><strong>增量更新逻辑</strong>：</p>
+<ul>
+<li>首先下载远程的 <code>manifest</code> 文件，并解析它。</li>
+<li>然后读取本地的 <code>manifest</code> 文件，并对比两个文件中的资源哈希（<code>AssetFileHash</code>）。</li>
+<li>如果发现远程的资源文件哈希值与本地不一致（即资源发生了变化），就下载对应的 <code>AssetBundle</code>。</li>
+<li>如果本地没有 <code>manifest</code> 文件（例如首次更新或清理后的情况），则执行全量更新，下载所有的资源包。</li>
+</ul>
+</li>
+<li>
+<p><strong>本地缓存与下载</strong>：</p>
+<ul>
+<li>每次更新完成后，将新的 <code>AssetBundle</code> 保存到本地缓存中，这样可以避免重复下载相同的资源。</li>
+<li>更新完成后，将新的 <code>manifest</code> 文件保存到本地，以便下次更新时使用。</li>
+</ul>
+</li>
+</ol>
+<h3 id="注意事项：">注意事项：</h3>
+<ul>
+<li><code>manifest</code> 文件通常会包含资源文件的所有信息，所以它的大小会比 <code>AssetBundle</code> 小很多。</li>
+<li>增量更新的关键是根据哈希对比资源的变化，而不是直接对比文件内容，因为 <code>AssetBundle</code> 打包后每次可能会有轻微的不同。</li>
+<li>使用这种方法时需要确保客户端和服务器的 <code>manifest</code> 文件结构一致。</li>
+</ul>
+<p>总结：<br>
+这种方法通过基于 <code>AssetBundleManifest</code> 文件中的 <code>AssetFileHash</code> 和 <code>CRC</code> 字段判断资源变化，只更新发生变化的资源，能显著提高增量更新的效率，减少不必要的资源重新加载。</p>
+<h2 id="AssetBundle的加载到内存方式">AssetBundle的加载到内存方式</h2>
+<p>在 Unity 中，<code>AssetBundle</code> 可以通过多种方式加载，具体的加载方式根据不同的需求（如从磁盘加载、从网络加载、从内存加载等）来选择。以下是所有常见的 <code>AssetBundle</code> 加载方式，包括同步和异步加载方式：</p>
+<p>以下是删除了示例代码和卸载方式列后的 Unity AssetBundle 加载方法对比表：</p>
+<table>
+<thead>
+<tr>
+<th>加载方法</th>
+<th>说明</th>
+<th>适用场景</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>AssetBundle.LoadFromFile</code></strong></td>
+<td>从指定路径加载 AssetBundle 文件</td>
+<td>加载本地存储的 AssetBundle 文件</td>
+<td>适用于文件路径已知的本地资源加载。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadFromMemory</code></strong></td>
+<td>从内存中加载 AssetBundle 数据</td>
+<td>当 AssetBundle 数据已经加载到内存时使用</td>
+<td>可以避免文件IO操作，适用于已有内存数据。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadFromStream</code></strong></td>
+<td>从流式数据中加载 AssetBundle</td>
+<td>当 AssetBundle 是通过流式数据传输时使用</td>
+<td>可用于网络加载流数据。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadAsset</code></strong></td>
+<td>加载 AssetBundle 中的指定资源</td>
+<td>加载 AssetBundle 中单个资源</td>
+<td>加载特定资源，常用于内存中加载资源。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadAssetAsync</code></strong></td>
+<td>异步加载 AssetBundle 中的指定资源</td>
+<td>加载 AssetBundle 中资源时不阻塞主线程</td>
+<td>异步操作，避免主线程卡顿。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadAllAssets</code></strong></td>
+<td>加载 AssetBundle 中所有资源</td>
+<td>加载整个 AssetBundle 内所有资源</td>
+<td>适用于需要加载所有资源的情况。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadAllAssetsAsync</code></strong></td>
+<td>异步加载 AssetBundle 中所有资源</td>
+<td>加载整个 AssetBundle 内所有资源时不阻塞主线程</td>
+<td>异步加载整个资源包。</td>
+</tr>
+<tr>
+<td><strong><code>AssetBundle.LoadAssetWithSubAssets</code></strong></td>
+<td>加载主资源及其附带的资源</td>
+<td>加载主资源及其附带的子资源</td>
+<td>加载一个资源以及其所有相关子资源。</td>
+</tr>
+<tr>
+<td><strong><code>WWW</code>（已废弃）</strong></td>
+<td>通过 WWW 类加载网络上的 AssetBundle</td>
+<td>用于较老版本的 Unity 中加载网络资源</td>
+<td>已废弃，推荐使用 <code>UnityWebRequest</code>。</td>
+</tr>
+<tr>
+<td><strong><code>UnityWebRequestAssetBundle</code></strong></td>
+<td>通过 <code>UnityWebRequest</code> 加载网络上的 AssetBundle</td>
+<td>用于加载远程服务器上的 AssetBundle</td>
+<td>推荐使用网络请求加载资源，性能更好。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="CRC-校验">CRC 校验</h2>
+<p>在 Unity 中，<code>CRC 校验</code> 是在加载 <code>AssetBundle</code> 的过程中进行的，用于确保加载的 <code>AssetBundle</code> 文件没有被篡改或损坏。具体来说，CRC 校验是在 <strong>AssetBundle 文件加载的过程中</strong>，由 Unity 在解析 <code>AssetBundle</code> 文件时自动进行的，通常不需要开发者手动干预。</p>
+<h3 id="CRC-校验发生的阶段">CRC 校验发生的阶段</h3>
+<p>CRC 校验是在 <code>AssetBundle</code> 加载过程中的文件解析阶段进行的。具体而言，CRC 校验会在以下几个步骤中进行：</p>
+<ol>
+<li>
+<p><strong>文件解析阶段</strong>：<br>
+当使用 <code>AssetBundle.LoadFromFile()</code> 或 <code>UnityWebRequestAssetBundle.GetAssetBundle()</code> 等加载方法时，Unity 会先读取并解析 <code>AssetBundle</code> 文件的头信息和内容。在这个阶段，Unity 会根据文件头信息中的 CRC 值与实际加载的内容进行比对。</p>
+</li>
+<li>
+<p><strong>自动校验</strong>：<br>
+在解析完 <code>AssetBundle</code> 文件的头信息后，Unity 会自动计算并验证该文件的 CRC 值（CRC32）。如果该值与 <code>AssetBundle</code> 文件头中记录的 CRC 值匹配，则表示文件完整，否则会抛出错误，提示文件损坏或不匹配。</p>
+</li>
+<li>
+<p><strong>加载资源阶段</strong>：<br>
+一旦 CRC 校验通过，Unity 会继续加载 <code>AssetBundle</code> 中的具体资源。在这个过程中，如果文件本身没有损坏，资源将被加载到内存中供后续使用。</p>
+</li>
+</ol>
+<h3 id="使用-CRC-校验的函数">使用 CRC 校验的函数</h3>
+<ul>
+<li><strong>AssetBundle.LoadFromFile()</strong>：加载文件时会进行 CRC 校验。</li>
+<li><strong>AssetBundle.LoadFromMemory()</strong>：在内存加载时也会进行 CRC 校验，确保加载的内存数据与 <code>AssetBundle</code> 文件的校验值一致。</li>
+<li><strong>UnityWebRequestAssetBundle.GetAssetBundle()</strong>：使用 <code>UnityWebRequest</code> 下载 <code>AssetBundle</code> 时，CRC 校验也会在文件下载并解析后进行。</li>
+</ul>
+<h3 id="代码示例-2">代码示例</h3>
+<p>如果使用 <code>UnityWebRequestAssetBundle</code> 来下载并加载资源时，你可以传入一个 <code>CRC</code> 值来确保文件的完整性。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleLoader</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> url = <span class="string">&quot;https://example.com/assetbundle&quot;</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest www = UnityWebRequestAssetBundle.GetAssetBundle(url, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> www.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (www.result != UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Error downloading AssetBundle: &quot;</span> + www.error);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 加载成功，获取 AssetBundle</span></span><br><span class="line">            AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(www);</span><br><span class="line">            <span class="keyword">if</span> (bundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="是否总是需要-CRC-校验？">是否总是需要 CRC 校验？</h3>
+<p>CRC 校验是确保数据完整性的一种手段，通常会在以下场景下启用：</p>
+<ul>
+<li><strong>网络传输时</strong>：下载的 <code>AssetBundle</code> 文件可能会被损坏，启用 CRC 校验可以验证文件是否在传输过程中发生了变化。</li>
+<li><strong>本地文件校验</strong>：通过文件系统读取的 <code>AssetBundle</code> 也需要 CRC 校验，防止文件在磁盘上发生损坏或篡改。</li>
+</ul>
+<h3 id="结论">结论</h3>
+<p>CRC 校验是由 Unity 在加载 <code>AssetBundle</code> 时自动进行的，通常发生在文件解析和资源加载阶段。CRC 校验确保文件在加载前是完整且未损坏的。</p>
+<h2 id="AssetBundle-LoadAsset">AssetBundle.LoadAsset</h2>
+<blockquote>
+<p>是用于从已经加载到内存中的 AssetBundle 中加载具体的资源（如材质、纹理、Prefab 等）。它不会重新加载整个 AssetBundle 文件，而是提取文件中的单个资源。</p>
+</blockquote>
+<p>既然我们加载出来了AssetBundle，我们就会想和Resource.load那样去加载一个我们需要的资源出来实例化。</p>
+<p>其实，AssetBundle加载资源和Resource.load的加载流程是一样的了，通过Instanceid找全局内是否有该资源的对象，如果没有就通过PresistManager去加载并保存改对象，只不过对于AssetBundle的话，PresistManager保存的对象的标识符是指向包含这个对象的AssetBundle的。</p>
+<h2 id="AssetBundle的卸载">AssetBundle的卸载</h2>
+<p>在 Unity 中，AssetBundle 是一种用于将游戏资源打包并按需加载的机制。随着游戏开发中的资源管理变得更加复杂，正确地卸载 AssetBundle 变得至关重要，因为它会直接影响到内存的使用效率和性能。</p>
+<h3 id="1-AssetBundle-卸载方法">1. <strong>AssetBundle 卸载方法</strong></h3>
+<p>Unity 提供了 <code>AssetBundle.Unload(bool)</code> 方法来卸载已经加载的 AssetBundle。该方法有一个布尔参数 <code>bool unloadAllLoadedObjects</code>，决定是否将与该 AssetBundle 关联的所有资源对象一并卸载。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Unload</span>(<span class="params"><span class="built_in">bool</span> unloadAllLoadedObjects</span>)</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>unloadAllLoadedObjects</strong>:
+<ul>
+<li><strong>true</strong>：表示卸载该 AssetBundle 以及所有与其关联的资源对象。</li>
+<li><strong>false</strong>：表示仅卸载 AssetBundle 文件的关联，而不卸载已经加载到内存中的资源对象。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-两种卸载模式的区别">2. <strong>两种卸载模式的区别</strong></h3>
+<h4 id="2-1-Unload-false">2.1 <strong>Unload(false)</strong></h4>
+<ul>
+<li><strong>作用</strong>：只会从 <code>PersistentManager</code> 中删除 AssetBundle 文件与内存中已加载的对象的关联，而不会删除这些资源对象本身。</li>
+<li><strong>影响</strong>：该对象的内存不会释放，因此，如果你只使用 <code>Unload(false)</code> 卸载，内存中会残留这些对象，并且后续若再次加载 AssetBundle，这些对象会被重新加载，导致内存中的重复数据。</li>
+</ul>
+<h4 id="2-2-Unload-true">2.2 <strong>Unload(true)</strong></h4>
+<ul>
+<li><strong>作用</strong>：不仅删除与 AssetBundle 文件相关联的对象，还会释放内存中所有与该 AssetBundle 相关联的对象（即资源对象），如材质、纹理、模型等。</li>
+<li><strong>影响</strong>：如果 AssetBundle 中的对象不再被其他部分引用，内存中会释放这些对象，帮助减少内存占用。</li>
+</ul>
+<h3 id="3-卸载时的注意事项">3. <strong>卸载时的注意事项</strong></h3>
+<h4 id="3-1-依赖关系">3.1 <strong>依赖关系</strong></h4>
+<p>在实际开发中，一个 AssetBundle 可能会依赖于另一个 AssetBundle。例如，A 包含了 B 包的资源。如果 A 被卸载，而 B 仍然被其他地方使用，<code>Unload(false)</code> 可能会导致 B 资源的内存泄漏。</p>
+<p>因此，卸载 AssetBundle 时需要确保它与其他 AssetBundle 之间的依赖关系被正确处理。理想情况下，应该先卸载所有不再需要的 AssetBundle，并确保没有任何资源正在被引用。</p>
+<h4 id="3-2-引用计数">3.2 <strong>引用计数</strong></h4>
+<p>Unity 使用引用计数机制来管理资源的生命周期。如果一个资源对象被多个 AssetBundle 引用，那么即使卸载了其中一个 AssetBundle，资源本身并不会立刻被卸载，直到所有引用该资源的 AssetBundle 都被卸载或没有其他对象再引用该资源。</p>
+<h4 id="3-3-资源的引用管理">3.3 <strong>资源的引用管理</strong></h4>
+<p>确保在卸载 AssetBundle 前，先销毁所有不再需要的引用。对于在场景中实例化的对象，应该显式销毁这些对象，否则它们可能会一直占用内存。</p>
+<p>例如：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Destroy(gameObject);  <span class="comment">// 销毁实例化的对象</span></span><br></pre></td></tr></table></figure>
+<p>然后，你可以调用 <code>Resources.UnloadUnusedAssets()</code> 来卸载所有不再使用的资源，进一步减少内存占用。</p>
+<h3 id="4-卸载与垃圾回收">4. <strong>卸载与垃圾回收</strong></h3>
+<p>卸载 AssetBundle 并不会立即触发垃圾回收。卸载操作会清除 AssetBundle 文件与内存中的对象的关联，但实际的内存释放可能会推迟，直到 Unity 的垃圾回收机制触发时。如果你希望立即释放内存，可以通过调用 <code>Resources.UnloadUnusedAssets()</code> 来帮助清理内存。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Resources.UnloadUnusedAssets();</span><br></pre></td></tr></table></figure>
+<p>该方法会强制清理不再使用的资源，并尝试减少内存占用，特别是在大量卸载资源后。</p>
+<h3 id="5-常见的-AssetBundle-卸载误区">5. <strong>常见的 AssetBundle 卸载误区</strong></h3>
+<ul>
+<li><strong>误区 1</strong>：只使用 <code>Unload(false)</code>，而不管理内存中的对象引用。会导致内存泄漏，虽然卸载了 AssetBundle，但内存中的资源对象仍然存在。</li>
+<li><strong>误区 2</strong>：在卸载 AssetBundle 后继续访问其中的资源对象。由于对象已经卸载，访问这些对象会导致错误或崩溃。</li>
+<li><strong>误区 3</strong>：频繁地加载和卸载 AssetBundle，而没有适当的资源管理策略。这样会导致不必要的内存占用和性能问题，应该避免频繁加载和卸载相同的资源。</li>
+</ul>
+<h3 id="6-示例：正确使用-AssetBundle-卸载">6. <strong>示例：正确使用 AssetBundle 卸载</strong></h3>
+<p>假设你在游戏中加载了一个 AssetBundle 并实例化了一些对象，接着需要卸载该 AssetBundle 以释放内存。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 加载 AssetBundle</span></span><br><span class="line">AssetBundle bundle = AssetBundle.LoadFromFile(<span class="string">&quot;path/to/assetbundle&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载并实例化资源</span></span><br><span class="line">GameObject prefab = bundle.LoadAsset&lt;GameObject&gt;(<span class="string">&quot;MyPrefab&quot;</span>);</span><br><span class="line">GameObject obj = Instantiate(prefab);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 卸载 AssetBundle</span></span><br><span class="line"><span class="comment">// 先销毁对象引用</span></span><br><span class="line">Destroy(obj);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 卸载 AssetBundle，并释放内存</span></span><br><span class="line">bundle.Unload(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 强制卸载不再使用的资源</span></span><br><span class="line">Resources.UnloadUnusedAssets();</span><br></pre></td></tr></table></figure>
+<p><strong>总结</strong></p>
+<ul>
+<li>使用 <code>AssetBundle.Unload(true)</code> 可以完全卸载 AssetBundle 和其关联的所有资源对象，释放内存。</li>
+<li><code>AssetBundle.Unload(false)</code> 只会断开 AssetBundle 与内存中对象的关联，不会释放内存。</li>
+<li>在卸载 AssetBundle 时，必须处理好资源的引用计数和依赖关系，避免内存泄漏。</li>
+<li>为了确保内存的彻底释放，可以使用 <code>Resources.UnloadUnusedAssets()</code> 来进一步清理未使用的资源。</li>
+<li>request.dispose(): 对于 UnityWebRequestAssetBundle，使用 dispose() 来释放网络请求资源。</li>
+</ul>
+<p>正确管理 AssetBundle 的加载和卸载，不仅能够提高游戏的性能，减少内存占用，还能避免不必要的资源重复加载，保持游戏的流畅体验。</p>
 ]]></content>
   </entry>
   <entry>
@@ -4058,160 +4058,6 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
       </tags>
   </entry>
   <entry>
-    <title>Lean Cloud</title>
-    <url>/2025/01/08/Lean-Cloud/</url>
-    <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
-<hr>
-<h3 id="LeanCloud-的核心功能"><strong>LeanCloud 的核心功能</strong></h3>
-<p>LeanCloud 提供了许多常见后端功能，以下是主要的功能模块：</p>
-<h4 id="1-数据存储"><strong>1. 数据存储</strong></h4>
-<ul>
-<li>提供类似数据库的云端存储服务，支持结构化和非结构化数据。</li>
-<li>数据存储是基于 <strong>NoSQL</strong> 的，开发者无需处理复杂的数据库部署和运维。</li>
-<li>支持复杂查询、关系模型以及文件存储（图片、文档等）。</li>
-</ul>
-<h4 id="2-用户管理"><strong>2. 用户管理</strong></h4>
-<ul>
-<li>提供用户注册、登录和管理功能。</li>
-<li>支持第三方登录（如微信、QQ、微博等）。</li>
-<li>提供基于角色和权限的访问控制。</li>
-</ul>
-<h4 id="3-即时通讯"><strong>3. 即时通讯</strong></h4>
-<ul>
-<li>支持实时消息传输，包括单聊、群聊和聊天室功能。</li>
-<li>提供消息历史记录和离线消息支持。</li>
-<li>适合需要社交聊天或消息通知功能的应用。</li>
-</ul>
-<h4 id="4-云引擎"><strong>4. 云引擎</strong></h4>
-<ul>
-<li>提供自定义后端逻辑的功能，开发者可以使用 LeanCloud 的云引擎编写自己的业务逻辑代码。</li>
-<li>支持定时任务、事件处理等。</li>
-</ul>
-<h4 id="5-推送通知"><strong>5. 推送通知</strong></h4>
-<ul>
-<li>提供消息推送功能，支持 iOS、Android 和 Web 平台。</li>
-<li>支持定向推送、广播推送以及根据用户属性筛选推送。</li>
-</ul>
-<h4 id="6-文件存储"><strong>6. 文件存储</strong></h4>
-<ul>
-<li>用于存储图片、视频、音频等文件。</li>
-<li>提供 CDN 加速功能，确保文件访问速度快且稳定。</li>
-</ul>
-<h4 id="7-数据分析"><strong>7. 数据分析</strong></h4>
-<ul>
-<li>提供实时的应用数据分析，帮助开发者了解用户行为和产品表现。</li>
-<li>支持自定义事件的埋点统计。</li>
-</ul>
-<hr>
-<h3 id="LeanCloud-的特点"><strong>LeanCloud 的特点</strong></h3>
-<ol>
-<li>
-<p><strong>一站式后端服务</strong></p>
-<ul>
-<li>开发者可以使用 LeanCloud 提供的所有后端功能，无需自己搭建服务器和数据库。</li>
-</ul>
-</li>
-<li>
-<p><strong>跨平台支持</strong></p>
-<ul>
-<li>提供丰富的 SDK，支持 Android、iOS、Unity、Web、小程序等多种平台。</li>
-</ul>
-</li>
-<li>
-<p><strong>高可用和可扩展性</strong></p>
-<ul>
-<li>LeanCloud 背后的基础设施支持高并发访问，能够应对大规模用户请求。</li>
-<li>开发者无需担心服务器维护和扩容问题。</li>
-</ul>
-</li>
-<li>
-<p><strong>高效开发</strong></p>
-<ul>
-<li>减少后端开发时间，让开发者专注于前端开发和产品逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="适用场景"><strong>适用场景</strong></h3>
-<ol>
-<li><strong>社交应用</strong>
-<ul>
-<li>即时通讯、群聊、好友系统、动态发布。</li>
-</ul>
-</li>
-<li><strong>电商平台</strong>
-<ul>
-<li>用户管理、商品存储、订单管理、推送通知。</li>
-</ul>
-</li>
-<li><strong>游戏开发</strong>
-<ul>
-<li>游戏玩家存档、排行榜、实时消息（如对战消息）。</li>
-</ul>
-</li>
-<li><strong>内容平台</strong>
-<ul>
-<li>文件存储（图片、音频、视频）、用户行为分析。</li>
-</ul>
-</li>
-<li><strong>小程序开发</strong>
-<ul>
-<li>数据存储、用户登录、消息推送。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="与其他-BaaS-的比较"><strong>与其他 BaaS 的比较</strong></h3>
-<p>与 Firebase、AWS Amplify 等 BaaS 服务相比，LeanCloud 更适合 <strong>国内市场</strong> 的开发者，尤其是以下场景：</p>
-<ul>
-<li><strong>国内访问速度快：</strong> 提供中国大陆的服务器节点。</li>
-<li><strong>符合国内法规：</strong> 支持合规化数据存储。</li>
-<li><strong>丰富的 SDK：</strong> 针对微信小程序、国内第三方登录等场景提供支持。</li>
-</ul>
-<hr>
-<h3 id="如何使用-LeanCloud？"><strong>如何使用 LeanCloud？</strong></h3>
-<ol>
-<li>
-<p><strong>注册 LeanCloud 账号并创建应用</strong></p>
-<ul>
-<li>前往 <a href="https://www.leancloud.cn/">LeanCloud 官网</a> 注册账号并创建一个新项目。</li>
-</ul>
-</li>
-<li>
-<p><strong>集成 LeanCloud SDK</strong></p>
-<ul>
-<li>在项目中下载并引入 LeanCloud 提供的 SDK（支持 Unity、C#、JavaScript、Python 等多种语言）。</li>
-</ul>
-</li>
-<li>
-<p><strong>调用 LeanCloud 的 API</strong></p>
-<ul>
-<li>通过 SDK 或 REST API，调用 LeanCloud 提供的各种服务，如存储数据、发送消息等。</li>
-</ul>
-</li>
-<li>
-<p><strong>部署云引擎</strong></p>
-<ul>
-<li>如果需要自定义后端逻辑，可以在 LeanCloud 的云引擎上部署自己的代码。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="示例代码"><strong>示例代码</strong></h3>
-<p>以下是一个使用 LeanCloud 存储数据的简单示例（C#）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> LeanCloud;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Example</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">SaveData</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化 LeanCloud</span></span><br><span class="line">        AVClient.Initialize(<span class="string">&quot;your-app-id&quot;</span>, <span class="string">&quot;your-app-key&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个对象</span></span><br><span class="line">        AVObject obj = <span class="keyword">new</span> AVObject(<span class="string">&quot;TestObject&quot;</span>);</span><br><span class="line">        obj[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;Unity开发者&quot;</span>;</span><br><span class="line">        obj[<span class="string">&quot;score&quot;</span>] = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存到 LeanCloud</span></span><br><span class="line">        <span class="keyword">await</span> obj.SaveAsync();</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;数据保存成功！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h3 id="总结"><strong>总结</strong></h3>
-<p>LeanCloud 是一个功能强大且易用的后端即服务平台，适合中小型团队甚至个人开发者快速构建后端服务。尤其是对于国内开发者来说，LeanCloud 的本地化支持和便捷性使其成为 Firebase 等海外 BaaS 平台的有力替代品。</p>
-]]></content>
-      <categories>
-        <category>Lean Cloud</category>
-      </categories>
-      <tags>
-        <tag>Lean Cloud</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Markdown 语法</title>
     <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<h1>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1>
@@ -4368,6 +4214,160 @@ $$</p>
       </categories>
       <tags>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lean Cloud</title>
+    <url>/2025/01/08/Lean-Cloud/</url>
+    <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
+<hr>
+<h3 id="LeanCloud-的核心功能"><strong>LeanCloud 的核心功能</strong></h3>
+<p>LeanCloud 提供了许多常见后端功能，以下是主要的功能模块：</p>
+<h4 id="1-数据存储"><strong>1. 数据存储</strong></h4>
+<ul>
+<li>提供类似数据库的云端存储服务，支持结构化和非结构化数据。</li>
+<li>数据存储是基于 <strong>NoSQL</strong> 的，开发者无需处理复杂的数据库部署和运维。</li>
+<li>支持复杂查询、关系模型以及文件存储（图片、文档等）。</li>
+</ul>
+<h4 id="2-用户管理"><strong>2. 用户管理</strong></h4>
+<ul>
+<li>提供用户注册、登录和管理功能。</li>
+<li>支持第三方登录（如微信、QQ、微博等）。</li>
+<li>提供基于角色和权限的访问控制。</li>
+</ul>
+<h4 id="3-即时通讯"><strong>3. 即时通讯</strong></h4>
+<ul>
+<li>支持实时消息传输，包括单聊、群聊和聊天室功能。</li>
+<li>提供消息历史记录和离线消息支持。</li>
+<li>适合需要社交聊天或消息通知功能的应用。</li>
+</ul>
+<h4 id="4-云引擎"><strong>4. 云引擎</strong></h4>
+<ul>
+<li>提供自定义后端逻辑的功能，开发者可以使用 LeanCloud 的云引擎编写自己的业务逻辑代码。</li>
+<li>支持定时任务、事件处理等。</li>
+</ul>
+<h4 id="5-推送通知"><strong>5. 推送通知</strong></h4>
+<ul>
+<li>提供消息推送功能，支持 iOS、Android 和 Web 平台。</li>
+<li>支持定向推送、广播推送以及根据用户属性筛选推送。</li>
+</ul>
+<h4 id="6-文件存储"><strong>6. 文件存储</strong></h4>
+<ul>
+<li>用于存储图片、视频、音频等文件。</li>
+<li>提供 CDN 加速功能，确保文件访问速度快且稳定。</li>
+</ul>
+<h4 id="7-数据分析"><strong>7. 数据分析</strong></h4>
+<ul>
+<li>提供实时的应用数据分析，帮助开发者了解用户行为和产品表现。</li>
+<li>支持自定义事件的埋点统计。</li>
+</ul>
+<hr>
+<h3 id="LeanCloud-的特点"><strong>LeanCloud 的特点</strong></h3>
+<ol>
+<li>
+<p><strong>一站式后端服务</strong></p>
+<ul>
+<li>开发者可以使用 LeanCloud 提供的所有后端功能，无需自己搭建服务器和数据库。</li>
+</ul>
+</li>
+<li>
+<p><strong>跨平台支持</strong></p>
+<ul>
+<li>提供丰富的 SDK，支持 Android、iOS、Unity、Web、小程序等多种平台。</li>
+</ul>
+</li>
+<li>
+<p><strong>高可用和可扩展性</strong></p>
+<ul>
+<li>LeanCloud 背后的基础设施支持高并发访问，能够应对大规模用户请求。</li>
+<li>开发者无需担心服务器维护和扩容问题。</li>
+</ul>
+</li>
+<li>
+<p><strong>高效开发</strong></p>
+<ul>
+<li>减少后端开发时间，让开发者专注于前端开发和产品逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="适用场景"><strong>适用场景</strong></h3>
+<ol>
+<li><strong>社交应用</strong>
+<ul>
+<li>即时通讯、群聊、好友系统、动态发布。</li>
+</ul>
+</li>
+<li><strong>电商平台</strong>
+<ul>
+<li>用户管理、商品存储、订单管理、推送通知。</li>
+</ul>
+</li>
+<li><strong>游戏开发</strong>
+<ul>
+<li>游戏玩家存档、排行榜、实时消息（如对战消息）。</li>
+</ul>
+</li>
+<li><strong>内容平台</strong>
+<ul>
+<li>文件存储（图片、音频、视频）、用户行为分析。</li>
+</ul>
+</li>
+<li><strong>小程序开发</strong>
+<ul>
+<li>数据存储、用户登录、消息推送。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="与其他-BaaS-的比较"><strong>与其他 BaaS 的比较</strong></h3>
+<p>与 Firebase、AWS Amplify 等 BaaS 服务相比，LeanCloud 更适合 <strong>国内市场</strong> 的开发者，尤其是以下场景：</p>
+<ul>
+<li><strong>国内访问速度快：</strong> 提供中国大陆的服务器节点。</li>
+<li><strong>符合国内法规：</strong> 支持合规化数据存储。</li>
+<li><strong>丰富的 SDK：</strong> 针对微信小程序、国内第三方登录等场景提供支持。</li>
+</ul>
+<hr>
+<h3 id="如何使用-LeanCloud？"><strong>如何使用 LeanCloud？</strong></h3>
+<ol>
+<li>
+<p><strong>注册 LeanCloud 账号并创建应用</strong></p>
+<ul>
+<li>前往 <a href="https://www.leancloud.cn/">LeanCloud 官网</a> 注册账号并创建一个新项目。</li>
+</ul>
+</li>
+<li>
+<p><strong>集成 LeanCloud SDK</strong></p>
+<ul>
+<li>在项目中下载并引入 LeanCloud 提供的 SDK（支持 Unity、C#、JavaScript、Python 等多种语言）。</li>
+</ul>
+</li>
+<li>
+<p><strong>调用 LeanCloud 的 API</strong></p>
+<ul>
+<li>通过 SDK 或 REST API，调用 LeanCloud 提供的各种服务，如存储数据、发送消息等。</li>
+</ul>
+</li>
+<li>
+<p><strong>部署云引擎</strong></p>
+<ul>
+<li>如果需要自定义后端逻辑，可以在 LeanCloud 的云引擎上部署自己的代码。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="示例代码"><strong>示例代码</strong></h3>
+<p>以下是一个使用 LeanCloud 存储数据的简单示例（C#）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> LeanCloud;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Example</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">SaveData</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化 LeanCloud</span></span><br><span class="line">        AVClient.Initialize(<span class="string">&quot;your-app-id&quot;</span>, <span class="string">&quot;your-app-key&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个对象</span></span><br><span class="line">        AVObject obj = <span class="keyword">new</span> AVObject(<span class="string">&quot;TestObject&quot;</span>);</span><br><span class="line">        obj[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;Unity开发者&quot;</span>;</span><br><span class="line">        obj[<span class="string">&quot;score&quot;</span>] = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存到 LeanCloud</span></span><br><span class="line">        <span class="keyword">await</span> obj.SaveAsync();</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;数据保存成功！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>LeanCloud 是一个功能强大且易用的后端即服务平台，适合中小型团队甚至个人开发者快速构建后端服务。尤其是对于国内开发者来说，LeanCloud 的本地化支持和便捷性使其成为 Firebase 等海外 BaaS 平台的有力替代品。</p>
+]]></content>
+      <categories>
+        <category>Lean Cloud</category>
+      </categories>
+      <tags>
+        <tag>Lean Cloud</tag>
       </tags>
   </entry>
   <entry>
@@ -4555,6 +4555,127 @@ $$</p>
 </ul>
 <hr>
 <p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念">1. <strong>基本概念</strong></h3>
+<p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势">2. <strong>用途与优势</strong></h3>
+<ul>
+<li>
+<p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li>
+<p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li>
+<p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li>
+<p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject">3. <strong>创建和使用 ScriptableObject</strong></h3>
+<p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类">步骤 1: 创建 ScriptableObject 类</h4>
+<p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例">步骤 2: 创建 ScriptableObject 实例</h4>
+<p>根据CreateAssetMenu代码中的路径来创建资源：<br>
+<code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例">步骤 3: 使用 ScriptableObject 实例</h4>
+<p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景">4. <strong>ScriptableObject 的应用场景</strong></h3>
+<p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置">(1) <strong>游戏数据配置</strong></h4>
+<p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统">(2) <strong>状态机或事件系统</strong></h4>
+<p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本">(3) <strong>可视化脚本</strong></h4>
+<p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理">(4) <strong>音频和动画管理</strong></h4>
+<p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别">5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-总结">6. <strong>总结</strong></h3>
+<p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
 ]]></content>
   </entry>
   <entry>
@@ -4838,127 +4959,6 @@ $$</p>
       <tags>
         <tag>Unity</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念">1. <strong>基本概念</strong></h3>
-<p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势">2. <strong>用途与优势</strong></h3>
-<ul>
-<li>
-<p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li>
-<p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li>
-<p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li>
-<p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject">3. <strong>创建和使用 ScriptableObject</strong></h3>
-<p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类">步骤 1: 创建 ScriptableObject 类</h4>
-<p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例">步骤 2: 创建 ScriptableObject 实例</h4>
-<p>根据CreateAssetMenu代码中的路径来创建资源：<br>
-<code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例">步骤 3: 使用 ScriptableObject 实例</h4>
-<p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景">4. <strong>ScriptableObject 的应用场景</strong></h3>
-<p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置">(1) <strong>游戏数据配置</strong></h4>
-<p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统">(2) <strong>状态机或事件系统</strong></h4>
-<p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本">(3) <strong>可视化脚本</strong></h4>
-<p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理">(4) <strong>音频和动画管理</strong></h4>
-<p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别">5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3>
-<table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody>
-</table>
-<h3 id="6-总结">6. <strong>总结</strong></h3>
-<p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
   </entry>
   <entry>
     <title>Unity UWA &amp; UWP</title>
@@ -6825,6 +6825,55 @@ TUN 模式是基于操作系统的虚拟网络接口（TUN/TAP）的工作方式
       </tags>
   </entry>
   <entry>
+    <title>hexo 图片加载方案</title>
+    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1>安装 hexo-asset-image 插件</h1>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>
+修改代码为如下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
+<h2 id="页签页md文档中插入图片">页签页md文档中插入图片</h2>
+<p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
+<p>打开_config.yml ，修改如下：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-trailing-index">1. trailing_index</h3>
+<p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
+<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>
+如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
+<h3 id="2-trailing-html">2. trailing_html</h3>
+<p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
+<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>
+如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+<p>这个方式的好处在于：</p>
+<ul>
+<li>支持vscode中正常预览</li>
+<li>无需修改Ctrl+V粘贴的路径</li>
+<li>本地构建的网站和正式部署的网站都能正常显示</li>
+</ul>
+<h1>html 脚本中添加图片</h1>
+<p>我们直接复制粘贴的路径：<br>
+将路径</p>
+<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
+<p>粘贴到scr中</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
+<p>src : index/image.png</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
+<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
+<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
+<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo butterfly 添加rightside 按钮</title>
     <url>/2025/01/21/hexo-butterfly-%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
     <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
@@ -6882,55 +6931,6 @@ main.js控件调用的功能逻辑</p>
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>hexo 图片加载方案</title>
-    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h1>安装 hexo-asset-image 插件</h1>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>
-修改代码为如下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
-<h2 id="页签页md文档中插入图片">页签页md文档中插入图片</h2>
-<p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
-<p>打开_config.yml ，修改如下：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-<h3 id="1-trailing-index">1. trailing_index</h3>
-<p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
-<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>
-如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
-<h3 id="2-trailing-html">2. trailing_html</h3>
-<p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
-<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>
-如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-<p>这个方式的好处在于：</p>
-<ul>
-<li>支持vscode中正常预览</li>
-<li>无需修改Ctrl+V粘贴的路径</li>
-<li>本地构建的网站和正式部署的网站都能正常显示</li>
-</ul>
-<h1>html 脚本中添加图片</h1>
-<p>我们直接复制粘贴的路径：<br>
-将路径</p>
-<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
-<p>粘贴到scr中</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
-<p>src : index/image.png</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
-<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
-<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
-<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
   </entry>
   <entry>
     <title>hexo添加标签样式</title>
@@ -9698,6 +9698,11 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
+    <title>文件树状层级图生成</title>
+    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
     <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
     <url>/2025/01/02/%E6%97%A5%E5%8E%86%E3%80%90FullCalendar-Lunar-RRule-Popper%E3%80%91/</url>
     <content><![CDATA[<p><strong>先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题</strong></p>
@@ -9745,11 +9750,6 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 <h1>Popper</h1>
 <p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
-  </entry>
-  <entry>
-    <title>文件树状层级图生成</title>
-    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>游戏资源服部署</title>
@@ -10367,120 +10367,6 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 ]]></content>
   </entry>
   <entry>
-    <title>算法脑筋急转弯</title>
-    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
-    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？">四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2>
-<p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
-<h3 id="步骤："><strong>步骤</strong>：</h3>
-<ol>
-<li>
-<p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
-</li>
-<li>
-<p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
-<ul>
-<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
-<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
-<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
-<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
-</ul>
-</li>
-<li>
-<p><strong>称重</strong>：</p>
-<ul>
-<li>假设正常药片的重量为 ( w )，</li>
-<li>过期药片的重量为 ( w + 1 )。</li>
-<li>如果所有药片都是正常的，总重量应为：<br>
-[<br>
-1w + 2w + 3w + 4w = 10w<br>
-]</li>
-<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
-</ul>
-</li>
-<li>
-<p><strong>分析结果</strong>：</p>
-<ul>
-<li>设称得的总重量为 ( S )，</li>
-<li>计算超出的重量：<br>
-[<br>
-S - 10w<br>
-]</li>
-<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
-</ul>
-</li>
-</ol>
-<h3 id="示例："><strong>示例</strong>：</h3>
-<p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
-<ul>
-<li>取样药片总数：( 1 + 2 + 3 + 4 = 10 ) 片，</li>
-<li>理论总重量：( 10w )，</li>
-<li>实际称重：( 10w + 3 )，</li>
-<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
-</ul>
-<p><strong>结论</strong>：<br>
-通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
-<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？">现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2>
-<p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
-<h3 id="步骤：-2"><strong>步骤</strong>：</h3>
-<ol>
-<li>
-<p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
-</li>
-<li>
-<p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
-</li>
-<li>
-<p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
-<ul>
-<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
-<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
-</ul>
-</li>
-</ol>
-<h3 id="结论："><strong>结论</strong>：</h3>
-<p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
-<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？">有两个容器分别是5L与6L,如何精准得到3L的水？</h2>
-<p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。</p>
-<hr>
-<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3>
-<ol>
-<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
-<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
-<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
-<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
-<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
-<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。
-<ul>
-<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3>
-<ol>
-<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
-<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。
-<ul>
-<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
-</ul>
-</li>
-<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
-<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
-</ol>
-<hr>
-<h3 id="总结"><strong>总结</strong></h3>
-<ul>
-<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
-<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
-</ul>
-<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
-]]></content>
-  </entry>
-  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab/Gitea）和简单搭建裸仓库。</p>
@@ -10733,6 +10619,120 @@ S - 10w<br>
       <tags>
         <tag>git</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>算法脑筋急转弯</title>
+    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
+    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？">四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2>
+<p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
+<h3 id="步骤："><strong>步骤</strong>：</h3>
+<ol>
+<li>
+<p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
+</li>
+<li>
+<p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
+<ul>
+<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
+<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
+<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
+<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>称重</strong>：</p>
+<ul>
+<li>假设正常药片的重量为 ( w )，</li>
+<li>过期药片的重量为 ( w + 1 )。</li>
+<li>如果所有药片都是正常的，总重量应为：<br>
+[<br>
+1w + 2w + 3w + 4w = 10w<br>
+]</li>
+<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>分析结果</strong>：</p>
+<ul>
+<li>设称得的总重量为 ( S )，</li>
+<li>计算超出的重量：<br>
+[<br>
+S - 10w<br>
+]</li>
+<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
+</ul>
+</li>
+</ol>
+<h3 id="示例："><strong>示例</strong>：</h3>
+<p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
+<ul>
+<li>取样药片总数：( 1 + 2 + 3 + 4 = 10 ) 片，</li>
+<li>理论总重量：( 10w )，</li>
+<li>实际称重：( 10w + 3 )，</li>
+<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
+</ul>
+<p><strong>结论</strong>：<br>
+通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
+<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？">现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2>
+<p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
+<h3 id="步骤：-2"><strong>步骤</strong>：</h3>
+<ol>
+<li>
+<p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
+</li>
+<li>
+<p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
+</li>
+<li>
+<p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
+<ul>
+<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
+<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="结论："><strong>结论</strong>：</h3>
+<p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
+<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？">有两个容器分别是5L与6L,如何精准得到3L的水？</h2>
+<p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。</p>
+<hr>
+<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3>
+<ol>
+<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
+<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
+<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
+<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
+<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
+<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。
+<ul>
+<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3>
+<ol>
+<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
+<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。
+<ul>
+<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
+</ul>
+</li>
+<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
+<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
+</ol>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<ul>
+<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
+<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
+</ul>
+<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
+]]></content>
   </entry>
   <entry>
     <title>跨境电商</title>
