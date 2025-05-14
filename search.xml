@@ -1646,6 +1646,79 @@ GitHub 仓库里没有 public/	它是构建产物，只生成在 GitHub Actions 
       </tags>
   </entry>
   <entry>
+    <title>Github-Hexo 部署脚本</title>
+    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h1>位置</h1>
+<ul>
+<li>根目录，不然是不会有action记录，不会执行</li>
+<li>token方式  ，推荐使用GITHUB_TOKEN</li>
+<li>分支</li>
+<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
+<li>只要你把 GitHub Actions 的 .yml 文件放在 .github/workflows/ 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
+</ul>
+<p>代码1：旧</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
+<p>代码2：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
+<hr>
+<h2 id="✅-建议优先使用：代码2（推荐）">✅ 建议优先使用：<strong>代码2（推荐）</strong></h2>
+<p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
+<hr>
+<h2 id="✨-对比分析：">✨ 对比分析：</h2>
+<table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>代码1（自己写 push 脚本）</th>
+<th>✅ 代码2（使用 peaceiris/actions-gh-pages）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>简洁性</strong></td>
+<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
+<td>✅ 封装好了所有逻辑，只需设置参数</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>🔐 需要小心 Token 拼接（可能泄露）</td>
+<td>✅ 使用官方方式处理 token，内置防泄露</td>
+</tr>
+<tr>
+<td><strong>维护性</strong></td>
+<td>❌ 需要自己维护 git 逻辑，容易出错</td>
+<td>✅ 官方维护的 Action，可靠稳定</td>
+</tr>
+<tr>
+<td><strong>兼容性</strong></td>
+<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
+<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
+</tr>
+<tr>
+<td><strong>常见性</strong></td>
+<td>❌ 不利于新人阅读维护</td>
+<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="✅-推荐做法：">✅ 推荐做法：</h2>
+<p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
+<hr>
+<h2 id="⛳-如果你未来要部署到其他仓库或服务器：">⛳ 如果你未来要部署到其他仓库或服务器：</h2>
+<p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
+<hr>
+<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>GitHub,Actions,Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo Categories 语法</title>
     <url>/2025/05/08/Hexo%20Categories%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<p>你提到的困惑很常见，Hexo 的分类嵌套和并列写法在语法上相似，但实际效果完全不同。下面我用具体例子对比说明它们的区别：</p>
@@ -1748,79 +1821,6 @@ Hexo 中分类的层级关系完全由 方括号 [] 决定：</p>
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Github-Hexo 部署脚本</title>
-    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<h1>位置</h1>
-<ul>
-<li>根目录，不然是不会有action记录，不会执行</li>
-<li>token方式  ，推荐使用GITHUB_TOKEN</li>
-<li>分支</li>
-<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
-<li>只要你把 GitHub Actions 的 .yml 文件放在 .github/workflows/ 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
-</ul>
-<p>代码1：旧</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
-<p>代码2：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
-<hr>
-<h2 id="✅-建议优先使用：代码2（推荐）">✅ 建议优先使用：<strong>代码2（推荐）</strong></h2>
-<p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
-<hr>
-<h2 id="✨-对比分析：">✨ 对比分析：</h2>
-<table>
-<thead>
-<tr>
-<th>比较项</th>
-<th>代码1（自己写 push 脚本）</th>
-<th>✅ 代码2（使用 peaceiris/actions-gh-pages）</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>简洁性</strong></td>
-<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
-<td>✅ 封装好了所有逻辑，只需设置参数</td>
-</tr>
-<tr>
-<td><strong>安全性</strong></td>
-<td>🔐 需要小心 Token 拼接（可能泄露）</td>
-<td>✅ 使用官方方式处理 token，内置防泄露</td>
-</tr>
-<tr>
-<td><strong>维护性</strong></td>
-<td>❌ 需要自己维护 git 逻辑，容易出错</td>
-<td>✅ 官方维护的 Action，可靠稳定</td>
-</tr>
-<tr>
-<td><strong>兼容性</strong></td>
-<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
-<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
-</tr>
-<tr>
-<td><strong>常见性</strong></td>
-<td>❌ 不利于新人阅读维护</td>
-<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="✅-推荐做法：">✅ 推荐做法：</h2>
-<p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
-<hr>
-<h2 id="⛳-如果你未来要部署到其他仓库或服务器：">⛳ 如果你未来要部署到其他仓库或服务器：</h2>
-<p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
-<hr>
-<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>GitHub,Actions,Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -3809,160 +3809,6 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
       </tags>
   </entry>
   <entry>
-    <title>Lean Cloud</title>
-    <url>/2025/01/08/Lean-Cloud/</url>
-    <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
-<hr>
-<h3 id="LeanCloud-的核心功能"><strong>LeanCloud 的核心功能</strong></h3>
-<p>LeanCloud 提供了许多常见后端功能，以下是主要的功能模块：</p>
-<h4 id="1-数据存储"><strong>1. 数据存储</strong></h4>
-<ul>
-<li>提供类似数据库的云端存储服务，支持结构化和非结构化数据。</li>
-<li>数据存储是基于 <strong>NoSQL</strong> 的，开发者无需处理复杂的数据库部署和运维。</li>
-<li>支持复杂查询、关系模型以及文件存储（图片、文档等）。</li>
-</ul>
-<h4 id="2-用户管理"><strong>2. 用户管理</strong></h4>
-<ul>
-<li>提供用户注册、登录和管理功能。</li>
-<li>支持第三方登录（如微信、QQ、微博等）。</li>
-<li>提供基于角色和权限的访问控制。</li>
-</ul>
-<h4 id="3-即时通讯"><strong>3. 即时通讯</strong></h4>
-<ul>
-<li>支持实时消息传输，包括单聊、群聊和聊天室功能。</li>
-<li>提供消息历史记录和离线消息支持。</li>
-<li>适合需要社交聊天或消息通知功能的应用。</li>
-</ul>
-<h4 id="4-云引擎"><strong>4. 云引擎</strong></h4>
-<ul>
-<li>提供自定义后端逻辑的功能，开发者可以使用 LeanCloud 的云引擎编写自己的业务逻辑代码。</li>
-<li>支持定时任务、事件处理等。</li>
-</ul>
-<h4 id="5-推送通知"><strong>5. 推送通知</strong></h4>
-<ul>
-<li>提供消息推送功能，支持 iOS、Android 和 Web 平台。</li>
-<li>支持定向推送、广播推送以及根据用户属性筛选推送。</li>
-</ul>
-<h4 id="6-文件存储"><strong>6. 文件存储</strong></h4>
-<ul>
-<li>用于存储图片、视频、音频等文件。</li>
-<li>提供 CDN 加速功能，确保文件访问速度快且稳定。</li>
-</ul>
-<h4 id="7-数据分析"><strong>7. 数据分析</strong></h4>
-<ul>
-<li>提供实时的应用数据分析，帮助开发者了解用户行为和产品表现。</li>
-<li>支持自定义事件的埋点统计。</li>
-</ul>
-<hr>
-<h3 id="LeanCloud-的特点"><strong>LeanCloud 的特点</strong></h3>
-<ol>
-<li>
-<p><strong>一站式后端服务</strong></p>
-<ul>
-<li>开发者可以使用 LeanCloud 提供的所有后端功能，无需自己搭建服务器和数据库。</li>
-</ul>
-</li>
-<li>
-<p><strong>跨平台支持</strong></p>
-<ul>
-<li>提供丰富的 SDK，支持 Android、iOS、Unity、Web、小程序等多种平台。</li>
-</ul>
-</li>
-<li>
-<p><strong>高可用和可扩展性</strong></p>
-<ul>
-<li>LeanCloud 背后的基础设施支持高并发访问，能够应对大规模用户请求。</li>
-<li>开发者无需担心服务器维护和扩容问题。</li>
-</ul>
-</li>
-<li>
-<p><strong>高效开发</strong></p>
-<ul>
-<li>减少后端开发时间，让开发者专注于前端开发和产品逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="适用场景"><strong>适用场景</strong></h3>
-<ol>
-<li><strong>社交应用</strong>
-<ul>
-<li>即时通讯、群聊、好友系统、动态发布。</li>
-</ul>
-</li>
-<li><strong>电商平台</strong>
-<ul>
-<li>用户管理、商品存储、订单管理、推送通知。</li>
-</ul>
-</li>
-<li><strong>游戏开发</strong>
-<ul>
-<li>游戏玩家存档、排行榜、实时消息（如对战消息）。</li>
-</ul>
-</li>
-<li><strong>内容平台</strong>
-<ul>
-<li>文件存储（图片、音频、视频）、用户行为分析。</li>
-</ul>
-</li>
-<li><strong>小程序开发</strong>
-<ul>
-<li>数据存储、用户登录、消息推送。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="与其他-BaaS-的比较"><strong>与其他 BaaS 的比较</strong></h3>
-<p>与 Firebase、AWS Amplify 等 BaaS 服务相比，LeanCloud 更适合 <strong>国内市场</strong> 的开发者，尤其是以下场景：</p>
-<ul>
-<li><strong>国内访问速度快：</strong> 提供中国大陆的服务器节点。</li>
-<li><strong>符合国内法规：</strong> 支持合规化数据存储。</li>
-<li><strong>丰富的 SDK：</strong> 针对微信小程序、国内第三方登录等场景提供支持。</li>
-</ul>
-<hr>
-<h3 id="如何使用-LeanCloud？"><strong>如何使用 LeanCloud？</strong></h3>
-<ol>
-<li>
-<p><strong>注册 LeanCloud 账号并创建应用</strong></p>
-<ul>
-<li>前往 <a href="https://www.leancloud.cn/">LeanCloud 官网</a> 注册账号并创建一个新项目。</li>
-</ul>
-</li>
-<li>
-<p><strong>集成 LeanCloud SDK</strong></p>
-<ul>
-<li>在项目中下载并引入 LeanCloud 提供的 SDK（支持 Unity、C#、JavaScript、Python 等多种语言）。</li>
-</ul>
-</li>
-<li>
-<p><strong>调用 LeanCloud 的 API</strong></p>
-<ul>
-<li>通过 SDK 或 REST API，调用 LeanCloud 提供的各种服务，如存储数据、发送消息等。</li>
-</ul>
-</li>
-<li>
-<p><strong>部署云引擎</strong></p>
-<ul>
-<li>如果需要自定义后端逻辑，可以在 LeanCloud 的云引擎上部署自己的代码。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="示例代码"><strong>示例代码</strong></h3>
-<p>以下是一个使用 LeanCloud 存储数据的简单示例（C#）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> LeanCloud;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Example</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">SaveData</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化 LeanCloud</span></span><br><span class="line">        AVClient.Initialize(<span class="string">&quot;your-app-id&quot;</span>, <span class="string">&quot;your-app-key&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个对象</span></span><br><span class="line">        AVObject obj = <span class="keyword">new</span> AVObject(<span class="string">&quot;TestObject&quot;</span>);</span><br><span class="line">        obj[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;Unity开发者&quot;</span>;</span><br><span class="line">        obj[<span class="string">&quot;score&quot;</span>] = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存到 LeanCloud</span></span><br><span class="line">        <span class="keyword">await</span> obj.SaveAsync();</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;数据保存成功！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h3 id="总结"><strong>总结</strong></h3>
-<p>LeanCloud 是一个功能强大且易用的后端即服务平台，适合中小型团队甚至个人开发者快速构建后端服务。尤其是对于国内开发者来说，LeanCloud 的本地化支持和便捷性使其成为 Firebase 等海外 BaaS 平台的有力替代品。</p>
-]]></content>
-      <categories>
-        <category>Lean Cloud</category>
-      </categories>
-      <tags>
-        <tag>Lean Cloud</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Jenkins 简介</title>
     <url>/2025/05/08/Jenkins/</url>
     <content><![CDATA[<h3 id="Jenkins-简介"><strong>Jenkins 简介</strong></h3>
@@ -4209,6 +4055,160 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
       </categories>
       <tags>
         <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lean Cloud</title>
+    <url>/2025/01/08/Lean-Cloud/</url>
+    <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
+<hr>
+<h3 id="LeanCloud-的核心功能"><strong>LeanCloud 的核心功能</strong></h3>
+<p>LeanCloud 提供了许多常见后端功能，以下是主要的功能模块：</p>
+<h4 id="1-数据存储"><strong>1. 数据存储</strong></h4>
+<ul>
+<li>提供类似数据库的云端存储服务，支持结构化和非结构化数据。</li>
+<li>数据存储是基于 <strong>NoSQL</strong> 的，开发者无需处理复杂的数据库部署和运维。</li>
+<li>支持复杂查询、关系模型以及文件存储（图片、文档等）。</li>
+</ul>
+<h4 id="2-用户管理"><strong>2. 用户管理</strong></h4>
+<ul>
+<li>提供用户注册、登录和管理功能。</li>
+<li>支持第三方登录（如微信、QQ、微博等）。</li>
+<li>提供基于角色和权限的访问控制。</li>
+</ul>
+<h4 id="3-即时通讯"><strong>3. 即时通讯</strong></h4>
+<ul>
+<li>支持实时消息传输，包括单聊、群聊和聊天室功能。</li>
+<li>提供消息历史记录和离线消息支持。</li>
+<li>适合需要社交聊天或消息通知功能的应用。</li>
+</ul>
+<h4 id="4-云引擎"><strong>4. 云引擎</strong></h4>
+<ul>
+<li>提供自定义后端逻辑的功能，开发者可以使用 LeanCloud 的云引擎编写自己的业务逻辑代码。</li>
+<li>支持定时任务、事件处理等。</li>
+</ul>
+<h4 id="5-推送通知"><strong>5. 推送通知</strong></h4>
+<ul>
+<li>提供消息推送功能，支持 iOS、Android 和 Web 平台。</li>
+<li>支持定向推送、广播推送以及根据用户属性筛选推送。</li>
+</ul>
+<h4 id="6-文件存储"><strong>6. 文件存储</strong></h4>
+<ul>
+<li>用于存储图片、视频、音频等文件。</li>
+<li>提供 CDN 加速功能，确保文件访问速度快且稳定。</li>
+</ul>
+<h4 id="7-数据分析"><strong>7. 数据分析</strong></h4>
+<ul>
+<li>提供实时的应用数据分析，帮助开发者了解用户行为和产品表现。</li>
+<li>支持自定义事件的埋点统计。</li>
+</ul>
+<hr>
+<h3 id="LeanCloud-的特点"><strong>LeanCloud 的特点</strong></h3>
+<ol>
+<li>
+<p><strong>一站式后端服务</strong></p>
+<ul>
+<li>开发者可以使用 LeanCloud 提供的所有后端功能，无需自己搭建服务器和数据库。</li>
+</ul>
+</li>
+<li>
+<p><strong>跨平台支持</strong></p>
+<ul>
+<li>提供丰富的 SDK，支持 Android、iOS、Unity、Web、小程序等多种平台。</li>
+</ul>
+</li>
+<li>
+<p><strong>高可用和可扩展性</strong></p>
+<ul>
+<li>LeanCloud 背后的基础设施支持高并发访问，能够应对大规模用户请求。</li>
+<li>开发者无需担心服务器维护和扩容问题。</li>
+</ul>
+</li>
+<li>
+<p><strong>高效开发</strong></p>
+<ul>
+<li>减少后端开发时间，让开发者专注于前端开发和产品逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="适用场景"><strong>适用场景</strong></h3>
+<ol>
+<li><strong>社交应用</strong>
+<ul>
+<li>即时通讯、群聊、好友系统、动态发布。</li>
+</ul>
+</li>
+<li><strong>电商平台</strong>
+<ul>
+<li>用户管理、商品存储、订单管理、推送通知。</li>
+</ul>
+</li>
+<li><strong>游戏开发</strong>
+<ul>
+<li>游戏玩家存档、排行榜、实时消息（如对战消息）。</li>
+</ul>
+</li>
+<li><strong>内容平台</strong>
+<ul>
+<li>文件存储（图片、音频、视频）、用户行为分析。</li>
+</ul>
+</li>
+<li><strong>小程序开发</strong>
+<ul>
+<li>数据存储、用户登录、消息推送。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="与其他-BaaS-的比较"><strong>与其他 BaaS 的比较</strong></h3>
+<p>与 Firebase、AWS Amplify 等 BaaS 服务相比，LeanCloud 更适合 <strong>国内市场</strong> 的开发者，尤其是以下场景：</p>
+<ul>
+<li><strong>国内访问速度快：</strong> 提供中国大陆的服务器节点。</li>
+<li><strong>符合国内法规：</strong> 支持合规化数据存储。</li>
+<li><strong>丰富的 SDK：</strong> 针对微信小程序、国内第三方登录等场景提供支持。</li>
+</ul>
+<hr>
+<h3 id="如何使用-LeanCloud？"><strong>如何使用 LeanCloud？</strong></h3>
+<ol>
+<li>
+<p><strong>注册 LeanCloud 账号并创建应用</strong></p>
+<ul>
+<li>前往 <a href="https://www.leancloud.cn/">LeanCloud 官网</a> 注册账号并创建一个新项目。</li>
+</ul>
+</li>
+<li>
+<p><strong>集成 LeanCloud SDK</strong></p>
+<ul>
+<li>在项目中下载并引入 LeanCloud 提供的 SDK（支持 Unity、C#、JavaScript、Python 等多种语言）。</li>
+</ul>
+</li>
+<li>
+<p><strong>调用 LeanCloud 的 API</strong></p>
+<ul>
+<li>通过 SDK 或 REST API，调用 LeanCloud 提供的各种服务，如存储数据、发送消息等。</li>
+</ul>
+</li>
+<li>
+<p><strong>部署云引擎</strong></p>
+<ul>
+<li>如果需要自定义后端逻辑，可以在 LeanCloud 的云引擎上部署自己的代码。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="示例代码"><strong>示例代码</strong></h3>
+<p>以下是一个使用 LeanCloud 存储数据的简单示例（C#）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> LeanCloud;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Example</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">SaveData</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化 LeanCloud</span></span><br><span class="line">        AVClient.Initialize(<span class="string">&quot;your-app-id&quot;</span>, <span class="string">&quot;your-app-key&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个对象</span></span><br><span class="line">        AVObject obj = <span class="keyword">new</span> AVObject(<span class="string">&quot;TestObject&quot;</span>);</span><br><span class="line">        obj[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;Unity开发者&quot;</span>;</span><br><span class="line">        obj[<span class="string">&quot;score&quot;</span>] = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存到 LeanCloud</span></span><br><span class="line">        <span class="keyword">await</span> obj.SaveAsync();</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;数据保存成功！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>LeanCloud 是一个功能强大且易用的后端即服务平台，适合中小型团队甚至个人开发者快速构建后端服务。尤其是对于国内开发者来说，LeanCloud 的本地化支持和便捷性使其成为 Firebase 等海外 BaaS 平台的有力替代品。</p>
+]]></content>
+      <categories>
+        <category>Lean Cloud</category>
+      </categories>
+      <tags>
+        <tag>Lean Cloud</tag>
       </tags>
   </entry>
   <entry>
@@ -4840,44 +4840,6 @@ $$</p>
       </tags>
   </entry>
   <entry>
-    <title>Unity UWA &amp; UWP</title>
-    <url>/2025/01/15/Unity-UWA-UWP/</url>
-    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
-<h3 id="1-UWA（Universal-Windows-App）">1. <strong>UWA（Universal Windows App）</strong></h3>
-<ul>
-<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
-<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
-</ul>
-<h3 id="2-UWP（Universal-Windows-Platform）">2. <strong>UWP（Universal Windows Platform）</strong></h3>
-<ul>
-<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
-<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
-</ul>
-<h3 id="关系："><strong>关系</strong>：</h3>
-<ul>
-<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
-<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
-</ul>
-<h3 id="区别："><strong>区别</strong>：</h3>
-<ul>
-<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
-<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
-<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
-</ul>
-<h3 id="示例："><strong>示例</strong>：</h3>
-<ul>
-<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
-<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
-</ul>
-<h3 id="总结："><strong>总结</strong>：</h3>
-<ul>
-<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
-<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
-</ul>
-<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity ScriptableObject</title>
     <url>/2025/01/16/Unity-ScriptableObject/</url>
     <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
@@ -4996,6 +4958,44 @@ $$</p>
 </table>
 <h3 id="6-总结">6. <strong>总结</strong></h3>
 <p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity UWA &amp; UWP</title>
+    <url>/2025/01/15/Unity-UWA-UWP/</url>
+    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
+<h3 id="1-UWA（Universal-Windows-App）">1. <strong>UWA（Universal Windows App）</strong></h3>
+<ul>
+<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
+<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
+</ul>
+<h3 id="2-UWP（Universal-Windows-Platform）">2. <strong>UWP（Universal Windows Platform）</strong></h3>
+<ul>
+<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
+<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
+</ul>
+<h3 id="关系："><strong>关系</strong>：</h3>
+<ul>
+<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
+<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
+</ul>
+<h3 id="区别："><strong>区别</strong>：</h3>
+<ul>
+<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
+<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
+<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
+</ul>
+<h3 id="示例："><strong>示例</strong>：</h3>
+<ul>
+<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
+<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
+</ul>
+<h3 id="总结："><strong>总结</strong>：</h3>
+<ul>
+<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
+<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
+</ul>
+<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
 ]]></content>
   </entry>
   <entry>
@@ -6306,158 +6306,6 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
 ]]></content>
   </entry>
   <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图">流程图</h2>
-<p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br>
-<img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态">git文件的三种状态</h2>
-<p>已修改(modified)<br>
-已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>
-已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>
-已经提交到本地仓库里，但还没push到远端仓库。<br>
-<img src="/.io//image-3.png" alt="alt text"><br>
-<a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过">事情经过</h2>
-<p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>
-使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>
-给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>
-启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping <a href="http://Google.com">Google.com</a> 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式">Clash for Windows 的 TUN 模式</h2>
-<p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>
-TUN 模式是基于操作系统的虚拟网络接口（TUN/TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
-<ul>
-<li>
-<p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li>
-<p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li>
-<p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li>
-<p>系统代理需要应用程序支持 HTTP/HTTPS 或 SOCKS 协议，并手动配置代理。</p>
-</li>
-<li>
-<p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3>
-<ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li>
-<p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br>
-<strong>常见问题</strong></p>
-</li>
-<li>
-<p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li>
-<p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3>
-<ol>
-<li>
-<p>打开 Clash for Windows。</p>
-</li>
-<li>
-<p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li>
-<p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong></p>
-<ol>
-<li>
-<p>确保规则优先级正确：</p>
-<p>例如：</p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li>
-<p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li>
-<p>测试网络连接：</p>
-</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：
-<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong></p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git修改历史提交</title>
     <url>/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/</url>
     <content><![CDATA[<h1>git reset命令</h1>
@@ -6673,6 +6521,158 @@ TUN 模式是基于操作系统的虚拟网络接口（TUN/TAP）的工作方式
 </table>
 <p>推荐：</p>
 <p><a href="https://x.zhixing.co/devops/the-differences-and-usages-of-git-merge-rebase/">Git merge &amp; rebase 区别和用法</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图">流程图</h2>
+<p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br>
+<img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态">git文件的三种状态</h2>
+<p>已修改(modified)<br>
+已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>
+已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>
+已经提交到本地仓库里，但还没push到远端仓库。<br>
+<img src="/.io//image-3.png" alt="alt text"><br>
+<a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过">事情经过</h2>
+<p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>
+使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>
+给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>
+启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping <a href="http://Google.com">Google.com</a> 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式">Clash for Windows 的 TUN 模式</h2>
+<p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>
+TUN 模式是基于操作系统的虚拟网络接口（TUN/TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li>
+<p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li>
+<p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li>
+<p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li>
+<p>系统代理需要应用程序支持 HTTP/HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li>
+<p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3>
+<ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li>
+<p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br>
+<strong>常见问题</strong></p>
+</li>
+<li>
+<p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li>
+<p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3>
+<ol>
+<li>
+<p>打开 Clash for Windows。</p>
+</li>
+<li>
+<p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li>
+<p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong></p>
+<ol>
+<li>
+<p>确保规则优先级正确：</p>
+<p>例如：</p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li>
+<p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li>
+<p>测试网络连接：</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：
+<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong></p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
 ]]></content>
       <categories>
         <category>git</category>
@@ -7157,104 +7157,6 @@ align-items: center;</p>
       <tags>
         <tag>butterfly</tag>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1>创建tmp中文字体资源</h1>
-<p>1.<strong>选择Window/TextMeshPro/Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br>
-<img src="/.io//image-1.png" alt="alt text"><br>
-Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>
-注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1>tmp创建字体报错:</h1>
-<p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong>
-<ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong>
-<ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
       </tags>
   </entry>
   <entry>
@@ -8338,6 +8240,104 @@ math.random</p>
 </li>
 </ol>
 ]]></content>
+  </entry>
+  <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1>创建tmp中文字体资源</h1>
+<p>1.<strong>选择Window/TextMeshPro/Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br>
+<img src="/.io//image-1.png" alt="alt text"><br>
+Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>
+注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1>tmp创建字体报错:</h1>
+<p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong>
+<ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong>
+<ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
+      </tags>
   </entry>
   <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
@@ -9569,50 +9569,6 @@ math.random</p>
       </tags>
   </entry>
   <entry>
-    <title>团结引擎</title>
-    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
-    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
-<h1>一站式微信小游戏解决方案</h1>
-<p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
-<p>IL2CPP 内存和性能优化，专项渲染/异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
-<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
-<h1>一站式智能座舱解决方案</h1>
-<p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
-<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
-<h1>适配OpenHarmony操作系统</h1>
-<p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
-<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run/Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
-<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
-<h1>虚拟几何体系统</h1>
-<p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
-<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
-<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
-<h1>团结引擎功能优势</h1>
-<ul>
-<li>
-<p>专为中国开发者定制</p>
-<p>Customized Feature<br>
-致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
-</li>
-<li>
-<p>本土科技生态支持</p>
-<p>Domestic Ecosystem Support<br>
-通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
-</li>
-<li>
-<p>微信小游戏解决方案</p>
-<p>Weixin Mini Game Solution<br>
-基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
-</li>
-<li>
-<p>车机定制编辑器</p>
-<p>HMI Editor<br>
-界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>医保</title>
     <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
     <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
@@ -9698,9 +9654,48 @@ math.random</p>
       </tags>
   </entry>
   <entry>
-    <title>文件树状层级图生成</title>
-    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+    <title>团结引擎</title>
+    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
+    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
+<h1>一站式微信小游戏解决方案</h1>
+<p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
+<p>IL2CPP 内存和性能优化，专项渲染/异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
+<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
+<h1>一站式智能座舱解决方案</h1>
+<p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
+<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
+<h1>适配OpenHarmony操作系统</h1>
+<p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
+<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run/Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
+<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
+<h1>虚拟几何体系统</h1>
+<p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
+<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
+<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
+<h1>团结引擎功能优势</h1>
+<ul>
+<li>
+<p>专为中国开发者定制</p>
+<p>Customized Feature<br>
+致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
+</li>
+<li>
+<p>本土科技生态支持</p>
+<p>Domestic Ecosystem Support<br>
+通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
+</li>
+<li>
+<p>微信小游戏解决方案</p>
+<p>Weixin Mini Game Solution<br>
+基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
+</li>
+<li>
+<p>车机定制编辑器</p>
+<p>HMI Editor<br>
+界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
+</li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
@@ -9750,6 +9745,11 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 <h1>Popper</h1>
 <p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
+    <title>文件树状层级图生成</title>
+    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>游戏资源服部署</title>
