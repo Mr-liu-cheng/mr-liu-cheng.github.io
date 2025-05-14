@@ -1246,11 +1246,11 @@
     <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
 <hr>
 <h3 id="1-核心架构"><strong>1. 核心架构</strong></h3>
-<pre class="mermaid">graph LR
-   玩家 -->|访问| GitHub_Pages[GitHub Pages官网]
-   GitHub_Pages -->|下载链接| GitHub_Releases[GitHub Releases]
-   GitHub_Releases -->|大文件| CDN[CDN缓存]
-   CDN -->|回源| 对象存储[Backblaze B2/AWS S3]</pre>
+<pre><code class="highlight mermaid">graph LR
+   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
+   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
 <ul>
 <li><strong>GitHub Pages</strong>：托管静态官网（HTML/CSS/JS）。</li>
 <li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。</li>
@@ -1646,6 +1646,79 @@ GitHub 仓库里没有 public/	它是构建产物，只生成在 GitHub Actions 
       </tags>
   </entry>
   <entry>
+    <title>Github-Hexo 部署脚本</title>
+    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h1>位置</h1>
+<ul>
+<li>根目录，不然是不会有action记录，不会执行</li>
+<li>token方式  ，推荐使用GITHUB_TOKEN</li>
+<li>分支</li>
+<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
+<li>只要你把 GitHub Actions 的 .yml 文件放在 .github/workflows/ 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
+</ul>
+<p>代码1：旧</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
+<p>代码2：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
+<hr>
+<h2 id="✅-建议优先使用：代码2（推荐）">✅ 建议优先使用：<strong>代码2（推荐）</strong></h2>
+<p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
+<hr>
+<h2 id="✨-对比分析：">✨ 对比分析：</h2>
+<table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>代码1（自己写 push 脚本）</th>
+<th>✅ 代码2（使用 peaceiris/actions-gh-pages）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>简洁性</strong></td>
+<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
+<td>✅ 封装好了所有逻辑，只需设置参数</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>🔐 需要小心 Token 拼接（可能泄露）</td>
+<td>✅ 使用官方方式处理 token，内置防泄露</td>
+</tr>
+<tr>
+<td><strong>维护性</strong></td>
+<td>❌ 需要自己维护 git 逻辑，容易出错</td>
+<td>✅ 官方维护的 Action，可靠稳定</td>
+</tr>
+<tr>
+<td><strong>兼容性</strong></td>
+<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
+<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
+</tr>
+<tr>
+<td><strong>常见性</strong></td>
+<td>❌ 不利于新人阅读维护</td>
+<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="✅-推荐做法：">✅ 推荐做法：</h2>
+<p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
+<hr>
+<h2 id="⛳-如果你未来要部署到其他仓库或服务器：">⛳ 如果你未来要部署到其他仓库或服务器：</h2>
+<p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
+<hr>
+<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>GitHub,Actions,Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo Categories 语法</title>
     <url>/2025/05/08/Hexo%20Categories%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<p>你提到的困惑很常见，Hexo 的分类嵌套和并列写法在语法上相似，但实际效果完全不同。下面我用具体例子对比说明它们的区别：</p>
@@ -1748,79 +1821,6 @@ Hexo 中分类的层级关系完全由 方括号 [] 决定：</p>
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Github-Hexo 部署脚本</title>
-    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<h1>位置</h1>
-<ul>
-<li>根目录，不然是不会有action记录，不会执行</li>
-<li>token方式  ，推荐使用GITHUB_TOKEN</li>
-<li>分支</li>
-<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
-<li>只要你把 GitHub Actions 的 .yml 文件放在 .github/workflows/ 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
-</ul>
-<p>代码1：旧</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
-<p>代码2：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
-<hr>
-<h2 id="✅-建议优先使用：代码2（推荐）">✅ 建议优先使用：<strong>代码2（推荐）</strong></h2>
-<p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
-<hr>
-<h2 id="✨-对比分析：">✨ 对比分析：</h2>
-<table>
-<thead>
-<tr>
-<th>比较项</th>
-<th>代码1（自己写 push 脚本）</th>
-<th>✅ 代码2（使用 peaceiris/actions-gh-pages）</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>简洁性</strong></td>
-<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
-<td>✅ 封装好了所有逻辑，只需设置参数</td>
-</tr>
-<tr>
-<td><strong>安全性</strong></td>
-<td>🔐 需要小心 Token 拼接（可能泄露）</td>
-<td>✅ 使用官方方式处理 token，内置防泄露</td>
-</tr>
-<tr>
-<td><strong>维护性</strong></td>
-<td>❌ 需要自己维护 git 逻辑，容易出错</td>
-<td>✅ 官方维护的 Action，可靠稳定</td>
-</tr>
-<tr>
-<td><strong>兼容性</strong></td>
-<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
-<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
-</tr>
-<tr>
-<td><strong>常见性</strong></td>
-<td>❌ 不利于新人阅读维护</td>
-<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="✅-推荐做法：">✅ 推荐做法：</h2>
-<p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
-<hr>
-<h2 id="⛳-如果你未来要部署到其他仓库或服务器：">⛳ 如果你未来要部署到其他仓库或服务器：</h2>
-<p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
-<hr>
-<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>GitHub,Actions,Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -4212,169 +4212,6 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
       </tags>
   </entry>
   <entry>
-    <title>Markdown 语法</title>
-    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
-    <content><![CDATA[<h1>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1>
-<p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
-<hr>
-<h2 id="如何使用">如何使用</h2>
-<p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
-<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
-<ul>
-<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
-<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
-<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
-</ul>
-<h3 id="PPT-预览">PPT 预览</h3>
-<p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
-<hr>
-<h2 id="什么是-Markdown">什么是 Markdown</h2>
-<p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
-<hr>
-<h3 id="1-制作待办事宜-Todo-列表">1. 制作待办事宜 <code>Todo</code> 列表</h3>
-<ul>
-<li>[x] 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
-<li>[x] 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
-<li>[x] 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
-<li>[x] 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
-<li>[x] 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
-<li>[x] 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
-<li>[x] 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
-<li>[x] ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
-<li>[x] ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
-<li>[x] 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
-<li>[x] 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
-<li>[x] 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
-</ul>
-<hr>
-<h3 id="2-书写一个质能守恒公式-LaTeX">2. 书写一个质能守恒公式[^LaTeX]</h3>
-<p>$$<br>
-E=mc^2<br>
-$$</p>
-<hr>
-<h3 id="3-高亮一段代码-code">3. 高亮一段代码[^code]</h3>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<hr>
-<h3 id="4-高效绘制流程图">4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3>
-<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
-  graph LR
-A --&gt; B
-  </pre></div>
-<pre class="mermaid">graph TD
-    A[用户请求] --> B[语义解析]
-    B --> C[RAG检索]
-    
-    C -->|✅ 知识库匹配| D[上下文增强]
-    C -->|❌ 无匹配| E[任务分解]
-    
-    D --> E
-    
-    E --> F{工具选择}
-    
-    F -->|🛠️ 核心工具| G{基础操作}
-    F -->|🔌 MCP扩展服务| H{MCP操作}
-    
-    G -->|✏️ 文件操作| I[读写/替换]
-    G -->|🖥️ 系统命令执行| J[执行命令]
-    G -->|🔍 代码分析| K[代码分析]
-    
-    H -->|⚙️ 使用MCP工具| L[使用MCP工具]
-    H -->|📦 访问MCP资源| M[访问MCP资源]
-    
-    I --> N[结果验证]
-    J --> N
-    K --> N
-    L --> N
-    M --> N
-    
-    N --> O{完成判断}
-    
-    O -->|✅| P[提交最终结果]
-    O -->|❌| E</pre>
-<hr>
-<h3 id="5-高效绘制序列图">5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3>
-<pre class="mermaid">sequenceDiagram
-  participant Alice
-  participant Bob
-  Alice->John: Hello John, how are you?
-  loop Healthcheck
-      John->John: Fight against hypochondria
-  end
-  Note right of John: Rational thoughts <br>prevail...
-  John-->Alice: Great!
-  John->Bob: How about you?
-  Bob-->John: Jolly good!</pre>
-<hr>
-<h3 id="6-高效绘制甘特图">6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3>
-<blockquote>
-<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
-</blockquote>
-<pre class="mermaid">gantt
-  title 项目开发流程
-  section 项目确定
-    需求分析       :a1, 2019-06-22, 3d
-    可行性报告     :after a1, 5d
-    概念验证       : 5d
-  section 项目实施
-    概要设计      :2019-07-05  , 5d
-    详细设计      :2019-07-08, 10d
-    编码          :2019-07-15, 10d
-    测试          :2019-07-22, 5d
-  section 发布验收
-    发布: 2d
-    验收: 3d</pre>
-<hr>
-<h3 id="8-绘制表格">8. 绘制表格</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">作品名称</th>
-<th style="text-align:left">在线地址</th>
-<th style="text-align:center">上线日期</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">逍遥自在轩</td>
-<td style="text-align:left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
-<td style="text-align:center">2024-04-26</td>
-</tr>
-<tr>
-<td style="text-align:left">玉桃文飨轩</td>
-<td style="text-align:left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
-<td style="text-align:center">2022-08-26</td>
-</tr>
-<tr>
-<td style="text-align:left">缘知随心庭</td>
-<td style="text-align:left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
-<td style="text-align:center">2022-02-26</td>
-</tr>
-<tr>
-<td style="text-align:left">静轩之别苑</td>
-<td style="text-align:left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
-<td style="text-align:center">2019-01-12</td>
-</tr>
-<tr>
-<td style="text-align:left">晚晴幽草轩</td>
-<td style="text-align:left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
-<td style="text-align:center">2014-09-20</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h3 id="9-更详细语法说明">9. 更详细语法说明</h3>
-<p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
-<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
-<p>最新更新于 2025.04.16</p>
-]]></content>
-      <categories>
-        <category>Markdown</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 环境安装</title>
     <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<h1>unity 模块添加</h1>
@@ -4560,6 +4397,169 @@ A --&gt; B
 <hr>
 <p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Markdown 语法</title>
+    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1>
+<p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
+<hr>
+<h2 id="如何使用">如何使用</h2>
+<p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
+<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
+<ul>
+<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
+<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
+<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
+</ul>
+<h3 id="PPT-预览">PPT 预览</h3>
+<p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
+<hr>
+<h2 id="什么是-Markdown">什么是 Markdown</h2>
+<p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
+<hr>
+<h3 id="1-制作待办事宜-Todo-列表">1. 制作待办事宜 <code>Todo</code> 列表</h3>
+<ul>
+<li>[x] 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
+<li>[x] 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
+<li>[x] 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
+<li>[x] 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
+<li>[x] 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
+<li>[x] 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
+<li>[x] 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
+<li>[x] ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
+<li>[x] ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
+<li>[x] 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
+<li>[x] 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
+<li>[x] 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
+</ul>
+<hr>
+<h3 id="2-书写一个质能守恒公式-LaTeX">2. 书写一个质能守恒公式[^LaTeX]</h3>
+<p>$$<br>
+E=mc^2<br>
+$$</p>
+<hr>
+<h3 id="3-高亮一段代码-code">3. 高亮一段代码[^code]</h3>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="4-高效绘制流程图">4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3>
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  graph LR
+A --&gt; B
+  </pre></div>
+<pre><code class="highlight mermaid">graph TD
+    A[用户请求] --&gt; B[语义解析]
+    B --&gt; C[RAG检索]
+    
+    C --&gt;|✅ 知识库匹配| D[上下文增强]
+    C --&gt;|❌ 无匹配| E[任务分解]
+    
+    D --&gt; E
+    
+    E --&gt; F&#123;工具选择&#125;
+    
+    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;
+    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;
+    
+    G --&gt;|✏️ 文件操作| I[读写/替换]
+    G --&gt;|🖥️ 系统命令执行| J[执行命令]
+    G --&gt;|🔍 代码分析| K[代码分析]
+    
+    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]
+    H --&gt;|📦 访问MCP资源| M[访问MCP资源]
+    
+    I --&gt; N[结果验证]
+    J --&gt; N
+    K --&gt; N
+    L --&gt; N
+    M --&gt; N
+    
+    N --&gt; O&#123;完成判断&#125;
+    
+    O --&gt;|✅| P[提交最终结果]
+    O --&gt;|❌| E</code></pre>
+<hr>
+<h3 id="5-高效绘制序列图">5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3>
+<pre><code class="highlight mermaid">sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice-&gt;John: Hello John, how are you?
+  loop Healthcheck
+      John-&gt;John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts &lt;br/&gt;prevail...
+  John--&gt;Alice: Great!
+  John-&gt;Bob: How about you?
+  Bob--&gt;John: Jolly good!</code></pre>
+<hr>
+<h3 id="6-高效绘制甘特图">6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3>
+<blockquote>
+<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
+</blockquote>
+<pre><code class="highlight mermaid">gantt
+  title 项目开发流程
+  section 项目确定
+    需求分析       :a1, 2019-06-22, 3d
+    可行性报告     :after a1, 5d
+    概念验证       : 5d
+  section 项目实施
+    概要设计      :2019-07-05  , 5d
+    详细设计      :2019-07-08, 10d
+    编码          :2019-07-15, 10d
+    测试          :2019-07-22, 5d
+  section 发布验收
+    发布: 2d
+    验收: 3d</code></pre>
+<hr>
+<h3 id="8-绘制表格">8. 绘制表格</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">作品名称</th>
+<th style="text-align:left">在线地址</th>
+<th style="text-align:center">上线日期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">逍遥自在轩</td>
+<td style="text-align:left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
+<td style="text-align:center">2024-04-26</td>
+</tr>
+<tr>
+<td style="text-align:left">玉桃文飨轩</td>
+<td style="text-align:left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
+<td style="text-align:center">2022-08-26</td>
+</tr>
+<tr>
+<td style="text-align:left">缘知随心庭</td>
+<td style="text-align:left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
+<td style="text-align:center">2022-02-26</td>
+</tr>
+<tr>
+<td style="text-align:left">静轩之别苑</td>
+<td style="text-align:left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
+<td style="text-align:center">2019-01-12</td>
+</tr>
+<tr>
+<td style="text-align:left">晚晴幽草轩</td>
+<td style="text-align:left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
+<td style="text-align:center">2014-09-20</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="9-更详细语法说明">9. 更详细语法说明</h3>
+<p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
+<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
+<p>最新更新于 2025.04.16</p>
+]]></content>
+      <categories>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
   </entry>
   <entry>
     <title>Unity Jobs System</title>
@@ -6042,80 +6042,6 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
       </tags>
   </entry>
   <entry>
-    <title>github 作为热更新服</title>
-    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）">1. <strong>准备资源（例如 AssetBundles）</strong></h3>
-<p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles：">创建 AssetBundles：</h4>
-<ol>
-<li>
-<p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li>
-<p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub">2. <strong>将 AssetBundles 上传到 GitHub</strong></h3>
-<p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源：">创建 GitHub 仓库并上传资源：</h4>
-<ol>
-<li>
-<p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li>
-<p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li>
-<p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源">3. <strong>在 Unity 中动态下载资源</strong></h3>
-<p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载">示例代码：从 GitHub 下载 AssetBundle 并加载</h4>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-版本控制与更新">4. <strong>版本控制与更新</strong></h3>
-<p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="5-优点与挑战">5. <strong>优点与挑战</strong></h3>
-<h4 id="优点：">优点：</h4>
-<ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战：">挑战：</h4>
-<ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结：">总结：</h3>
-<p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>git submodule</title>
     <url>/2025/02/06/git-submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
@@ -6307,6 +6233,80 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
 <h2 id="🔹-总结"><strong>🔹 总结</strong></h2>
 <p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
 <p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>github 作为热更新服</title>
+    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）">1. <strong>准备资源（例如 AssetBundles）</strong></h3>
+<p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles：">创建 AssetBundles：</h4>
+<ol>
+<li>
+<p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li>
+<p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub">2. <strong>将 AssetBundles 上传到 GitHub</strong></h3>
+<p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源：">创建 GitHub 仓库并上传资源：</h4>
+<ol>
+<li>
+<p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li>
+<p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li>
+<p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源">3. <strong>在 Unity 中动态下载资源</strong></h3>
+<p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载">示例代码：从 GitHub 下载 AssetBundle 并加载</h4>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-版本控制与更新">4. <strong>版本控制与更新</strong></h3>
+<p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-优点与挑战">5. <strong>优点与挑战</strong></h3>
+<h4 id="优点：">优点：</h4>
+<ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战：">挑战：</h4>
+<ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结：">总结：</h3>
+<p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
 ]]></content>
   </entry>
   <entry>
@@ -9702,6 +9702,11 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
+    <title>文件树状层级图生成</title>
+    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
     <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
     <url>/2025/01/02/%E6%97%A5%E5%8E%86%E3%80%90FullCalendar-Lunar-RRule-Popper%E3%80%91/</url>
     <content><![CDATA[<p><strong>先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题</strong></p>
@@ -9749,11 +9754,6 @@ events 属性:死板，但是支持重复事件，根据FullCalendar语法来</l
 <h1>Popper</h1>
 <p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
-  </entry>
-  <entry>
-    <title>文件树状层级图生成</title>
-    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>游戏资源服部署</title>
