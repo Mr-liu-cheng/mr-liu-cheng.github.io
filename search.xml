@@ -4256,6 +4256,10 @@ $$</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <hr>
 <h3 id="4-高效绘制流程图">4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3>
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  graph LR
+A --&gt; B
+  </pre></div>
 <pre class="mermaid">graph TD
     A[用户请求] --> B[语义解析]
     B --> C[RAG检索]
@@ -4558,6 +4562,127 @@ $$</p>
 ]]></content>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念">1. <strong>基本概念</strong></h3>
+<p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势">2. <strong>用途与优势</strong></h3>
+<ul>
+<li>
+<p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li>
+<p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li>
+<p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li>
+<p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject">3. <strong>创建和使用 ScriptableObject</strong></h3>
+<p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类">步骤 1: 创建 ScriptableObject 类</h4>
+<p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例">步骤 2: 创建 ScriptableObject 实例</h4>
+<p>根据CreateAssetMenu代码中的路径来创建资源：<br>
+<code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例">步骤 3: 使用 ScriptableObject 实例</h4>
+<p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景">4. <strong>ScriptableObject 的应用场景</strong></h3>
+<p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置">(1) <strong>游戏数据配置</strong></h4>
+<p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统">(2) <strong>状态机或事件系统</strong></h4>
+<p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本">(3) <strong>可视化脚本</strong></h4>
+<p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理">(4) <strong>音频和动画管理</strong></h4>
+<p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别">5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-总结">6. <strong>总结</strong></h3>
+<p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1>Unity Jobs</h1>
@@ -4840,127 +4965,6 @@ $$</p>
       </tags>
   </entry>
   <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念">1. <strong>基本概念</strong></h3>
-<p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势">2. <strong>用途与优势</strong></h3>
-<ul>
-<li>
-<p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li>
-<p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li>
-<p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li>
-<p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject">3. <strong>创建和使用 ScriptableObject</strong></h3>
-<p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类">步骤 1: 创建 ScriptableObject 类</h4>
-<p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例">步骤 2: 创建 ScriptableObject 实例</h4>
-<p>根据CreateAssetMenu代码中的路径来创建资源：<br>
-<code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例">步骤 3: 使用 ScriptableObject 实例</h4>
-<p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景">4. <strong>ScriptableObject 的应用场景</strong></h3>
-<p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置">(1) <strong>游戏数据配置</strong></h4>
-<p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统">(2) <strong>状态机或事件系统</strong></h4>
-<p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本">(3) <strong>可视化脚本</strong></h4>
-<p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理">(4) <strong>音频和动画管理</strong></h4>
-<p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别">5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3>
-<table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody>
-</table>
-<h3 id="6-总结">6. <strong>总结</strong></h3>
-<p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -4996,6 +5000,191 @@ $$</p>
 <li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
 </ul>
 <p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><strong>1. 移除与游戏开发相关的功能</strong></h3>
+<h4 id="a-不需要的模块和功能"><strong>a. 不需要的模块和功能</strong></h4>
+<p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong>
+<ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong>
+<ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong>
+<ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong>
+<ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><strong>b. 项目中未使用的脚本和资源</strong></h4>
+<ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><strong>2. 优化项目设置</strong></h3>
+<h4 id="a-减少渲染相关功能"><strong>a. 减少渲染相关功能</strong></h4>
+<p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong>
+<ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong>
+<ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong>
+<ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><strong>b. 禁用不必要的引擎特性</strong></h4>
+<ul>
+<li><strong>音频模块</strong>
+<ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong>
+<ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><strong>3. 精简打包体积</strong></h3>
+<h4 id="a-Player-Settings-调整"><strong>a. Player Settings 调整</strong></h4>
+<ul>
+<li><strong>Script Stripping（脚本裁剪）</strong>
+<ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong>
+<ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><strong>b. 剔除未使用的代码和资源</strong></h4>
+<ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><strong>c. 平台相关优化</strong></h4>
+<ul>
+<li>针对目标平台，移除不需要的平台支持文件：
+<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><strong>4. 简化界面和逻辑</strong></h3>
+<h4 id="a-使用-UI-专用功能"><strong>a. 使用 UI 专用功能</strong></h4>
+<p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：
+<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：
+<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><strong>b. 使用场景管理优化加载</strong></h4>
+<ul>
+<li><strong>Single Scene 模式</strong>
+<ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong>
+<ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><strong>5. 替代默认功能</strong></h3>
+<p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong>
+<ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong>
+<ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong>
+<ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><strong>推荐开发和优化步骤</strong></h3>
+<ol>
+<li>
+<p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li>
+<p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li>
+<p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li>
+<p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li>
+<p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
 ]]></content>
   </entry>
   <entry>
@@ -5587,191 +5776,6 @@ $$</p>
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><strong>1. 移除与游戏开发相关的功能</strong></h3>
-<h4 id="a-不需要的模块和功能"><strong>a. 不需要的模块和功能</strong></h4>
-<p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong>
-<ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong>
-<ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong>
-<ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong>
-<ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><strong>b. 项目中未使用的脚本和资源</strong></h4>
-<ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><strong>2. 优化项目设置</strong></h3>
-<h4 id="a-减少渲染相关功能"><strong>a. 减少渲染相关功能</strong></h4>
-<p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong>
-<ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong>
-<ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong>
-<ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><strong>b. 禁用不必要的引擎特性</strong></h4>
-<ul>
-<li><strong>音频模块</strong>
-<ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong>
-<ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><strong>3. 精简打包体积</strong></h3>
-<h4 id="a-Player-Settings-调整"><strong>a. Player Settings 调整</strong></h4>
-<ul>
-<li><strong>Script Stripping（脚本裁剪）</strong>
-<ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong>
-<ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><strong>b. 剔除未使用的代码和资源</strong></h4>
-<ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><strong>c. 平台相关优化</strong></h4>
-<ul>
-<li>针对目标平台，移除不需要的平台支持文件：
-<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><strong>4. 简化界面和逻辑</strong></h3>
-<h4 id="a-使用-UI-专用功能"><strong>a. 使用 UI 专用功能</strong></h4>
-<p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：
-<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：
-<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><strong>b. 使用场景管理优化加载</strong></h4>
-<ul>
-<li><strong>Single Scene 模式</strong>
-<ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong>
-<ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><strong>5. 替代默认功能</strong></h3>
-<p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong>
-<ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong>
-<ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong>
-<ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><strong>推荐开发和优化步骤</strong></h3>
-<ol>
-<li>
-<p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li>
-<p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li>
-<p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li>
-<p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li>
-<p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 渲染管线选择</title>
     <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
     <content><![CDATA[<h3 id="选择渲染模式的建议"><strong>选择渲染模式的建议</strong></h3>
@@ -6038,6 +6042,80 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
       </tags>
   </entry>
   <entry>
+    <title>github 作为热更新服</title>
+    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）">1. <strong>准备资源（例如 AssetBundles）</strong></h3>
+<p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles：">创建 AssetBundles：</h4>
+<ol>
+<li>
+<p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li>
+<p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub">2. <strong>将 AssetBundles 上传到 GitHub</strong></h3>
+<p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源：">创建 GitHub 仓库并上传资源：</h4>
+<ol>
+<li>
+<p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li>
+<p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li>
+<p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源">3. <strong>在 Unity 中动态下载资源</strong></h3>
+<p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载">示例代码：从 GitHub 下载 AssetBundle 并加载</h4>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-版本控制与更新">4. <strong>版本控制与更新</strong></h3>
+<p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-优点与挑战">5. <strong>优点与挑战</strong></h3>
+<h4 id="优点：">优点：</h4>
+<ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战：">挑战：</h4>
+<ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结：">总结：</h3>
+<p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>git submodule</title>
     <url>/2025/02/06/git-submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
@@ -6229,80 +6307,6 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
 <h2 id="🔹-总结"><strong>🔹 总结</strong></h2>
 <p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
 <p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>github 作为热更新服</title>
-    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）">1. <strong>准备资源（例如 AssetBundles）</strong></h3>
-<p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles：">创建 AssetBundles：</h4>
-<ol>
-<li>
-<p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li>
-<p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub">2. <strong>将 AssetBundles 上传到 GitHub</strong></h3>
-<p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源：">创建 GitHub 仓库并上传资源：</h4>
-<ol>
-<li>
-<p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li>
-<p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li>
-<p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源">3. <strong>在 Unity 中动态下载资源</strong></h3>
-<p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载">示例代码：从 GitHub 下载 AssetBundle 并加载</h4>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-版本控制与更新">4. <strong>版本控制与更新</strong></h3>
-<p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="5-优点与挑战">5. <strong>优点与挑战</strong></h3>
-<h4 id="优点：">优点：</h4>
-<ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战：">挑战：</h4>
-<ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结：">总结：</h3>
-<p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
 ]]></content>
   </entry>
   <entry>
@@ -9287,6 +9291,91 @@ Source Font File：拖入需要使用的字体</p>
       </tags>
   </entry>
   <entry>
+    <title>医保</title>
+    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
+    <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
+<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
+<h2 id="一档医保报销比例">一档医保报销比例</h2>
+<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
+<h3 id="一、门诊报销比例">一、门诊报销比例</h3>
+<p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
+<ul>
+<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
+<li>二级医院报销比例：65%;</li>
+<li>三级医院报销比例：55%;</li>
+</ul>
+<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
+<h3 id="二、一档医保市内住院报销比例">二、一档医保市内住院报销比例</h3>
+<p>在一级以下医院支付比例为94%;</p>
+<p>二级医院支付比例为92%;</p>
+<p>三级医院支付比例为90%;</p>
+<p>退休人员支付比例为95%。</p>
+<p>住院起付线</p>
+<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
+<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
+<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
+<h2 id="灵活就业医保缴费标准">灵活就业医保缴费标准</h2>
+<p><img src="/.io//image.png" alt></p>
+<blockquote>
+<p>缴费金额：</p>
+</blockquote>
+<p>6733x0.02 个人余额134</p>
+<p>6733x0.07 个人缴纳医保费用471</p>
+<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
+<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
+<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
+<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
+<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
+</ul>
+<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
+<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
+<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
+</ul>
+<h2 id="门诊和住院医保报销的区别">门诊和住院医保报销的区别</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>门诊</th>
+<th>住院</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>报销比例</td>
+<td>一般较低</td>
+<td>一般较高</td>
+</tr>
+<tr>
+<td>起付线</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>年度限额</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>报销范围</td>
+<td>诊疗费、药费、检查费等</td>
+<td>所有医疗费用</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>社保</category>
+      </categories>
+      <tags>
+        <tag>医保</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1>
@@ -9567,91 +9656,6 @@ Source Font File：拖入需要使用的字体</p>
 <h3 id="结论："><strong>结论：</strong></h3>
 <p>将 <strong>UnityGameFramework 插件</strong> 直接放入 <code>Assets/</code> 父级目录并通过 Git 管理，适合 <strong>小型项目</strong> 或 <strong>定制化需求高的项目</strong>，但对于 <strong>长期维护、多个项目使用的框架</strong>，使用 <strong>UPM</strong> 或 <strong>Git Submodule</strong> 等更合适，因为它们能够更好地管理框架版本、提高代码的可维护性并支持多个项目之间的共享。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>医保</title>
-    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
-    <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
-<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
-<h2 id="一档医保报销比例">一档医保报销比例</h2>
-<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
-<h3 id="一、门诊报销比例">一、门诊报销比例</h3>
-<p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
-<ul>
-<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
-<li>二级医院报销比例：65%;</li>
-<li>三级医院报销比例：55%;</li>
-</ul>
-<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
-<h3 id="二、一档医保市内住院报销比例">二、一档医保市内住院报销比例</h3>
-<p>在一级以下医院支付比例为94%;</p>
-<p>二级医院支付比例为92%;</p>
-<p>三级医院支付比例为90%;</p>
-<p>退休人员支付比例为95%。</p>
-<p>住院起付线</p>
-<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
-<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
-<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
-<h2 id="灵活就业医保缴费标准">灵活就业医保缴费标准</h2>
-<p><img src="/.io//image.png" alt></p>
-<blockquote>
-<p>缴费金额：</p>
-</blockquote>
-<p>6733x0.02 个人余额134</p>
-<p>6733x0.07 个人缴纳医保费用471</p>
-<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
-<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
-<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
-<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
-<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
-</ul>
-<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
-<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
-<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
-</ul>
-<h2 id="门诊和住院医保报销的区别">门诊和住院医保报销的区别</h2>
-<table>
-<thead>
-<tr>
-<th>项目</th>
-<th>门诊</th>
-<th>住院</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>报销比例</td>
-<td>一般较低</td>
-<td>一般较高</td>
-</tr>
-<tr>
-<td>起付线</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>年度限额</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>报销范围</td>
-<td>诊疗费、药费、检查费等</td>
-<td>所有医疗费用</td>
-</tr>
-</tbody>
-</table>
-]]></content>
-      <categories>
-        <category>社保</category>
-      </categories>
-      <tags>
-        <tag>医保</tag>
-      </tags>
   </entry>
   <entry>
     <title>团结引擎</title>
