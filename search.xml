@@ -1,6 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>C# CLR</title>
+    <url>/2025/01/20/C-CLR/</url>
+    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、<a href="http://VB.NET">VB.NET</a>、F# 等）编写的程序。</p>
+<h3 id="CLR-的主要功能：">CLR 的主要功能：</h3>
+<ol>
+<li>
+<p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
+</li>
+<li>
+<p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
+</li>
+<li>
+<p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
+</li>
+<li>
+<p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
+</li>
+<li>
+<p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 <a href="http://VB.NET">VB.NET</a> 编写的类和方法。</p>
+</li>
+<li>
+<p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
+</li>
+</ol>
+<h3 id="CLR-主要包含的部分：">CLR 主要包含的部分：</h3>
+<ul>
+<li>
+<p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
+</li>
+<li>
+<p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
+</li>
+<li>
+<p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
+</li>
+<li>
+<p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
+</li>
+</ul>
+<h3 id="CLR-与其他技术的关系：">CLR 与其他技术的关系：</h3>
+<ul>
+<li>
+<p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
+</li>
+<li>
+<p><strong>.NET Core 和 .NET 5/6+</strong>：随着 .NET Core 和后来的统一平台 .NET 5/6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
+</li>
+</ul>
+<h3 id="CLR-的作用：">CLR 的作用：</h3>
+<ul>
+<li>
+<p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
+</li>
+<li>
+<p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
+</li>
+</ul>
+<h3 id="小结：">小结：</h3>
+<p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
+<h2 id="跨平台">跨平台</h2>
+<p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5/6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
+<h3 id="CLR-如何实现跨平台支持：">CLR 如何实现跨平台支持：</h3>
+<ol>
+<li>
+<p><strong>平台无关性</strong>：</p>
+<ul>
+<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
+<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
+</ul>
+</li>
+<li>
+<p><strong>跨语言互操作性</strong>：</p>
+<ul>
+<li>CLR 支持多种编程语言（例如 C#、F#、<a href="http://VB.NET">VB.NET</a> 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
+</ul>
+</li>
+<li>
+<p><strong>运行时环境的适配</strong>：</p>
+<ul>
+<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：
+<ul>
+<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
+<li><strong>.NET Core / .NET 5+</strong>：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>垃圾回收与内存管理</strong>：</p>
+<ul>
+<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
+</ul>
+</li>
+<li>
+<p><strong>平台特定实现</strong>：</p>
+<ul>
+<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
+</ul>
+</li>
+<li>
+<p><strong>移植和兼容性</strong>：</p>
+<ul>
+<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
+</ul>
+</li>
+</ol>
+<h3 id="CLR-与-Unity-的跨平台能力：">CLR 与 Unity 的跨平台能力：</h3>
+<p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
+<ul>
+<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
+<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
+</ul>
+<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
+<h3 id="总结："><strong>总结</strong>：</h3>
+<ul>
+<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
+<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
+<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
+</ul>
+<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Assetbundle</title>
     <url>/2025/01/20/Assetbundle/</url>
     <content><![CDATA[<h2 id="了解什么是Assetbundle">了解什么是Assetbundle</h2>
@@ -534,129 +657,6 @@
 <li>request.dispose(): 对于 UnityWebRequestAssetBundle，使用 dispose() 来释放网络请求资源。</li>
 </ul>
 <p>正确管理 AssetBundle 的加载和卸载，不仅能够提高游戏的性能，减少内存占用，还能避免不必要的资源重复加载，保持游戏的流畅体验。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>C# CLR</title>
-    <url>/2025/01/20/C-CLR/</url>
-    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、<a href="http://VB.NET">VB.NET</a>、F# 等）编写的程序。</p>
-<h3 id="CLR-的主要功能：">CLR 的主要功能：</h3>
-<ol>
-<li>
-<p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
-</li>
-<li>
-<p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
-</li>
-<li>
-<p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
-</li>
-<li>
-<p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
-</li>
-<li>
-<p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 <a href="http://VB.NET">VB.NET</a> 编写的类和方法。</p>
-</li>
-<li>
-<p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
-</li>
-</ol>
-<h3 id="CLR-主要包含的部分：">CLR 主要包含的部分：</h3>
-<ul>
-<li>
-<p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
-</li>
-<li>
-<p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
-</li>
-<li>
-<p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
-</li>
-<li>
-<p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
-</li>
-</ul>
-<h3 id="CLR-与其他技术的关系：">CLR 与其他技术的关系：</h3>
-<ul>
-<li>
-<p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
-</li>
-<li>
-<p><strong>.NET Core 和 .NET 5/6+</strong>：随着 .NET Core 和后来的统一平台 .NET 5/6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
-</li>
-</ul>
-<h3 id="CLR-的作用：">CLR 的作用：</h3>
-<ul>
-<li>
-<p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
-</li>
-<li>
-<p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
-</li>
-</ul>
-<h3 id="小结：">小结：</h3>
-<p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
-<h2 id="跨平台">跨平台</h2>
-<p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5/6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
-<h3 id="CLR-如何实现跨平台支持：">CLR 如何实现跨平台支持：</h3>
-<ol>
-<li>
-<p><strong>平台无关性</strong>：</p>
-<ul>
-<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
-<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
-</ul>
-</li>
-<li>
-<p><strong>跨语言互操作性</strong>：</p>
-<ul>
-<li>CLR 支持多种编程语言（例如 C#、F#、<a href="http://VB.NET">VB.NET</a> 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
-</ul>
-</li>
-<li>
-<p><strong>运行时环境的适配</strong>：</p>
-<ul>
-<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：
-<ul>
-<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
-<li><strong>.NET Core / .NET 5+</strong>：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>垃圾回收与内存管理</strong>：</p>
-<ul>
-<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
-</ul>
-</li>
-<li>
-<p><strong>平台特定实现</strong>：</p>
-<ul>
-<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
-</ul>
-</li>
-<li>
-<p><strong>移植和兼容性</strong>：</p>
-<ul>
-<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
-</ul>
-</li>
-</ol>
-<h3 id="CLR-与-Unity-的跨平台能力：">CLR 与 Unity 的跨平台能力：</h3>
-<p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
-<ul>
-<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
-<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
-</ul>
-<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
-<h3 id="总结："><strong>总结</strong>：</h3>
-<ul>
-<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
-<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
-<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
-</ul>
-<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
 ]]></content>
   </entry>
   <entry>
@@ -1451,87 +1451,6 @@
       </tags>
   </entry>
   <entry>
-    <title>GitHub Actions部署流程</title>
-    <url>/2025/05/08/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
-<hr>
-<h3 id="🧾-YAML-脚本结构快速回顾">🧾 YAML 脚本结构快速回顾</h3>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-<h4 id="✅-含义：">✅ 含义：</h4>
-<ul>
-<li><code>name</code>: 工作流的名称，显示在 GitHub Actions 页中。</li>
-<li><code>on.push.branches</code>: 表示当你向 <code>master</code> 分支推送代码时，会自动触发这个部署工作流。</li>
-</ul>
-<hr>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br></pre></td></tr></table></figure>
-<h4 id="✅-含义：-2">✅ 含义：</h4>
-<ul>
-<li>定义了一个名为 <code>build</code> 的任务（job）</li>
-<li><code>runs-on: ubuntu-latest</code> 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务</li>
-</ul>
-<hr>
-<h3 id="🚀-核心步骤一览">🚀 核心步骤一览</h3>
-<hr>
-<h4 id="1️⃣-获取仓库代码">1️⃣ 获取仓库代码</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br></pre></td></tr></table></figure>
-<p>✅ 使用官方的 <code>checkout</code> Action 把当前仓库的源码拉下来。</p>
-<hr>
-<h4 id="2️⃣-设置-Node-js-环境">2️⃣ 设置 Node.js 环境</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">node-version:</span> <span class="string">&#x27;20&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>✅ 安装指定版本的 Node.js 环境，因为 Hexo 是基于 Node.js 的静态站点生成器。</p>
-<hr>
-<h4 id="3️⃣-安装依赖">3️⃣ 安装依赖</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Dependencies</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br></pre></td></tr></table></figure>
-<p>✅ 安装你 <code>package.json</code> 中定义的所有 Hexo 插件、主题依赖（比如主题支持的 <code>hexo-renderer-*</code>、<code>hexo-generator-*</code> 等）。</p>
-<hr>
-<h4 id="4️⃣-安装部署插件和-Hexo-CLI">4️⃣ 安装部署插件和 Hexo CLI</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">Git</span> <span class="string">Deployer</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">    npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
-<p>✅ <code>hexo-deployer-git</code>: 用于将生成的静态文件部署到 GitHub Pages<br>
-✅ <code>hexo-cli -g</code>: 全局安装 Hexo 命令行工具，后面需要执行 <code>hexo generate</code> 命令</p>
-<hr>
-<h4 id="5️⃣-生成静态页面">5️⃣ 生成静态页面</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">and</span> <span class="string">Generate</span> <span class="string">Static</span> <span class="string">Files</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    hexo clean</span></span><br><span class="line"><span class="string">    hexo generate</span></span><br></pre></td></tr></table></figure>
-<p>✅ <code>hexo clean</code>: 清理之前生成的 <code>public/</code><br>
-✅ <code>hexo generate</code>: 将 Markdown 和配置转化为静态网站内容，放入 <code>public/</code> 文件夹</p>
-<hr>
-<h4 id="6️⃣-配置-Git-信息（用于提交）">6️⃣ 配置 Git 信息（用于提交）</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Git</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    git config --global user.name &#x27;github-actions[bot]&#x27;</span></span><br><span class="line"><span class="string">    git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>✅ 配置 Git 用户信息，避免提交时报错。</p>
-<hr>
-<h4 id="7️⃣-推送到-GitHub-Pages">7️⃣ 推送到 GitHub Pages</h4>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">  <span class="attr">env:</span></span><br><span class="line">    <span class="attr">GH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GH_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    cd public/</span></span><br><span class="line"><span class="string">    git init</span></span><br><span class="line"><span class="string">    git add -A</span></span><br><span class="line"><span class="string">    git commit -m &quot;Create by workflows&quot;</span></span><br><span class="line"><span class="string">    git remote add origin https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span></span><br><span class="line"><span class="string">    git push origin HEAD:gh-pages -f</span></span><br></pre></td></tr></table></figure>
-<p>✅ 这段代码作用：</p>
-<ul>
-<li>进入 Hexo 生成的 <code>public/</code> 静态目录</li>
-<li>初始化 Git 仓库</li>
-<li>用你设置的 <code>GH_TOKEN</code>（GitHub Token）认证身份</li>
-<li>将 <code>public/</code> 目录的内容强制推送到部署仓库（<code>gh-pages</code> 分支）</li>
-</ul>
-<p>这样 GitHub Pages 就可以用 <code>gh-pages</code> 分支中的内容部署网页。</p>
-<hr>
-<h3 id="🔒-GH-TOKEN-是干什么用的？">🔒 <code>GH_TOKEN</code> 是干什么用的？</h3>
-<p>这是一个 <strong>私密令牌（Personal Access Token）</strong>，用于允许 GitHub Actions 自动推送内容到仓库。</p>
-<p>你需要在源仓库的 <strong>Settings &gt; Secrets</strong> 中添加：</p>
-<ul>
-<li>名称：<code>GH_TOKEN</code></li>
-<li>内容：GitHub PAT，要求权限包含：<code>repo</code>（公开仓库也可不选）</li>
-</ul>
-<hr>
-<h3 id="✅-总结：这个-Actions-脚本做了什么？">✅ 总结：这个 Actions 脚本做了什么？</h3>
-<p>简要流程如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 git push 文章 --&gt; GitHub 触发 Action --&gt; 自动安装依赖并构建静态网站 --&gt; 自动部署 public/ 到 gh-pages</span><br></pre></td></tr></table></figure>
-<p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
-<hr>
-<p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
-]]></content>
-      <categories>
-        <category>GitHub Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub Actions</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitHub action 自动发布博客</title>
     <url>/2025/05/12/GitHub%20action%20%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>完整推荐如下：</p>
@@ -1637,6 +1556,87 @@ GitHub 仓库里没有 public/	它是构建产物，只生成在 GitHub Actions 
 •	publish_dir 是 ./blog/public
 </code></pre>
 <p>部署完成后，可以访问 GitHub Pages 设置页面确认是否启用了 GitHub Pages，并且指向了 gh-pages 分支。</p>
+]]></content>
+      <categories>
+        <category>GitHub Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub Actions部署流程</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
+<hr>
+<h3 id="🧾-YAML-脚本结构快速回顾">🧾 YAML 脚本结构快速回顾</h3>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+<h4 id="✅-含义：">✅ 含义：</h4>
+<ul>
+<li><code>name</code>: 工作流的名称，显示在 GitHub Actions 页中。</li>
+<li><code>on.push.branches</code>: 表示当你向 <code>master</code> 分支推送代码时，会自动触发这个部署工作流。</li>
+</ul>
+<hr>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br></pre></td></tr></table></figure>
+<h4 id="✅-含义：-2">✅ 含义：</h4>
+<ul>
+<li>定义了一个名为 <code>build</code> 的任务（job）</li>
+<li><code>runs-on: ubuntu-latest</code> 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务</li>
+</ul>
+<hr>
+<h3 id="🚀-核心步骤一览">🚀 核心步骤一览</h3>
+<hr>
+<h4 id="1️⃣-获取仓库代码">1️⃣ 获取仓库代码</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br></pre></td></tr></table></figure>
+<p>✅ 使用官方的 <code>checkout</code> Action 把当前仓库的源码拉下来。</p>
+<hr>
+<h4 id="2️⃣-设置-Node-js-环境">2️⃣ 设置 Node.js 环境</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">node-version:</span> <span class="string">&#x27;20&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>✅ 安装指定版本的 Node.js 环境，因为 Hexo 是基于 Node.js 的静态站点生成器。</p>
+<hr>
+<h4 id="3️⃣-安装依赖">3️⃣ 安装依赖</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Dependencies</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br></pre></td></tr></table></figure>
+<p>✅ 安装你 <code>package.json</code> 中定义的所有 Hexo 插件、主题依赖（比如主题支持的 <code>hexo-renderer-*</code>、<code>hexo-generator-*</code> 等）。</p>
+<hr>
+<h4 id="4️⃣-安装部署插件和-Hexo-CLI">4️⃣ 安装部署插件和 Hexo CLI</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">Git</span> <span class="string">Deployer</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">    npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
+<p>✅ <code>hexo-deployer-git</code>: 用于将生成的静态文件部署到 GitHub Pages<br>
+✅ <code>hexo-cli -g</code>: 全局安装 Hexo 命令行工具，后面需要执行 <code>hexo generate</code> 命令</p>
+<hr>
+<h4 id="5️⃣-生成静态页面">5️⃣ 生成静态页面</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">and</span> <span class="string">Generate</span> <span class="string">Static</span> <span class="string">Files</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    hexo clean</span></span><br><span class="line"><span class="string">    hexo generate</span></span><br></pre></td></tr></table></figure>
+<p>✅ <code>hexo clean</code>: 清理之前生成的 <code>public/</code><br>
+✅ <code>hexo generate</code>: 将 Markdown 和配置转化为静态网站内容，放入 <code>public/</code> 文件夹</p>
+<hr>
+<h4 id="6️⃣-配置-Git-信息（用于提交）">6️⃣ 配置 Git 信息（用于提交）</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Git</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    git config --global user.name &#x27;github-actions[bot]&#x27;</span></span><br><span class="line"><span class="string">    git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>✅ 配置 Git 用户信息，避免提交时报错。</p>
+<hr>
+<h4 id="7️⃣-推送到-GitHub-Pages">7️⃣ 推送到 GitHub Pages</h4>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">  <span class="attr">env:</span></span><br><span class="line">    <span class="attr">GH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GH_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    cd public/</span></span><br><span class="line"><span class="string">    git init</span></span><br><span class="line"><span class="string">    git add -A</span></span><br><span class="line"><span class="string">    git commit -m &quot;Create by workflows&quot;</span></span><br><span class="line"><span class="string">    git remote add origin https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span></span><br><span class="line"><span class="string">    git push origin HEAD:gh-pages -f</span></span><br></pre></td></tr></table></figure>
+<p>✅ 这段代码作用：</p>
+<ul>
+<li>进入 Hexo 生成的 <code>public/</code> 静态目录</li>
+<li>初始化 Git 仓库</li>
+<li>用你设置的 <code>GH_TOKEN</code>（GitHub Token）认证身份</li>
+<li>将 <code>public/</code> 目录的内容强制推送到部署仓库（<code>gh-pages</code> 分支）</li>
+</ul>
+<p>这样 GitHub Pages 就可以用 <code>gh-pages</code> 分支中的内容部署网页。</p>
+<hr>
+<h3 id="🔒-GH-TOKEN-是干什么用的？">🔒 <code>GH_TOKEN</code> 是干什么用的？</h3>
+<p>这是一个 <strong>私密令牌（Personal Access Token）</strong>，用于允许 GitHub Actions 自动推送内容到仓库。</p>
+<p>你需要在源仓库的 <strong>Settings &gt; Secrets</strong> 中添加：</p>
+<ul>
+<li>名称：<code>GH_TOKEN</code></li>
+<li>内容：GitHub PAT，要求权限包含：<code>repo</code>（公开仓库也可不选）</li>
+</ul>
+<hr>
+<h3 id="✅-总结：这个-Actions-脚本做了什么？">✅ 总结：这个 Actions 脚本做了什么？</h3>
+<p>简要流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 git push 文章 --&gt; GitHub 触发 Action --&gt; 自动安装依赖并构建静态网站 --&gt; 自动部署 public/ 到 gh-pages</span><br></pre></td></tr></table></figure>
+<p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
+<hr>
+<p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
 ]]></content>
       <categories>
         <category>GitHub Actions</category>
@@ -3440,6 +3440,159 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
 ]]></content>
   </entry>
   <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3>
+<p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><strong>1. 环境准备</strong></h2>
+<table>
+<thead>
+<tr>
+<th>工具/环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI/CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub/GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows/Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP/SSH/云存储（如阿里云 OSS）</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="2-Jenkins-配置"><strong>2. Jenkins 配置</strong></h2>
+<h3 id="1-安装必要插件"><strong>(1) 安装必要插件</strong></h3>
+<ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI/CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><strong>(2) 配置 Unity 环境</strong></h3>
+<ol>
+<li>
+<p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong></li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li>
+<p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><strong>3. 创建 Jenkins Pipeline</strong></h2>
+<p>在项目根目录创建 <strong><code>Jenkinsfile</code></strong>，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="4-Unity-构建脚本"><strong>4. Unity 构建脚本</strong></h2>
+<p>在 Unity 项目中创建 <strong><code>BuildScript.cs</code></strong>（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="5-触发构建"><strong>5. 触发构建</strong></h2>
+<h3 id="1-手动触发"><strong>(1) 手动触发</strong></h3>
+<ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><strong>(2) 自动触发（Git Webhook）</strong></h3>
+<ol>
+<li><strong>在 GitHub/GitLab 设置 Webhook</strong>：
+<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：
+<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><strong>6. 常见问题</strong></h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android/iOS 打包问题</strong></td>
+<td>配置 JDK/NDK/Xcode 环境</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-优化建议"><strong>7. 优化建议</strong></h2>
+<ol>
+<li><strong>使用 Docker 镜像</strong>：
+<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。</li>
+</ul>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><strong>并行构建多平台</strong>：
+<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win/Android/iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK/IPA</strong>：
+<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><strong>8. 最终效果</strong></h2>
+<ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong></li>
+<li><strong>团队收到构建成功/失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Jenkins 游戏后端自动化部署流程</title>
     <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><strong>Jenkins 游戏后端自动化部署流程（以微服务/分布式架构为例）</strong></h3>
@@ -3647,159 +3800,6 @@ HybridCLR/Generate/All命令会重新扫描热更新程序集，生成link.xml�
 <li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
 </ul>
 <p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3>
-<p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><strong>1. 环境准备</strong></h2>
-<table>
-<thead>
-<tr>
-<th>工具/环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI/CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub/GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows/Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP/SSH/云存储（如阿里云 OSS）</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="2-Jenkins-配置"><strong>2. Jenkins 配置</strong></h2>
-<h3 id="1-安装必要插件"><strong>(1) 安装必要插件</strong></h3>
-<ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI/CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><strong>(2) 配置 Unity 环境</strong></h3>
-<ol>
-<li>
-<p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong></li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li>
-<p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><strong>3. 创建 Jenkins Pipeline</strong></h2>
-<p>在项目根目录创建 <strong><code>Jenkinsfile</code></strong>，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="4-Unity-构建脚本"><strong>4. Unity 构建脚本</strong></h2>
-<p>在 Unity 项目中创建 <strong><code>BuildScript.cs</code></strong>（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="5-触发构建"><strong>5. 触发构建</strong></h2>
-<h3 id="1-手动触发"><strong>(1) 手动触发</strong></h3>
-<ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><strong>(2) 自动触发（Git Webhook）</strong></h3>
-<ol>
-<li><strong>在 GitHub/GitLab 设置 Webhook</strong>：
-<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：
-<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><strong>6. 常见问题</strong></h2>
-<table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android/iOS 打包问题</strong></td>
-<td>配置 JDK/NDK/Xcode 环境</td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="7-优化建议"><strong>7. 优化建议</strong></h2>
-<ol>
-<li><strong>使用 Docker 镜像</strong>：
-<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。</li>
-</ul>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><strong>并行构建多平台</strong>：
-<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win/Android/iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK/IPA</strong>：
-<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><strong>8. 最终效果</strong></h2>
-<ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong></li>
-<li><strong>团队收到构建成功/失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -4256,10 +4256,6 @@ $$</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <hr>
 <h3 id="4-高效绘制流程图">4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3>
-<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
-  graph LR
-A --&gt; B
-  </pre></div>
 <pre class="mermaid">graph TD
     A[用户请求] --> B[语义解析]
     B --> C[RAG检索]
@@ -4562,127 +4558,6 @@ A --&gt; B
 ]]></content>
   </entry>
   <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念">1. <strong>基本概念</strong></h3>
-<p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势">2. <strong>用途与优势</strong></h3>
-<ul>
-<li>
-<p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li>
-<p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li>
-<p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li>
-<p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject">3. <strong>创建和使用 ScriptableObject</strong></h3>
-<p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类">步骤 1: 创建 ScriptableObject 类</h4>
-<p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例">步骤 2: 创建 ScriptableObject 实例</h4>
-<p>根据CreateAssetMenu代码中的路径来创建资源：<br>
-<code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例">步骤 3: 使用 ScriptableObject 实例</h4>
-<p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景">4. <strong>ScriptableObject 的应用场景</strong></h3>
-<p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置">(1) <strong>游戏数据配置</strong></h4>
-<p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统">(2) <strong>状态机或事件系统</strong></h4>
-<p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本">(3) <strong>可视化脚本</strong></h4>
-<p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理">(4) <strong>音频和动画管理</strong></h4>
-<p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别">5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3>
-<table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody>
-</table>
-<h3 id="6-总结">6. <strong>总结</strong></h3>
-<p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1>Unity Jobs</h1>
@@ -4965,6 +4840,127 @@ A --&gt; B
       </tags>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念">1. <strong>基本概念</strong></h3>
+<p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势">2. <strong>用途与优势</strong></h3>
+<ul>
+<li>
+<p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li>
+<p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li>
+<p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li>
+<p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject">3. <strong>创建和使用 ScriptableObject</strong></h3>
+<p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类">步骤 1: 创建 ScriptableObject 类</h4>
+<p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例">步骤 2: 创建 ScriptableObject 实例</h4>
+<p>根据CreateAssetMenu代码中的路径来创建资源：<br>
+<code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例">步骤 3: 使用 ScriptableObject 实例</h4>
+<p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景">4. <strong>ScriptableObject 的应用场景</strong></h3>
+<p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置">(1) <strong>游戏数据配置</strong></h4>
+<p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统">(2) <strong>状态机或事件系统</strong></h4>
+<p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本">(3) <strong>可视化脚本</strong></h4>
+<p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理">(4) <strong>音频和动画管理</strong></h4>
+<p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别">5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-总结">6. <strong>总结</strong></h3>
+<p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -5000,191 +4996,6 @@ A --&gt; B
 <li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
 </ul>
 <p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><strong>1. 移除与游戏开发相关的功能</strong></h3>
-<h4 id="a-不需要的模块和功能"><strong>a. 不需要的模块和功能</strong></h4>
-<p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong>
-<ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong>
-<ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong>
-<ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong>
-<ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><strong>b. 项目中未使用的脚本和资源</strong></h4>
-<ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><strong>2. 优化项目设置</strong></h3>
-<h4 id="a-减少渲染相关功能"><strong>a. 减少渲染相关功能</strong></h4>
-<p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong>
-<ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong>
-<ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong>
-<ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><strong>b. 禁用不必要的引擎特性</strong></h4>
-<ul>
-<li><strong>音频模块</strong>
-<ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong>
-<ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><strong>3. 精简打包体积</strong></h3>
-<h4 id="a-Player-Settings-调整"><strong>a. Player Settings 调整</strong></h4>
-<ul>
-<li><strong>Script Stripping（脚本裁剪）</strong>
-<ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong>
-<ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><strong>b. 剔除未使用的代码和资源</strong></h4>
-<ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><strong>c. 平台相关优化</strong></h4>
-<ul>
-<li>针对目标平台，移除不需要的平台支持文件：
-<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><strong>4. 简化界面和逻辑</strong></h3>
-<h4 id="a-使用-UI-专用功能"><strong>a. 使用 UI 专用功能</strong></h4>
-<p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：
-<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：
-<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><strong>b. 使用场景管理优化加载</strong></h4>
-<ul>
-<li><strong>Single Scene 模式</strong>
-<ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong>
-<ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><strong>5. 替代默认功能</strong></h3>
-<p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong>
-<ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong>
-<ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong>
-<ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><strong>推荐开发和优化步骤</strong></h3>
-<ol>
-<li>
-<p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li>
-<p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li>
-<p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li>
-<p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li>
-<p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
 ]]></content>
   </entry>
   <entry>
@@ -5674,6 +5485,191 @@ A --&gt; B
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><strong>1. 移除与游戏开发相关的功能</strong></h3>
+<h4 id="a-不需要的模块和功能"><strong>a. 不需要的模块和功能</strong></h4>
+<p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong>
+<ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong>
+<ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong>
+<ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong>
+<ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><strong>b. 项目中未使用的脚本和资源</strong></h4>
+<ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><strong>2. 优化项目设置</strong></h3>
+<h4 id="a-减少渲染相关功能"><strong>a. 减少渲染相关功能</strong></h4>
+<p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong>
+<ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong>
+<ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong>
+<ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><strong>b. 禁用不必要的引擎特性</strong></h4>
+<ul>
+<li><strong>音频模块</strong>
+<ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong>
+<ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><strong>3. 精简打包体积</strong></h3>
+<h4 id="a-Player-Settings-调整"><strong>a. Player Settings 调整</strong></h4>
+<ul>
+<li><strong>Script Stripping（脚本裁剪）</strong>
+<ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong>
+<ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><strong>b. 剔除未使用的代码和资源</strong></h4>
+<ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><strong>c. 平台相关优化</strong></h4>
+<ul>
+<li>针对目标平台，移除不需要的平台支持文件：
+<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><strong>4. 简化界面和逻辑</strong></h3>
+<h4 id="a-使用-UI-专用功能"><strong>a. 使用 UI 专用功能</strong></h4>
+<p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：
+<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：
+<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><strong>b. 使用场景管理优化加载</strong></h4>
+<ul>
+<li><strong>Single Scene 模式</strong>
+<ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong>
+<ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><strong>5. 替代默认功能</strong></h3>
+<p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong>
+<ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong>
+<ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong>
+<ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><strong>推荐开发和优化步骤</strong></h3>
+<ol>
+<li>
+<p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li>
+<p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li>
+<p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li>
+<p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li>
+<p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -6042,80 +6038,6 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
       </tags>
   </entry>
   <entry>
-    <title>github 作为热更新服</title>
-    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）">1. <strong>准备资源（例如 AssetBundles）</strong></h3>
-<p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles：">创建 AssetBundles：</h4>
-<ol>
-<li>
-<p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li>
-<p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub">2. <strong>将 AssetBundles 上传到 GitHub</strong></h3>
-<p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源：">创建 GitHub 仓库并上传资源：</h4>
-<ol>
-<li>
-<p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li>
-<p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li>
-<p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源">3. <strong>在 Unity 中动态下载资源</strong></h3>
-<p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载">示例代码：从 GitHub 下载 AssetBundle 并加载</h4>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-版本控制与更新">4. <strong>版本控制与更新</strong></h3>
-<p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="5-优点与挑战">5. <strong>优点与挑战</strong></h3>
-<h4 id="优点：">优点：</h4>
-<ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战：">挑战：</h4>
-<ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结：">总结：</h3>
-<p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>git submodule</title>
     <url>/2025/02/06/git-submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
@@ -6307,6 +6229,80 @@ themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: 
 <h2 id="🔹-总结"><strong>🔹 总结</strong></h2>
 <p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
 <p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>github 作为热更新服</title>
+    <url>/2025/01/22/github-%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%96%B0%E6%9C%8D/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）">1. <strong>准备资源（例如 AssetBundles）</strong></h3>
+<p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles：">创建 AssetBundles：</h4>
+<ol>
+<li>
+<p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li>
+<p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub">2. <strong>将 AssetBundles 上传到 GitHub</strong></h3>
+<p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源：">创建 GitHub 仓库并上传资源：</h4>
+<ol>
+<li>
+<p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li>
+<p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li>
+<p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源">3. <strong>在 Unity 中动态下载资源</strong></h3>
+<p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载">示例代码：从 GitHub 下载 AssetBundle 并加载</h4>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-版本控制与更新">4. <strong>版本控制与更新</strong></h3>
+<p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-优点与挑战">5. <strong>优点与挑战</strong></h3>
+<h4 id="优点：">优点：</h4>
+<ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战：">挑战：</h4>
+<ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结：">总结：</h3>
+<p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
 ]]></content>
   </entry>
   <entry>
@@ -9170,212 +9166,6 @@ Source Font File：拖入需要使用的字体</p>
 ]]></content>
   </entry>
   <entry>
-    <title>vs隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3>
-<p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><strong>步骤：自定义插件的 Assembly Definition</strong></h4>
-<ol>
-<li>
-<p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li>
-<p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li>
-<p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><strong>方法 2：修改 Unity 编辑器设置</strong></h3>
-<p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li>
-<p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li>
-<p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3>
-<p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li>
-<p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li>
-<p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3>
-<p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><strong>具体步骤</strong></h4>
-<ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3>
-<p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><strong>步骤</strong></h4>
-<ol>
-<li>
-<p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li>
-<p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li>
-<p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><strong>注意事项</strong></h3>
-<ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>医保</title>
-    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
-    <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
-<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
-<h2 id="一档医保报销比例">一档医保报销比例</h2>
-<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
-<h3 id="一、门诊报销比例">一、门诊报销比例</h3>
-<p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
-<ul>
-<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
-<li>二级医院报销比例：65%;</li>
-<li>三级医院报销比例：55%;</li>
-</ul>
-<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
-<h3 id="二、一档医保市内住院报销比例">二、一档医保市内住院报销比例</h3>
-<p>在一级以下医院支付比例为94%;</p>
-<p>二级医院支付比例为92%;</p>
-<p>三级医院支付比例为90%;</p>
-<p>退休人员支付比例为95%。</p>
-<p>住院起付线</p>
-<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
-<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
-<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
-<h2 id="灵活就业医保缴费标准">灵活就业医保缴费标准</h2>
-<p><img src="/.io//image.png" alt></p>
-<blockquote>
-<p>缴费金额：</p>
-</blockquote>
-<p>6733x0.02 个人余额134</p>
-<p>6733x0.07 个人缴纳医保费用471</p>
-<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
-<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
-<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
-<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
-<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
-</ul>
-<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
-<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
-<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
-</ul>
-<h2 id="门诊和住院医保报销的区别">门诊和住院医保报销的区别</h2>
-<table>
-<thead>
-<tr>
-<th>项目</th>
-<th>门诊</th>
-<th>住院</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>报销比例</td>
-<td>一般较低</td>
-<td>一般较高</td>
-</tr>
-<tr>
-<td>起付线</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>年度限额</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>报销范围</td>
-<td>诊疗费、药费、检查费等</td>
-<td>所有医疗费用</td>
-</tr>
-</tbody>
-</table>
-]]></content>
-      <categories>
-        <category>社保</category>
-      </categories>
-      <tags>
-        <tag>医保</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1>
@@ -9656,6 +9446,212 @@ Source Font File：拖入需要使用的字体</p>
 <h3 id="结论："><strong>结论：</strong></h3>
 <p>将 <strong>UnityGameFramework 插件</strong> 直接放入 <code>Assets/</code> 父级目录并通过 Git 管理，适合 <strong>小型项目</strong> 或 <strong>定制化需求高的项目</strong>，但对于 <strong>长期维护、多个项目使用的框架</strong>，使用 <strong>UPM</strong> 或 <strong>Git Submodule</strong> 等更合适，因为它们能够更好地管理框架版本、提高代码的可维护性并支持多个项目之间的共享。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>vs隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3>
+<p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><strong>步骤：自定义插件的 Assembly Definition</strong></h4>
+<ol>
+<li>
+<p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li>
+<p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li>
+<p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><strong>方法 2：修改 Unity 编辑器设置</strong></h3>
+<p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li>
+<p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li>
+<p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3>
+<p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li>
+<p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li>
+<p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3>
+<p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><strong>具体步骤</strong></h4>
+<ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3>
+<p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><strong>步骤</strong></h4>
+<ol>
+<li>
+<p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li>
+<p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li>
+<p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><strong>注意事项</strong></h3>
+<ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>医保</title>
+    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
+    <content><![CDATA[<h1>灵活就业一档医保报销政策</h1>
+<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
+<h2 id="一档医保报销比例">一档医保报销比例</h2>
+<p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
+<h3 id="一、门诊报销比例">一、门诊报销比例</h3>
+<p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
+<ul>
+<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
+<li>二级医院报销比例：65%;</li>
+<li>三级医院报销比例：55%;</li>
+</ul>
+<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
+<h3 id="二、一档医保市内住院报销比例">二、一档医保市内住院报销比例</h3>
+<p>在一级以下医院支付比例为94%;</p>
+<p>二级医院支付比例为92%;</p>
+<p>三级医院支付比例为90%;</p>
+<p>退休人员支付比例为95%。</p>
+<p>住院起付线</p>
+<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
+<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
+<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
+<h2 id="灵活就业医保缴费标准">灵活就业医保缴费标准</h2>
+<p><img src="/.io//image.png" alt></p>
+<blockquote>
+<p>缴费金额：</p>
+</blockquote>
+<p>6733x0.02 个人余额134</p>
+<p>6733x0.07 个人缴纳医保费用471</p>
+<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
+<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
+<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
+<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
+<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
+</ul>
+<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
+<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
+<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
+</ul>
+<h2 id="门诊和住院医保报销的区别">门诊和住院医保报销的区别</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>门诊</th>
+<th>住院</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>报销比例</td>
+<td>一般较低</td>
+<td>一般较高</td>
+</tr>
+<tr>
+<td>起付线</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>年度限额</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>报销范围</td>
+<td>诊疗费、药费、检查费等</td>
+<td>所有医疗费用</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>社保</category>
+      </categories>
+      <tags>
+        <tag>医保</tag>
+      </tags>
   </entry>
   <entry>
     <title>团结引擎</title>
