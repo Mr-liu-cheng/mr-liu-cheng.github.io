@@ -548,6 +548,157 @@
 ]]></content>
   </entry>
   <entry>
+    <title>GitHub + CDN</title>
+    <url>/2025/05/08/GitHub%20+%20CDN/</url>
+    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
+<hr>
+<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
+   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
+   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
+
+<ul>
+<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
+<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
+<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
+</ul>
+<hr>
+<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
+<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
+<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
+<li>获取直链：  <ul>
+<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
+<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
+<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
+</ul>
+</li>
+</ol>
+<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
+<ol>
+<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
+<li>在Cloudflare中：  <ul>
+<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
+<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
+</ul>
+</li>
+<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
+<ol>
+<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
+<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
+<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
+</ul>
+<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
+<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
+<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
+</ul>
+<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
+<li><strong>流量统计</strong>：  <ul>
+<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
+<li>在Cloudflare面板查看CDN请求数。</li>
+</ul>
+</li>
+<li><strong>防滥用</strong>：  <ul>
+<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>免费游戏试玩</strong></td>
+<td>GitHub Releases直链</td>
+<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
+</tr>
+<tr>
+<td><strong>开源项目分发</strong></td>
+<td>jsDelivr CDN</td>
+<td>必须公开仓库，适合Demo或工具类游戏。</td>
+</tr>
+<tr>
+<td><strong>商业游戏早期测试</strong></td>
+<td>Cloudflare+B2</td>
+<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
+</tr>
+<tr>
+<td><strong>大规模正式发布</strong></td>
+<td>需迁移至专业CDN&#x2F;自建</td>
+<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>存储成本</th>
+<th>流量成本（1TB下载）</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub直链</strong></td>
+<td>免费</td>
+<td>免费（但有限流风险）</td>
+<td>原型&#x2F;测试</td>
+</tr>
+<tr>
+<td><strong>Cloudflare+B2</strong></td>
+<td>$0.005&#x2F;GB&#x2F;月</td>
+<td>$10~$50</td>
+<td>小规模发布</td>
+</tr>
+<tr>
+<td><strong>AWS S3+CloudFront</strong></td>
+<td>$0.023&#x2F;GB&#x2F;月</td>
+<td>$85~$120</td>
+<td>中等规模</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
+<ol>
+<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
+<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
+<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
+</ol>
+<p>此方案适合：  </p>
+<ul>
+<li>独立开发者验证游戏热度。  </li>
+<li>开源项目或免费游戏分发。  </li>
+<li>规避早期服务器运维成本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GitHub,CDN</category>
+      </categories>
+      <tags>
+        <tag>GitHub,CDN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1016,157 +1167,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>GitHub + CDN</title>
-    <url>/2025/05/08/GitHub%20+%20CDN/</url>
-    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
-<hr>
-<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
-   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
-   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
-   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
-   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
-
-<ul>
-<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
-<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
-<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
-</ul>
-<hr>
-<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
-<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
-<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
-<li>获取直链：  <ul>
-<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
-<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
-<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
-</ul>
-</li>
-</ol>
-<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
-<ol>
-<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
-<li>在Cloudflare中：  <ul>
-<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
-<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
-</ul>
-</li>
-<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
-<ol>
-<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
-<ul>
-<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
-<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
-<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
-</ul>
-<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
-<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
-<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
-</ul>
-<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
-<li><strong>流量统计</strong>：  <ul>
-<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
-<li>在Cloudflare面板查看CDN请求数。</li>
-</ul>
-</li>
-<li><strong>防滥用</strong>：  <ul>
-<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐方案</th>
-<th>注意事项</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>免费游戏试玩</strong></td>
-<td>GitHub Releases直链</td>
-<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
-</tr>
-<tr>
-<td><strong>开源项目分发</strong></td>
-<td>jsDelivr CDN</td>
-<td>必须公开仓库，适合Demo或工具类游戏。</td>
-</tr>
-<tr>
-<td><strong>商业游戏早期测试</strong></td>
-<td>Cloudflare+B2</td>
-<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
-</tr>
-<tr>
-<td><strong>大规模正式发布</strong></td>
-<td>需迁移至专业CDN&#x2F;自建</td>
-<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
-<thead>
-<tr>
-<th>方案</th>
-<th>存储成本</th>
-<th>流量成本（1TB下载）</th>
-<th>适用阶段</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GitHub直链</strong></td>
-<td>免费</td>
-<td>免费（但有限流风险）</td>
-<td>原型&#x2F;测试</td>
-</tr>
-<tr>
-<td><strong>Cloudflare+B2</strong></td>
-<td>$0.005&#x2F;GB&#x2F;月</td>
-<td>$10~$50</td>
-<td>小规模发布</td>
-</tr>
-<tr>
-<td><strong>AWS S3+CloudFront</strong></td>
-<td>$0.023&#x2F;GB&#x2F;月</td>
-<td>$85~$120</td>
-<td>中等规模</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
-<ol>
-<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
-<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
-<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
-</ol>
-<p>此方案适合：  </p>
-<ul>
-<li>独立开发者验证游戏热度。  </li>
-<li>开源项目或免费游戏分发。  </li>
-<li>规避早期服务器运维成本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GitHub,CDN</category>
-      </categories>
-      <tags>
-        <tag>GitHub,CDN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitHub Actions 没有触发的核心原因</title>
     <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
     <content><![CDATA[<p>谢谢提供路径信息。</p>
@@ -1522,199 +1522,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏后端自动化部署流程</title>
-    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>CI&#x2F;CD 核心调度平台</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>代码版本管理（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>Docker</strong></td>
-<td>容器化部署（可选）</td>
-</tr>
-<tr>
-<td><strong>Kubernetes (K8s)</strong></td>
-<td>容器编排（适用于分布式后端）</td>
-</tr>
-<tr>
-<td><strong>构建工具</strong></td>
-<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
-<thead>
-<tr>
-<th>插件</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker Plugin</strong></td>
-<td>构建 Docker 镜像</td>
-</tr>
-<tr>
-<td><strong>Kubernetes Plugin</strong></td>
-<td>部署到 K8s</td>
-</tr>
-<tr>
-<td><strong>Pipeline</strong></td>
-<td>定义 CI&#x2F;CD 流程</td>
-</tr>
-<tr>
-<td><strong>Publish Over SSH</strong></td>
-<td>远程服务器部署</td>
-</tr>
-<tr>
-<td><strong>SonarQube Scanner</strong></td>
-<td>代码质量检测（可选）</td>
-</tr>
-</tbody></table>
-<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
-<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
-<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
-<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
-</ul>
-<hr>
-<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
-<thead>
-<tr>
-<th>语言</th>
-<th>构建命令</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Java (Maven)</strong></td>
-<td><code>mvn clean package -DskipTests</code></td>
-</tr>
-<tr>
-<td><strong>Go</strong></td>
-<td><code>go build -o bin/server ./cmd/server</code></td>
-</tr>
-<tr>
-<td><strong>Python</strong></td>
-<td><code>pip install -r requirements.txt</code></td>
-</tr>
-</tbody></table>
-<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
-<thead>
-<tr>
-<th>部署方式</th>
-<th>适用场景</th>
-<th>Jenkins 配置</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>SSH 直接部署</strong></td>
-<td>传统服务器</td>
-<td>使用 <code>Publish Over SSH</code> 插件</td>
-</tr>
-<tr>
-<td><strong>Docker Swarm</strong></td>
-<td>小型集群</td>
-<td><code>docker stack deploy</code></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>生产级集群</td>
-<td><code>kubectl set image</code> 或 Helm</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Prometheus + Grafana</strong></td>
-<td>监控服务性能</td>
-</tr>
-<tr>
-<td><strong>Kibana</strong></td>
-<td>日志分析</td>
-</tr>
-<tr>
-<td><strong>Jenkins 回滚脚本</strong></td>
-<td>快速回退到旧版本</td>
-</tr>
-</tbody></table>
-<p><strong>回滚示例</strong>：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>排查方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker 构建失败</strong></td>
-<td>检查 <code>Dockerfile</code> 和构建日志</td>
-</tr>
-<tr>
-<td><strong>K8s 部署超时</strong></td>
-<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
-</tr>
-<tr>
-<td><strong>微服务通信异常</strong></td>
-<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
-<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
-<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
-</ul>
-<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -3044,6 +2851,199 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Jenkins 游戏后端自动化部署流程</title>
+    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>CI&#x2F;CD 核心调度平台</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>代码版本管理（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>容器化部署（可选）</td>
+</tr>
+<tr>
+<td><strong>Kubernetes (K8s)</strong></td>
+<td>容器编排（适用于分布式后端）</td>
+</tr>
+<tr>
+<td><strong>构建工具</strong></td>
+<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker Plugin</strong></td>
+<td>构建 Docker 镜像</td>
+</tr>
+<tr>
+<td><strong>Kubernetes Plugin</strong></td>
+<td>部署到 K8s</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>定义 CI&#x2F;CD 流程</td>
+</tr>
+<tr>
+<td><strong>Publish Over SSH</strong></td>
+<td>远程服务器部署</td>
+</tr>
+<tr>
+<td><strong>SonarQube Scanner</strong></td>
+<td>代码质量检测（可选）</td>
+</tr>
+</tbody></table>
+<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
+<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
+<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
+<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+</ul>
+<hr>
+<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
+<thead>
+<tr>
+<th>语言</th>
+<th>构建命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Java (Maven)</strong></td>
+<td><code>mvn clean package -DskipTests</code></td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td><code>go build -o bin/server ./cmd/server</code></td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td><code>pip install -r requirements.txt</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
+<thead>
+<tr>
+<th>部署方式</th>
+<th>适用场景</th>
+<th>Jenkins 配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SSH 直接部署</strong></td>
+<td>传统服务器</td>
+<td>使用 <code>Publish Over SSH</code> 插件</td>
+</tr>
+<tr>
+<td><strong>Docker Swarm</strong></td>
+<td>小型集群</td>
+<td><code>docker stack deploy</code></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>生产级集群</td>
+<td><code>kubectl set image</code> 或 Helm</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Prometheus + Grafana</strong></td>
+<td>监控服务性能</td>
+</tr>
+<tr>
+<td><strong>Kibana</strong></td>
+<td>日志分析</td>
+</tr>
+<tr>
+<td><strong>Jenkins 回滚脚本</strong></td>
+<td>快速回退到旧版本</td>
+</tr>
+</tbody></table>
+<p><strong>回滚示例</strong>：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker 构建失败</strong></td>
+<td>检查 <code>Dockerfile</code> 和构建日志</td>
+</tr>
+<tr>
+<td><strong>K8s 部署超时</strong></td>
+<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+</tr>
+<tr>
+<td><strong>微服务通信异常</strong></td>
+<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
+<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
+<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+</ul>
+<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Jenkins 游戏打包部署流程</title>
     <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
@@ -4163,7 +4163,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#x2e;&#117;&#x6e;&#105;&#x74;&#121;&#x2e;&#x63;&#111;&#108;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#111;&#120;&#121;&#64;&#x32;&#46;&#54;&#46;&#48;">&#x63;&#x6f;&#x6d;&#x2e;&#117;&#x6e;&#105;&#x74;&#121;&#x2e;&#x63;&#111;&#108;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#111;&#120;&#121;&#64;&#x32;&#46;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#109;&#x2e;&#x75;&#110;&#x69;&#116;&#121;&#x2e;&#x63;&#111;&#x6c;&#108;&#x61;&#98;&#45;&#112;&#114;&#111;&#120;&#x79;&#x40;&#x32;&#46;&#x36;&#x2e;&#48;">&#99;&#111;&#109;&#x2e;&#x75;&#110;&#x69;&#116;&#121;&#x2e;&#x63;&#111;&#x6c;&#108;&#x61;&#98;&#45;&#112;&#114;&#111;&#120;&#x79;&#x40;&#x32;&#46;&#x36;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5813,71 +5813,6 @@
       </tags>
   </entry>
   <entry>
-    <title>hexo添加标签样式</title>
-    <url>/2024/12/15/hexo%E6%B7%BB%E5%8A%A0%E6%A0%87%E7%AD%BE%E6%A0%B7%E5%BC%8F/</url>
-    <content><![CDATA[<p>在 <strong>Hexo Butterfly</strong>  主题中，由于 Markdown 文件中的代码会经过 Hexo 的解析后转换为 HTML，而 HTML 的样式需要依赖主题中的 CSS 文件，直接嵌入的 TailwindCSS 或自定义 CSS 可能无法生效。如果你希望在 Hexo 中生效样式，可以尝试以下方法：</p>
-<h2 id="解决方法-1：使用行内样式-style-属性"><a href="#解决方法-1：使用行内样式-style-属性" class="headerlink" title="解决方法 1：使用行内样式 (style 属性)"></a>解决方法 1：使用行内样式 (style 属性)</h2><p>在 Hexo Markdown 中，直接使用 HTML 的 <code>style</code> 属性为每个标签设置样式。这种方法不依赖外部 CSS 文件，可以确保样式生效。<br>示例： </p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方法-2：在主题配置中添加自定义-CSS"><a href="#解决方法-2：在主题配置中添加自定义-CSS" class="headerlink" title="解决方法 2：在主题配置中添加自定义 CSS"></a>解决方法 2：在主题配置中添加自定义 CSS</h2><p>步骤：</p>
-<ol>
-<li><p><strong>找到 Butterfly 主题的 CSS 文件：</strong><br>通常在 <code>source/css/_custom.css</code> 或 <code>source/_data/styles.styl</code> 中可以添加自定义样式。</p>
-</li>
-<li><p><strong>添加样式：</strong></p>
-</li>
-</ol>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span><br><span class="line">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span><br><span class="line">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">text-align</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li><strong>在 Markdown 文件中使用：</strong></li>
-</ol>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方法-3：使用-Hexo-的-标签"><a href="#解决方法-3：使用-Hexo-的-标签" class="headerlink" title="解决方法 3：使用 Hexo 的 &lt;style&gt; 标签"></a>解决方法 3：使用 Hexo 的 <code>&lt;style&gt;</code> 标签</h2><p>如果不想全局修改，只想在某一篇文章中生效样式，可以直接在 Markdown 文件中添加 <code>&lt;style&gt;</code> 标签。<br>示例： </p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: inline-block;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>注意：<br><code>&lt;style&gt;</code> 标签必须写在文章的 HTML 部分中，不能直接用在纯 Markdown 语法中。</p>
-<h2 id="解决方法-4：通过-Butterfly-的自定义组件功能"><a href="#解决方法-4：通过-Butterfly-的自定义组件功能" class="headerlink" title="解决方法 4：通过 Butterfly 的自定义组件功能"></a>解决方法 4：通过 Butterfly 的自定义组件功能</h2><p> Butterfly 主题支持自定义 <code>shortcode</code> 或 <strong>Nunjucks 模板</strong> ，可以在配置中添加一个通用组件。<br>步骤：</p>
-<ol>
-<li><p><strong>在 Butterfly 的 <code>source/_data</code> 中创建 <code>custom.swig</code> 文件（如果不存在）。</strong></p>
-</li>
-<li><p><strong>定义一个标签模板：</strong></p>
-</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;% for skill in skills %&#125;</span><br><span class="line">    &lt;span class=&quot;tag&quot; style=&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;&gt;&#123;&#123; skill &#125;&#125;&lt;/span&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li><strong>在 Markdown 文件中使用：</strong></li>
-</ol>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&#123;% custom skills=[&quot;Next&quot;, &quot;Plasmo&quot;, &quot;Typescript&quot;, &quot;Supabase&quot;, &quot;TailwindCSS&quot;] %&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong> </p>
-<hr>
-<p>如果样式完全无法生效，建议先检查以下内容：</p>
-<ol>
-<li><p>Markdown 文件是否启用了 HTML 渲染（Hexo 默认支持）。</p>
-</li>
-<li><p>自定义样式是否被主题的全局样式覆盖，可以用浏览器调试工具检查。</p>
-</li>
-<li><p>如果是 TailwindCSS，确保它已集成到 Butterfly 主题中。优先推荐 <strong>方法 2</strong>（主题配置中添加 CSS）或 <strong>方法 3</strong>（文章中嵌入 <code>&lt;style&gt;</code> 标签），这些方法既灵活又能避免重复代码。</p>
-</li>
-</ol>
-<blockquote>
-<p>样式效果</p>
-</blockquote>
-<div class="skill-tags">
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">效果一</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Plasmo</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Typescript</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Supabase</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">TailwindCSS</span>
-</div>]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo 疑难杂症</title>
     <url>/2024/12/28/hexo%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/</url>
     <content><![CDATA[<h2 id="butterfly通过样式隐藏页脚"><a href="#butterfly通过样式隐藏页脚" class="headerlink" title="butterfly通过样式隐藏页脚"></a>butterfly通过样式隐藏页脚</h2><p>如果配置文件没有提供选项，可以通过 CSS 隐藏页脚区域。<br>打开或创建 source&#x2F;css&#x2F;_layout&#x2F;footer.styl 文件。</p>
@@ -6014,6 +5949,162 @@
       <tags>
         <tag>butterfly</tag>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo添加标签样式</title>
+    <url>/2024/12/15/hexo%E6%B7%BB%E5%8A%A0%E6%A0%87%E7%AD%BE%E6%A0%B7%E5%BC%8F/</url>
+    <content><![CDATA[<p>在 <strong>Hexo Butterfly</strong>  主题中，由于 Markdown 文件中的代码会经过 Hexo 的解析后转换为 HTML，而 HTML 的样式需要依赖主题中的 CSS 文件，直接嵌入的 TailwindCSS 或自定义 CSS 可能无法生效。如果你希望在 Hexo 中生效样式，可以尝试以下方法：</p>
+<h2 id="解决方法-1：使用行内样式-style-属性"><a href="#解决方法-1：使用行内样式-style-属性" class="headerlink" title="解决方法 1：使用行内样式 (style 属性)"></a>解决方法 1：使用行内样式 (style 属性)</h2><p>在 Hexo Markdown 中，直接使用 HTML 的 <code>style</code> 属性为每个标签设置样式。这种方法不依赖外部 CSS 文件，可以确保样式生效。<br>示例： </p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法-2：在主题配置中添加自定义-CSS"><a href="#解决方法-2：在主题配置中添加自定义-CSS" class="headerlink" title="解决方法 2：在主题配置中添加自定义 CSS"></a>解决方法 2：在主题配置中添加自定义 CSS</h2><p>步骤：</p>
+<ol>
+<li><p><strong>找到 Butterfly 主题的 CSS 文件：</strong><br>通常在 <code>source/css/_custom.css</code> 或 <code>source/_data/styles.styl</code> 中可以添加自定义样式。</p>
+</li>
+<li><p><strong>添加样式：</strong></p>
+</li>
+</ol>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span><br><span class="line">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span><br><span class="line">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">text-align</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><strong>在 Markdown 文件中使用：</strong></li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法-3：使用-Hexo-的-标签"><a href="#解决方法-3：使用-Hexo-的-标签" class="headerlink" title="解决方法 3：使用 Hexo 的 &lt;style&gt; 标签"></a>解决方法 3：使用 Hexo 的 <code>&lt;style&gt;</code> 标签</h2><p>如果不想全局修改，只想在某一篇文章中生效样式，可以直接在 Markdown 文件中添加 <code>&lt;style&gt;</code> 标签。<br>示例： </p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: inline-block;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：<br><code>&lt;style&gt;</code> 标签必须写在文章的 HTML 部分中，不能直接用在纯 Markdown 语法中。</p>
+<h2 id="解决方法-4：通过-Butterfly-的自定义组件功能"><a href="#解决方法-4：通过-Butterfly-的自定义组件功能" class="headerlink" title="解决方法 4：通过 Butterfly 的自定义组件功能"></a>解决方法 4：通过 Butterfly 的自定义组件功能</h2><p> Butterfly 主题支持自定义 <code>shortcode</code> 或 <strong>Nunjucks 模板</strong> ，可以在配置中添加一个通用组件。<br>步骤：</p>
+<ol>
+<li><p><strong>在 Butterfly 的 <code>source/_data</code> 中创建 <code>custom.swig</code> 文件（如果不存在）。</strong></p>
+</li>
+<li><p><strong>定义一个标签模板：</strong></p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;% for skill in skills %&#125;</span><br><span class="line">    &lt;span class=&quot;tag&quot; style=&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;&gt;&#123;&#123; skill &#125;&#125;&lt;/span&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><strong>在 Markdown 文件中使用：</strong></li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&#123;% custom skills=[&quot;Next&quot;, &quot;Plasmo&quot;, &quot;Typescript&quot;, &quot;Supabase&quot;, &quot;TailwindCSS&quot;] %&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong> </p>
+<hr>
+<p>如果样式完全无法生效，建议先检查以下内容：</p>
+<ol>
+<li><p>Markdown 文件是否启用了 HTML 渲染（Hexo 默认支持）。</p>
+</li>
+<li><p>自定义样式是否被主题的全局样式覆盖，可以用浏览器调试工具检查。</p>
+</li>
+<li><p>如果是 TailwindCSS，确保它已集成到 Butterfly 主题中。优先推荐 <strong>方法 2</strong>（主题配置中添加 CSS）或 <strong>方法 3</strong>（文章中嵌入 <code>&lt;style&gt;</code> 标签），这些方法既灵活又能避免重复代码。</p>
+</li>
+</ol>
+<blockquote>
+<p>样式效果</p>
+</blockquote>
+<div class="skill-tags">
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">效果一</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Plasmo</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Typescript</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Supabase</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">TailwindCSS</span>
+</div>]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
       </tags>
   </entry>
   <entry>
@@ -6921,97 +7012,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
     <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
     <content><![CDATA[<ol>
@@ -7413,6 +7413,220 @@
       </tags>
   </entry>
   <entry>
+    <title>unity插件导入方式</title>
+    <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣"><a href="#Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣" class="headerlink" title="Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣"></a><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1><p>在 Unity 中导入插件主要有两种方式：  </p>
+<ol>
+<li><strong>UPM（Unity Package Manager）形式导入</strong>  </li>
+<li><strong>传统 Package 形式（直接拷贝到 <code>Assets/</code> 目录）</strong></li>
+</ol>
+<p>它们各有优势和适用场景，下面详细对比一下。  </p>
+<hr>
+<h2 id="🔹-UPM-形式导入（Unity-Package-Manager）"><a href="#🔹-UPM-形式导入（Unity-Package-Manager）" class="headerlink" title="🔹 UPM 形式导入（Unity Package Manager）"></a><strong>🔹 UPM 形式导入（Unity Package Manager）</strong></h2><h3 id="✅-优势："><a href="#✅-优势：" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ul>
+<li><strong>版本管理</strong>：可以通过 <code>Packages/manifest.json</code> 直接管理插件版本，方便回退和升级。  </li>
+<li><strong>依赖管理</strong>：UPM 会自动解析插件的依赖项，避免手动安装额外的库或 DLL 文件。  </li>
+<li><strong>项目更整洁</strong>：导入的插件存放在 <code>Packages/</code> 目录下，不会污染 <code>Assets/</code> 目录，使项目结构更清晰。  </li>
+<li><strong>便捷更新</strong>：可以直接从 Unity Registry、Git 或本地路径安装和更新插件，不需要手动替换文件。  </li>
+<li><strong>团队协作</strong>：Git 版本控制时，只需要提交 <code>manifest.json</code>，无需提交整个插件代码，减少代码库体积。</li>
+</ul>
+<h3 id="❌-缺点："><a href="#❌-缺点：" class="headerlink" title="❌ 缺点："></a><strong>❌ 缺点：</strong></h3><ul>
+<li><strong>离线访问受限</strong>：如果插件是从 Unity Registry 或 Git 拉取的，可能需要联网才能安装。  </li>
+<li><strong>本地修改麻烦</strong>：UPM 目录默认是“只读”的，想要修改插件代码需要额外步骤（可以通过 <code>Packages</code> 目录手动调整或克隆到 <code>Assets</code>）。</li>
+</ul>
+<hr>
+<h2 id="🔹-传统-Package-形式导入（直接放入-Assets-）"><a href="#🔹-传统-Package-形式导入（直接放入-Assets-）" class="headerlink" title="🔹 传统 Package 形式导入（直接放入 Assets/）"></a><strong>🔹 传统 Package 形式导入（直接放入 <code>Assets/</code>）</strong></h2><h3 id="✅-优势：-1"><a href="#✅-优势：-1" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ul>
+<li><strong>即拿即用</strong>：直接拷贝到 <code>Assets/</code> 目录，无需依赖网络，适合不支持 UPM 的插件。  </li>
+<li><strong>易于修改</strong>：插件源码就在项目里，可以直接修改、调试，适合二次开发。  </li>
+<li><strong>适配旧版本</strong>：某些老旧插件或第三方工具可能没有 UPM 支持，传统方式更适合。</li>
+</ul>
+<h3 id="❌-缺点：-1"><a href="#❌-缺点：-1" class="headerlink" title="❌ 缺点："></a><strong>❌ 缺点：</strong></h3><ul>
+<li><strong>难以管理版本</strong>：升级插件时可能需要手动删除旧版本并重新导入，容易导致版本混乱。  </li>
+<li><strong>项目污染</strong>：所有插件代码和资源混在 <code>Assets/</code> 目录，项目一大就变得难以维护。  </li>
+<li><strong>依赖问题</strong>：如果插件需要额外的 DLL 或依赖库，可能需要手动配置，增加维护成本。</li>
+</ul>
+<hr>
+<h2 id="🔹-哪种方式更适合？"><a href="#🔹-哪种方式更适合？" class="headerlink" title="🔹 哪种方式更适合？"></a><strong>🔹 哪种方式更适合？</strong></h2><table>
+<thead>
+<tr>
+<th>适用场景</th>
+<th>UPM 形式导入</th>
+<th>传统 Package 形式导入</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>插件版本管理</strong></td>
+<td>✅ 自动管理版本，可回退</td>
+<td>❌ 需要手动删除和更新</td>
+</tr>
+<tr>
+<td><strong>依赖管理</strong></td>
+<td>✅ 自动解析依赖项</td>
+<td>❌ 可能需要手动配置</td>
+</tr>
+<tr>
+<td><strong>项目结构整洁</strong></td>
+<td>✅ 插件放 <code>Packages/</code> 目录</td>
+<td>❌ 插件和代码混在 <code>Assets/</code></td>
+</tr>
+<tr>
+<td><strong>网络依赖</strong></td>
+<td>❌ 可能需要联网安装</td>
+<td>✅ 完全离线使用</td>
+</tr>
+<tr>
+<td><strong>源码修改</strong></td>
+<td>❌ 需要手动克隆到 <code>Assets/</code></td>
+<td>✅ 直接修改</td>
+</tr>
+<tr>
+<td><strong>团队协作</strong></td>
+<td>✅ Git 只需同步 <code>manifest.json</code></td>
+<td>❌ 插件代码需要提交到 Git</td>
+</tr>
+</tbody></table>
+<h3 id="📌-结论："><a href="#📌-结论：" class="headerlink" title="📌 结论："></a><strong>📌 结论：</strong></h3><ul>
+<li><strong>如果插件支持 UPM，并且你不需要修改源码</strong>，建议使用 <strong>UPM</strong>，这样可以更好地管理版本和依赖，保持项目整洁。  </li>
+<li><strong>如果插件不支持 UPM，或者你需要修改源码、进行二次开发</strong>，传统的 <code>Assets/</code> 方式更合适。</li>
+</ul>
+<h1 id="Git-本地-UPM（与游戏业务逻辑分开管理版本）"><a href="#Git-本地-UPM（与游戏业务逻辑分开管理版本）" class="headerlink" title="Git + 本地 UPM（与游戏业务逻辑分开管理版本）"></a>Git + 本地 UPM（与游戏业务逻辑分开管理版本）</h1><p>使用 <strong>Git + 本地 UPM</strong> 方式管理 <strong>UnityGameFramework 插件</strong> 是一个非常灵活且高效的方式，尤其适合你想要自定义框架或保持插件版本控制的情况。这样你既能通过 Git 管理插件版本，又能通过 <strong>Unity Package Manager (UPM)</strong> 管理项目依赖。</p>
+<h3 id="如何实现-Git-本地-UPM-管理-UnityGameFramework-插件"><a href="#如何实现-Git-本地-UPM-管理-UnityGameFramework-插件" class="headerlink" title="如何实现 Git + 本地 UPM 管理 UnityGameFramework 插件"></a><strong>如何实现 Git + 本地 UPM 管理 UnityGameFramework 插件</strong></h3><h4 id="步骤-1：使用-Git-管理-UnityGameFramework-插件"><a href="#步骤-1：使用-Git-管理-UnityGameFramework-插件" class="headerlink" title="步骤 1：使用 Git 管理 UnityGameFramework 插件"></a><strong>步骤 1：使用 Git 管理 UnityGameFramework 插件</strong></h4><p>首先，假设你已经将 <strong>UnityGameFramework</strong> 插件仓库克隆到本地，并且想将其作为 <strong>UPM 本地包</strong> 引入你的 Unity 项目。</p>
+<ol>
+<li><p><strong>克隆 UnityGameFramework 插件仓库到本地：</strong><br>在你的工作目录下，克隆 UnityGameFramework 插件仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/UnityGameFramework/UnityGameFramework.git D:/UnityGameFramework</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>初始化和更新子模块</strong>（如果插件使用了 Git 子模块）：<br>如果插件仓库使用了子模块，确保你已经初始化并更新子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="步骤-2：配置本地-UPM-包"><a href="#步骤-2：配置本地-UPM-包" class="headerlink" title="步骤 2：配置本地 UPM 包"></a><strong>步骤 2：配置本地 UPM 包</strong></h4><ol>
+<li><p><strong>修改主项目的 <code>manifest.json</code> 文件</strong>：<br>你需要修改 Unity 项目的 <code>Packages/manifest.json</code> 文件，将本地 UnityGameFramework 插件作为依赖项添加到其中。打开 <code>manifest.json</code> 文件，在 <code>&quot;dependencies&quot;</code> 部分加入你的本地路径。</p>
+<p>假设你已经将 UnityGameFramework 插件克隆到 <code>D:/UnityGameFramework</code>，那么可以这样添加：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;dependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;com.gameframework&quot;</span><span class="punctuation">:</span> <span class="string">&quot;file:D:/UnityGameFramework&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这会告诉 Unity 从你本地的 <code>D:/UnityGameFramework</code> 路径加载 UnityGameFramework 插件。</p>
+</li>
+<li><p><strong>检查文件夹结构</strong>：<br>确保本地的 UnityGameFramework 插件目录结构符合 UPM 的要求。插件根目录下应该包含 <code>package.json</code> 文件，这是 UPM 识别包的必要文件。如果没有，你可以参考其他 UPM 包的结构，手动添加或修改。</p>
+<p>插件的基本结构应该类似于：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">UnityGameFramework/</span><br><span class="line">├── package.json</span><br><span class="line">├── Runtime/</span><br><span class="line">├── Editor/</span><br><span class="line">└── Documentation~</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>package.json</code> 文件中，你需要指定插件的版本号、名称和其他元数据，例如：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;com.gameframework&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;displayName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Unity Game Framework&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A lightweight game framework for Unity.&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;unity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2021.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;dependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="步骤-3：同步本地插件更新"><a href="#步骤-3：同步本地插件更新" class="headerlink" title="步骤 3：同步本地插件更新"></a><strong>步骤 3：同步本地插件更新</strong></h4><ol>
+<li><p><strong>从 Git 更新插件</strong>：<br>当你想要更新本地 UnityGameFramework 插件时，只需要在插件目录下拉取最新的代码：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> D:/UnityGameFramework</span><br><span class="line">git pull origin main</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>提交更新到主项目</strong>：<br>如果更新了插件的代码，记得返回主项目目录并提交子模块的更新，确保每个团队成员都使用相同版本的插件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework to the latest version&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>检查并确保本地插件的依赖正确</strong>：<br>每次更新插件时，确保你没有遗漏插件依赖的任何库或组件。如果插件有额外的资源，检查是否需要重新导入或更新。</p>
+</li>
+</ol>
+<h4 id="步骤-4：团队协作和版本控制"><a href="#步骤-4：团队协作和版本控制" class="headerlink" title="步骤 4：团队协作和版本控制"></a><strong>步骤 4：团队协作和版本控制</strong></h4><ol>
+<li><p><strong>共享插件版本</strong>：<br>团队成员需要确保他们的本地仓库和主项目仓库同步。如果你通过 Git 管理子模块，也可以通过 Git 子模块来同步插件的更新：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>推送主项目和插件更改</strong>：<br>更新完插件或修改完主项目后，推送主项目的更改：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push origin main</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>克隆项目时使用本地 UPM 插件</strong>：<br>当团队成员克隆项目时，他们只需要确保从 Git 拉取子模块并更新本地插件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a><strong>优点：</strong></h2><ol>
+<li><p><strong>版本控制管理：</strong><br>通过 Git，你可以管理 UnityGameFramework 插件的所有版本，轻松回滚到以前的版本或者与主项目同步最新代码。</p>
+</li>
+<li><p><strong>本地开发和修改：</strong><br>如果需要对插件进行定制或修改，你可以在本地修改框架代码，并将其提交到 Git 仓库，不会影响主项目的其他代码。</p>
+</li>
+<li><p><strong>清晰的项目结构：</strong><br>使用 UPM 将插件管理与项目代码解耦，保持项目的清洁和组织性，同时支持本地路径方式，避免了直接将框架代码嵌入到 <code>Assets/</code> 目录中。</p>
+</li>
+<li><p><strong>支持多人协作：</strong><br>团队成员可以通过 Git 子模块或 <code>manifest.json</code> 文件统一插件版本，避免了因版本不一致而产生的错误。</p>
+</li>
+<li><p><strong>插件更新便捷：</strong><br>每次更新插件时，只需要在主项目中执行 <code>git submodule update --remote</code> 即可轻松更新到插件的最新版本。</p>
+</li>
+</ol>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>使用 <strong>Git + 本地 UPM</strong> 管理 <strong>UnityGameFramework 插件</strong> 可以充分利用 Git 的版本控制和 UPM 的包管理功能。它让你能够灵活管理插件版本，同时保持项目结构的清洁，便于多人协作和框架定制。对于需要自定义的插件或长期维护的项目，Git + 本地 UPM 方式是一个非常强大且方便的选择。</p>
+<p>如果有具体操作上的问题或者想进一步了解如何处理更新、团队协作等，随时告诉我！😊</p>
+<h1 id="Git-UPM-统一管理版本"><a href="#Git-UPM-统一管理版本" class="headerlink" title="Git + UPM (统一管理版本)"></a>Git + UPM (统一管理版本)</h1><p>将 <strong>UnityGameFramework 插件</strong> 拷贝到Assets父级目录中，这样既不会污染Assets，同时还让游戏框架的代码随工程项目一起，提交git,但是不能控制框架代码的版本。</p>
+<p>将 <strong>UnityGameFramework 插件</strong> 拷贝到 <code>Assets</code> 父级目录中，并通过 <strong>Git</strong> 管理项目代码，而不使用 <strong>UPM</strong> 形式的方式，确实是一种常见的做法。它有一些优点，但也存在一些明显的缺点。下面我们详细分析一下这种做法的 <strong>好处</strong> 和 <strong>问题</strong>。</p>
+<hr>
+<h2 id="优点：-1"><a href="#优点：-1" class="headerlink" title="优点："></a><strong>优点：</strong></h2><h3 id="1-框架代码与项目代码一起管理"><a href="#1-框架代码与项目代码一起管理" class="headerlink" title="1. 框架代码与项目代码一起管理"></a><strong>1. 框架代码与项目代码一起管理</strong></h3><ul>
+<li><strong>紧密集成</strong>：插件代码和游戏项目代码在同一 Git 仓库中管理，便于团队开发时统一管理和控制，不需要考虑 UPM 形式的插件版本和依赖问题。</li>
+<li><strong>简化流程</strong>：在项目中直接修改框架代码非常方便，避免了使用 UPM 需要克隆或额外管理的步骤，开发者可以直接在 <code>Assets/</code> 目录修改和调试插件代码。</li>
+</ul>
+<h3 id="2-版本控制与跟踪"><a href="#2-版本控制与跟踪" class="headerlink" title="2. 版本控制与跟踪"></a><strong>2. 版本控制与跟踪</strong></h3><ul>
+<li><strong>直接版本控制</strong>：将插件直接集成到项目代码库，可以跟随项目一起提交和更新。每个修改都可以进行版本控制，且可以在项目更新时同步更新框架代码。</li>
+<li><strong>Git 提交</strong>：由于框架和项目代码在同一仓库，所有修改都可以一起提交和同步，避免了手动管理框架版本的问题。</li>
+</ul>
+<h3 id="3-便于调试和定制"><a href="#3-便于调试和定制" class="headerlink" title="3. 便于调试和定制"></a><strong>3. 便于调试和定制</strong></h3><ul>
+<li><strong>直接修改框架代码</strong>：如果需要修改框架的实现或调试某个功能，可以直接在 <code>Assets/</code> 目录中找到相关代码，修改时不需要额外处理包管理。</li>
+<li><strong>定制化更方便</strong>：你可以更轻松地根据项目需求定制游戏框架，无需担心 UPM 形式插件的限制。</li>
+</ul>
+<h3 id="4-没有外部依赖"><a href="#4-没有外部依赖" class="headerlink" title="4. 没有外部依赖"></a><strong>4. 没有外部依赖</strong></h3><ul>
+<li><strong>无需网络依赖</strong>：不像 UPM 需要通过网络拉取插件，所有的框架代码都存储在本地，项目可以完全离线工作，避免了网络问题对开发环境的影响。</li>
+<li><strong>简单易用</strong>：这种方法相对简单，特别是在 Unity 的较旧版本中，可能没有完全集成 UPM 系统。</li>
+</ul>
+<hr>
+<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a><strong>缺点：</strong></h2><h3 id="1-不能轻松管理框架版本"><a href="#1-不能轻松管理框架版本" class="headerlink" title="1. 不能轻松管理框架版本"></a><strong>1. 不能轻松管理框架版本</strong></h3><ul>
+<li><strong>版本控制缺失</strong>：将框架代码直接包含在项目中，你无法像 UPM 那样轻松地管理插件的版本（回滚、更新、替换等）。如果框架代码发生更新，你需要手动更新并提交，而这可能导致多个项目中框架版本不一致。</li>
+<li><strong>手动管理更新</strong>：每次框架有更新时，需要手动获取新版本，直接替换或合并代码。没有 UPM 那样的包管理系统，更新流程更容易出错。</li>
+</ul>
+<h3 id="2-项目结构可能变得混乱"><a href="#2-项目结构可能变得混乱" class="headerlink" title="2. 项目结构可能变得混乱"></a><strong>2. 项目结构可能变得混乱</strong></h3><ul>
+<li><strong><code>Assets/</code> 目录可能污染</strong>：框架代码存放在项目的 <code>Assets/</code> 目录外面，虽然不会直接污染 <code>Assets/</code> 目录，但可能会导致项目文件夹结构变得复杂，尤其是当框架代码需要频繁更新和修改时。</li>
+<li><strong>文件夹管理问题</strong>：将框架代码放在 <code>Assets</code> 父级目录下，可能会导致一些资源或脚本文件和项目的其他部分混杂，影响项目管理和可维护性，尤其是大型项目。</li>
+</ul>
+<h3 id="3-难以与其他项目共享框架"><a href="#3-难以与其他项目共享框架" class="headerlink" title="3. 难以与其他项目共享框架"></a><strong>3. 难以与其他项目共享框架</strong></h3><ul>
+<li><strong>无法轻松复用</strong>：如果你在多个项目中都使用同一个框架，每次更新框架代码时，你需要手动同步到每个项目中。这比起 UPM 的方式要麻烦得多，尤其是在框架更新频繁时。</li>
+<li><strong>跨项目依赖管理复杂</strong>：无法通过 Git 子模块、UPM 等方式方便地共享框架代码，这使得跨多个项目的框架维护变得更复杂。</li>
+</ul>
+<h3 id="4-框架与主项目耦合"><a href="#4-框架与主项目耦合" class="headerlink" title="4. 框架与主项目耦合"></a><strong>4. 框架与主项目耦合</strong></h3><ul>
+<li><strong>框架修改难以隔离</strong>：框架和主项目代码紧密耦合，难以做到框架代码和主项目代码的解耦。即使你修改框架代码，这些修改也会直接影响主项目，可能会导致框架变更与主项目变更之间的混淆。</li>
+</ul>
+<h3 id="5-不易维护长期项目"><a href="#5-不易维护长期项目" class="headerlink" title="5. 不易维护长期项目"></a><strong>5. 不易维护长期项目</strong></h3><ul>
+<li><strong>长期维护困难</strong>：当框架代码在多个项目中频繁使用时，版本更新和维护的工作量会增加，尤其是涉及到 bug 修复或框架功能扩展时。你可能需要针对不同的项目做不同的框架版本管理，这会导致维护工作变得更加复杂。</li>
+</ul>
+<hr>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结：</strong></h2><table>
+<thead>
+<tr>
+<th><strong>优点</strong></th>
+<th><strong>缺点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>框架与项目代码紧密集成，便于管理和定制</td>
+<td>无法轻松管理框架版本，缺乏版本控制机制</td>
+</tr>
+<tr>
+<td>版本控制方便，代码和项目同步提交</td>
+<td>项目结构可能变得混乱，尤其在大型项目中</td>
+</tr>
+<tr>
+<td>便于调试和修改框架代码</td>
+<td>难以与多个项目共享框架代码</td>
+</tr>
+<tr>
+<td>无需外部依赖，简单易用</td>
+<td>框架与主项目耦合，难以解耦</td>
+</tr>
+<tr>
+<td>适合小型或单一项目开发</td>
+<td>长期项目维护复杂，版本更新困难</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="适用场景："><a href="#适用场景：" class="headerlink" title="适用场景："></a><strong>适用场景：</strong></h2><ul>
+<li><strong>适用小型或中型项目</strong>：如果你在开发一个单一的项目，并且框架的功能和版本不会频繁更新，这种方式是一个简单、直接且方便的解决方案。</li>
+<li><strong>适用项目需求高度定制的场景</strong>：当你需要在项目中大量修改框架代码，或框架本身比较简单时，这种方式能让你方便快捷地进行调试和开发。</li>
+</ul>
+<h2 id="不推荐场景："><a href="#不推荐场景：" class="headerlink" title="不推荐场景："></a><strong>不推荐场景：</strong></h2><ul>
+<li><strong>长期维护的项目</strong>：如果你的框架是长期维护，并且有多个项目需要使用，或者框架的版本更新频繁，UPM 或 Git Submodule 形式会更适合，能方便管理和共享框架代码。</li>
+</ul>
+<hr>
+<h3 id="结论："><a href="#结论：" class="headerlink" title="结论："></a><strong>结论：</strong></h3><p>将 <strong>UnityGameFramework 插件</strong> 直接放入 <code>Assets/</code> 父级目录并通过 Git 管理，适合 <strong>小型项目</strong> 或 <strong>定制化需求高的项目</strong>，但对于 <strong>长期维护、多个项目使用的框架</strong>，使用 <strong>UPM</strong> 或 <strong>Git Submodule</strong> 等更合适，因为它们能够更好地管理框架版本、提高代码的可维护性并支持多个项目之间的共享。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>unity 面试总结</title>
     <url>/2025/02/20/unity-%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h1 id="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"><a href="#IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？" class="headerlink" title="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"></a>IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？</h1><p>IT 技术类岗位的面试通常包括多个环节，具体的面试轮次、问题类型和考察重点取决于 <strong>公司规模、职位级别（初级&#x2F;中级&#x2F;高级）、技术方向（前端&#x2F;后端&#x2F;全栈&#x2F;算法&#x2F;架构&#x2F;游戏开发等）</strong>。以下是 <strong>一般 IT 技术岗面试流程、可能的问题类型、考察点以及面试官的期望</strong>。  </p>
@@ -7724,220 +7938,6 @@
 </ul>
 <hr>
 <h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>HR提问离职原因，主要是为了评估候选人的职业动机、稳定性、工作态度和与公司文化的契合度。通过积极、合理的回答，你可以展现自己的职业素养和发展潜力，增加面试成功率。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>unity插件导入方式</title>
-    <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
-    <content><![CDATA[<h1 id="Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣"><a href="#Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣" class="headerlink" title="Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣"></a><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1><p>在 Unity 中导入插件主要有两种方式：  </p>
-<ol>
-<li><strong>UPM（Unity Package Manager）形式导入</strong>  </li>
-<li><strong>传统 Package 形式（直接拷贝到 <code>Assets/</code> 目录）</strong></li>
-</ol>
-<p>它们各有优势和适用场景，下面详细对比一下。  </p>
-<hr>
-<h2 id="🔹-UPM-形式导入（Unity-Package-Manager）"><a href="#🔹-UPM-形式导入（Unity-Package-Manager）" class="headerlink" title="🔹 UPM 形式导入（Unity Package Manager）"></a><strong>🔹 UPM 形式导入（Unity Package Manager）</strong></h2><h3 id="✅-优势："><a href="#✅-优势：" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ul>
-<li><strong>版本管理</strong>：可以通过 <code>Packages/manifest.json</code> 直接管理插件版本，方便回退和升级。  </li>
-<li><strong>依赖管理</strong>：UPM 会自动解析插件的依赖项，避免手动安装额外的库或 DLL 文件。  </li>
-<li><strong>项目更整洁</strong>：导入的插件存放在 <code>Packages/</code> 目录下，不会污染 <code>Assets/</code> 目录，使项目结构更清晰。  </li>
-<li><strong>便捷更新</strong>：可以直接从 Unity Registry、Git 或本地路径安装和更新插件，不需要手动替换文件。  </li>
-<li><strong>团队协作</strong>：Git 版本控制时，只需要提交 <code>manifest.json</code>，无需提交整个插件代码，减少代码库体积。</li>
-</ul>
-<h3 id="❌-缺点："><a href="#❌-缺点：" class="headerlink" title="❌ 缺点："></a><strong>❌ 缺点：</strong></h3><ul>
-<li><strong>离线访问受限</strong>：如果插件是从 Unity Registry 或 Git 拉取的，可能需要联网才能安装。  </li>
-<li><strong>本地修改麻烦</strong>：UPM 目录默认是“只读”的，想要修改插件代码需要额外步骤（可以通过 <code>Packages</code> 目录手动调整或克隆到 <code>Assets</code>）。</li>
-</ul>
-<hr>
-<h2 id="🔹-传统-Package-形式导入（直接放入-Assets-）"><a href="#🔹-传统-Package-形式导入（直接放入-Assets-）" class="headerlink" title="🔹 传统 Package 形式导入（直接放入 Assets/）"></a><strong>🔹 传统 Package 形式导入（直接放入 <code>Assets/</code>）</strong></h2><h3 id="✅-优势：-1"><a href="#✅-优势：-1" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ul>
-<li><strong>即拿即用</strong>：直接拷贝到 <code>Assets/</code> 目录，无需依赖网络，适合不支持 UPM 的插件。  </li>
-<li><strong>易于修改</strong>：插件源码就在项目里，可以直接修改、调试，适合二次开发。  </li>
-<li><strong>适配旧版本</strong>：某些老旧插件或第三方工具可能没有 UPM 支持，传统方式更适合。</li>
-</ul>
-<h3 id="❌-缺点：-1"><a href="#❌-缺点：-1" class="headerlink" title="❌ 缺点："></a><strong>❌ 缺点：</strong></h3><ul>
-<li><strong>难以管理版本</strong>：升级插件时可能需要手动删除旧版本并重新导入，容易导致版本混乱。  </li>
-<li><strong>项目污染</strong>：所有插件代码和资源混在 <code>Assets/</code> 目录，项目一大就变得难以维护。  </li>
-<li><strong>依赖问题</strong>：如果插件需要额外的 DLL 或依赖库，可能需要手动配置，增加维护成本。</li>
-</ul>
-<hr>
-<h2 id="🔹-哪种方式更适合？"><a href="#🔹-哪种方式更适合？" class="headerlink" title="🔹 哪种方式更适合？"></a><strong>🔹 哪种方式更适合？</strong></h2><table>
-<thead>
-<tr>
-<th>适用场景</th>
-<th>UPM 形式导入</th>
-<th>传统 Package 形式导入</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>插件版本管理</strong></td>
-<td>✅ 自动管理版本，可回退</td>
-<td>❌ 需要手动删除和更新</td>
-</tr>
-<tr>
-<td><strong>依赖管理</strong></td>
-<td>✅ 自动解析依赖项</td>
-<td>❌ 可能需要手动配置</td>
-</tr>
-<tr>
-<td><strong>项目结构整洁</strong></td>
-<td>✅ 插件放 <code>Packages/</code> 目录</td>
-<td>❌ 插件和代码混在 <code>Assets/</code></td>
-</tr>
-<tr>
-<td><strong>网络依赖</strong></td>
-<td>❌ 可能需要联网安装</td>
-<td>✅ 完全离线使用</td>
-</tr>
-<tr>
-<td><strong>源码修改</strong></td>
-<td>❌ 需要手动克隆到 <code>Assets/</code></td>
-<td>✅ 直接修改</td>
-</tr>
-<tr>
-<td><strong>团队协作</strong></td>
-<td>✅ Git 只需同步 <code>manifest.json</code></td>
-<td>❌ 插件代码需要提交到 Git</td>
-</tr>
-</tbody></table>
-<h3 id="📌-结论："><a href="#📌-结论：" class="headerlink" title="📌 结论："></a><strong>📌 结论：</strong></h3><ul>
-<li><strong>如果插件支持 UPM，并且你不需要修改源码</strong>，建议使用 <strong>UPM</strong>，这样可以更好地管理版本和依赖，保持项目整洁。  </li>
-<li><strong>如果插件不支持 UPM，或者你需要修改源码、进行二次开发</strong>，传统的 <code>Assets/</code> 方式更合适。</li>
-</ul>
-<h1 id="Git-本地-UPM（与游戏业务逻辑分开管理版本）"><a href="#Git-本地-UPM（与游戏业务逻辑分开管理版本）" class="headerlink" title="Git + 本地 UPM（与游戏业务逻辑分开管理版本）"></a>Git + 本地 UPM（与游戏业务逻辑分开管理版本）</h1><p>使用 <strong>Git + 本地 UPM</strong> 方式管理 <strong>UnityGameFramework 插件</strong> 是一个非常灵活且高效的方式，尤其适合你想要自定义框架或保持插件版本控制的情况。这样你既能通过 Git 管理插件版本，又能通过 <strong>Unity Package Manager (UPM)</strong> 管理项目依赖。</p>
-<h3 id="如何实现-Git-本地-UPM-管理-UnityGameFramework-插件"><a href="#如何实现-Git-本地-UPM-管理-UnityGameFramework-插件" class="headerlink" title="如何实现 Git + 本地 UPM 管理 UnityGameFramework 插件"></a><strong>如何实现 Git + 本地 UPM 管理 UnityGameFramework 插件</strong></h3><h4 id="步骤-1：使用-Git-管理-UnityGameFramework-插件"><a href="#步骤-1：使用-Git-管理-UnityGameFramework-插件" class="headerlink" title="步骤 1：使用 Git 管理 UnityGameFramework 插件"></a><strong>步骤 1：使用 Git 管理 UnityGameFramework 插件</strong></h4><p>首先，假设你已经将 <strong>UnityGameFramework</strong> 插件仓库克隆到本地，并且想将其作为 <strong>UPM 本地包</strong> 引入你的 Unity 项目。</p>
-<ol>
-<li><p><strong>克隆 UnityGameFramework 插件仓库到本地：</strong><br>在你的工作目录下，克隆 UnityGameFramework 插件仓库：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/UnityGameFramework/UnityGameFramework.git D:/UnityGameFramework</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>初始化和更新子模块</strong>（如果插件使用了 Git 子模块）：<br>如果插件仓库使用了子模块，确保你已经初始化并更新子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h4 id="步骤-2：配置本地-UPM-包"><a href="#步骤-2：配置本地-UPM-包" class="headerlink" title="步骤 2：配置本地 UPM 包"></a><strong>步骤 2：配置本地 UPM 包</strong></h4><ol>
-<li><p><strong>修改主项目的 <code>manifest.json</code> 文件</strong>：<br>你需要修改 Unity 项目的 <code>Packages/manifest.json</code> 文件，将本地 UnityGameFramework 插件作为依赖项添加到其中。打开 <code>manifest.json</code> 文件，在 <code>&quot;dependencies&quot;</code> 部分加入你的本地路径。</p>
-<p>假设你已经将 UnityGameFramework 插件克隆到 <code>D:/UnityGameFramework</code>，那么可以这样添加：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;dependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;com.gameframework&quot;</span><span class="punctuation">:</span> <span class="string">&quot;file:D:/UnityGameFramework&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>这会告诉 Unity 从你本地的 <code>D:/UnityGameFramework</code> 路径加载 UnityGameFramework 插件。</p>
-</li>
-<li><p><strong>检查文件夹结构</strong>：<br>确保本地的 UnityGameFramework 插件目录结构符合 UPM 的要求。插件根目录下应该包含 <code>package.json</code> 文件，这是 UPM 识别包的必要文件。如果没有，你可以参考其他 UPM 包的结构，手动添加或修改。</p>
-<p>插件的基本结构应该类似于：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">UnityGameFramework/</span><br><span class="line">├── package.json</span><br><span class="line">├── Runtime/</span><br><span class="line">├── Editor/</span><br><span class="line">└── Documentation~</span><br></pre></td></tr></table></figure>
-
-<p>在 <code>package.json</code> 文件中，你需要指定插件的版本号、名称和其他元数据，例如：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;com.gameframework&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;1.0.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;displayName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Unity Game Framework&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A lightweight game framework for Unity.&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;unity&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2021.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;dependencies&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<h4 id="步骤-3：同步本地插件更新"><a href="#步骤-3：同步本地插件更新" class="headerlink" title="步骤 3：同步本地插件更新"></a><strong>步骤 3：同步本地插件更新</strong></h4><ol>
-<li><p><strong>从 Git 更新插件</strong>：<br>当你想要更新本地 UnityGameFramework 插件时，只需要在插件目录下拉取最新的代码：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> D:/UnityGameFramework</span><br><span class="line">git pull origin main</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>提交更新到主项目</strong>：<br>如果更新了插件的代码，记得返回主项目目录并提交子模块的更新，确保每个团队成员都使用相同版本的插件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework to the latest version&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>检查并确保本地插件的依赖正确</strong>：<br>每次更新插件时，确保你没有遗漏插件依赖的任何库或组件。如果插件有额外的资源，检查是否需要重新导入或更新。</p>
-</li>
-</ol>
-<h4 id="步骤-4：团队协作和版本控制"><a href="#步骤-4：团队协作和版本控制" class="headerlink" title="步骤 4：团队协作和版本控制"></a><strong>步骤 4：团队协作和版本控制</strong></h4><ol>
-<li><p><strong>共享插件版本</strong>：<br>团队成员需要确保他们的本地仓库和主项目仓库同步。如果你通过 Git 管理子模块，也可以通过 Git 子模块来同步插件的更新：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>推送主项目和插件更改</strong>：<br>更新完插件或修改完主项目后，推送主项目的更改：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push origin main</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>克隆项目时使用本地 UPM 插件</strong>：<br>当团队成员克隆项目时，他们只需要确保从 Git 拉取子模块并更新本地插件：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a><strong>优点：</strong></h2><ol>
-<li><p><strong>版本控制管理：</strong><br>通过 Git，你可以管理 UnityGameFramework 插件的所有版本，轻松回滚到以前的版本或者与主项目同步最新代码。</p>
-</li>
-<li><p><strong>本地开发和修改：</strong><br>如果需要对插件进行定制或修改，你可以在本地修改框架代码，并将其提交到 Git 仓库，不会影响主项目的其他代码。</p>
-</li>
-<li><p><strong>清晰的项目结构：</strong><br>使用 UPM 将插件管理与项目代码解耦，保持项目的清洁和组织性，同时支持本地路径方式，避免了直接将框架代码嵌入到 <code>Assets/</code> 目录中。</p>
-</li>
-<li><p><strong>支持多人协作：</strong><br>团队成员可以通过 Git 子模块或 <code>manifest.json</code> 文件统一插件版本，避免了因版本不一致而产生的错误。</p>
-</li>
-<li><p><strong>插件更新便捷：</strong><br>每次更新插件时，只需要在主项目中执行 <code>git submodule update --remote</code> 即可轻松更新到插件的最新版本。</p>
-</li>
-</ol>
-<hr>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>使用 <strong>Git + 本地 UPM</strong> 管理 <strong>UnityGameFramework 插件</strong> 可以充分利用 Git 的版本控制和 UPM 的包管理功能。它让你能够灵活管理插件版本，同时保持项目结构的清洁，便于多人协作和框架定制。对于需要自定义的插件或长期维护的项目，Git + 本地 UPM 方式是一个非常强大且方便的选择。</p>
-<p>如果有具体操作上的问题或者想进一步了解如何处理更新、团队协作等，随时告诉我！😊</p>
-<h1 id="Git-UPM-统一管理版本"><a href="#Git-UPM-统一管理版本" class="headerlink" title="Git + UPM (统一管理版本)"></a>Git + UPM (统一管理版本)</h1><p>将 <strong>UnityGameFramework 插件</strong> 拷贝到Assets父级目录中，这样既不会污染Assets，同时还让游戏框架的代码随工程项目一起，提交git,但是不能控制框架代码的版本。</p>
-<p>将 <strong>UnityGameFramework 插件</strong> 拷贝到 <code>Assets</code> 父级目录中，并通过 <strong>Git</strong> 管理项目代码，而不使用 <strong>UPM</strong> 形式的方式，确实是一种常见的做法。它有一些优点，但也存在一些明显的缺点。下面我们详细分析一下这种做法的 <strong>好处</strong> 和 <strong>问题</strong>。</p>
-<hr>
-<h2 id="优点：-1"><a href="#优点：-1" class="headerlink" title="优点："></a><strong>优点：</strong></h2><h3 id="1-框架代码与项目代码一起管理"><a href="#1-框架代码与项目代码一起管理" class="headerlink" title="1. 框架代码与项目代码一起管理"></a><strong>1. 框架代码与项目代码一起管理</strong></h3><ul>
-<li><strong>紧密集成</strong>：插件代码和游戏项目代码在同一 Git 仓库中管理，便于团队开发时统一管理和控制，不需要考虑 UPM 形式的插件版本和依赖问题。</li>
-<li><strong>简化流程</strong>：在项目中直接修改框架代码非常方便，避免了使用 UPM 需要克隆或额外管理的步骤，开发者可以直接在 <code>Assets/</code> 目录修改和调试插件代码。</li>
-</ul>
-<h3 id="2-版本控制与跟踪"><a href="#2-版本控制与跟踪" class="headerlink" title="2. 版本控制与跟踪"></a><strong>2. 版本控制与跟踪</strong></h3><ul>
-<li><strong>直接版本控制</strong>：将插件直接集成到项目代码库，可以跟随项目一起提交和更新。每个修改都可以进行版本控制，且可以在项目更新时同步更新框架代码。</li>
-<li><strong>Git 提交</strong>：由于框架和项目代码在同一仓库，所有修改都可以一起提交和同步，避免了手动管理框架版本的问题。</li>
-</ul>
-<h3 id="3-便于调试和定制"><a href="#3-便于调试和定制" class="headerlink" title="3. 便于调试和定制"></a><strong>3. 便于调试和定制</strong></h3><ul>
-<li><strong>直接修改框架代码</strong>：如果需要修改框架的实现或调试某个功能，可以直接在 <code>Assets/</code> 目录中找到相关代码，修改时不需要额外处理包管理。</li>
-<li><strong>定制化更方便</strong>：你可以更轻松地根据项目需求定制游戏框架，无需担心 UPM 形式插件的限制。</li>
-</ul>
-<h3 id="4-没有外部依赖"><a href="#4-没有外部依赖" class="headerlink" title="4. 没有外部依赖"></a><strong>4. 没有外部依赖</strong></h3><ul>
-<li><strong>无需网络依赖</strong>：不像 UPM 需要通过网络拉取插件，所有的框架代码都存储在本地，项目可以完全离线工作，避免了网络问题对开发环境的影响。</li>
-<li><strong>简单易用</strong>：这种方法相对简单，特别是在 Unity 的较旧版本中，可能没有完全集成 UPM 系统。</li>
-</ul>
-<hr>
-<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a><strong>缺点：</strong></h2><h3 id="1-不能轻松管理框架版本"><a href="#1-不能轻松管理框架版本" class="headerlink" title="1. 不能轻松管理框架版本"></a><strong>1. 不能轻松管理框架版本</strong></h3><ul>
-<li><strong>版本控制缺失</strong>：将框架代码直接包含在项目中，你无法像 UPM 那样轻松地管理插件的版本（回滚、更新、替换等）。如果框架代码发生更新，你需要手动更新并提交，而这可能导致多个项目中框架版本不一致。</li>
-<li><strong>手动管理更新</strong>：每次框架有更新时，需要手动获取新版本，直接替换或合并代码。没有 UPM 那样的包管理系统，更新流程更容易出错。</li>
-</ul>
-<h3 id="2-项目结构可能变得混乱"><a href="#2-项目结构可能变得混乱" class="headerlink" title="2. 项目结构可能变得混乱"></a><strong>2. 项目结构可能变得混乱</strong></h3><ul>
-<li><strong><code>Assets/</code> 目录可能污染</strong>：框架代码存放在项目的 <code>Assets/</code> 目录外面，虽然不会直接污染 <code>Assets/</code> 目录，但可能会导致项目文件夹结构变得复杂，尤其是当框架代码需要频繁更新和修改时。</li>
-<li><strong>文件夹管理问题</strong>：将框架代码放在 <code>Assets</code> 父级目录下，可能会导致一些资源或脚本文件和项目的其他部分混杂，影响项目管理和可维护性，尤其是大型项目。</li>
-</ul>
-<h3 id="3-难以与其他项目共享框架"><a href="#3-难以与其他项目共享框架" class="headerlink" title="3. 难以与其他项目共享框架"></a><strong>3. 难以与其他项目共享框架</strong></h3><ul>
-<li><strong>无法轻松复用</strong>：如果你在多个项目中都使用同一个框架，每次更新框架代码时，你需要手动同步到每个项目中。这比起 UPM 的方式要麻烦得多，尤其是在框架更新频繁时。</li>
-<li><strong>跨项目依赖管理复杂</strong>：无法通过 Git 子模块、UPM 等方式方便地共享框架代码，这使得跨多个项目的框架维护变得更复杂。</li>
-</ul>
-<h3 id="4-框架与主项目耦合"><a href="#4-框架与主项目耦合" class="headerlink" title="4. 框架与主项目耦合"></a><strong>4. 框架与主项目耦合</strong></h3><ul>
-<li><strong>框架修改难以隔离</strong>：框架和主项目代码紧密耦合，难以做到框架代码和主项目代码的解耦。即使你修改框架代码，这些修改也会直接影响主项目，可能会导致框架变更与主项目变更之间的混淆。</li>
-</ul>
-<h3 id="5-不易维护长期项目"><a href="#5-不易维护长期项目" class="headerlink" title="5. 不易维护长期项目"></a><strong>5. 不易维护长期项目</strong></h3><ul>
-<li><strong>长期维护困难</strong>：当框架代码在多个项目中频繁使用时，版本更新和维护的工作量会增加，尤其是涉及到 bug 修复或框架功能扩展时。你可能需要针对不同的项目做不同的框架版本管理，这会导致维护工作变得更加复杂。</li>
-</ul>
-<hr>
-<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结：</strong></h2><table>
-<thead>
-<tr>
-<th><strong>优点</strong></th>
-<th><strong>缺点</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>框架与项目代码紧密集成，便于管理和定制</td>
-<td>无法轻松管理框架版本，缺乏版本控制机制</td>
-</tr>
-<tr>
-<td>版本控制方便，代码和项目同步提交</td>
-<td>项目结构可能变得混乱，尤其在大型项目中</td>
-</tr>
-<tr>
-<td>便于调试和修改框架代码</td>
-<td>难以与多个项目共享框架代码</td>
-</tr>
-<tr>
-<td>无需外部依赖，简单易用</td>
-<td>框架与主项目耦合，难以解耦</td>
-</tr>
-<tr>
-<td>适合小型或单一项目开发</td>
-<td>长期项目维护复杂，版本更新困难</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="适用场景："><a href="#适用场景：" class="headerlink" title="适用场景："></a><strong>适用场景：</strong></h2><ul>
-<li><strong>适用小型或中型项目</strong>：如果你在开发一个单一的项目，并且框架的功能和版本不会频繁更新，这种方式是一个简单、直接且方便的解决方案。</li>
-<li><strong>适用项目需求高度定制的场景</strong>：当你需要在项目中大量修改框架代码，或框架本身比较简单时，这种方式能让你方便快捷地进行调试和开发。</li>
-</ul>
-<h2 id="不推荐场景："><a href="#不推荐场景：" class="headerlink" title="不推荐场景："></a><strong>不推荐场景：</strong></h2><ul>
-<li><strong>长期维护的项目</strong>：如果你的框架是长期维护，并且有多个项目需要使用，或者框架的版本更新频繁，UPM 或 Git Submodule 形式会更适合，能方便管理和共享框架代码。</li>
-</ul>
-<hr>
-<h3 id="结论："><a href="#结论：" class="headerlink" title="结论："></a><strong>结论：</strong></h3><p>将 <strong>UnityGameFramework 插件</strong> 直接放入 <code>Assets/</code> 父级目录并通过 Git 管理，适合 <strong>小型项目</strong> 或 <strong>定制化需求高的项目</strong>，但对于 <strong>长期维护、多个项目使用的框架</strong>，使用 <strong>UPM</strong> 或 <strong>Git Submodule</strong> 等更合适，因为它们能够更好地管理框架版本、提高代码的可维护性并支持多个项目之间的共享。</p>
 ]]></content>
   </entry>
   <entry>
@@ -8780,6 +8780,40 @@
 ]]></content>
   </entry>
   <entry>
+    <title>跨境电商</title>
+    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
+    <content><![CDATA[<p>店铺类型：</p>
+<ul>
+<li>铺货</li>
+<li>精铺</li>
+<li>品牌（精品）</li>
+</ul>
+<p>物流</p>
+<ul>
+<li>FBA：亚马逊仓发货</li>
+<li>FBM(商家自发货)</li>
+</ul>
+<p>形式：</p>
+<ul>
+<li>海</li>
+<li>铁</li>
+<li>空</li>
+</ul>
+<p>工具：</p>
+<p>谷歌趋势： Google Trends  关键词搜索 </p>
+<ul>
+<li>相关主题  趋势变化判断是不是和开发该品类</li>
+<li>订阅关键词</li>
+</ul>
+<p>ads - 关键词规划师 </p>
+<ul>
+<li>转换率</li>
+<li>获客成本</li>
+<li></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab&#x2F;Gitea）和简单搭建裸仓库。</p>
@@ -8982,40 +9016,6 @@
       <tags>
         <tag>git</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>跨境电商</title>
-    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
-    <content><![CDATA[<p>店铺类型：</p>
-<ul>
-<li>铺货</li>
-<li>精铺</li>
-<li>品牌（精品）</li>
-</ul>
-<p>物流</p>
-<ul>
-<li>FBA：亚马逊仓发货</li>
-<li>FBM(商家自发货)</li>
-</ul>
-<p>形式：</p>
-<ul>
-<li>海</li>
-<li>铁</li>
-<li>空</li>
-</ul>
-<p>工具：</p>
-<p>谷歌趋势： Google Trends  关键词搜索 </p>
-<ul>
-<li>相关主题  趋势变化判断是不是和开发该品类</li>
-<li>订阅关键词</li>
-</ul>
-<p>ads - 关键词规划师 </p>
-<ul>
-<li>转换率</li>
-<li>获客成本</li>
-<li></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>转产品经理</title>
