@@ -1718,460 +1718,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 简介</title>
-    <url>/2025/05/08/Jenkins/</url>
-    <content><![CDATA[<h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a><strong>Jenkins 简介</strong></h3><p>Jenkins 是一个开源的 <strong>持续集成和持续交付 (CI&#x2F;CD)</strong> 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。</p>
-<hr>
-<h2 id="1-Jenkins-安装"><a href="#1-Jenkins-安装" class="headerlink" title="1. Jenkins 安装"></a><strong>1. Jenkins 安装</strong></h2><h3 id="1-Windows-安装"><a href="#1-Windows-安装" class="headerlink" title="(1) Windows 安装"></a><strong>(1) Windows 安装</strong></h3><ol>
-<li><p><strong>下载 Jenkins</strong>：</p>
-<ul>
-<li>官网下载地址：<a href="https://www.jenkins.io/download/">https://www.jenkins.io/download/</a></li>
-<li>选择 <strong>Windows 版本（.msi 安装包）</strong>。</li>
-</ul>
-</li>
-<li><p><strong>运行安装程序</strong>：</p>
-<ul>
-<li>双击 <code>.msi</code> 文件，按向导安装。</li>
-<li>默认端口：<code>8080</code>（可修改）。</li>
-</ul>
-</li>
-<li><p><strong>启动 Jenkins</strong>：</p>
-<ul>
-<li>安装完成后，访问 <code>http://localhost:8080</code>。</li>
-<li>首次启动需要输入 <strong>初始管理员密码</strong>（在日志或 <code>C:\Program Files\Jenkins\secrets\initialAdminPassword</code> 中查找）。</li>
-</ul>
-</li>
-<li><p><strong>安装推荐插件</strong>：</p>
-<ul>
-<li>选择 **”Install suggested plugins”**（推荐）。</li>
-<li>等待插件安装完成。</li>
-</ul>
-</li>
-<li><p><strong>创建管理员账户</strong>：</p>
-<ul>
-<li>设置用户名、密码和邮箱。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="2-Linux-macOS-安装"><a href="#2-Linux-macOS-安装" class="headerlink" title="(2) Linux&#x2F;macOS 安装"></a><strong>(2) Linux&#x2F;macOS 安装</strong></h3><h4 id="方法-1：使用-Docker（推荐）"><a href="#方法-1：使用-Docker（推荐）" class="headerlink" title="方法 1：使用 Docker（推荐）"></a><strong>方法 1：使用 Docker（推荐）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts</span><br></pre></td></tr></table></figure>
-<p>访问 <code>http://localhost:8080</code> 进行初始化。</p>
-<h4 id="方法-2：直接安装（Ubuntu-Debian）"><a href="#方法-2：直接安装（Ubuntu-Debian）" class="headerlink" title="方法 2：直接安装（Ubuntu&#x2F;Debian）"></a><strong>方法 2：直接安装（Ubuntu&#x2F;Debian）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | <span class="built_in">sudo</span> apt-key add -</span><br><span class="line"><span class="built_in">sudo</span> sh -c <span class="string">&#x27;echo deb http://pkg.jenkins.io/debian-stable binary/ &gt; /etc/apt/sources.list.d/jenkins.list&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install jenkins</span><br><span class="line"><span class="built_in">sudo</span> systemctl start jenkins</span><br></pre></td></tr></table></figure>
-<p>访问 <code>http://localhost:8080</code>。</p>
-<hr>
-<h2 id="2-Jenkins-基本配置"><a href="#2-Jenkins-基本配置" class="headerlink" title="2. Jenkins 基本配置"></a><strong>2. Jenkins 基本配置</strong></h2><h3 id="1-管理插件"><a href="#1-管理插件" class="headerlink" title="(1) 管理插件"></a><strong>(1) 管理插件</strong></h3><ol>
-<li><strong>进入插件管理</strong>：<ul>
-<li><strong>Dashboard → Manage Jenkins → Manage Plugins</strong>。</li>
-</ul>
-</li>
-<li><strong>安装常用插件</strong>：<ul>
-<li><strong>Git</strong>（用于代码拉取）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Docker</strong>（用于容器化构建）</li>
-<li><strong>Blue Ocean</strong>（可视化流水线）</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-配置全局工具"><a href="#2-配置全局工具" class="headerlink" title="(2) 配置全局工具"></a><strong>(2) 配置全局工具</strong></h3><ol>
-<li><strong>进入全局工具配置</strong>：<ul>
-<li><strong>Dashboard → Manage Jenkins → Global Tool Configuration</strong>。</li>
-</ul>
-</li>
-<li><strong>配置 JDK、Maven、Git</strong>：<ul>
-<li>指定路径或自动安装。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-Jenkins-创建第一个-Job"><a href="#3-Jenkins-创建第一个-Job" class="headerlink" title="3. Jenkins 创建第一个 Job"></a><strong>3. Jenkins 创建第一个 Job</strong></h2><h3 id="1-自由风格项目（Freestyle-Project）"><a href="#1-自由风格项目（Freestyle-Project）" class="headerlink" title="(1) 自由风格项目（Freestyle Project）"></a><strong>(1) 自由风格项目（Freestyle Project）</strong></h3><ol>
-<li><strong>新建 Job</strong>：<ul>
-<li><strong>Dashboard → New Item → Freestyle project</strong>。</li>
-</ul>
-</li>
-<li><strong>配置 Git 仓库</strong>：<ul>
-<li><strong>Source Code Management → Git</strong>，输入仓库 URL。</li>
-</ul>
-</li>
-<li><strong>设置构建触发器</strong>：<ul>
-<li><strong>Poll SCM</strong>（定时检查代码更新）。</li>
-<li><strong>GitHub Webhook</strong>（代码提交后自动触发）。</li>
-</ul>
-</li>
-<li><strong>添加构建步骤</strong>：<ul>
-<li><strong>Execute shell</strong>（Linux）或 <strong>Execute Windows batch command</strong>（Windows）：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Building...&quot;</span></span><br><span class="line">mvn clean package</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>保存并运行</strong>：<ul>
-<li>点击 <strong>Build Now</strong> 手动触发构建。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-使用-Pipeline（推荐）"><a href="#2-使用-Pipeline（推荐）" class="headerlink" title="(2) 使用 Pipeline（推荐）"></a><strong>(2) 使用 Pipeline（推荐）</strong></h3><ol>
-<li><strong>新建 Pipeline Job</strong>：<ul>
-<li><strong>New Item → Pipeline</strong>。</li>
-</ul>
-</li>
-<li><strong>编写 Jenkinsfile</strong>（示例）：<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn clean package&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn test&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;scp target/*.jar user@server:/path/&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><strong>保存并运行</strong>：<ul>
-<li>代码提交后自动触发 Pipeline。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="4-Jenkins-集成-GitHub-GitLab"><a href="#4-Jenkins-集成-GitHub-GitLab" class="headerlink" title="4. Jenkins 集成 GitHub&#x2F;GitLab"></a><strong>4. Jenkins 集成 GitHub&#x2F;GitLab</strong></h2><h3 id="1-GitHub-Webhook-自动触发"><a href="#1-GitHub-Webhook-自动触发" class="headerlink" title="(1) GitHub Webhook 自动触发"></a><strong>(1) GitHub Webhook 自动触发</strong></h3><ol>
-<li><strong>在 GitHub 仓库设置 Webhook</strong>：<ul>
-<li><strong>Settings → Webhooks → Add webhook</strong>。</li>
-<li>Payload URL: <code>http://&lt;你的Jenkins服务器&gt;/github-webhook/</code>。</li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置 GitHub 插件</strong>：<ul>
-<li><strong>Manage Jenkins → Configure System → GitHub Server</strong>。</li>
-<li>添加 GitHub 凭据（Personal Access Token）。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-GitLab-CI-CD-集成"><a href="#2-GitLab-CI-CD-集成" class="headerlink" title="(2) GitLab CI&#x2F;CD 集成"></a><strong>(2) GitLab CI&#x2F;CD 集成</strong></h3><ol>
-<li><strong>安装 GitLab 插件</strong>：<ul>
-<li>**Manage Plugins → 搜索 “GitLab”**。</li>
-</ul>
-</li>
-<li><strong>配置 GitLab 连接</strong>：<ul>
-<li><strong>Manage Jenkins → Configure System → GitLab</strong>。</li>
-<li>输入 GitLab URL 和 API Token。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="5-Jenkins-常见问题"><a href="#5-Jenkins-常见问题" class="headerlink" title="5. Jenkins 常见问题"></a><strong>5. Jenkins 常见问题</strong></h2><h3 id="1-Jenkins-启动失败"><a href="#1-Jenkins-启动失败" class="headerlink" title="(1) Jenkins 启动失败"></a><strong>(1) Jenkins 启动失败</strong></h3><ul>
-<li><strong>检查端口冲突</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -ano | findstr 8080  <span class="comment"># Windows</span></span><br><span class="line"><span class="built_in">sudo</span> lsof -i :8080           <span class="comment"># Linux/macOS</span></span><br></pre></td></tr></table></figure></li>
-<li><strong>修改端口</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nano /etc/default/jenkins  <span class="comment"># 修改 HTTP_PORT</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl restart jenkins</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="2-插件安装失败"><a href="#2-插件安装失败" class="headerlink" title="(2) 插件安装失败"></a><strong>(2) 插件安装失败</strong></h3><ul>
-<li><strong>更换镜像源</strong>：<ul>
-<li><strong>Manage Jenkins → Manage Plugins → Advanced</strong>。</li>
-<li>修改 Update Site 为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<h3 id="3-构建失败排查"><a href="#3-构建失败排查" class="headerlink" title="(3) 构建失败排查"></a><strong>(3) 构建失败排查</strong></h3><ul>
-<li><strong>查看控制台日志</strong>：<ul>
-<li>进入构建详情 → <strong>Console Output</strong>。</li>
-</ul>
-</li>
-<li><strong>检查环境变量</strong>：<ul>
-<li><code>echo $PATH</code>（Linux）或 <code>echo %PATH%</code>（Windows）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h2 id="6-Jenkins-进阶功能"><a href="#6-Jenkins-进阶功能" class="headerlink" title="6. Jenkins 进阶功能"></a><strong>6. Jenkins 进阶功能</strong></h2><table>
-<thead>
-<tr>
-<th>功能</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>分布式构建</strong></td>
-<td>使用 Agent 节点分担主节点压力</td>
-</tr>
-<tr>
-<td><strong>Blue Ocean</strong></td>
-<td>可视化 Pipeline 编辑</td>
-</tr>
-<tr>
-<td><strong>Docker 集成</strong></td>
-<td>在容器中运行构建</td>
-</tr>
-<tr>
-<td><strong>Kubernetes 插件</strong></td>
-<td>动态创建 Pod 运行 Job</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-学习资源"><a href="#7-学习资源" class="headerlink" title="7. 学习资源"></a><strong>7. 学习资源</strong></h2><ul>
-<li><strong>官方文档</strong>：<a href="https://www.jenkins.io/doc/">https://www.jenkins.io/doc/</a></li>
-<li><strong>中文社区</strong>：<a href="https://jenkins-zh.cn/">https://jenkins-zh.cn/</a></li>
-<li><strong>实战课程</strong>：<ul>
-<li>Udemy: <a href="https://www.udemy.com/course/jenkins-from-zero-to-hero/">Jenkins CI&#x2F;CD Pipeline</a></li>
-<li>B站：搜索 “Jenkins 教程”</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li>Jenkins 是强大的 CI&#x2F;CD 工具，支持自动化构建、测试和部署。</li>
-<li>推荐使用 <strong>Pipeline + Docker</strong> 实现现代化 DevOps 流程。</li>
-<li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
-</ul>
-<p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Lean Cloud</title>
-    <url>/2025/01/08/Lean-Cloud/</url>
-    <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
-<hr>
-<h3 id="LeanCloud-的核心功能"><a href="#LeanCloud-的核心功能" class="headerlink" title="LeanCloud 的核心功能"></a><strong>LeanCloud 的核心功能</strong></h3><p>LeanCloud 提供了许多常见后端功能，以下是主要的功能模块：</p>
-<h4 id="1-数据存储"><a href="#1-数据存储" class="headerlink" title="1. 数据存储"></a><strong>1. 数据存储</strong></h4><ul>
-<li>提供类似数据库的云端存储服务，支持结构化和非结构化数据。</li>
-<li>数据存储是基于 <strong>NoSQL</strong> 的，开发者无需处理复杂的数据库部署和运维。</li>
-<li>支持复杂查询、关系模型以及文件存储（图片、文档等）。</li>
-</ul>
-<h4 id="2-用户管理"><a href="#2-用户管理" class="headerlink" title="2. 用户管理"></a><strong>2. 用户管理</strong></h4><ul>
-<li>提供用户注册、登录和管理功能。</li>
-<li>支持第三方登录（如微信、QQ、微博等）。</li>
-<li>提供基于角色和权限的访问控制。</li>
-</ul>
-<h4 id="3-即时通讯"><a href="#3-即时通讯" class="headerlink" title="3. 即时通讯"></a><strong>3. 即时通讯</strong></h4><ul>
-<li>支持实时消息传输，包括单聊、群聊和聊天室功能。</li>
-<li>提供消息历史记录和离线消息支持。</li>
-<li>适合需要社交聊天或消息通知功能的应用。</li>
-</ul>
-<h4 id="4-云引擎"><a href="#4-云引擎" class="headerlink" title="4. 云引擎"></a><strong>4. 云引擎</strong></h4><ul>
-<li>提供自定义后端逻辑的功能，开发者可以使用 LeanCloud 的云引擎编写自己的业务逻辑代码。</li>
-<li>支持定时任务、事件处理等。</li>
-</ul>
-<h4 id="5-推送通知"><a href="#5-推送通知" class="headerlink" title="5. 推送通知"></a><strong>5. 推送通知</strong></h4><ul>
-<li>提供消息推送功能，支持 iOS、Android 和 Web 平台。</li>
-<li>支持定向推送、广播推送以及根据用户属性筛选推送。</li>
-</ul>
-<h4 id="6-文件存储"><a href="#6-文件存储" class="headerlink" title="6. 文件存储"></a><strong>6. 文件存储</strong></h4><ul>
-<li>用于存储图片、视频、音频等文件。</li>
-<li>提供 CDN 加速功能，确保文件访问速度快且稳定。</li>
-</ul>
-<h4 id="7-数据分析"><a href="#7-数据分析" class="headerlink" title="7. 数据分析"></a><strong>7. 数据分析</strong></h4><ul>
-<li>提供实时的应用数据分析，帮助开发者了解用户行为和产品表现。</li>
-<li>支持自定义事件的埋点统计。</li>
-</ul>
-<hr>
-<h3 id="LeanCloud-的特点"><a href="#LeanCloud-的特点" class="headerlink" title="LeanCloud 的特点"></a><strong>LeanCloud 的特点</strong></h3><ol>
-<li><p><strong>一站式后端服务</strong></p>
-<ul>
-<li>开发者可以使用 LeanCloud 提供的所有后端功能，无需自己搭建服务器和数据库。</li>
-</ul>
-</li>
-<li><p><strong>跨平台支持</strong></p>
-<ul>
-<li>提供丰富的 SDK，支持 Android、iOS、Unity、Web、小程序等多种平台。</li>
-</ul>
-</li>
-<li><p><strong>高可用和可扩展性</strong></p>
-<ul>
-<li>LeanCloud 背后的基础设施支持高并发访问，能够应对大规模用户请求。</li>
-<li>开发者无需担心服务器维护和扩容问题。</li>
-</ul>
-</li>
-<li><p><strong>高效开发</strong></p>
-<ul>
-<li>减少后端开发时间，让开发者专注于前端开发和产品逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a><strong>适用场景</strong></h3><ol>
-<li><strong>社交应用</strong><ul>
-<li>即时通讯、群聊、好友系统、动态发布。</li>
-</ul>
-</li>
-<li><strong>电商平台</strong><ul>
-<li>用户管理、商品存储、订单管理、推送通知。</li>
-</ul>
-</li>
-<li><strong>游戏开发</strong><ul>
-<li>游戏玩家存档、排行榜、实时消息（如对战消息）。</li>
-</ul>
-</li>
-<li><strong>内容平台</strong><ul>
-<li>文件存储（图片、音频、视频）、用户行为分析。</li>
-</ul>
-</li>
-<li><strong>小程序开发</strong><ul>
-<li>数据存储、用户登录、消息推送。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="与其他-BaaS-的比较"><a href="#与其他-BaaS-的比较" class="headerlink" title="与其他 BaaS 的比较"></a><strong>与其他 BaaS 的比较</strong></h3><p>与 Firebase、AWS Amplify 等 BaaS 服务相比，LeanCloud 更适合 <strong>国内市场</strong> 的开发者，尤其是以下场景：</p>
-<ul>
-<li><strong>国内访问速度快：</strong> 提供中国大陆的服务器节点。</li>
-<li><strong>符合国内法规：</strong> 支持合规化数据存储。</li>
-<li><strong>丰富的 SDK：</strong> 针对微信小程序、国内第三方登录等场景提供支持。</li>
-</ul>
-<hr>
-<h3 id="如何使用-LeanCloud？"><a href="#如何使用-LeanCloud？" class="headerlink" title="如何使用 LeanCloud？"></a><strong>如何使用 LeanCloud？</strong></h3><ol>
-<li><p><strong>注册 LeanCloud 账号并创建应用</strong></p>
-<ul>
-<li>前往 <a href="https://www.leancloud.cn/">LeanCloud 官网</a> 注册账号并创建一个新项目。</li>
-</ul>
-</li>
-<li><p><strong>集成 LeanCloud SDK</strong></p>
-<ul>
-<li>在项目中下载并引入 LeanCloud 提供的 SDK（支持 Unity、C#、JavaScript、Python 等多种语言）。</li>
-</ul>
-</li>
-<li><p><strong>调用 LeanCloud 的 API</strong></p>
-<ul>
-<li>通过 SDK 或 REST API，调用 LeanCloud 提供的各种服务，如存储数据、发送消息等。</li>
-</ul>
-</li>
-<li><p><strong>部署云引擎</strong></p>
-<ul>
-<li>如果需要自定义后端逻辑，可以在 LeanCloud 的云引擎上部署自己的代码。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a><strong>示例代码</strong></h3><p>以下是一个使用 LeanCloud 存储数据的简单示例（C#）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> LeanCloud;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Example</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">SaveData</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化 LeanCloud</span></span><br><span class="line">        AVClient.Initialize(<span class="string">&quot;your-app-id&quot;</span>, <span class="string">&quot;your-app-key&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个对象</span></span><br><span class="line">        AVObject obj = <span class="keyword">new</span> AVObject(<span class="string">&quot;TestObject&quot;</span>);</span><br><span class="line">        obj[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;Unity开发者&quot;</span>;</span><br><span class="line">        obj[<span class="string">&quot;score&quot;</span>] = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存到 LeanCloud</span></span><br><span class="line">        <span class="keyword">await</span> obj.SaveAsync();</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;数据保存成功！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>LeanCloud 是一个功能强大且易用的后端即服务平台，适合中小型团队甚至个人开发者快速构建后端服务。尤其是对于国内开发者来说，LeanCloud 的本地化支持和便捷性使其成为 Firebase 等海外 BaaS 平台的有力替代品。</p>
-]]></content>
-      <categories>
-        <category>Lean Cloud</category>
-      </categories>
-      <tags>
-        <tag>Lean Cloud</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>HybridCLR 笔记</title>
     <url>/2025/01/13/HybridCLR-%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h2 id="hybridclr-Package手册"><a href="#hybridclr-Package手册" class="headerlink" title="hybridclr Package手册"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/com.code-philosophy.hybridclr">hybridclr Package手册</a></h2><h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/bestpractice">最佳实践</a></h2><h2 id="不支持特性"><a href="#不支持特性" class="headerlink" title="不支持特性"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/notsupportedfeatures">不支持特性</a></h2><h2 id="AOT泛型"><a href="#AOT泛型" class="headerlink" title="AOT泛型"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/aotgeneric">AOT泛型</a></h2><h2 id="热更新程序集的-auto-reference"><a href="#热更新程序集的-auto-reference" class="headerlink" title="热更新程序集的 auto reference"></a>热更新程序集的 auto reference</h2><blockquote>
@@ -3498,6 +3044,460 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 简介</title>
+    <url>/2025/05/08/Jenkins/</url>
+    <content><![CDATA[<h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a><strong>Jenkins 简介</strong></h3><p>Jenkins 是一个开源的 <strong>持续集成和持续交付 (CI&#x2F;CD)</strong> 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。</p>
+<hr>
+<h2 id="1-Jenkins-安装"><a href="#1-Jenkins-安装" class="headerlink" title="1. Jenkins 安装"></a><strong>1. Jenkins 安装</strong></h2><h3 id="1-Windows-安装"><a href="#1-Windows-安装" class="headerlink" title="(1) Windows 安装"></a><strong>(1) Windows 安装</strong></h3><ol>
+<li><p><strong>下载 Jenkins</strong>：</p>
+<ul>
+<li>官网下载地址：<a href="https://www.jenkins.io/download/">https://www.jenkins.io/download/</a></li>
+<li>选择 <strong>Windows 版本（.msi 安装包）</strong>。</li>
+</ul>
+</li>
+<li><p><strong>运行安装程序</strong>：</p>
+<ul>
+<li>双击 <code>.msi</code> 文件，按向导安装。</li>
+<li>默认端口：<code>8080</code>（可修改）。</li>
+</ul>
+</li>
+<li><p><strong>启动 Jenkins</strong>：</p>
+<ul>
+<li>安装完成后，访问 <code>http://localhost:8080</code>。</li>
+<li>首次启动需要输入 <strong>初始管理员密码</strong>（在日志或 <code>C:\Program Files\Jenkins\secrets\initialAdminPassword</code> 中查找）。</li>
+</ul>
+</li>
+<li><p><strong>安装推荐插件</strong>：</p>
+<ul>
+<li>选择 **”Install suggested plugins”**（推荐）。</li>
+<li>等待插件安装完成。</li>
+</ul>
+</li>
+<li><p><strong>创建管理员账户</strong>：</p>
+<ul>
+<li>设置用户名、密码和邮箱。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="2-Linux-macOS-安装"><a href="#2-Linux-macOS-安装" class="headerlink" title="(2) Linux&#x2F;macOS 安装"></a><strong>(2) Linux&#x2F;macOS 安装</strong></h3><h4 id="方法-1：使用-Docker（推荐）"><a href="#方法-1：使用-Docker（推荐）" class="headerlink" title="方法 1：使用 Docker（推荐）"></a><strong>方法 1：使用 Docker（推荐）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts</span><br></pre></td></tr></table></figure>
+<p>访问 <code>http://localhost:8080</code> 进行初始化。</p>
+<h4 id="方法-2：直接安装（Ubuntu-Debian）"><a href="#方法-2：直接安装（Ubuntu-Debian）" class="headerlink" title="方法 2：直接安装（Ubuntu&#x2F;Debian）"></a><strong>方法 2：直接安装（Ubuntu&#x2F;Debian）</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | <span class="built_in">sudo</span> apt-key add -</span><br><span class="line"><span class="built_in">sudo</span> sh -c <span class="string">&#x27;echo deb http://pkg.jenkins.io/debian-stable binary/ &gt; /etc/apt/sources.list.d/jenkins.list&#x27;</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install jenkins</span><br><span class="line"><span class="built_in">sudo</span> systemctl start jenkins</span><br></pre></td></tr></table></figure>
+<p>访问 <code>http://localhost:8080</code>。</p>
+<hr>
+<h2 id="2-Jenkins-基本配置"><a href="#2-Jenkins-基本配置" class="headerlink" title="2. Jenkins 基本配置"></a><strong>2. Jenkins 基本配置</strong></h2><h3 id="1-管理插件"><a href="#1-管理插件" class="headerlink" title="(1) 管理插件"></a><strong>(1) 管理插件</strong></h3><ol>
+<li><strong>进入插件管理</strong>：<ul>
+<li><strong>Dashboard → Manage Jenkins → Manage Plugins</strong>。</li>
+</ul>
+</li>
+<li><strong>安装常用插件</strong>：<ul>
+<li><strong>Git</strong>（用于代码拉取）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Docker</strong>（用于容器化构建）</li>
+<li><strong>Blue Ocean</strong>（可视化流水线）</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-配置全局工具"><a href="#2-配置全局工具" class="headerlink" title="(2) 配置全局工具"></a><strong>(2) 配置全局工具</strong></h3><ol>
+<li><strong>进入全局工具配置</strong>：<ul>
+<li><strong>Dashboard → Manage Jenkins → Global Tool Configuration</strong>。</li>
+</ul>
+</li>
+<li><strong>配置 JDK、Maven、Git</strong>：<ul>
+<li>指定路径或自动安装。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-Jenkins-创建第一个-Job"><a href="#3-Jenkins-创建第一个-Job" class="headerlink" title="3. Jenkins 创建第一个 Job"></a><strong>3. Jenkins 创建第一个 Job</strong></h2><h3 id="1-自由风格项目（Freestyle-Project）"><a href="#1-自由风格项目（Freestyle-Project）" class="headerlink" title="(1) 自由风格项目（Freestyle Project）"></a><strong>(1) 自由风格项目（Freestyle Project）</strong></h3><ol>
+<li><strong>新建 Job</strong>：<ul>
+<li><strong>Dashboard → New Item → Freestyle project</strong>。</li>
+</ul>
+</li>
+<li><strong>配置 Git 仓库</strong>：<ul>
+<li><strong>Source Code Management → Git</strong>，输入仓库 URL。</li>
+</ul>
+</li>
+<li><strong>设置构建触发器</strong>：<ul>
+<li><strong>Poll SCM</strong>（定时检查代码更新）。</li>
+<li><strong>GitHub Webhook</strong>（代码提交后自动触发）。</li>
+</ul>
+</li>
+<li><strong>添加构建步骤</strong>：<ul>
+<li><strong>Execute shell</strong>（Linux）或 <strong>Execute Windows batch command</strong>（Windows）：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Building...&quot;</span></span><br><span class="line">mvn clean package</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>保存并运行</strong>：<ul>
+<li>点击 <strong>Build Now</strong> 手动触发构建。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-使用-Pipeline（推荐）"><a href="#2-使用-Pipeline（推荐）" class="headerlink" title="(2) 使用 Pipeline（推荐）"></a><strong>(2) 使用 Pipeline（推荐）</strong></h3><ol>
+<li><strong>新建 Pipeline Job</strong>：<ul>
+<li><strong>New Item → Pipeline</strong>。</li>
+</ul>
+</li>
+<li><strong>编写 Jenkinsfile</strong>（示例）：<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn clean package&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;mvn test&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh <span class="string">&#x27;scp target/*.jar user@server:/path/&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><strong>保存并运行</strong>：<ul>
+<li>代码提交后自动触发 Pipeline。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="4-Jenkins-集成-GitHub-GitLab"><a href="#4-Jenkins-集成-GitHub-GitLab" class="headerlink" title="4. Jenkins 集成 GitHub&#x2F;GitLab"></a><strong>4. Jenkins 集成 GitHub&#x2F;GitLab</strong></h2><h3 id="1-GitHub-Webhook-自动触发"><a href="#1-GitHub-Webhook-自动触发" class="headerlink" title="(1) GitHub Webhook 自动触发"></a><strong>(1) GitHub Webhook 自动触发</strong></h3><ol>
+<li><strong>在 GitHub 仓库设置 Webhook</strong>：<ul>
+<li><strong>Settings → Webhooks → Add webhook</strong>。</li>
+<li>Payload URL: <code>http://&lt;你的Jenkins服务器&gt;/github-webhook/</code>。</li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置 GitHub 插件</strong>：<ul>
+<li><strong>Manage Jenkins → Configure System → GitHub Server</strong>。</li>
+<li>添加 GitHub 凭据（Personal Access Token）。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-GitLab-CI-CD-集成"><a href="#2-GitLab-CI-CD-集成" class="headerlink" title="(2) GitLab CI&#x2F;CD 集成"></a><strong>(2) GitLab CI&#x2F;CD 集成</strong></h3><ol>
+<li><strong>安装 GitLab 插件</strong>：<ul>
+<li>**Manage Plugins → 搜索 “GitLab”**。</li>
+</ul>
+</li>
+<li><strong>配置 GitLab 连接</strong>：<ul>
+<li><strong>Manage Jenkins → Configure System → GitLab</strong>。</li>
+<li>输入 GitLab URL 和 API Token。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="5-Jenkins-常见问题"><a href="#5-Jenkins-常见问题" class="headerlink" title="5. Jenkins 常见问题"></a><strong>5. Jenkins 常见问题</strong></h2><h3 id="1-Jenkins-启动失败"><a href="#1-Jenkins-启动失败" class="headerlink" title="(1) Jenkins 启动失败"></a><strong>(1) Jenkins 启动失败</strong></h3><ul>
+<li><strong>检查端口冲突</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">netstat -ano | findstr 8080  <span class="comment"># Windows</span></span><br><span class="line"><span class="built_in">sudo</span> lsof -i :8080           <span class="comment"># Linux/macOS</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>修改端口</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> nano /etc/default/jenkins  <span class="comment"># 修改 HTTP_PORT</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl restart jenkins</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-插件安装失败"><a href="#2-插件安装失败" class="headerlink" title="(2) 插件安装失败"></a><strong>(2) 插件安装失败</strong></h3><ul>
+<li><strong>更换镜像源</strong>：<ul>
+<li><strong>Manage Jenkins → Manage Plugins → Advanced</strong>。</li>
+<li>修改 Update Site 为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-构建失败排查"><a href="#3-构建失败排查" class="headerlink" title="(3) 构建失败排查"></a><strong>(3) 构建失败排查</strong></h3><ul>
+<li><strong>查看控制台日志</strong>：<ul>
+<li>进入构建详情 → <strong>Console Output</strong>。</li>
+</ul>
+</li>
+<li><strong>检查环境变量</strong>：<ul>
+<li><code>echo $PATH</code>（Linux）或 <code>echo %PATH%</code>（Windows）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="6-Jenkins-进阶功能"><a href="#6-Jenkins-进阶功能" class="headerlink" title="6. Jenkins 进阶功能"></a><strong>6. Jenkins 进阶功能</strong></h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>分布式构建</strong></td>
+<td>使用 Agent 节点分担主节点压力</td>
+</tr>
+<tr>
+<td><strong>Blue Ocean</strong></td>
+<td>可视化 Pipeline 编辑</td>
+</tr>
+<tr>
+<td><strong>Docker 集成</strong></td>
+<td>在容器中运行构建</td>
+</tr>
+<tr>
+<td><strong>Kubernetes 插件</strong></td>
+<td>动态创建 Pod 运行 Job</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-学习资源"><a href="#7-学习资源" class="headerlink" title="7. 学习资源"></a><strong>7. 学习资源</strong></h2><ul>
+<li><strong>官方文档</strong>：<a href="https://www.jenkins.io/doc/">https://www.jenkins.io/doc/</a></li>
+<li><strong>中文社区</strong>：<a href="https://jenkins-zh.cn/">https://jenkins-zh.cn/</a></li>
+<li><strong>实战课程</strong>：<ul>
+<li>Udemy: <a href="https://www.udemy.com/course/jenkins-from-zero-to-hero/">Jenkins CI&#x2F;CD Pipeline</a></li>
+<li>B站：搜索 “Jenkins 教程”</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li>Jenkins 是强大的 CI&#x2F;CD 工具，支持自动化构建、测试和部署。</li>
+<li>推荐使用 <strong>Pipeline + Docker</strong> 实现现代化 DevOps 流程。</li>
+<li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
+</ul>
+<p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lean Cloud</title>
+    <url>/2025/01/08/Lean-Cloud/</url>
+    <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
+<hr>
+<h3 id="LeanCloud-的核心功能"><a href="#LeanCloud-的核心功能" class="headerlink" title="LeanCloud 的核心功能"></a><strong>LeanCloud 的核心功能</strong></h3><p>LeanCloud 提供了许多常见后端功能，以下是主要的功能模块：</p>
+<h4 id="1-数据存储"><a href="#1-数据存储" class="headerlink" title="1. 数据存储"></a><strong>1. 数据存储</strong></h4><ul>
+<li>提供类似数据库的云端存储服务，支持结构化和非结构化数据。</li>
+<li>数据存储是基于 <strong>NoSQL</strong> 的，开发者无需处理复杂的数据库部署和运维。</li>
+<li>支持复杂查询、关系模型以及文件存储（图片、文档等）。</li>
+</ul>
+<h4 id="2-用户管理"><a href="#2-用户管理" class="headerlink" title="2. 用户管理"></a><strong>2. 用户管理</strong></h4><ul>
+<li>提供用户注册、登录和管理功能。</li>
+<li>支持第三方登录（如微信、QQ、微博等）。</li>
+<li>提供基于角色和权限的访问控制。</li>
+</ul>
+<h4 id="3-即时通讯"><a href="#3-即时通讯" class="headerlink" title="3. 即时通讯"></a><strong>3. 即时通讯</strong></h4><ul>
+<li>支持实时消息传输，包括单聊、群聊和聊天室功能。</li>
+<li>提供消息历史记录和离线消息支持。</li>
+<li>适合需要社交聊天或消息通知功能的应用。</li>
+</ul>
+<h4 id="4-云引擎"><a href="#4-云引擎" class="headerlink" title="4. 云引擎"></a><strong>4. 云引擎</strong></h4><ul>
+<li>提供自定义后端逻辑的功能，开发者可以使用 LeanCloud 的云引擎编写自己的业务逻辑代码。</li>
+<li>支持定时任务、事件处理等。</li>
+</ul>
+<h4 id="5-推送通知"><a href="#5-推送通知" class="headerlink" title="5. 推送通知"></a><strong>5. 推送通知</strong></h4><ul>
+<li>提供消息推送功能，支持 iOS、Android 和 Web 平台。</li>
+<li>支持定向推送、广播推送以及根据用户属性筛选推送。</li>
+</ul>
+<h4 id="6-文件存储"><a href="#6-文件存储" class="headerlink" title="6. 文件存储"></a><strong>6. 文件存储</strong></h4><ul>
+<li>用于存储图片、视频、音频等文件。</li>
+<li>提供 CDN 加速功能，确保文件访问速度快且稳定。</li>
+</ul>
+<h4 id="7-数据分析"><a href="#7-数据分析" class="headerlink" title="7. 数据分析"></a><strong>7. 数据分析</strong></h4><ul>
+<li>提供实时的应用数据分析，帮助开发者了解用户行为和产品表现。</li>
+<li>支持自定义事件的埋点统计。</li>
+</ul>
+<hr>
+<h3 id="LeanCloud-的特点"><a href="#LeanCloud-的特点" class="headerlink" title="LeanCloud 的特点"></a><strong>LeanCloud 的特点</strong></h3><ol>
+<li><p><strong>一站式后端服务</strong></p>
+<ul>
+<li>开发者可以使用 LeanCloud 提供的所有后端功能，无需自己搭建服务器和数据库。</li>
+</ul>
+</li>
+<li><p><strong>跨平台支持</strong></p>
+<ul>
+<li>提供丰富的 SDK，支持 Android、iOS、Unity、Web、小程序等多种平台。</li>
+</ul>
+</li>
+<li><p><strong>高可用和可扩展性</strong></p>
+<ul>
+<li>LeanCloud 背后的基础设施支持高并发访问，能够应对大规模用户请求。</li>
+<li>开发者无需担心服务器维护和扩容问题。</li>
+</ul>
+</li>
+<li><p><strong>高效开发</strong></p>
+<ul>
+<li>减少后端开发时间，让开发者专注于前端开发和产品逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a><strong>适用场景</strong></h3><ol>
+<li><strong>社交应用</strong><ul>
+<li>即时通讯、群聊、好友系统、动态发布。</li>
+</ul>
+</li>
+<li><strong>电商平台</strong><ul>
+<li>用户管理、商品存储、订单管理、推送通知。</li>
+</ul>
+</li>
+<li><strong>游戏开发</strong><ul>
+<li>游戏玩家存档、排行榜、实时消息（如对战消息）。</li>
+</ul>
+</li>
+<li><strong>内容平台</strong><ul>
+<li>文件存储（图片、音频、视频）、用户行为分析。</li>
+</ul>
+</li>
+<li><strong>小程序开发</strong><ul>
+<li>数据存储、用户登录、消息推送。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="与其他-BaaS-的比较"><a href="#与其他-BaaS-的比较" class="headerlink" title="与其他 BaaS 的比较"></a><strong>与其他 BaaS 的比较</strong></h3><p>与 Firebase、AWS Amplify 等 BaaS 服务相比，LeanCloud 更适合 <strong>国内市场</strong> 的开发者，尤其是以下场景：</p>
+<ul>
+<li><strong>国内访问速度快：</strong> 提供中国大陆的服务器节点。</li>
+<li><strong>符合国内法规：</strong> 支持合规化数据存储。</li>
+<li><strong>丰富的 SDK：</strong> 针对微信小程序、国内第三方登录等场景提供支持。</li>
+</ul>
+<hr>
+<h3 id="如何使用-LeanCloud？"><a href="#如何使用-LeanCloud？" class="headerlink" title="如何使用 LeanCloud？"></a><strong>如何使用 LeanCloud？</strong></h3><ol>
+<li><p><strong>注册 LeanCloud 账号并创建应用</strong></p>
+<ul>
+<li>前往 <a href="https://www.leancloud.cn/">LeanCloud 官网</a> 注册账号并创建一个新项目。</li>
+</ul>
+</li>
+<li><p><strong>集成 LeanCloud SDK</strong></p>
+<ul>
+<li>在项目中下载并引入 LeanCloud 提供的 SDK（支持 Unity、C#、JavaScript、Python 等多种语言）。</li>
+</ul>
+</li>
+<li><p><strong>调用 LeanCloud 的 API</strong></p>
+<ul>
+<li>通过 SDK 或 REST API，调用 LeanCloud 提供的各种服务，如存储数据、发送消息等。</li>
+</ul>
+</li>
+<li><p><strong>部署云引擎</strong></p>
+<ul>
+<li>如果需要自定义后端逻辑，可以在 LeanCloud 的云引擎上部署自己的代码。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a><strong>示例代码</strong></h3><p>以下是一个使用 LeanCloud 存储数据的简单示例（C#）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> LeanCloud;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Example</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">SaveData</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 初始化 LeanCloud</span></span><br><span class="line">        AVClient.Initialize(<span class="string">&quot;your-app-id&quot;</span>, <span class="string">&quot;your-app-key&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建一个对象</span></span><br><span class="line">        AVObject obj = <span class="keyword">new</span> AVObject(<span class="string">&quot;TestObject&quot;</span>);</span><br><span class="line">        obj[<span class="string">&quot;name&quot;</span>] = <span class="string">&quot;Unity开发者&quot;</span>;</span><br><span class="line">        obj[<span class="string">&quot;score&quot;</span>] = <span class="number">100</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存到 LeanCloud</span></span><br><span class="line">        <span class="keyword">await</span> obj.SaveAsync();</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;数据保存成功！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p>LeanCloud 是一个功能强大且易用的后端即服务平台，适合中小型团队甚至个人开发者快速构建后端服务。尤其是对于国内开发者来说，LeanCloud 的本地化支持和便捷性使其成为 Firebase 等海外 BaaS 平台的有力替代品。</p>
+]]></content>
+      <categories>
+        <category>Lean Cloud</category>
+      </categories>
+      <tags>
+        <tag>Lean Cloud</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Markdown 语法</title>
     <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
@@ -4163,7 +4163,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#x69;&#116;&#121;&#46;&#99;&#111;&#x6c;&#x6c;&#97;&#x62;&#x2d;&#112;&#114;&#x6f;&#x78;&#x79;&#x40;&#50;&#46;&#54;&#46;&#x30;">&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#x69;&#116;&#121;&#46;&#99;&#111;&#x6c;&#x6c;&#97;&#x62;&#x2d;&#112;&#114;&#x6f;&#x78;&#x79;&#x40;&#50;&#46;&#54;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#109;&#x2e;&#x75;&#110;&#x69;&#x74;&#121;&#46;&#99;&#x6f;&#108;&#108;&#97;&#98;&#45;&#112;&#114;&#111;&#x78;&#121;&#64;&#x32;&#46;&#x36;&#x2e;&#x30;">&#99;&#x6f;&#109;&#x2e;&#x75;&#110;&#x69;&#x74;&#121;&#46;&#99;&#x6f;&#108;&#108;&#97;&#98;&#45;&#112;&#114;&#111;&#x78;&#121;&#64;&#x32;&#46;&#x36;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -4724,6 +4724,35 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -4811,35 +4840,6 @@
 <li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
 <li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
 ]]></content>
   </entry>
   <entry>
@@ -5454,6 +5454,22 @@
       </tags>
   </entry>
   <entry>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git无法访问外网</title>
     <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
     <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
@@ -5548,22 +5564,6 @@
 <li>用于拦截不支持手动代理配置的程序流量。</li>
 <li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
 </ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -6921,6 +6921,31 @@
 ]]></content>
   </entry>
   <entry>
+    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
+    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
+    <content><![CDATA[<ol>
+<li><p>去这个网站下载工程：</p>
+<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
+</li>
+<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
+<p><img src="/.io//20241213_141006_image.png"></p>
+</li>
+<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
+</li>
+<li><p>勾选show html element 不然输入后不显示。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>unity</category>
+        <category>webGL</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>webGL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity tmp中文显示</title>
     <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
     <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
@@ -7007,33 +7032,8 @@
         <category>unity</category>
       </categories>
       <tags>
+        <tag>unity</tag>
         <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
-    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
-    <content><![CDATA[<ol>
-<li><p>去这个网站下载工程：</p>
-<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
-</li>
-<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
-<p><img src="/.io//20241213_141006_image.png"></p>
-</li>
-<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
-</li>
-<li><p>勾选show html element 不然输入后不显示。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>unity</category>
-        <category>webGL</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>webGL</tag>
       </tags>
   </entry>
   <entry>
@@ -8151,6 +8151,34 @@
 ]]></content>
   </entry>
   <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>文件树状层级图生成</title>
     <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
@@ -9052,40 +9080,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>跨境电商</title>
-    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
-    <content><![CDATA[<p>店铺类型：</p>
-<ul>
-<li>铺货</li>
-<li>精铺</li>
-<li>品牌（精品）</li>
-</ul>
-<p>物流</p>
-<ul>
-<li>FBA：亚马逊仓发货</li>
-<li>FBM(商家自发货)</li>
-</ul>
-<p>形式：</p>
-<ul>
-<li>海</li>
-<li>铁</li>
-<li>空</li>
-</ul>
-<p>工具：</p>
-<p>谷歌趋势： Google Trends  关键词搜索 </p>
-<ul>
-<li>相关主题  趋势变化判断是不是和开发该品类</li>
-<li>订阅关键词</li>
-</ul>
-<p>ads - 关键词规划师 </p>
-<ul>
-<li>转换率</li>
-<li>获客成本</li>
-<li></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab&#x2F;Gitea）和简单搭建裸仓库。</p>
@@ -9288,6 +9282,40 @@
       <tags>
         <tag>git</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>跨境电商</title>
+    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
+    <content><![CDATA[<p>店铺类型：</p>
+<ul>
+<li>铺货</li>
+<li>精铺</li>
+<li>品牌（精品）</li>
+</ul>
+<p>物流</p>
+<ul>
+<li>FBA：亚马逊仓发货</li>
+<li>FBM(商家自发货)</li>
+</ul>
+<p>形式：</p>
+<ul>
+<li>海</li>
+<li>铁</li>
+<li>空</li>
+</ul>
+<p>工具：</p>
+<p>谷歌趋势： Google Trends  关键词搜索 </p>
+<ul>
+<li>相关主题  趋势变化判断是不是和开发该品类</li>
+<li>订阅关键词</li>
+</ul>
+<p>ads - 关键词规划师 </p>
+<ul>
+<li>转换率</li>
+<li>获客成本</li>
+<li></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>转产品经理</title>
