@@ -1036,3 +1036,11 @@ print(string.gsub(s, "%a+", "#"))  --> # # 123
       2. suspended 暂停  挂起的协程
       3. running   只能在协程内获取该状态    coroutine.running()可以得到当前正在运行的协程的编号
 9.  Person.sayHello() ≈ 静态函数   p1:sayHello() ≈ 成员函数
+10. 在 Lua 中，函数参数的传递方式可以这样理解：
+	- 对于基本类型（number, string, boolean, nil等）：
+ 		- 是值传递（pass by value），函数内修改不会影响外部变量
+	- 对于 table、function、userdata 等复合类型：
+		- 是引用传递（pass by reference），但更准确说是"共享传递"（pass by sharing）
+		- 你会得到原始对象的引用（指针），而不是副本
+		- 如果直接修改table的内容（如添加/修改字段），会影响原始table
+		- 但如果给参数赋新值（改变引用本身），不会影响外部变量
