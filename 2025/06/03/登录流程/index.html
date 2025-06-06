@@ -210,6 +210,77 @@
         注销--&gt;z
         服务器返回错误码--&gt;z
         ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
+        C--&gt;Request.Login--&gt;LoginWithProcess
+
+        subgraph 共同请求模块
+            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
+        end
+        
+    end
+
+   subgraph 新登录流程
+        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
+        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
+        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
+        --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+
+        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
+
+        ReadyToEnter--&gt;|Guest|NewAccountLogin
+        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
+        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
+    end</code></pre>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
         LoginViewCtr:OnSocketConnect
         --&gt; LoginViewCtr:ReadyToEnter
         V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
