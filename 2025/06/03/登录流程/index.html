@@ -253,8 +253,16 @@
    subgraph 新登录流程
         OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
         --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
-        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
-        --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
+        
+        subgraph 合并请求回复的数据
+            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
+            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
+        end
+
+        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+
+
 
         OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
         LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
@@ -263,7 +271,27 @@
         ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
         oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
         LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
-    end</code></pre>
+    
+        subgraph 各登录方式请求所需的数据
+            FacebookLogin:InitData
+            GuestLogin:InitData
+            RoyalLogin:InitData
+        end
+
+        subgraph 各登录方式请求的成功回调
+            ProcessingAccountLoginTokenInfoData
+            ProcessingGuestLoginTokenInfoData
+            ProcessingFacebookLoginTokenInfoData
+        end
+
+      
+    
+    end
+    
+
+
+
+</code></pre>
 <pre><code class="highlight mermaid">graph TD
     subgraph 登录模块
         子游戏接口--&gt;z
