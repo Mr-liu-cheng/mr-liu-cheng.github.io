@@ -948,13 +948,6 @@ mermaid:
   theme:
     light: default
     dark: dark
-  startOnLoad: true
-  flowchart:
-    useMaxWidth: false  # 禁用自动宽度以允许缩放
-  zoom:
-    enable: true       # 启用缩放（需mermaid>=8.4.0）
-  pan:
-    enable: true       # 启用平移
 
 # chartjs
 # see https://www.chartjs.org/docs/latest/
@@ -1067,6 +1060,7 @@ css_prefix: true
 # 插入代码到头部 </head> 之前 和 底部 </body> 之前
 inject:
   head:
+    - <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.css">
   bottom:
     - '<div id="music-player" style="display: none;"></div>'
     - '<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">'
@@ -1085,8 +1079,15 @@ inject:
     - '    })'
     - '    .catch(error => console.error("Error loading playlist:", error));'
     - '</script>'
-
-
+    - '<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>'
+    - '<script>'
+    - '  mermaid.initialize({'
+    - '    startOnLoad: true,'
+    - '    zoom: { enable: true },'
+    - '    pan: { enable: true }'
+    - '  });'
+    - '</script>'
+      
 # CDN Settings
 # Don't modify the following settings unless you know how they work
 CDN:
