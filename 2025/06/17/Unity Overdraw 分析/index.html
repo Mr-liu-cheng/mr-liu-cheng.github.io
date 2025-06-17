@@ -1,0 +1,455 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Unity Overdraw 分析 | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 Unity 的 Scene 视图 + Frame Debugger 以及 Profiler 和 RenderDoc 工具。下面是详细方法：  ✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）操作步骤： 打开 Unity 编辑器。 切换到 Scene 视图（不是 Game 视图）。 在 Scene 视图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity Overdraw 分析">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 Unity 的 Scene 视图 + Frame Debugger 以及 Profiler 和 RenderDoc 工具。下面是详细方法：  ✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）操作步骤： 打开 Unity 编辑器。 切换到 Scene 视图（不是 Game 视图）。 在 Scene 视图">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2025-06-17T14:16:02.000Z">
+<meta property="article:modified_time" content="2025-06-17T14:16:02.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="Unity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Unity Overdraw 分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">60</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">18</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Unity Overdraw 分析</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Unity Overdraw 分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-17T14:16:02.000Z" title="发表于 2025-06-17 14:16:02">2025-06-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-17T14:16:02.000Z" title="更新于 2025-06-17 14:16:02">2025-06-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Unity/">Unity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
+<hr>
+<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 编辑器。</li>
+<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
+<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
+<li>选择 <strong>“Overdraw”</strong> 模式。</li>
+</ol>
+<blockquote>
+<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
+</blockquote>
+<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
+<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
+<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
+</ul>
+<hr>
+<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
+<li>点击左上角的 <strong>Enable</strong>。</li>
+<li>运行游戏，进入你要查看的 UI 界面。</li>
+<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
+</ol>
+<blockquote>
+<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
+</blockquote>
+<hr>
+<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
+<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
+</li>
+<li><p>切换到 <strong>Rendering</strong> 模块。</p>
+</li>
+<li><p>查看：</p>
+<ul>
+<li><strong>Draw Calls（绘制调用次数）</strong></li>
+<li><strong>Batches（批处理）</strong></li>
+<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
+</ul>
+</li>
+</ol>
+<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
+<hr>
+<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
+<ol>
+<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
+<li>捕捉一帧 UI 显示画面。</li>
+<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
+</ol>
+<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
+<hr>
+<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>优点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scene View 的 Overdraw 模式</td>
+<td>快速查看 UI 哪些地方重叠</td>
+<td>快速可视化</td>
+</tr>
+<tr>
+<td>Frame Debugger</td>
+<td>精确分析哪些 UI 元素被重复绘制</td>
+<td>精准</td>
+</tr>
+<tr>
+<td>Profiler</td>
+<td>查看整体 UI 渲染开销</td>
+<td>性能趋势</td>
+</tr>
+<tr>
+<td>RenderDoc</td>
+<td>专业 GPU 分析工具</td>
+<td>最精细</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
+<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/">https://mr-liu-cheng.github.io/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Unity/">Unity</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/06/17/Unity%20Rebuild%20%E5%88%86%E6%9E%90/" title="Unity Rebuild 分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Unity Rebuild 分析</div></div><div class="info-2"><div class="info-item-1">在 Unity 的 UI 系统（UGUI）中，Rebuild 是指 UI 元素在生命周期中的某些阶段发生变化时触发的一种“重建”流程。频繁的 Rebuild 会带来性能问题，尤其在界面复杂或频繁更新时。下面是关于 Rebuild 的全面分析：  🧩 什么是 Rebuild？UI 元素发生如下变化时，会触发 Rebuild：  位置&#x2F;大小发生变化（RectTransform 变动） 内容变动（Text 文本变了） 属性变动（颜色、字体、sprite 等）  Unity 会将这些 UI 元素加入到一个队列，在 Canvas 的渲染阶段进行一次“重建”。  🔍 Rebuild 的类型（对应 CanvasUpdate 枚举）Unity 的 Rebuild 会按照 5 个阶段进行处理，分别是： 12345678public enum CanvasUpdate &#123;    Prelayout,    Layout,    PostLayout,    PreRender,    LatePreRender,    MaxUpdateValue&#125;  这些阶段由...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/06/17/Unity%20Rebuild%20%E5%88%86%E6%9E%90/" title="Unity Rebuild 分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-17</div><div class="info-item-2">Unity Rebuild 分析</div></div><div class="info-2"><div class="info-item-1">在 Unity 的 UI 系统（UGUI）中，Rebuild 是指 UI 元素在生命周期中的某些阶段发生变化时触发的一种“重建”流程。频繁的 Rebuild 会带来性能问题，尤其在界面复杂或频繁更新时。下面是关于 Rebuild 的全面分析：  🧩 什么是 Rebuild？UI 元素发生如下变化时，会触发 Rebuild：  位置&#x2F;大小发生变化（RectTransform 变动） 内容变动（Text 文本变了） 属性变动（颜色、字体、sprite 等）  Unity 会将这些 UI 元素加入到一个队列，在 Canvas 的渲染阶段进行一次“重建”。  🔍 Rebuild 的类型（对应 CanvasUpdate 枚举）Unity 的 Rebuild 会按照 5 个阶段进行处理，分别是： 12345678public enum CanvasUpdate &#123;    Prelayout,    Layout,    PostLayout,    PreRender,    LatePreRender,    MaxUpdateValue&#125;  这些阶段由...</div></div></div></a><a class="pagination-related" href="/2025/01/10/Unity-Jobs-System/" title="Unity Jobs System"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-10</div><div class="info-item-2">Unity Jobs System</div></div><div class="info-2"><div class="info-item-1">Unity JobsUnity Jobs System 是 Unity 提供的一种高效并行计算框架，用来帮助开发者更好地利用多核 CPU 的计算能力，提高性能。它是 Unity Data-Oriented Technology Stack (DOTS) 的核心组件之一，与 Burst Compiler 和 Entity Component System (ECS) 密切相关。  Unity Jobs 的功能与用途 并行任务处理  Unity Jobs 允许你将复杂的计算任务拆分成多个小任务，并分配到多个 CPU 核心上同时运行。 例如，可以用 Jobs System 处理路径寻路、物理模拟、动画运算、大规模 AI 行为、粒子系统等需要高计算量的任务。   线程安全  Unity Jobs 通过自动管理线程池，避免了开发者手动创建和管理线程带来的复杂性和错误风险。 提供数据访问的约束机制（如 NativeArray），避免多线程访问冲突。   性能优化  Unity Jobs 和 Burst Compiler 配合，能大幅优化计算性能。Burst Compiler 会将 Jobs...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">60</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">18</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9AScene-%E8%A7%86%E5%9B%BE%E4%B8%AD%E7%9A%84-Overdraw-%E6%A8%A1%E5%BC%8F%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">操作步骤：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A"><span class="toc-number">1.2.</span> <span class="toc-text">注意事项：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9AFrame-Debugger%EF%BC%88%E6%8E%A8%E8%8D%90%E7%94%A8%E4%BA%8E%E6%9F%A5%E6%89%BE%E5%85%B7%E4%BD%93%E8%B0%83%E7%94%A8%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">✅ 方法二：Frame Debugger（推荐用于查找具体调用）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4%EF%BC%9A-1"><span class="toc-number">2.1.</span> <span class="toc-text">操作步骤：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95%E4%B8%89%EF%BC%9AUnity-Profiler%EF%BC%88%E6%95%B4%E4%BD%93%E8%A7%82%E5%AF%9F%E5%BC%80%E9%94%80%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">✅ 方法三：Unity Profiler（整体观察开销）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95%E5%9B%9B%EF%BC%9A%E4%BD%BF%E7%94%A8-RenderDoc%EF%BC%88%E9%9C%80%E8%A6%81%E6%9B%B4%E4%B8%93%E4%B8%9A%E5%88%86%E6%9E%90%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">✅ 方法四：使用 RenderDoc（需要更专业分析）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8E%AF-%E5%B0%8F%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">🎯 小结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/" title="Unity Overdraw 分析">Unity Overdraw 分析</a><time datetime="2025-06-17T14:16:02.000Z" title="发表于 2025-06-17 14:16:02">2025-06-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/17/Unity%20Rebuild%20%E5%88%86%E6%9E%90/" title="Unity Rebuild 分析">Unity Rebuild 分析</a><time datetime="2025-06-17T12:06:02.000Z" title="发表于 2025-06-17 12:06:02">2025-06-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/" title="部门">部门</a><time datetime="2025-06-09T11:20:13.000Z" title="发表于 2025-06-09 11:20:13">2025-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/" title="登录流程">登录流程</a><time datetime="2025-06-03T11:20:13.000Z" title="发表于 2025-06-03 11:20:13">2025-06-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/05/21/%E6%8F%90%E5%8D%87/" title="提升">提升</a><time datetime="2025-05-21T11:20:13.000Z" title="发表于 2025-05-21 11:20:13">2025-05-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'bbe6e93daccddb78b07068f410838ff0'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script><script>  mermaid.initialize({    startOnLoad: true,    zoom: { enable: true },    pan: { enable: true }  });</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
