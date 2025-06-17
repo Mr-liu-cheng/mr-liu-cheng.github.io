@@ -1525,199 +1525,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Jenkins 游戏后端自动化部署流程</title>
-    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>CI&#x2F;CD 核心调度平台</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>代码版本管理（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>Docker</strong></td>
-<td>容器化部署（可选）</td>
-</tr>
-<tr>
-<td><strong>Kubernetes (K8s)</strong></td>
-<td>容器编排（适用于分布式后端）</td>
-</tr>
-<tr>
-<td><strong>构建工具</strong></td>
-<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
-<thead>
-<tr>
-<th>插件</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker Plugin</strong></td>
-<td>构建 Docker 镜像</td>
-</tr>
-<tr>
-<td><strong>Kubernetes Plugin</strong></td>
-<td>部署到 K8s</td>
-</tr>
-<tr>
-<td><strong>Pipeline</strong></td>
-<td>定义 CI&#x2F;CD 流程</td>
-</tr>
-<tr>
-<td><strong>Publish Over SSH</strong></td>
-<td>远程服务器部署</td>
-</tr>
-<tr>
-<td><strong>SonarQube Scanner</strong></td>
-<td>代码质量检测（可选）</td>
-</tr>
-</tbody></table>
-<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
-<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
-<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
-<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
-</ul>
-<hr>
-<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
-<thead>
-<tr>
-<th>语言</th>
-<th>构建命令</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Java (Maven)</strong></td>
-<td><code>mvn clean package -DskipTests</code></td>
-</tr>
-<tr>
-<td><strong>Go</strong></td>
-<td><code>go build -o bin/server ./cmd/server</code></td>
-</tr>
-<tr>
-<td><strong>Python</strong></td>
-<td><code>pip install -r requirements.txt</code></td>
-</tr>
-</tbody></table>
-<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
-<thead>
-<tr>
-<th>部署方式</th>
-<th>适用场景</th>
-<th>Jenkins 配置</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>SSH 直接部署</strong></td>
-<td>传统服务器</td>
-<td>使用 <code>Publish Over SSH</code> 插件</td>
-</tr>
-<tr>
-<td><strong>Docker Swarm</strong></td>
-<td>小型集群</td>
-<td><code>docker stack deploy</code></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>生产级集群</td>
-<td><code>kubectl set image</code> 或 Helm</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Prometheus + Grafana</strong></td>
-<td>监控服务性能</td>
-</tr>
-<tr>
-<td><strong>Kibana</strong></td>
-<td>日志分析</td>
-</tr>
-<tr>
-<td><strong>Jenkins 回滚脚本</strong></td>
-<td>快速回退到旧版本</td>
-</tr>
-</tbody></table>
-<p><strong>回滚示例</strong>：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>排查方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker 构建失败</strong></td>
-<td>检查 <code>Dockerfile</code> 和构建日志</td>
-</tr>
-<tr>
-<td><strong>K8s 部署超时</strong></td>
-<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
-</tr>
-<tr>
-<td><strong>微服务通信异常</strong></td>
-<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
-<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
-<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
-</ul>
-<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>HybridCLR 笔记</title>
     <url>/2025/01/13/HybridCLR-%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h2 id="hybridclr-Package手册"><a href="#hybridclr-Package手册" class="headerlink" title="hybridclr Package手册"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/com.code-philosophy.hybridclr">hybridclr Package手册</a></h2><h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/bestpractice">最佳实践</a></h2><h2 id="不支持特性"><a href="#不支持特性" class="headerlink" title="不支持特性"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/notsupportedfeatures">不支持特性</a></h2><h2 id="AOT泛型"><a href="#AOT泛型" class="headerlink" title="AOT泛型"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/aotgeneric">AOT泛型</a></h2><h2 id="热更新程序集的-auto-reference"><a href="#热更新程序集的-auto-reference" class="headerlink" title="热更新程序集的 auto reference"></a>热更新程序集的 auto reference</h2><blockquote>
@@ -3044,6 +2851,199 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Jenkins 游戏后端自动化部署流程</title>
+    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>CI&#x2F;CD 核心调度平台</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>代码版本管理（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>容器化部署（可选）</td>
+</tr>
+<tr>
+<td><strong>Kubernetes (K8s)</strong></td>
+<td>容器编排（适用于分布式后端）</td>
+</tr>
+<tr>
+<td><strong>构建工具</strong></td>
+<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker Plugin</strong></td>
+<td>构建 Docker 镜像</td>
+</tr>
+<tr>
+<td><strong>Kubernetes Plugin</strong></td>
+<td>部署到 K8s</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>定义 CI&#x2F;CD 流程</td>
+</tr>
+<tr>
+<td><strong>Publish Over SSH</strong></td>
+<td>远程服务器部署</td>
+</tr>
+<tr>
+<td><strong>SonarQube Scanner</strong></td>
+<td>代码质量检测（可选）</td>
+</tr>
+</tbody></table>
+<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
+<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
+<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
+<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+</ul>
+<hr>
+<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
+<thead>
+<tr>
+<th>语言</th>
+<th>构建命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Java (Maven)</strong></td>
+<td><code>mvn clean package -DskipTests</code></td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td><code>go build -o bin/server ./cmd/server</code></td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td><code>pip install -r requirements.txt</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
+<thead>
+<tr>
+<th>部署方式</th>
+<th>适用场景</th>
+<th>Jenkins 配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SSH 直接部署</strong></td>
+<td>传统服务器</td>
+<td>使用 <code>Publish Over SSH</code> 插件</td>
+</tr>
+<tr>
+<td><strong>Docker Swarm</strong></td>
+<td>小型集群</td>
+<td><code>docker stack deploy</code></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>生产级集群</td>
+<td><code>kubectl set image</code> 或 Helm</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Prometheus + Grafana</strong></td>
+<td>监控服务性能</td>
+</tr>
+<tr>
+<td><strong>Kibana</strong></td>
+<td>日志分析</td>
+</tr>
+<tr>
+<td><strong>Jenkins 回滚脚本</strong></td>
+<td>快速回退到旧版本</td>
+</tr>
+</tbody></table>
+<p><strong>回滚示例</strong>：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker 构建失败</strong></td>
+<td>检查 <code>Dockerfile</code> 和构建日志</td>
+</tr>
+<tr>
+<td><strong>K8s 部署超时</strong></td>
+<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+</tr>
+<tr>
+<td><strong>微服务通信异常</strong></td>
+<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
+<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
+<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+</ul>
+<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Jenkins 游戏打包部署流程</title>
     <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
@@ -3881,6 +3881,103 @@
 </tbody></table>
 <hr>
 <p>如果你能贴出当前频繁触发 Rebuild 的 UI 层级截图或结构，我可以进一步帮你定位是哪类组件或结构导致的性能瓶颈。是否需要我给你一个自动统计每帧 UI Rebuild 的脚本？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 后置界面截图代替</title>
+    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
+    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
+<hr>
+<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
+<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
+</blockquote>
+<hr>
+<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
+<hr>
+<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
+</blockquote>
+<hr>
+<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
+<ol>
+<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
+<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
+<li>把这个 Texture 设置给 <code>RawImage</code></li>
+<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>推荐做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI 层级很多（嵌套 Canvas）</td>
+<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
+</tr>
+<tr>
+<td>UI 不频繁交互</td>
+<td>完全截图为静态图</td>
+</tr>
+<tr>
+<td>UI 中有动态内容</td>
+<td>考虑部分截图或继续动态更新</td>
+</tr>
+<tr>
+<td>需要点击穿透</td>
+<td><code>RawImage.raycastTarget = false</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
+<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
+<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
+<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
+</ul>
+<hr>
+<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>背包界面被“角色换装界面”全屏遮挡</td>
+<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
+</tr>
+<tr>
+<td>商店全屏 UI 切到签到页面</td>
+<td>商店改为截图，不再实时渲染</td>
+</tr>
+<tr>
+<td>模拟对话剧情</td>
+<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -4766,7 +4863,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#x69;&#x74;&#121;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#97;&#98;&#x2d;&#112;&#x72;&#x6f;&#x78;&#121;&#64;&#x32;&#46;&#54;&#x2e;&#x30;">&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#x69;&#x74;&#121;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#97;&#98;&#x2d;&#112;&#x72;&#x6f;&#x78;&#121;&#64;&#x32;&#46;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#x2e;&#x75;&#110;&#105;&#x74;&#x79;&#46;&#x63;&#x6f;&#x6c;&#108;&#x61;&#x62;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#54;&#x2e;&#x30;">&#x63;&#x6f;&#109;&#x2e;&#x75;&#110;&#105;&#x74;&#x79;&#46;&#x63;&#x6f;&#x6c;&#108;&#x61;&#x62;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5632,6 +5729,18 @@
 ]]></content>
   </entry>
   <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git submodule</title>
     <url>/2025/02/06/git-submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
@@ -5833,18 +5942,6 @@
 </ul>
 <h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>git修改历史提交</title>
@@ -6617,6 +6714,97 @@
       <tags>
         <tag>butterfly</tag>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
       </tags>
   </entry>
   <entry>
@@ -7537,97 +7725,6 @@
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
   </entry>
   <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
@@ -8661,65 +8758,6 @@
       </tags>
   </entry>
   <entry>
-    <title>团结引擎</title>
-    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
-    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
-<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
-<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
-<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
-<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
-<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
-<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
-<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
-<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
-<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
-<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
-<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
-<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
-<li><p>专为中国开发者定制</p>
-<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
-</li>
-<li><p>本土科技生态支持</p>
-<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
-</li>
-<li><p>微信小游戏解决方案</p>
-<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
-</li>
-<li><p>车机定制编辑器</p>
-<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
-</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>提升</title>
-    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<ol>
-<li>做demo</li>
-<li>看技术文章</li>
-<li>逛社区，看别人的问题和解决方案</li>
-<li>研究GitHub开源项目</li>
-<li>学习新技术，看教程</li>
-<li>刷boss直聘,关注市场技术需求和趋势</li>
-<li>根据unity 官方认证考核要求，系统学习技能点</li>
-<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
-<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
-<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>提升</category>
-      </categories>
-      <tags>
-        <tag>提升</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>医保</title>
     <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
     <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
@@ -8794,6 +8832,65 @@
       </categories>
       <tags>
         <tag>医保</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>团结引擎</title>
+    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
+    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
+<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
+<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
+<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
+<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
+<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
+<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
+<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
+<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
+<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
+<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
+<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
+<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
+<li><p>专为中国开发者定制</p>
+<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
+</li>
+<li><p>本土科技生态支持</p>
+<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
+</li>
+<li><p>微信小游戏解决方案</p>
+<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
+</li>
+<li><p>车机定制编辑器</p>
+<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
       </tags>
   </entry>
   <entry>
@@ -9095,231 +9192,6 @@
       </categories>
       <tags>
         <tag>游戏研发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>登录流程</title>
-    <url>/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
-<hr>
-<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
-  participant 玩家
-  participant 客户端
-  participant 服务器
-  玩家--&gt;&gt;客户端: 选择游客登陆
-  客户端-&gt;&gt;玩家: 成功回调
-
-  loop 递归
-      玩家-&gt;&gt;玩家: 接收消息
-  end
-  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
-
-
-<hr>
-<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
-<p>login</p>
-</blockquote>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
-        C--&gt;Request.Login--&gt;LoginWithProcess
-
-        subgraph 共同请求模块
-            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
-        end
-        
-    end
-
-   subgraph 新登录流程
-        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
-        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
-        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
-        
-        subgraph 合并请求回复的数据
-            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
-            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
-        end
-
-        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
-
-
-
-        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
-
-        ReadyToEnter--&gt;|Guest|NewAccountLogin
-        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
-        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
-    
-        subgraph 各登录方式请求所需的数据
-            FacebookLogin:InitData
-            GuestLogin:InitData
-            RoyalLogin:InitData
-        end
-
-        subgraph 各登录方式请求的成功回调
-            ProcessingAccountLoginTokenInfoData
-            ProcessingGuestLoginTokenInfoData
-            ProcessingFacebookLoginTokenInfoData
-        end
-
-      
-    
-    end
-    
-
-
-
-</code></pre>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect
-        --&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-    end</code></pre>
-<blockquote>
-<p>loading</p>
-</blockquote>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        子游戏接口--&gt;z
-    end
-
-    subgraph 加载模块
-        LoadingView:CheckUpdate--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
-        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
-        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
-        ch--&gt;|非debug|bv[bigVersion判断]--&gt;|大于|aa[BigVersionHandle]--&gt;SafeQuit--&gt;|编辑器|zz
-        SafeQuit--&gt;|非编辑器|Application.Quit
-        bv--&gt;|等于|ab[BigVersionHandle]--&gt;az[指定版本检查]
-        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
-        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
-        bv--&gt;|小于|zz
-        ch--&gt;hhf
-        hotResVersion判断--&gt;|不热更|zz
-    end
-
-    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-    LoginViewCtr:OnSocketConnect
-    --&gt; LoginViewCtr:ReadyToEnter
-    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
-
-
-
-]]></content>
-      <categories>
-        <category>登录流程,mermaid</category>
-      </categories>
-      <tags>
-        <tag>Markdown,mermaid</tag>
       </tags>
   </entry>
   <entry>
@@ -9733,6 +9605,231 @@
 <hr>
 <p><strong>总结</strong><br><strong>如果关闭 Clash 后 Unity 可以正常请求网络，那问题就是 Clash 代理影响了 Unity 的请求。</strong><br>你可以尝试 <strong>关闭 Clash 或者排除 Unity 进程不走代理</strong> 来解决问题。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>登录流程</title>
+    <url>/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
+<hr>
+<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
+  participant 玩家
+  participant 客户端
+  participant 服务器
+  玩家--&gt;&gt;客户端: 选择游客登陆
+  客户端-&gt;&gt;玩家: 成功回调
+
+  loop 递归
+      玩家-&gt;&gt;玩家: 接收消息
+  end
+  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
+
+
+<hr>
+<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
+<p>login</p>
+</blockquote>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
+        C--&gt;Request.Login--&gt;LoginWithProcess
+
+        subgraph 共同请求模块
+            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
+        end
+        
+    end
+
+   subgraph 新登录流程
+        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
+        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
+        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
+        
+        subgraph 合并请求回复的数据
+            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
+            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
+        end
+
+        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+
+
+
+        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
+
+        ReadyToEnter--&gt;|Guest|NewAccountLogin
+        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
+        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
+    
+        subgraph 各登录方式请求所需的数据
+            FacebookLogin:InitData
+            GuestLogin:InitData
+            RoyalLogin:InitData
+        end
+
+        subgraph 各登录方式请求的成功回调
+            ProcessingAccountLoginTokenInfoData
+            ProcessingGuestLoginTokenInfoData
+            ProcessingFacebookLoginTokenInfoData
+        end
+
+      
+    
+    end
+    
+
+
+
+</code></pre>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect
+        --&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+    end</code></pre>
+<blockquote>
+<p>loading</p>
+</blockquote>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        子游戏接口--&gt;z
+    end
+
+    subgraph 加载模块
+        LoadingView:CheckUpdate--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
+        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
+        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
+        ch--&gt;|非debug|bv[bigVersion判断]--&gt;|大于|aa[BigVersionHandle]--&gt;SafeQuit--&gt;|编辑器|zz
+        SafeQuit--&gt;|非编辑器|Application.Quit
+        bv--&gt;|等于|ab[BigVersionHandle]--&gt;az[指定版本检查]
+        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
+        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
+        bv--&gt;|小于|zz
+        ch--&gt;hhf
+        hotResVersion判断--&gt;|不热更|zz
+    end
+
+    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+    LoginViewCtr:OnSocketConnect
+    --&gt; LoginViewCtr:ReadyToEnter
+    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
+
+
+
+]]></content>
+      <categories>
+        <category>登录流程,mermaid</category>
+      </categories>
+      <tags>
+        <tag>Markdown,mermaid</tag>
+      </tags>
   </entry>
   <entry>
     <title>社保和公积金的补缴问题</title>
@@ -10183,6 +10280,40 @@
 ]]></content>
   </entry>
   <entry>
+    <title>跨境电商</title>
+    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
+    <content><![CDATA[<p>店铺类型：</p>
+<ul>
+<li>铺货</li>
+<li>精铺</li>
+<li>品牌（精品）</li>
+</ul>
+<p>物流</p>
+<ul>
+<li>FBA：亚马逊仓发货</li>
+<li>FBM(商家自发货)</li>
+</ul>
+<p>形式：</p>
+<ul>
+<li>海</li>
+<li>铁</li>
+<li>空</li>
+</ul>
+<p>工具：</p>
+<p>谷歌趋势： Google Trends  关键词搜索 </p>
+<ul>
+<li>相关主题  趋势变化判断是不是和开发该品类</li>
+<li>订阅关键词</li>
+</ul>
+<p>ads - 关键词规划师 </p>
+<ul>
+<li>转换率</li>
+<li>获客成本</li>
+<li></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab&#x2F;Gitea）和简单搭建裸仓库。</p>
@@ -10385,40 +10516,6 @@
       <tags>
         <tag>git</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>跨境电商</title>
-    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
-    <content><![CDATA[<p>店铺类型：</p>
-<ul>
-<li>铺货</li>
-<li>精铺</li>
-<li>品牌（精品）</li>
-</ul>
-<p>物流</p>
-<ul>
-<li>FBA：亚马逊仓发货</li>
-<li>FBM(商家自发货)</li>
-</ul>
-<p>形式：</p>
-<ul>
-<li>海</li>
-<li>铁</li>
-<li>空</li>
-</ul>
-<p>工具：</p>
-<p>谷歌趋势： Google Trends  关键词搜索 </p>
-<ul>
-<li>相关主题  趋势变化判断是不是和开发该品类</li>
-<li>订阅关键词</li>
-</ul>
-<p>ads - 关键词规划师 </p>
-<ul>
-<li>转换率</li>
-<li>获客成本</li>
-<li></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>转产品经理</title>
