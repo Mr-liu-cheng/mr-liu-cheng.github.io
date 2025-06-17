@@ -548,6 +548,157 @@
 ]]></content>
   </entry>
   <entry>
+    <title>GitHub + CDN</title>
+    <url>/2025/05/08/GitHub%20+%20CDN/</url>
+    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
+<hr>
+<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
+   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
+   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
+
+<ul>
+<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
+<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
+<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
+</ul>
+<hr>
+<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
+<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
+<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
+<li>获取直链：  <ul>
+<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
+<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
+<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
+</ul>
+</li>
+</ol>
+<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
+<ol>
+<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
+<li>在Cloudflare中：  <ul>
+<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
+<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
+</ul>
+</li>
+<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
+<ol>
+<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
+<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
+<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
+</ul>
+<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
+<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
+<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
+</ul>
+<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
+<li><strong>流量统计</strong>：  <ul>
+<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
+<li>在Cloudflare面板查看CDN请求数。</li>
+</ul>
+</li>
+<li><strong>防滥用</strong>：  <ul>
+<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>免费游戏试玩</strong></td>
+<td>GitHub Releases直链</td>
+<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
+</tr>
+<tr>
+<td><strong>开源项目分发</strong></td>
+<td>jsDelivr CDN</td>
+<td>必须公开仓库，适合Demo或工具类游戏。</td>
+</tr>
+<tr>
+<td><strong>商业游戏早期测试</strong></td>
+<td>Cloudflare+B2</td>
+<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
+</tr>
+<tr>
+<td><strong>大规模正式发布</strong></td>
+<td>需迁移至专业CDN&#x2F;自建</td>
+<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>存储成本</th>
+<th>流量成本（1TB下载）</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub直链</strong></td>
+<td>免费</td>
+<td>免费（但有限流风险）</td>
+<td>原型&#x2F;测试</td>
+</tr>
+<tr>
+<td><strong>Cloudflare+B2</strong></td>
+<td>$0.005&#x2F;GB&#x2F;月</td>
+<td>$10~$50</td>
+<td>小规模发布</td>
+</tr>
+<tr>
+<td><strong>AWS S3+CloudFront</strong></td>
+<td>$0.023&#x2F;GB&#x2F;月</td>
+<td>$85~$120</td>
+<td>中等规模</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
+<ol>
+<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
+<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
+<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
+</ol>
+<p>此方案适合：  </p>
+<ul>
+<li>独立开发者验证游戏热度。  </li>
+<li>开源项目或免费游戏分发。  </li>
+<li>规避早期服务器运维成本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GitHub,CDN</category>
+      </categories>
+      <tags>
+        <tag>GitHub,CDN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1014,157 +1165,6 @@
 </ul>
 <p>通过这种方式，你可以实现 <strong>灵活的热更新系统</strong>，无论是 <strong>C# 代码</strong> 还是 <strong>游戏资源</strong>，都能够根据需要动态更新，并确保两者的匹配和协调工作。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>GitHub + CDN</title>
-    <url>/2025/05/08/GitHub%20+%20CDN/</url>
-    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
-<hr>
-<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
-   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
-   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
-   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
-   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
-
-<ul>
-<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
-<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
-<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
-</ul>
-<hr>
-<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
-<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
-<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
-<li>获取直链：  <ul>
-<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
-<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
-<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
-</ul>
-</li>
-</ol>
-<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
-<ol>
-<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
-<li>在Cloudflare中：  <ul>
-<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
-<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
-</ul>
-</li>
-<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
-<ol>
-<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
-<ul>
-<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
-<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
-<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
-</ul>
-<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
-<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
-<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
-</ul>
-<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
-<li><strong>流量统计</strong>：  <ul>
-<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
-<li>在Cloudflare面板查看CDN请求数。</li>
-</ul>
-</li>
-<li><strong>防滥用</strong>：  <ul>
-<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐方案</th>
-<th>注意事项</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>免费游戏试玩</strong></td>
-<td>GitHub Releases直链</td>
-<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
-</tr>
-<tr>
-<td><strong>开源项目分发</strong></td>
-<td>jsDelivr CDN</td>
-<td>必须公开仓库，适合Demo或工具类游戏。</td>
-</tr>
-<tr>
-<td><strong>商业游戏早期测试</strong></td>
-<td>Cloudflare+B2</td>
-<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
-</tr>
-<tr>
-<td><strong>大规模正式发布</strong></td>
-<td>需迁移至专业CDN&#x2F;自建</td>
-<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
-<thead>
-<tr>
-<th>方案</th>
-<th>存储成本</th>
-<th>流量成本（1TB下载）</th>
-<th>适用阶段</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GitHub直链</strong></td>
-<td>免费</td>
-<td>免费（但有限流风险）</td>
-<td>原型&#x2F;测试</td>
-</tr>
-<tr>
-<td><strong>Cloudflare+B2</strong></td>
-<td>$0.005&#x2F;GB&#x2F;月</td>
-<td>$10~$50</td>
-<td>小规模发布</td>
-</tr>
-<tr>
-<td><strong>AWS S3+CloudFront</strong></td>
-<td>$0.023&#x2F;GB&#x2F;月</td>
-<td>$85~$120</td>
-<td>中等规模</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
-<ol>
-<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
-<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
-<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
-</ol>
-<p>此方案适合：  </p>
-<ul>
-<li>独立开发者验证游戏热度。  </li>
-<li>开源项目或免费游戏分发。  </li>
-<li>规避早期服务器运维成本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GitHub,CDN</category>
-      </categories>
-      <tags>
-        <tag>GitHub,CDN</tag>
-      </tags>
   </entry>
   <entry>
     <title>GitHub Actions 没有触发的核心原因</title>
@@ -3890,6 +3890,262 @@
       </tags>
   </entry>
   <entry>
+    <title>Unity Scene 优化</title>
+    <url>/2025/06/17/Unity%20Scene%20%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<p>我做的编辑器拓展开发，卡顿是出现在通过配置生成上万个带指向的3d球体和linerenderer，根据每个点的配置信息来设置球体的旋转偏量，3d空间位置,两个点之间通过linerenderer连接，创建过程耗时很长，卡顿是出现在编辑器静态界面，而非运行状态。当前面临的 <strong>编辑器卡顿问题</strong>，本质上是因为：</p>
+<blockquote>
+<p>✅ 在 <strong>非运行时的编辑器模式（EditMode）中批量生成上万个带有 Mesh 和 LineRenderer 的 GameObject</strong>，Unity 会：</p>
+<ul>
+<li>每次 <code>GameObject.Instantiate()</code> 都触发内部注册与序列化</li>
+<li>每个 LineRenderer 或 Transform 修改都会立即记录在场景状态中</li>
+<li>在主线程阻塞执行，触发 <strong>大量 Hierarchy 刷新、Inspector 重绘、Undo 缓存注册、序列化数据写入</strong><br>→ 导致 Unity 编辑器卡死或极度卡顿</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="✅-针对性优化建议（编辑器扩展模式专属）"><a href="#✅-针对性优化建议（编辑器扩展模式专属）" class="headerlink" title="✅ 针对性优化建议（编辑器扩展模式专属）"></a>✅ 针对性优化建议（编辑器扩展模式专属）</h2><hr>
+<h3 id="🧱-一、核心优化原则"><a href="#🧱-一、核心优化原则" class="headerlink" title="🧱 一、核心优化原则"></a>🧱 一、核心优化原则</h3><table>
+<thead>
+<tr>
+<th>问题来源</th>
+<th>优化手段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每个 <code>GameObject</code> 实时创建、注册 Undo、序列化</td>
+<td>✅ 使用 <code>EditorApplication.delayCall</code> 分批异步创建 &#x2F; 禁用 Undo</td>
+</tr>
+<tr>
+<td>每次 Transform 设置都会触发刷新</td>
+<td>✅ 批量设置坐标，<strong>禁用场景刷新</strong>（SceneView.RepaintControl）</td>
+</tr>
+<tr>
+<td>每个对象生成都立即刷新 Hierarchy</td>
+<td>✅ <strong>临时关闭自动刷新界面</strong>，批量结束后一次性刷新</td>
+</tr>
+<tr>
+<td>每次 <code>LineRenderer.SetPositions()</code> 修改也会导致 GC</td>
+<td>✅ 合并线段&#x2F;简化结构&#x2F;使用 GPU 绘制优化线渲染</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="🔧-二、操作级优化方式（编辑器端）"><a href="#🔧-二、操作级优化方式（编辑器端）" class="headerlink" title="🔧 二、操作级优化方式（编辑器端）"></a>🔧 二、操作级优化方式（编辑器端）</h3><h4 id="✅-1-禁用-Undo-RecordObject"><a href="#✅-1-禁用-Undo-RecordObject" class="headerlink" title="✅ 1. 禁用 Undo.RecordObject"></a>✅ 1. 禁用 Undo.RecordObject</h4><p>如果不是必要的编辑器撤销操作，<strong>禁用 <code>Undo.RegisterCreatedObjectUndo()</code></strong> 可以显著减少性能开销：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">GameObject go = GameObject.Instantiate(prefab);</span><br><span class="line">go.transform.SetParent(parent, <span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 删除 Undo 这句 ↓</span></span><br><span class="line"><span class="comment">// Undo.RegisterCreatedObjectUndo(go, &quot;Create Point&quot;);</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="✅-2-批量暂停-Scene-刷新-Hierarchy-重绘"><a href="#✅-2-批量暂停-Scene-刷新-Hierarchy-重绘" class="headerlink" title="✅ 2. 批量暂停 Scene 刷新 + Hierarchy 重绘"></a>✅ 2. 批量暂停 Scene 刷新 + Hierarchy 重绘</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">EditorApplication.delayCall += () =&gt;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 暂停场景刷新</span></span><br><span class="line">    SceneView.duringSceneGui -= OnSceneGUI; <span class="comment">// 如果你有实时绘制</span></span><br><span class="line">    EditorApplication.QueuePlayerLoopUpdate(); <span class="comment">// 延迟刷新</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 批量操作</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; configData.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        CreateOnePoint(configData[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 手动刷新场景与 Hierarchy</span></span><br><span class="line">    SceneView.RepaintAll();</span><br><span class="line">    EditorApplication.RepaintHierarchyWindow();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="✅-3-使用-Coroutine-风格的异步分帧生成（模拟帧分批）"><a href="#✅-3-使用-Coroutine-风格的异步分帧生成（模拟帧分批）" class="headerlink" title="✅ 3. 使用 Coroutine 风格的异步分帧生成（模拟帧分批）"></a>✅ 3. 使用 Coroutine 风格的异步分帧生成（模拟帧分批）</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function">IEnumerator <span class="title">GeneratePointsStepByStep</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="built_in">int</span> batchSize = <span class="number">200</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; allPoints.Count; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        CreateOnePoint(allPoints[i]);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (i % batchSize == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// 下一帧</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Debug.Log(<span class="string">&quot;生成完成！&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用 <code>EditorCoroutineUtility.StartCoroutine(GeneratePointsStepByStep(), this)</code> 来调用</p>
+<blockquote>
+<p>✅ 来自 Unity.EditorCoroutines 包，推荐引入用于编辑器分帧逻辑</p>
+</blockquote>
+<hr>
+<h4 id="✅-4-创建时不要激活-GameObject，最后一起启用"><a href="#✅-4-创建时不要激活-GameObject，最后一起启用" class="headerlink" title="✅ 4. 创建时不要激活 GameObject，最后一起启用"></a>✅ 4. 创建时不要激活 GameObject，最后一起启用</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">GameObject go = Instantiate(prefab);</span><br><span class="line">go.SetActive(<span class="literal">false</span>); <span class="comment">// 禁用初始化逻辑和渲染负担</span></span><br><span class="line"><span class="comment">// 设置坐标、旋转等</span></span><br><span class="line">go.SetActive(<span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="✅-5-使用-Mesh-或-DrawMesh-替代-LineRenderer（合并优化）"><a href="#✅-5-使用-Mesh-或-DrawMesh-替代-LineRenderer（合并优化）" class="headerlink" title="✅ 5. 使用 Mesh 或 DrawMesh 替代 LineRenderer（合并优化）"></a>✅ 5. 使用 Mesh 或 DrawMesh 替代 LineRenderer（合并优化）</h4><ul>
+<li>将多个线段数据汇总，手动用 <code>GL.LINES</code> 或 <code>Graphics.DrawMeshNow()</code> 在 SceneView 渲染而不是生成上万个 LineRenderer</li>
+<li>或者使用一个 <code>Mesh</code> 合并所有线段的渲染顶点，自定义材质渲染</li>
+</ul>
+<hr>
+<h2 id="📌-Bonus：GPU-绘制线连接方案（不生成-GameObject）"><a href="#📌-Bonus：GPU-绘制线连接方案（不生成-GameObject）" class="headerlink" title="📌 Bonus：GPU 绘制线连接方案（不生成 GameObject）"></a>📌 Bonus：GPU 绘制线连接方案（不生成 GameObject）</h2><ul>
+<li>使用一个 <code>ScriptableObject</code> 维护线段列表</li>
+<li>在 Scene GUI 中绘制：</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Handles.color = Color.green;</span><br><span class="line"><span class="keyword">for</span> (<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; lines.Count; i++)</span><br><span class="line">&#123;</span><br><span class="line">    Handles.DrawLine(lines[i].start, lines[i].end);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>➡️ 不创建 GameObject，不占用层级，无 GC&#x2F;卡顿 ✅</p>
+<hr>
+<h2 id="✅-推荐组合优化方案（低开销）"><a href="#✅-推荐组合优化方案（低开销）" class="headerlink" title="✅ 推荐组合优化方案（低开销）"></a>✅ 推荐组合优化方案（低开销）</h2><table>
+<thead>
+<tr>
+<th>目标</th>
+<th>实现方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>支持查看上万个点 + 连接线</td>
+<td><code>Handles.DrawLine()</code> 在 SceneView 中实时渲染</td>
+</tr>
+<tr>
+<td>支持选中点位</td>
+<td>注册 <code>HandleUtility.AddDefaultControl()</code> + <code>HandleUtility.PickGameObject</code> 实现点击识别</td>
+</tr>
+<tr>
+<td>仅在运行前批量生成真实物体</td>
+<td>提供按钮：“生成 GameObject” → 批量生成，<strong>不自动创建</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="🚀-实用工具推荐"><a href="#🚀-实用工具推荐" class="headerlink" title="🚀 实用工具推荐"></a>🚀 实用工具推荐</h2><ul>
+<li>✅ <a href="https://docs.unity3d.com/Packages/com.unity.editorcoroutines@1.0/manual/index.html">Editor Coroutines</a>：编辑器异步分帧执行逻辑</li>
+<li>✅ <a href="https://docs.unity3d.com/ScriptReference/SceneView-onSceneGUIDelegate.html">SceneView.onSceneGUIDelegate</a>：用于绘制线、不创建对象</li>
+<li>✅ <a href="https://odininspector.com/">Odin Inspector</a>：可视化控制面板和配置生成控制器</li>
+</ul>
+<hr>
+<h2 id="🧠-总结"><a href="#🧠-总结" class="headerlink" title="🧠 总结"></a>🧠 总结</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>❌ 不要</td>
+<td>一次性创建上万个 GameObject + LineRenderer（会卡）</td>
+</tr>
+<tr>
+<td>✅ 推荐</td>
+<td>分批延迟创建、禁用 Undo、绘制到 Scene GUI 替代真实对象</td>
+</tr>
+<tr>
+<td>🛠️ 补充</td>
+<td>可以提供一个“点位配置→可视化→生成真实节点”的分离工具</td>
+</tr>
+</tbody></table>
+<hr>
+<p>你在 <code>OnSceneGUI</code> 中绘制上万条线，导致移动视角卡顿，是 <strong>合理且常见的问题</strong>。原因如下：</p>
+<hr>
+<h3 id="🧠-原因：Handles-DrawLine-在-OnSceneGUI-中是-CPU-密集型-每帧运行"><a href="#🧠-原因：Handles-DrawLine-在-OnSceneGUI-中是-CPU-密集型-每帧运行" class="headerlink" title="🧠 原因：Handles.DrawLine 在 OnSceneGUI 中是 CPU 密集型 + 每帧运行"></a>🧠 原因：<code>Handles.DrawLine</code> 在 <code>OnSceneGUI</code> 中是 CPU 密集型 + 每帧运行</h3><ul>
+<li>每次移动场景视角时，<code>SceneView.OnSceneGUI</code> 都会触发重新绘制</li>
+<li><code>Handles.DrawLine</code> 属于 <strong>Immediate Mode GUI</strong>（IMGUI），无法批量合批优化</li>
+<li>当你绘制上万个点或线段，编辑器主线程完全吃满（全在 CPU 上渲染、无缓存）</li>
+</ul>
+<hr>
+<h2 id="✅-解决方案：降低绘制密度-使用-GPU-批量绘制"><a href="#✅-解决方案：降低绘制密度-使用-GPU-批量绘制" class="headerlink" title="✅ 解决方案：降低绘制密度 + 使用 GPU 批量绘制"></a>✅ 解决方案：降低绘制密度 + 使用 GPU 批量绘制</h2><hr>
+<h3 id="✅-方案一：仅在静止或需要时绘制（减少频率）"><a href="#✅-方案一：仅在静止或需要时绘制（减少频率）" class="headerlink" title="✅ 方案一：仅在静止或需要时绘制（减少频率）"></a>✅ 方案一：仅在静止或需要时绘制（减少频率）</h3><p>你可以 <strong>只在窗口打开或点击按钮时才绘制一次</strong>，而不是一直监听 <code>SceneView.duringSceneGui</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="built_in">bool</span> forceDraw = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;预览线条&quot;</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        forceDraw = <span class="literal">true</span>;</span><br><span class="line">        SceneView.RepaintAll();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnSceneGUI</span>(<span class="params">SceneView view</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!forceDraw) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 画完一帧后不再绘制</span></span><br><span class="line">    forceDraw = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    DrawLinesOnce(); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-方案二：GL-CommandBuffer-批量绘制（推荐）"><a href="#✅-方案二：GL-CommandBuffer-批量绘制（推荐）" class="headerlink" title="✅ 方案二：GL + CommandBuffer 批量绘制（推荐）"></a>✅ 方案二：GL + CommandBuffer 批量绘制（推荐）</h3><p>可以使用 <code>GL.LINES</code> + 自定义材质，在 GPU 中绘制所有线条，一次性渲染，不产生 GC 和 CPU 压力。</p>
+<h4 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h4><ol>
+<li>创建一个材质（使用 <code>Unlit/Color</code> 或自定义 Shader）</li>
+<li>在 Scene GUI 中注册一个 <code>Camera.onPostRender</code> 或 <code>SceneView.onSceneGUIDelegate</code></li>
+<li>使用 <code>GL.Begin(GL.LINES)</code> 批量绘制所有连接线</li>
+</ol>
+<h4 id="示例代码："><a href="#示例代码：" class="headerlink" title="示例代码："></a>示例代码：</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">InitializeOnLoad</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">LineDrawer</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> Material lineMat;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="title">LineDrawer</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        SceneView.duringSceneGui += OnSceneGUI;</span><br><span class="line">        lineMat = <span class="keyword">new</span> Material(Shader.Find(<span class="string">&quot;Hidden/Internal-Colored&quot;</span>));</span><br><span class="line">        lineMat.hideFlags = HideFlags.HideAndDontSave;</span><br><span class="line">        lineMat.SetInt(<span class="string">&quot;_ZWrite&quot;</span>, <span class="number">0</span>);</span><br><span class="line">        lineMat.SetInt(<span class="string">&quot;_Cull&quot;</span>, (<span class="built_in">int</span>)UnityEngine.Rendering.CullMode.Off);</span><br><span class="line">        lineMat.SetInt(<span class="string">&quot;_ZTest&quot;</span>, (<span class="built_in">int</span>)UnityEngine.Rendering.CompareFunction.Always);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OnSceneGUI</span>(<span class="params">SceneView sceneView</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!shouldDraw) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        Handles.BeginGUI();</span><br><span class="line">        <span class="comment">// 可在 GUI 绘制按钮等</span></span><br><span class="line">        Handles.EndGUI();</span><br><span class="line"></span><br><span class="line">        GL.PushMatrix();</span><br><span class="line">        lineMat.SetPass(<span class="number">0</span>);</span><br><span class="line">        GL.LoadProjectionMatrix(sceneView.camera.projectionMatrix);</span><br><span class="line">        GL.modelview = sceneView.camera.worldToCameraMatrix;</span><br><span class="line"></span><br><span class="line">        GL.Begin(GL.LINES);</span><br><span class="line">        GL.Color(Color.yellow);</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> (a, b) <span class="keyword">in</span> lines)</span><br><span class="line">        &#123;</span><br><span class="line">            GL.Vertex(a);</span><br><span class="line">            GL.Vertex(b);</span><br><span class="line">        &#125;</span><br><span class="line">        GL.End();</span><br><span class="line"></span><br><span class="line">        GL.PopMatrix();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">bool</span> shouldDraw = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">static</span> List&lt;(Vector3, Vector3)&gt; lines = <span class="keyword">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">SetLines</span>(<span class="params">List&lt;(Vector3, Vector3</span>)&gt; lineData)</span></span><br><span class="line">    &#123;</span><br><span class="line">        lines = lineData;</span><br><span class="line">        shouldDraw = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ 优势：</p>
+<ul>
+<li>使用 GPU 绘制，不卡顿</li>
+<li>不生成 GameObject，也不会触发 Scene 刷新</li>
+<li>可实时预览 + 快速刷新</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="✅-方案三：对远离视野的线段-点位做视锥剔除"><a href="#✅-方案三：对远离视野的线段-点位做视锥剔除" class="headerlink" title="✅ 方案三：对远离视野的线段&#x2F;点位做视锥剔除"></a>✅ 方案三：对远离视野的线段&#x2F;点位做视锥剔除</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (SceneView.lastActiveSceneView != <span class="literal">null</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> cam = SceneView.lastActiveSceneView.camera;</span><br><span class="line">    Plane[] planes = GeometryUtility.CalculateFrustumPlanes(cam);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> (a, b) <span class="keyword">in</span> links)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (GeometryUtility.TestPlanesAABB(planes, <span class="keyword">new</span> Bounds((a + b) / <span class="number">2</span>, Vector3.one * <span class="number">0.5f</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            Handles.DrawLine(a, b);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>📌 降低绘制线段数量，对可见部分仅绘制，性能可大幅提升</p>
+</blockquote>
+<hr>
+<h2 id="✅-总结推荐"><a href="#✅-总结推荐" class="headerlink" title="✅ 总结推荐"></a>✅ 总结推荐</h2><table>
+<thead>
+<tr>
+<th>场景需求</th>
+<th>推荐方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>上万条线，实时预览</td>
+<td>✅ 使用 <code>GL.LINES</code> 批量绘制，避免 <code>Handles.DrawLine</code></td>
+</tr>
+<tr>
+<td>临时静态可视化</td>
+<td>只绘制一次 <code>OnSceneGUI</code>，绘完关闭</td>
+</tr>
+<tr>
+<td>编辑器工具面板控制</td>
+<td>提供“开启预览”、“关闭预览”按钮控制绘制状态</td>
+</tr>
+<tr>
+<td>远距离线段过滤</td>
+<td>添加视锥剔除只绘可见连接线</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="❗你遇到的问题"><a href="#❗你遇到的问题" class="headerlink" title="❗你遇到的问题"></a>❗你遇到的问题</h3><ol>
+<li><p><strong>使用 <code>GL.LINES</code> 绘制的线段</strong>，确实<strong>不会自动跟随 Scene 中对象的移动</strong>，因为 <code>GL.Vertex</code> 是在 <code>SceneView.camera</code> 的一次性投影矩阵下静态绘制的，除非你主动刷新数据。</p>
+</li>
+<li><p><strong>你在编辑器 Scene 操作顶点（或对象）时卡顿</strong>，是因为：</p>
+<ul>
+<li>你每帧都进行 <strong>大量线段计算 + 绘制（如上万个）</strong></li>
+<li>并且你不断访问&#x2F;同步变化的坐标 → 每帧都 CPU 扫一次全量顶点 → 毫无缓存</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="✅-解决方案：动态、流式、可跟随的高效绘制策略"><a href="#✅-解决方案：动态、流式、可跟随的高效绘制策略" class="headerlink" title="✅ 解决方案：动态、流式、可跟随的高效绘制策略"></a>✅ 解决方案：动态、流式、可跟随的高效绘制策略</h2><hr>
+<h3 id="✅-方案一：仅展示当前视野范围的少量线段"><a href="#✅-方案一：仅展示当前视野范围的少量线段" class="headerlink" title="✅ 方案一：仅展示当前视野范围的少量线段"></a>✅ 方案一：<strong>仅展示当前视野范围的少量线段</strong></h3><p>结合视锥体剔除 + 距离裁剪，大幅降低绘制压力：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Plane[] planes = GeometryUtility.CalculateFrustumPlanes(sceneCam);</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> (a, b) <span class="keyword">in</span> links)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> mid = (a + b) * <span class="number">0.5f</span>;</span><br><span class="line">    <span class="keyword">if</span> (!GeometryUtility.TestPlanesAABB(planes, <span class="keyword">new</span> Bounds(mid, Vector3.one * <span class="number">1f</span>))) <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 只有视野范围内的才画</span></span><br><span class="line">    GL.Vertex(a);</span><br><span class="line">    GL.Vertex(b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-方案二：仅绘制选中或焦点区域的连接线"><a href="#✅-方案二：仅绘制选中或焦点区域的连接线" class="headerlink" title="✅ 方案二：仅绘制选中或焦点区域的连接线"></a>✅ 方案二：<strong>仅绘制选中或焦点区域的连接线</strong></h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Vector3 camPos = sceneCam.transform.position;</span><br><span class="line"><span class="built_in">float</span> maxDrawDistance = <span class="number">100f</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="keyword">var</span> (a, b) <span class="keyword">in</span> links)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> ((a - camPos).sqrMagnitude &gt; maxDrawDistance * maxDrawDistance &amp;&amp;</span><br><span class="line">        (b - camPos).sqrMagnitude &gt; maxDrawDistance * maxDrawDistance)</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line"></span><br><span class="line">    GL.Vertex(a);</span><br><span class="line">    GL.Vertex(b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-方案三：数据缓存-变化时更新"><a href="#✅-方案三：数据缓存-变化时更新" class="headerlink" title="✅ 方案三：数据缓存 + 变化时更新"></a>✅ 方案三：<strong>数据缓存 + 变化时更新</strong></h3><p>你需要避免每帧都全量重计算所有坐标。可以这样优化：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> List&lt;Vector3&gt; cachedPoints = <span class="keyword">new</span>();</span><br><span class="line"><span class="keyword">private</span> <span class="built_in">bool</span> needUpdate = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">UpdateDataIfNeeded</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!needUpdate) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    cachedPoints.Clear();</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> go <span class="keyword">in</span> allPointObjects)</span><br><span class="line">        cachedPoints.Add(go.transform.position);</span><br><span class="line"></span><br><span class="line">    needUpdate = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnSceneGUI</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    UpdateDataIfNeeded();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绘制线段用 cachedPoints</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在对象位置变化时设置 <code>needUpdate = true</code>。你可以：</p>
+<ul>
+<li>用 <code>EditorApplication.hierarchyChanged</code> 监听结构变化</li>
+<li>或在 <code>Selection</code> 改变时做刷新</li>
+</ul>
+<hr>
+<h3 id="✅-方案四：使用-Graphics-DrawMeshNow-合批绘制动态线条"><a href="#✅-方案四：使用-Graphics-DrawMeshNow-合批绘制动态线条" class="headerlink" title="✅ 方案四：使用 Graphics.DrawMeshNow 合批绘制动态线条"></a>✅ 方案四：使用 <code>Graphics.DrawMeshNow</code> 合批绘制动态线条</h3><p>自己生成一整张 <code>Mesh</code>（比如线段的 cylinder 或 quad），然后一次性 <code>Graphics.DrawMeshNow()</code> 绘制所有线段，这种方式：</p>
+<ul>
+<li>支持跟随坐标变动（每帧更新 mesh）</li>
+<li>GPU 绘制，不卡</li>
+<li>可打包成 <code>GizmosRenderer</code> 或 <code>SceneView</code> 工具</li>
+</ul>
+<p>这是很多大型编辑器工具（如 DOTS Inspector、AI Debugger）常用方案。</p>
+<hr>
+<h2 id="🔧-如果你要动态显示-更新线段，并跟随场景中球体移动"><a href="#🔧-如果你要动态显示-更新线段，并跟随场景中球体移动" class="headerlink" title="🔧 如果你要动态显示&#x2F;更新线段，并跟随场景中球体移动"></a>🔧 如果你要动态显示&#x2F;更新线段，并跟随场景中球体移动</h2><h3 id="✅-最佳方案组合建议："><a href="#✅-最佳方案组合建议：" class="headerlink" title="✅ 最佳方案组合建议："></a>✅ 最佳方案组合建议：</h3><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>使用方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>点位</td>
+<td>实体使用 <code>GameObject + Sphere</code>（可交互、选中）</td>
+</tr>
+<tr>
+<td>连线</td>
+<td>用单个 <code>Mesh</code> 合批绘制所有线段，动态更新（非 <code>LineRenderer</code>，避免生成上万个）</td>
+</tr>
+<tr>
+<td>性能保障</td>
+<td>添加视锥体剔除 + 距离剔除逻辑</td>
+</tr>
+<tr>
+<td>数据管理</td>
+<td>使用数组缓存点位坐标，仅在坐标改变时更新一次线段 <code>Mesh</code></td>
+</tr>
+<tr>
+<td>触发更新</td>
+<td>使用自定义按钮 &#x2F; Unity <code>EditorApplication.update</code> &#x2F; <code>SceneView.duringSceneGui</code> 判断是否需要更新</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="🚀-是否需要我帮你写一个："><a href="#🚀-是否需要我帮你写一个：" class="headerlink" title="🚀 是否需要我帮你写一个："></a>🚀 是否需要我帮你写一个：</h3><ul>
+<li>自动从所有球体位置构建一张合批线段 <code>Mesh</code></li>
+<li>支持动态更新（如某球体移动后线段自动更新）</li>
+<li>不依赖 LineRenderer 或 GL，每次仅绘制 1 个合批对象</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 后置界面截图代替</title>
     <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
     <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
@@ -3985,6 +4241,160 @@
       <tags>
         <tag>Unity</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Unity 环境安装</title>
+    <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h1 id="unity-模块添加"><a href="#unity-模块添加" class="headerlink" title="unity 模块添加"></a>unity 模块添加</h1><p><a href="https://discussions.unity.com/t/unable-to-add-modules-to-installation-in-unity-hub-3-7-0/935934/12">官方解释</a></p>
+<p>这段官方解释详细说明了为什么 <strong>“Add Modules”</strong> 按钮可能缺失以及如何通过手动方式修复。以下是总结和关键要点：</p>
+<hr>
+<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a><strong>问题原因</strong></h2><ul>
+<li><strong>Unity Hub</strong> 使用 <code>modules.json</code> 文件来记录某个 Unity 编辑器版本的模块安装状态。</li>
+<li>如果该文件缺失或未正确生成，Unity Hub 就无法知道有哪些模块已安装，也无法显示 <strong>“Add Modules”</strong> 按钮。</li>
+<li>如果编辑器是通过非 Unity Hub 安装的（例如手动下载解压安装），默认没有 <code>modules.json</code> 文件，Unity Hub 将无法管理该版本的模块。所以我们安装unity时hub上可能没有列出我们需要的版本，但是我们可以去官网找到对应的版本链接至UnityHub 这样就相当于使用UnityHub下载，支持模块管理。</li>
+</ul>
+<hr>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a><strong>解决方案</strong></h2><p>如果你的 Unity 安装缺失 <strong>“Add Modules”</strong> 按钮，可以尝试以下步骤修复：</p>
+<h3 id="方法一：手动下载模块"><a href="#方法一：手动下载模块" class="headerlink" title="方法一：手动下载模块"></a>方法一：手动下载模块</h3><ol>
+<li>选版本 <a href="https://unity.com/releases/editor/archive">archive</a></li>
+<li><a href="https://unity.com/releases/editor/whats-new/2022.3.20#installers">releases</a>，找到组件对应组件模块，如下：</li>
+</ol>
+<p>   Component installers -&gt;</p>
+<p>   Windows :</p>
+<ul>
+<li>Android Build Support</li>
+<li>iOS Build Support</li>
+<li>tvOS Build Support</li>
+<li>Linux Build Support (IL2CPP)</li>
+<li>Linux Build Support (Mono)</li>
+<li>Linux Dedicated Server Build Support</li>
+<li>Mac Build Support (Mono)</li>
+<li>Mac Dedicated Server Build Support</li>
+<li>Universal Windows Platform Build Support</li>
+<li>WebGL Build Support</li>
+<li>Windows Build Support (IL2CPP)</li>
+<li>Windows Dedicated Server Build Support</li>
+<li>Documentation</li>
+</ul>
+<h3 id="方法二：创建modules-json"><a href="#方法二：创建modules-json" class="headerlink" title="方法二：创建modules.json"></a>方法二：创建modules.json</h3><h4 id="1-检查-Unity-安装路径"><a href="#1-检查-Unity-安装路径" class="headerlink" title="1. 检查 Unity 安装路径"></a><strong>1. 检查 Unity 安装路径</strong></h4><ul>
+<li>打开 Unity Hub 的 <strong>Installs</strong> 页。</li>
+<li>点击 Unity 版本右侧的 <strong>齿轮图标</strong>，选择 <strong>“Show in Explorer”</strong> 或 <strong>“Show in Finder”</strong>。</li>
+<li>在打开的文件夹中，确认是否存在 <code>modules.json</code> 文件。</li>
+</ul>
+<h4 id="2-手动创建-modules-json-文件"><a href="#2-手动创建-modules-json-文件" class="headerlink" title="2. 手动创建 modules.json 文件"></a><strong>2. 手动创建 <code>modules.json</code> 文件</strong></h4><p>如果文件缺失，可以手动创建：</p>
+<ol>
+<li><p>在 Unity 安装目录下新建一个文件，命名为 <code>modules.json</code>。</p>
+<ul>
+<li>注意文件扩展名必须为 <code>.json</code>。</li>
+<li>确保在操作系统中未隐藏扩展名（防止被误命名为 <code>modules.json.txt</code>）。</li>
+</ul>
+</li>
+<li><p>打开文件并添加以下内容：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure></li>
+<li><p>保存并关闭文件。</p>
+</li>
+</ol>
+<h4 id="3-重启-Unity-Hub"><a href="#3-重启-Unity-Hub" class="headerlink" title="3. 重启 Unity Hub"></a><strong>3. 重启 Unity Hub</strong></h4><ul>
+<li>完全退出 Unity Hub，确保它不在系统托盘运行。</li>
+<li>重新打开 Unity Hub，检查 <strong>“Add Modules”</strong> 按钮是否出现。</li>
+</ul>
+<hr>
+<h3 id="重要注意事项"><a href="#重要注意事项" class="headerlink" title="重要注意事项"></a><strong>重要注意事项</strong></h3><ol>
+<li><p><strong>风险提示</strong>：</p>
+<ul>
+<li>如果 <code>modules.json</code> 文件信息不正确，可能会导致 Unity Hub 无法正确管理模块安装&#x2F;卸载。</li>
+<li>如果问题发生，可以删除 <code>modules.json</code> 文件并重试。</li>
+</ul>
+</li>
+<li><p><strong>推荐使用 Unity Hub 安装编辑器</strong>：</p>
+<ul>
+<li>Unity Hub 安装会自动生成 <code>modules.json</code>，并确保模块的正确状态。</li>
+</ul>
+</li>
+<li><p><strong>归档下载的版本建议单独管理</strong>：</p>
+<ul>
+<li>如果从 <a href="https://unity.com/releases/editor/archive">Unity 归档</a>下载的版本，最好直接使用 Unity Hub 安装或按照官方文档的安装步骤手动管理模块。</li>
+</ul>
+</li>
+</ol>
+<h3 id="方法三：卸载，使用Unityhub重新安装-【推荐】"><a href="#方法三：卸载，使用Unityhub重新安装-【推荐】" class="headerlink" title="方法三：卸载，使用Unityhub重新安装 【推荐】"></a>方法三：卸载，使用Unityhub重新安装 【推荐】</h3><p><strong>强调：</strong></p>
+<ol>
+<li>不要使用中国版团结引擎，版本带c的就是</li>
+<li>不要单独下载unity editor 安装器，使用UnityHub下载</li>
+</ol>
+<h2 id="Visual-Studio-的安装"><a href="#Visual-Studio-的安装" class="headerlink" title="Visual Studio 的安装"></a>Visual Studio 的安装</h2><p>在 Unity 开发中，Visual Studio 的安装需要包含以下关键组件，以确保支持 Unity 的所有功能，包括 C# 脚本开发、IL2CPP 构建、调试和测试。</p>
+<hr>
+<h2 id="推荐的安装步骤"><a href="#推荐的安装步骤" class="headerlink" title="推荐的安装步骤"></a><strong>推荐的安装步骤</strong></h2><ol>
+<li>打开 <strong>Visual Studio Installer</strong>。</li>
+<li>选择要安装或修改的 Visual Studio 版本（例如 Visual Studio 2022）。</li>
+<li>点击 <strong>修改</strong>。</li>
+<li>在 <strong>工作负载</strong> 和 <strong>单个组件</strong> 中勾选以下内容。</li>
+</ol>
+<hr>
+<h2 id="必须安装的组件"><a href="#必须安装的组件" class="headerlink" title="必须安装的组件"></a><strong>必须安装的组件</strong></h2><h3 id="工作负载"><a href="#工作负载" class="headerlink" title="工作负载"></a><strong>工作负载</strong></h3><p>以下工作负载是 Unity 开发的基本需求：</p>
+<ol>
+<li><p><strong>Game development with Unity</strong>（使用 Unity 进行游戏开发）：</p>
+<ul>
+<li>Unity 的官方推荐工作负载。</li>
+<li>包含 Unity 相关工具、调试器、测试工具和集成插件。</li>
+</ul>
+</li>
+<li><p><strong>.NET desktop development</strong>（.NET 桌面开发）：</p>
+<ul>
+<li>提供必要的 .NET 和 C# 工具。</li>
+</ul>
+</li>
+<li><p>**Desktop development with C++**（C++ 桌面开发）：</p>
+<ul>
+<li><strong>IL2CPP 构建</strong>所需，用于将 Unity 项目转换为本地 C++ 代码并编译。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="单个组件"><a href="#单个组件" class="headerlink" title="单个组件"></a><strong>单个组件</strong></h3><p>在顶部切换到 <strong>单个组件</strong>，选择以下组件：</p>
+<h4 id="C-和-NET"><a href="#C-和-NET" class="headerlink" title="C# 和 .NET"></a><strong>C# 和 .NET</strong></h4><ol>
+<li><strong>.NET Framework 4.8 SDK</strong></li>
+<li><strong>.NET Framework 4.8 Targeting Pack</strong></li>
+<li><strong>NuGet Package Manager</strong></li>
+</ol>
+<h4 id="C-工具链"><a href="#C-工具链" class="headerlink" title="C++ 工具链"></a><strong>C++ 工具链</strong></h4><ol>
+<li><strong>MSVC v143 - VS 2022 C++ x64&#x2F;x86 build tools</strong></li>
+<li><strong>Windows 10 SDK（10.x.x.x）</strong> 或更新版本：<ul>
+<li>这是 IL2CPP 必需的工具链之一。</li>
+</ul>
+</li>
+<li><strong>C++ CMake tools for Windows</strong></li>
+<li><strong>C++&#x2F;CLI support</strong>（可选，针对 .NET 与 C++ 交互的情况）。</li>
+</ol>
+<h4 id="Unity-工具"><a href="#Unity-工具" class="headerlink" title="Unity 工具"></a><strong>Unity 工具</strong></h4><ol>
+<li><strong>Unity Hub</strong>（可选，如果未安装）。</li>
+<li><strong>Visual Studio Tools for Unity</strong>：<ul>
+<li>提供 Unity 与 Visual Studio 的集成，包括代码提示、调试和错误报告。</li>
+</ul>
+</li>
+</ol>
+<h4 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a><strong>调试工具</strong></h4><ol>
+<li><strong>JavaScript diagnostics</strong>（用于调试 WebGL 项目）。</li>
+<li><strong>Graphics debugger and GPU profiler</strong>（可选，用于调试渲染问题）。</li>
+</ol>
+<hr>
+<h3 id="其他推荐组件"><a href="#其他推荐组件" class="headerlink" title="其他推荐组件"></a><strong>其他推荐组件</strong></h3><ol>
+<li><strong>Azure DevOps</strong>（可选，用于版本控制）。</li>
+<li><strong>MSBuild</strong>（项目构建工具）。</li>
+<li><strong>Live Share</strong>（用于多人协作开发）。</li>
+<li><strong>Performance profiler</strong>（可选，性能分析工具）。</li>
+</ol>
+<hr>
+<h2 id="检查-Unity-项目所需的额外内容"><a href="#检查-Unity-项目所需的额外内容" class="headerlink" title="检查 Unity 项目所需的额外内容"></a><strong>检查 Unity 项目所需的额外内容</strong></h2><p>如果你的 Unity 项目需要构建到特定平台，请安装相关的 SDK 和工具：</p>
+<ul>
+<li><strong>Android</strong>：需要安装 Android SDK 和 NDK，建议通过 Unity Hub 设置。</li>
+<li><strong>iOS</strong>：需要 macOS 和 Xcode。</li>
+<li><strong>WebGL</strong>：安装 Node.js 和 JavaScript 工具（Visual Studio 会自动提供支持）。</li>
+<li><strong>Windows</strong>：确保安装了 <strong>Windows 10 SDK</strong> 和 <strong>C++ 工具链</strong>。</li>
+</ul>
+<hr>
+<p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
+]]></content>
   </entry>
   <entry>
     <title>Unity 打图集 - 合批减少DrawCall</title>
@@ -4343,160 +4753,6 @@
       <tags>
         <tag>Unity</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Unity 环境安装</title>
-    <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h1 id="unity-模块添加"><a href="#unity-模块添加" class="headerlink" title="unity 模块添加"></a>unity 模块添加</h1><p><a href="https://discussions.unity.com/t/unable-to-add-modules-to-installation-in-unity-hub-3-7-0/935934/12">官方解释</a></p>
-<p>这段官方解释详细说明了为什么 <strong>“Add Modules”</strong> 按钮可能缺失以及如何通过手动方式修复。以下是总结和关键要点：</p>
-<hr>
-<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a><strong>问题原因</strong></h2><ul>
-<li><strong>Unity Hub</strong> 使用 <code>modules.json</code> 文件来记录某个 Unity 编辑器版本的模块安装状态。</li>
-<li>如果该文件缺失或未正确生成，Unity Hub 就无法知道有哪些模块已安装，也无法显示 <strong>“Add Modules”</strong> 按钮。</li>
-<li>如果编辑器是通过非 Unity Hub 安装的（例如手动下载解压安装），默认没有 <code>modules.json</code> 文件，Unity Hub 将无法管理该版本的模块。所以我们安装unity时hub上可能没有列出我们需要的版本，但是我们可以去官网找到对应的版本链接至UnityHub 这样就相当于使用UnityHub下载，支持模块管理。</li>
-</ul>
-<hr>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a><strong>解决方案</strong></h2><p>如果你的 Unity 安装缺失 <strong>“Add Modules”</strong> 按钮，可以尝试以下步骤修复：</p>
-<h3 id="方法一：手动下载模块"><a href="#方法一：手动下载模块" class="headerlink" title="方法一：手动下载模块"></a>方法一：手动下载模块</h3><ol>
-<li>选版本 <a href="https://unity.com/releases/editor/archive">archive</a></li>
-<li><a href="https://unity.com/releases/editor/whats-new/2022.3.20#installers">releases</a>，找到组件对应组件模块，如下：</li>
-</ol>
-<p>   Component installers -&gt;</p>
-<p>   Windows :</p>
-<ul>
-<li>Android Build Support</li>
-<li>iOS Build Support</li>
-<li>tvOS Build Support</li>
-<li>Linux Build Support (IL2CPP)</li>
-<li>Linux Build Support (Mono)</li>
-<li>Linux Dedicated Server Build Support</li>
-<li>Mac Build Support (Mono)</li>
-<li>Mac Dedicated Server Build Support</li>
-<li>Universal Windows Platform Build Support</li>
-<li>WebGL Build Support</li>
-<li>Windows Build Support (IL2CPP)</li>
-<li>Windows Dedicated Server Build Support</li>
-<li>Documentation</li>
-</ul>
-<h3 id="方法二：创建modules-json"><a href="#方法二：创建modules-json" class="headerlink" title="方法二：创建modules.json"></a>方法二：创建modules.json</h3><h4 id="1-检查-Unity-安装路径"><a href="#1-检查-Unity-安装路径" class="headerlink" title="1. 检查 Unity 安装路径"></a><strong>1. 检查 Unity 安装路径</strong></h4><ul>
-<li>打开 Unity Hub 的 <strong>Installs</strong> 页。</li>
-<li>点击 Unity 版本右侧的 <strong>齿轮图标</strong>，选择 <strong>“Show in Explorer”</strong> 或 <strong>“Show in Finder”</strong>。</li>
-<li>在打开的文件夹中，确认是否存在 <code>modules.json</code> 文件。</li>
-</ul>
-<h4 id="2-手动创建-modules-json-文件"><a href="#2-手动创建-modules-json-文件" class="headerlink" title="2. 手动创建 modules.json 文件"></a><strong>2. 手动创建 <code>modules.json</code> 文件</strong></h4><p>如果文件缺失，可以手动创建：</p>
-<ol>
-<li><p>在 Unity 安装目录下新建一个文件，命名为 <code>modules.json</code>。</p>
-<ul>
-<li>注意文件扩展名必须为 <code>.json</code>。</li>
-<li>确保在操作系统中未隐藏扩展名（防止被误命名为 <code>modules.json.txt</code>）。</li>
-</ul>
-</li>
-<li><p>打开文件并添加以下内容：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure></li>
-<li><p>保存并关闭文件。</p>
-</li>
-</ol>
-<h4 id="3-重启-Unity-Hub"><a href="#3-重启-Unity-Hub" class="headerlink" title="3. 重启 Unity Hub"></a><strong>3. 重启 Unity Hub</strong></h4><ul>
-<li>完全退出 Unity Hub，确保它不在系统托盘运行。</li>
-<li>重新打开 Unity Hub，检查 <strong>“Add Modules”</strong> 按钮是否出现。</li>
-</ul>
-<hr>
-<h3 id="重要注意事项"><a href="#重要注意事项" class="headerlink" title="重要注意事项"></a><strong>重要注意事项</strong></h3><ol>
-<li><p><strong>风险提示</strong>：</p>
-<ul>
-<li>如果 <code>modules.json</code> 文件信息不正确，可能会导致 Unity Hub 无法正确管理模块安装&#x2F;卸载。</li>
-<li>如果问题发生，可以删除 <code>modules.json</code> 文件并重试。</li>
-</ul>
-</li>
-<li><p><strong>推荐使用 Unity Hub 安装编辑器</strong>：</p>
-<ul>
-<li>Unity Hub 安装会自动生成 <code>modules.json</code>，并确保模块的正确状态。</li>
-</ul>
-</li>
-<li><p><strong>归档下载的版本建议单独管理</strong>：</p>
-<ul>
-<li>如果从 <a href="https://unity.com/releases/editor/archive">Unity 归档</a>下载的版本，最好直接使用 Unity Hub 安装或按照官方文档的安装步骤手动管理模块。</li>
-</ul>
-</li>
-</ol>
-<h3 id="方法三：卸载，使用Unityhub重新安装-【推荐】"><a href="#方法三：卸载，使用Unityhub重新安装-【推荐】" class="headerlink" title="方法三：卸载，使用Unityhub重新安装 【推荐】"></a>方法三：卸载，使用Unityhub重新安装 【推荐】</h3><p><strong>强调：</strong></p>
-<ol>
-<li>不要使用中国版团结引擎，版本带c的就是</li>
-<li>不要单独下载unity editor 安装器，使用UnityHub下载</li>
-</ol>
-<h2 id="Visual-Studio-的安装"><a href="#Visual-Studio-的安装" class="headerlink" title="Visual Studio 的安装"></a>Visual Studio 的安装</h2><p>在 Unity 开发中，Visual Studio 的安装需要包含以下关键组件，以确保支持 Unity 的所有功能，包括 C# 脚本开发、IL2CPP 构建、调试和测试。</p>
-<hr>
-<h2 id="推荐的安装步骤"><a href="#推荐的安装步骤" class="headerlink" title="推荐的安装步骤"></a><strong>推荐的安装步骤</strong></h2><ol>
-<li>打开 <strong>Visual Studio Installer</strong>。</li>
-<li>选择要安装或修改的 Visual Studio 版本（例如 Visual Studio 2022）。</li>
-<li>点击 <strong>修改</strong>。</li>
-<li>在 <strong>工作负载</strong> 和 <strong>单个组件</strong> 中勾选以下内容。</li>
-</ol>
-<hr>
-<h2 id="必须安装的组件"><a href="#必须安装的组件" class="headerlink" title="必须安装的组件"></a><strong>必须安装的组件</strong></h2><h3 id="工作负载"><a href="#工作负载" class="headerlink" title="工作负载"></a><strong>工作负载</strong></h3><p>以下工作负载是 Unity 开发的基本需求：</p>
-<ol>
-<li><p><strong>Game development with Unity</strong>（使用 Unity 进行游戏开发）：</p>
-<ul>
-<li>Unity 的官方推荐工作负载。</li>
-<li>包含 Unity 相关工具、调试器、测试工具和集成插件。</li>
-</ul>
-</li>
-<li><p><strong>.NET desktop development</strong>（.NET 桌面开发）：</p>
-<ul>
-<li>提供必要的 .NET 和 C# 工具。</li>
-</ul>
-</li>
-<li><p>**Desktop development with C++**（C++ 桌面开发）：</p>
-<ul>
-<li><strong>IL2CPP 构建</strong>所需，用于将 Unity 项目转换为本地 C++ 代码并编译。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="单个组件"><a href="#单个组件" class="headerlink" title="单个组件"></a><strong>单个组件</strong></h3><p>在顶部切换到 <strong>单个组件</strong>，选择以下组件：</p>
-<h4 id="C-和-NET"><a href="#C-和-NET" class="headerlink" title="C# 和 .NET"></a><strong>C# 和 .NET</strong></h4><ol>
-<li><strong>.NET Framework 4.8 SDK</strong></li>
-<li><strong>.NET Framework 4.8 Targeting Pack</strong></li>
-<li><strong>NuGet Package Manager</strong></li>
-</ol>
-<h4 id="C-工具链"><a href="#C-工具链" class="headerlink" title="C++ 工具链"></a><strong>C++ 工具链</strong></h4><ol>
-<li><strong>MSVC v143 - VS 2022 C++ x64&#x2F;x86 build tools</strong></li>
-<li><strong>Windows 10 SDK（10.x.x.x）</strong> 或更新版本：<ul>
-<li>这是 IL2CPP 必需的工具链之一。</li>
-</ul>
-</li>
-<li><strong>C++ CMake tools for Windows</strong></li>
-<li><strong>C++&#x2F;CLI support</strong>（可选，针对 .NET 与 C++ 交互的情况）。</li>
-</ol>
-<h4 id="Unity-工具"><a href="#Unity-工具" class="headerlink" title="Unity 工具"></a><strong>Unity 工具</strong></h4><ol>
-<li><strong>Unity Hub</strong>（可选，如果未安装）。</li>
-<li><strong>Visual Studio Tools for Unity</strong>：<ul>
-<li>提供 Unity 与 Visual Studio 的集成，包括代码提示、调试和错误报告。</li>
-</ul>
-</li>
-</ol>
-<h4 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a><strong>调试工具</strong></h4><ol>
-<li><strong>JavaScript diagnostics</strong>（用于调试 WebGL 项目）。</li>
-<li><strong>Graphics debugger and GPU profiler</strong>（可选，用于调试渲染问题）。</li>
-</ol>
-<hr>
-<h3 id="其他推荐组件"><a href="#其他推荐组件" class="headerlink" title="其他推荐组件"></a><strong>其他推荐组件</strong></h3><ol>
-<li><strong>Azure DevOps</strong>（可选，用于版本控制）。</li>
-<li><strong>MSBuild</strong>（项目构建工具）。</li>
-<li><strong>Live Share</strong>（用于多人协作开发）。</li>
-<li><strong>Performance profiler</strong>（可选，性能分析工具）。</li>
-</ol>
-<hr>
-<h2 id="检查-Unity-项目所需的额外内容"><a href="#检查-Unity-项目所需的额外内容" class="headerlink" title="检查 Unity 项目所需的额外内容"></a><strong>检查 Unity 项目所需的额外内容</strong></h2><p>如果你的 Unity 项目需要构建到特定平台，请安装相关的 SDK 和工具：</p>
-<ul>
-<li><strong>Android</strong>：需要安装 Android SDK 和 NDK，建议通过 Unity Hub 设置。</li>
-<li><strong>iOS</strong>：需要 macOS 和 Xcode。</li>
-<li><strong>WebGL</strong>：安装 Node.js 和 JavaScript 工具（Visual Studio 会自动提供支持）。</li>
-<li><strong>Windows</strong>：确保安装了 <strong>Windows 10 SDK</strong> 和 <strong>C++ 工具链</strong>。</li>
-</ul>
-<hr>
-<p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
-]]></content>
   </entry>
   <entry>
     <title>Unity Jobs System</title>
@@ -4859,11 +5115,157 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#x2e;&#x75;&#110;&#105;&#x74;&#x79;&#46;&#x63;&#x6f;&#x6c;&#108;&#x61;&#x62;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#54;&#x2e;&#x30;">&#x63;&#x6f;&#109;&#x2e;&#x75;&#110;&#105;&#x74;&#x79;&#46;&#x63;&#x6f;&#x6c;&#108;&#x61;&#x62;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#x32;&#x2e;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#46;&#x75;&#110;&#105;&#116;&#121;&#46;&#x63;&#111;&#x6c;&#108;&#x61;&#x62;&#45;&#x70;&#x72;&#111;&#x78;&#121;&#x40;&#x32;&#46;&#54;&#46;&#x30;">&#x63;&#x6f;&#109;&#46;&#x75;&#110;&#105;&#116;&#121;&#46;&#x63;&#111;&#x6c;&#108;&#x61;&#x62;&#45;&#x70;&#x72;&#111;&#x78;&#121;&#x40;&#x32;&#46;&#54;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5278,152 +5680,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -5729,18 +5985,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git submodule</title>
     <url>/2025/02/06/git-submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
@@ -5881,6 +6125,18 @@
 <h2 id="🔹-总结"><a href="#🔹-总结" class="headerlink" title="🔹 总结"></a><strong>🔹 总结</strong></h2><p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
 <p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
   </entry>
   <entry>
     <title>github 作为热更新服</title>
@@ -6417,6 +6673,51 @@
       </tags>
   </entry>
   <entry>
+    <title>hexo 图片加载方案</title>
+    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1 id="安装-hexo-asset-image-插件"><a href="#安装-hexo-asset-image-插件" class="headerlink" title="安装 hexo-asset-image 插件"></a>安装 hexo-asset-image 插件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>修改代码为如下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
+
+<h2 id="页签页md文档中插入图片"><a href="#页签页md文档中插入图片" class="headerlink" title="页签页md文档中插入图片"></a>页签页md文档中插入图片</h2><p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
+<p>打开_config.yml ，修改如下：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-trailing-index"><a href="#1-trailing-index" class="headerlink" title="1. trailing_index"></a>1. trailing_index</h3><p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
+<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
+<h3 id="2-trailing-html"><a href="#2-trailing-html" class="headerlink" title="2. trailing_html"></a>2. trailing_html</h3><p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
+<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>这个方式的好处在于：</p>
+<ul>
+<li>支持vscode中正常预览</li>
+<li>无需修改Ctrl+V粘贴的路径</li>
+<li>本地构建的网站和正式部署的网站都能正常显示</li>
+</ul>
+<h1 id="html-脚本中添加图片"><a href="#html-脚本中添加图片" class="headerlink" title="html 脚本中添加图片"></a>html 脚本中添加图片</h1><p>我们直接复制粘贴的路径：<br>将路径</p>
+<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
+<p>粘贴到scr中</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
+<p>src : index&#x2F;image.png</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
+<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
+<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
+<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo butterfly 添加rightside 按钮</title>
     <url>/2025/01/21/hexo-butterfly-%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
     <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
@@ -6466,51 +6767,6 @@
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>hexo 图片加载方案</title>
-    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h1 id="安装-hexo-asset-image-插件"><a href="#安装-hexo-asset-image-插件" class="headerlink" title="安装 hexo-asset-image 插件"></a>安装 hexo-asset-image 插件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-
-<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>修改代码为如下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
-
-<h2 id="页签页md文档中插入图片"><a href="#页签页md文档中插入图片" class="headerlink" title="页签页md文档中插入图片"></a>页签页md文档中插入图片</h2><p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
-<p>打开_config.yml ，修改如下：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="1-trailing-index"><a href="#1-trailing-index" class="headerlink" title="1. trailing_index"></a>1. trailing_index</h3><p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
-<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
-<h3 id="2-trailing-html"><a href="#2-trailing-html" class="headerlink" title="2. trailing_html"></a>2. trailing_html</h3><p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
-<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<p>这个方式的好处在于：</p>
-<ul>
-<li>支持vscode中正常预览</li>
-<li>无需修改Ctrl+V粘贴的路径</li>
-<li>本地构建的网站和正式部署的网站都能正常显示</li>
-</ul>
-<h1 id="html-脚本中添加图片"><a href="#html-脚本中添加图片" class="headerlink" title="html 脚本中添加图片"></a>html 脚本中添加图片</h1><p>我们直接复制粘贴的路径：<br>将路径</p>
-<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
-<p>粘贴到scr中</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
-<p>src : index&#x2F;image.png</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
-<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
-<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
-<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>hexo</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
   </entry>
   <entry>
     <title>hexo添加标签样式</title>
@@ -10280,40 +10536,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>跨境电商</title>
-    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
-    <content><![CDATA[<p>店铺类型：</p>
-<ul>
-<li>铺货</li>
-<li>精铺</li>
-<li>品牌（精品）</li>
-</ul>
-<p>物流</p>
-<ul>
-<li>FBA：亚马逊仓发货</li>
-<li>FBM(商家自发货)</li>
-</ul>
-<p>形式：</p>
-<ul>
-<li>海</li>
-<li>铁</li>
-<li>空</li>
-</ul>
-<p>工具：</p>
-<p>谷歌趋势： Google Trends  关键词搜索 </p>
-<ul>
-<li>相关主题  趋势变化判断是不是和开发该品类</li>
-<li>订阅关键词</li>
-</ul>
-<p>ads - 关键词规划师 </p>
-<ul>
-<li>转换率</li>
-<li>获客成本</li>
-<li></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab&#x2F;Gitea）和简单搭建裸仓库。</p>
@@ -10516,6 +10738,40 @@
       <tags>
         <tag>git</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>跨境电商</title>
+    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
+    <content><![CDATA[<p>店铺类型：</p>
+<ul>
+<li>铺货</li>
+<li>精铺</li>
+<li>品牌（精品）</li>
+</ul>
+<p>物流</p>
+<ul>
+<li>FBA：亚马逊仓发货</li>
+<li>FBM(商家自发货)</li>
+</ul>
+<p>形式：</p>
+<ul>
+<li>海</li>
+<li>铁</li>
+<li>空</li>
+</ul>
+<p>工具：</p>
+<p>谷歌趋势： Google Trends  关键词搜索 </p>
+<ul>
+<li>相关主题  趋势变化判断是不是和开发该品类</li>
+<li>订阅关键词</li>
+</ul>
+<p>ads - 关键词规划师 </p>
+<ul>
+<li>转换率</li>
+<li>获客成本</li>
+<li></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>转产品经理</title>
