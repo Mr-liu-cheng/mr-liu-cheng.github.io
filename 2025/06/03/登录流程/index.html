@@ -345,7 +345,8 @@
 <blockquote>
 <p>loading</p>
 </blockquote>
-<pre><code class="highlight mermaid">graph TD
+<pre><code class="highlight mermaid">
+graph TD
     subgraph 登录模块
         z[登出]--&gt;V
         引导--&gt;z
@@ -364,16 +365,17 @@
     end
 
     subgraph 加载模块
-        LoadingView:CheckUpdate--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
+    
+        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
         |debug|zz[ResDownloadManager.EnterLogin]--&gt;
         LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
-        ch--&gt;|非debug|bv[bigVersion判断]--&gt;|大于|aa[BigVersionHandle]--&gt;SafeQuit--&gt;|编辑器|zz
+        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
+        SafeQuit--&gt;|编辑器|zz
         SafeQuit--&gt;|非编辑器|Application.Quit
-        bv--&gt;|等于|ab[BigVersionHandle]--&gt;az[指定版本检查]
+        bv--&gt;|等于|az[指定版本检查]
         az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
         az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
         bv--&gt;|小于|zz
-        ch--&gt;hhf
         hotResVersion判断--&gt;|不热更|zz
     end
 
