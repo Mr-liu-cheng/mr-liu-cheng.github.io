@@ -909,6 +909,38 @@ print(string.gsub(s, "%a+", "#"))  --> # # 123
     print("hello")
     end
     ```
+
+    实际lua游戏项目中，绑定监听事件需要使用闭包捕获完整信息
+``` lua
+一、（直接内联）：
+✅ 优点：快速实现功能 ❌ 缺点：如果逻辑变复杂，代码会臃肿，难以调试或扩展
+    UIEvent.AddDropdownValueChange(self.Dropdown.transform,
+            function(index)
+                log("OnToggleValueChange_" .. index)
+            end)
+
+
+二、建议写法（封装成独立方法）：
+function SetUpSoundView:OnDropdownValueChanged(index)
+    log("OnToggleValueChange_" .. index)
+end
+✅ 优点：
+逻辑分离，便于调试
+可以在多个地方复用 OnDropdownValueChanged
+更清晰地表达意图（命名函数）
+
+-- 绑定时：
+UIEvent.AddDropdownValueChange(self.Dropdown.transform, function(index)
+    self:OnDropdownValueChanged(index)
+end)
+
+三、❌而不是采用：
+function SetUpSoundView:OnDropdownValueChanged(k)
+    log("OnToggleValueChange_")
+end
+UIEvent.AddDropdownValueChange(self.Dropdown.transform, self.OnDropdownValueChanged)
+```
+  
 - return  可以返回多个值用逗号隔开
 - Lua 中有 8 个基本类型分别为：nil、boolean、number、string、userdata、function、thread 和 table。
   - userdata	表示任意存储在变量中的C数据结构
