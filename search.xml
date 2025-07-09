@@ -548,157 +548,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>GitHub + CDN</title>
-    <url>/2025/05/08/GitHub%20+%20CDN/</url>
-    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
-<hr>
-<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
-   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
-   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
-   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
-   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
-
-<ul>
-<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
-<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
-<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
-</ul>
-<hr>
-<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
-<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
-<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
-<li>获取直链：  <ul>
-<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
-<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
-<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
-</ul>
-</li>
-</ol>
-<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
-<ol>
-<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
-<li>在Cloudflare中：  <ul>
-<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
-<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
-</ul>
-</li>
-<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
-<ol>
-<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
-<ul>
-<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
-<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
-<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
-</ul>
-<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
-<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
-<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
-</ul>
-<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
-<li><strong>流量统计</strong>：  <ul>
-<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
-<li>在Cloudflare面板查看CDN请求数。</li>
-</ul>
-</li>
-<li><strong>防滥用</strong>：  <ul>
-<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐方案</th>
-<th>注意事项</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>免费游戏试玩</strong></td>
-<td>GitHub Releases直链</td>
-<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
-</tr>
-<tr>
-<td><strong>开源项目分发</strong></td>
-<td>jsDelivr CDN</td>
-<td>必须公开仓库，适合Demo或工具类游戏。</td>
-</tr>
-<tr>
-<td><strong>商业游戏早期测试</strong></td>
-<td>Cloudflare+B2</td>
-<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
-</tr>
-<tr>
-<td><strong>大规模正式发布</strong></td>
-<td>需迁移至专业CDN&#x2F;自建</td>
-<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
-<thead>
-<tr>
-<th>方案</th>
-<th>存储成本</th>
-<th>流量成本（1TB下载）</th>
-<th>适用阶段</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GitHub直链</strong></td>
-<td>免费</td>
-<td>免费（但有限流风险）</td>
-<td>原型&#x2F;测试</td>
-</tr>
-<tr>
-<td><strong>Cloudflare+B2</strong></td>
-<td>$0.005&#x2F;GB&#x2F;月</td>
-<td>$10~$50</td>
-<td>小规模发布</td>
-</tr>
-<tr>
-<td><strong>AWS S3+CloudFront</strong></td>
-<td>$0.023&#x2F;GB&#x2F;月</td>
-<td>$85~$120</td>
-<td>中等规模</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
-<ol>
-<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
-<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
-<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
-</ol>
-<p>此方案适合：  </p>
-<ul>
-<li>独立开发者验证游戏热度。  </li>
-<li>开源项目或免费游戏分发。  </li>
-<li>规避早期服务器运维成本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GitHub,CDN</category>
-      </categories>
-      <tags>
-        <tag>GitHub,CDN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1165,6 +1014,157 @@
 </ul>
 <p>通过这种方式，你可以实现 <strong>灵活的热更新系统</strong>，无论是 <strong>C# 代码</strong> 还是 <strong>游戏资源</strong>，都能够根据需要动态更新，并确保两者的匹配和协调工作。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>GitHub + CDN</title>
+    <url>/2025/05/08/GitHub%20+%20CDN/</url>
+    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
+<hr>
+<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
+   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
+   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
+
+<ul>
+<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
+<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
+<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
+</ul>
+<hr>
+<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
+<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
+<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
+<li>获取直链：  <ul>
+<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
+<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
+<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
+</ul>
+</li>
+</ol>
+<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
+<ol>
+<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
+<li>在Cloudflare中：  <ul>
+<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
+<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
+</ul>
+</li>
+<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
+<ol>
+<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
+<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
+<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
+</ul>
+<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
+<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
+<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
+</ul>
+<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
+<li><strong>流量统计</strong>：  <ul>
+<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
+<li>在Cloudflare面板查看CDN请求数。</li>
+</ul>
+</li>
+<li><strong>防滥用</strong>：  <ul>
+<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>免费游戏试玩</strong></td>
+<td>GitHub Releases直链</td>
+<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
+</tr>
+<tr>
+<td><strong>开源项目分发</strong></td>
+<td>jsDelivr CDN</td>
+<td>必须公开仓库，适合Demo或工具类游戏。</td>
+</tr>
+<tr>
+<td><strong>商业游戏早期测试</strong></td>
+<td>Cloudflare+B2</td>
+<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
+</tr>
+<tr>
+<td><strong>大规模正式发布</strong></td>
+<td>需迁移至专业CDN&#x2F;自建</td>
+<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>存储成本</th>
+<th>流量成本（1TB下载）</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub直链</strong></td>
+<td>免费</td>
+<td>免费（但有限流风险）</td>
+<td>原型&#x2F;测试</td>
+</tr>
+<tr>
+<td><strong>Cloudflare+B2</strong></td>
+<td>$0.005&#x2F;GB&#x2F;月</td>
+<td>$10~$50</td>
+<td>小规模发布</td>
+</tr>
+<tr>
+<td><strong>AWS S3+CloudFront</strong></td>
+<td>$0.023&#x2F;GB&#x2F;月</td>
+<td>$85~$120</td>
+<td>中等规模</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
+<ol>
+<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
+<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
+<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
+</ol>
+<p>此方案适合：  </p>
+<ul>
+<li>独立开发者验证游戏热度。  </li>
+<li>开源项目或免费游戏分发。  </li>
+<li>规避早期服务器运维成本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GitHub,CDN</category>
+      </categories>
+      <tags>
+        <tag>GitHub,CDN</tag>
+      </tags>
   </entry>
   <entry>
     <title>GitHub Actions 没有触发的核心原因</title>
@@ -3044,136 +3044,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Jenkins 简介</title>
     <url>/2025/05/08/Jenkins/</url>
     <content><![CDATA[<h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a><strong>Jenkins 简介</strong></h3><p>Jenkins 是一个开源的 <strong>持续集成和持续交付 (CI&#x2F;CD)</strong> 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。</p>
@@ -3361,6 +3231,136 @@
 <li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
 </ul>
 <p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -5037,6 +5037,38 @@
       </tags>
   </entry>
   <entry>
+    <title>Unity UWA &amp; UWP</title>
+    <url>/2025/01/15/Unity-UWA-UWP/</url>
+    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
+<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
+<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
+<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
+</ul>
+<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
+<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
+<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
+</ul>
+<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
+<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
+<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
+</ul>
+<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
+<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
+<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
+<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
+</ul>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
+<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
+<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
+</ul>
+<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity ScriptableObject</title>
     <url>/2025/01/16/Unity-ScriptableObject/</url>
     <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
@@ -5140,43 +5172,11 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity UWA &amp; UWP</title>
-    <url>/2025/01/15/Unity-UWA-UWP/</url>
-    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
-<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
-<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
-<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
-</ul>
-<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
-<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
-<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
-</ul>
-<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
-<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
-<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
-</ul>
-<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
-<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
-<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
-<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
-</ul>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
-<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
-<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
-</ul>
-<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#46;&#x75;&#x6e;&#x69;&#116;&#121;&#46;&#99;&#111;&#108;&#108;&#97;&#x62;&#x2d;&#112;&#114;&#x6f;&#120;&#121;&#x40;&#x32;&#46;&#54;&#46;&#x30;">&#99;&#111;&#x6d;&#46;&#x75;&#x6e;&#x69;&#116;&#121;&#46;&#99;&#111;&#108;&#108;&#97;&#x62;&#x2d;&#112;&#114;&#x6f;&#120;&#121;&#x40;&#x32;&#46;&#54;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#46;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#108;&#97;&#98;&#x2d;&#112;&#x72;&#111;&#x78;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;">&#x63;&#111;&#109;&#46;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#108;&#97;&#98;&#x2d;&#112;&#x72;&#111;&#x78;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -6257,22 +6257,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git修改历史提交</title>
     <url>/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/</url>
     <content><![CDATA[<h1 id="git-reset命令"><a href="#git-reset命令" class="headerlink" title="git reset命令"></a>git reset命令</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --soft 29f9bbd77da69902335cad77a12eac7b022b9f63</span><br></pre></td></tr></table></figure>
@@ -6474,6 +6458,22 @@
 </tbody></table>
 <p>推荐：</p>
 <p><a href="https://x.zhixing.co/devops/the-differences-and-usages-of-git-merge-rebase/">Git merge &amp; rebase 区别和用法</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -9247,11 +9247,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>文件树状层级图生成</title>
-    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
-  </entry>
-  <entry>
     <title>提升</title>
     <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
     <content><![CDATA[<ol>
@@ -9278,6 +9273,11 @@
       <tags>
         <tag>提升</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>文件树状层级图生成</title>
+    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
@@ -9573,235 +9573,6 @@
       </categories>
       <tags>
         <tag>游戏研发</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>登录流程</title>
-    <url>/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
-<hr>
-<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
-  participant 玩家
-  participant 客户端
-  participant 服务器
-  玩家--&gt;&gt;客户端: 选择游客登陆
-  客户端-&gt;&gt;玩家: 成功回调
-
-  loop 递归
-      玩家-&gt;&gt;玩家: 接收消息
-  end
-  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
-
-
-<hr>
-<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
-<p>login</p>
-</blockquote>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
-        C--&gt;Request.Login--&gt;LoginWithProcess
-
-        subgraph 共同请求模块
-            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
-        end
-        
-    end
-
-   subgraph 新登录流程
-        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
-        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
-        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
-        
-        subgraph 合并请求回复的数据
-            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
-            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
-        end
-
-        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
-
-
-
-        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
-
-        ReadyToEnter--&gt;|Guest|NewAccountLogin
-        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
-        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
-    
-        subgraph 各登录方式请求所需的数据
-            FacebookLogin:InitData
-            GuestLogin:InitData
-            RoyalLogin:InitData
-        end
-
-        subgraph 各登录方式请求的成功回调
-            ProcessingAccountLoginTokenInfoData
-            ProcessingGuestLoginTokenInfoData
-            ProcessingFacebookLoginTokenInfoData
-        end
-
-      
-    
-    end
-    
-
-
-
-</code></pre>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect
-        --&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-    end</code></pre>
-<blockquote>
-<p>loading</p>
-</blockquote>
-<pre><code class="highlight mermaid">
-graph TD
-    subgraph 登录模块
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        子游戏接口--&gt;z
-    end
-
-    subgraph 加载模块
-    
-        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
-        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
-        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
-        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
-        SafeQuit--&gt;|编辑器|zz
-        SafeQuit--&gt;|非编辑器|Application.Quit
-        bv--&gt;|等于|az[指定版本检查]
-        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
-        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
-        bv--&gt;|小于|zz
-        hotResVersion判断--&gt;|不热更|zz
-    end
-
-    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-    LoginViewCtr:OnSocketConnect
-    --&gt; LoginViewCtr:ReadyToEnter
-    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
-<blockquote>
-<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，并且Mermaid可以点击【分享Kroki】来全屏预览。不过为了确保数据不会丢失最好在文档中记录一份。Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法，并且自带全屏预览效果，不用分享Kroki。</p>
-</blockquote>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI"><img src="https://mermaid.ink/img/pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI?type=png"></a></p>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNqNVVtTGkkU_ivUPCOFIBh5SFXEuD7oplZdUxXwoZlpYQroZochJohVuImKFoLZVVLEaBKjxqqNl5TuhlLI_hl7Lk_5C9s9zTKDmkp4Gs75zne-PpfuOUHEEhRCQlwBmYRrciiKXPSXzcW4Qa9fktamdviObL_kLvbLR5h9-WK6p-fulG0mzU1y0qS2vG0zjr_orWOzWKRw4_yAVD93-8nRutZoaKWqVtkn1ffUaez-ZTR2HYi9D6SyqFUOzeJCx30tsQWhtocRc3nN-Hdn2vZxduazbRxE9j4Z5_vdHtL6U3u9RlbfkfohhVBRWu2INIvdqIfd6YcH9csX5PgV2a-R1U_m7hKp1sjWjnH6jOJ4frK0aHw-M1ofKbZ-adaXuhm0s0Nzo9hdGYeODcpmbtSNkxP97cL36td2QiRF0bVuktW3Rqvl7KZNFA57fsaqPCOLQJUxynrG4W8_gTQclbPqPSSxzymoZKlrWEZyNkEzAQAioxhIMopPyXA2FE5AMflrRgIqZJPhdE2oQFG5i3rERGQcZofwLEpRzBhAIA4VjxU-AlIp7X1Re7PPm2r8_Vy7WNefHWlb54zUFlyQYCwXL-Tzt3HdRypURnFcRt1BTk0dOQVeF3Jc1krrBSfEomFHZ-2iho5UnE5jZHnHgIwmRIignURkxSmY2ztcYexxJCbH28Vz3XWlsAhSgx0LKe3RGZu2dOx9uLqoFGhZbzmSHTECkJSC3QebADPwl5ysMhq9WTO-vKCTQ4tzO4Jqs0H3MplUu-seBrBDYo8tuqMVS1U-opWX6ZjrKyXt9UfeJMeigbwD_AP6KTqRmLntpGwGRrA6LD-5QX_VWGtnoLGMAauUoKuSDGYcLPCRKfx41_hhyWmVsTsL940cTArPkb-5ct9La60HnU6GC6tK6AEKK5BOo4s6XNc8DzIQTWAxCVnr2JpCdRYrSY-1U50huBbEA8IYISi2O3qDehwC6ekktpS1ZUecwgeBmJzEVoj76rJC70aysqZvls3t3a_NEjn4vX01l2r8CvraXOF3FSmd8ofjf3BZayzq60v6VoMsnumr_2jFBfJHme_29LdqwSUJbvo2yZIQmgGpLHQLaaikAfsvzDFAVFATMA2jQoh-SkBJRoUomqdBGYAeYZwWQqqSo2EKzsUTHZKctfpDMqD3og2h_YNKGOeQKoQCFoMQmhOeCKEev9_j8_r7fH3eXl8g6OsPuoWn1Oy7E_Tc8Qd7vYGAt8_v7fPNu4W8lbTXExwI9g70B7wD_UEaQemgJKtYGePPrfXqzv8H_SEXcw"><img src="https://mermaid.ink/img/pako:eNqNVVtTGkkU_ivUPCOFIBh5SFXEuD7oplZdUxXwoZlpYQroZochJohVuImKFoLZVVLEaBKjxqqNl5TuhlLI_hl7Lk_5C9s9zTKDmkp4Gs75zne-PpfuOUHEEhRCQlwBmYRrciiKXPSXzcW4Qa9fktamdviObL_kLvbLR5h9-WK6p-fulG0mzU1y0qS2vG0zjr_orWOzWKRw4_yAVD93-8nRutZoaKWqVtkn1ffUaez-ZTR2HYi9D6SyqFUOzeJCx30tsQWhtocRc3nN-Hdn2vZxduazbRxE9j4Z5_vdHtL6U3u9RlbfkfohhVBRWu2INIvdqIfd6YcH9csX5PgV2a-R1U_m7hKp1sjWjnH6jOJ4frK0aHw-M1ofKbZ-adaXuhm0s0Nzo9hdGYeODcpmbtSNkxP97cL36td2QiRF0bVuktW3Rqvl7KZNFA57fsaqPCOLQJUxynrG4W8_gTQclbPqPSSxzymoZKlrWEZyNkEzAQAioxhIMopPyXA2FE5AMflrRgIqZJPhdE2oQFG5i3rERGQcZofwLEpRzBhAIA4VjxU-AlIp7X1Re7PPm2r8_Vy7WNefHWlb54zUFlyQYCwXL-Tzt3HdRypURnFcRt1BTk0dOQVeF3Jc1krrBSfEomFHZ-2iho5UnE5jZHnHgIwmRIignURkxSmY2ztcYexxJCbH28Vz3XWlsAhSgx0LKe3RGZu2dOx9uLqoFGhZbzmSHTECkJSC3QebADPwl5ysMhq9WTO-vKCTQ4tzO4Jqs0H3MplUu-seBrBDYo8tuqMVS1U-opWX6ZjrKyXt9UfeJMeigbwD_AP6KTqRmLntpGwGRrA6LD-5QX_VWGtnoLGMAauUoKuSDGYcLPCRKfx41_hhyWmVsTsL940cTArPkb-5ct9La60HnU6GC6tK6AEKK5BOo4s6XNc8DzIQTWAxCVnr2JpCdRYrSY-1U50huBbEA8IYISi2O3qDehwC6ekktpS1ZUecwgeBmJzEVoj76rJC70aysqZvls3t3a_NEjn4vX01l2r8CvraXOF3FSmd8ofjf3BZayzq60v6VoMsnumr_2jFBfJHme_29LdqwSUJbvo2yZIQmgGpLHQLaaikAfsvzDFAVFATMA2jQoh-SkBJRoUomqdBGYAeYZwWQqqSo2EKzsUTHZKctfpDMqD3og2h_YNKGOeQKoQCFoMQmhOeCKEev9_j8_r7fH3eXl8g6OsPuoWn1Oy7E_Tc8Qd7vYGAt8_v7fPNu4W8lbTXExwI9g70B7wD_UEaQemgJKtYGePPrfXqzv8H_SEXcw?type=png"></a></p>
-]]></content>
-      <categories>
-        <category>登录流程,mermaid</category>
-      </categories>
-      <tags>
-        <tag>Markdown,mermaid</tag>
       </tags>
   </entry>
   <entry>
@@ -10215,6 +9986,235 @@ graph TD
 <hr>
 <p><strong>总结</strong><br><strong>如果关闭 Clash 后 Unity 可以正常请求网络，那问题就是 Clash 代理影响了 Unity 的请求。</strong><br>你可以尝试 <strong>关闭 Clash 或者排除 Unity 进程不走代理</strong> 来解决问题。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>登录流程</title>
+    <url>/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
+<hr>
+<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
+  participant 玩家
+  participant 客户端
+  participant 服务器
+  玩家--&gt;&gt;客户端: 选择游客登陆
+  客户端-&gt;&gt;玩家: 成功回调
+
+  loop 递归
+      玩家-&gt;&gt;玩家: 接收消息
+  end
+  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
+
+
+<hr>
+<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
+<p>login</p>
+</blockquote>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
+        C--&gt;Request.Login--&gt;LoginWithProcess
+
+        subgraph 共同请求模块
+            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
+        end
+        
+    end
+
+   subgraph 新登录流程
+        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
+        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
+        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
+        
+        subgraph 合并请求回复的数据
+            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
+            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
+        end
+
+        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+
+
+
+        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
+
+        ReadyToEnter--&gt;|Guest|NewAccountLogin
+        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
+        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
+    
+        subgraph 各登录方式请求所需的数据
+            FacebookLogin:InitData
+            GuestLogin:InitData
+            RoyalLogin:InitData
+        end
+
+        subgraph 各登录方式请求的成功回调
+            ProcessingAccountLoginTokenInfoData
+            ProcessingGuestLoginTokenInfoData
+            ProcessingFacebookLoginTokenInfoData
+        end
+
+      
+    
+    end
+    
+
+
+
+</code></pre>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect
+        --&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+    end</code></pre>
+<blockquote>
+<p>loading</p>
+</blockquote>
+<pre><code class="highlight mermaid">
+graph TD
+    subgraph 登录模块
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        子游戏接口--&gt;z
+    end
+
+    subgraph 加载模块
+    
+        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
+        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
+        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
+        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
+        SafeQuit--&gt;|编辑器|zz
+        SafeQuit--&gt;|非编辑器|Application.Quit
+        bv--&gt;|等于|az[指定版本检查]
+        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
+        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
+        bv--&gt;|小于|zz
+        hotResVersion判断--&gt;|不热更|zz
+    end
+
+    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+    LoginViewCtr:OnSocketConnect
+    --&gt; LoginViewCtr:ReadyToEnter
+    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
+<blockquote>
+<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，并且Mermaid可以点击【分享Kroki】来全屏预览。不过为了确保数据不会丢失最好在文档中记录一份。Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法，并且自带全屏预览效果，不用分享Kroki。</p>
+</blockquote>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI"><img src="https://mermaid.ink/img/pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI?type=png"></a></p>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNqNVVtTGkkU_ivUPCOFIBh5SFXEuD7oplZdUxXwoZlpYQroZochJohVuImKFoLZVVLEaBKjxqqNl5TuhlLI_hl7Lk_5C9s9zTKDmkp4Gs75zne-PpfuOUHEEhRCQlwBmYRrciiKXPSXzcW4Qa9fktamdviObL_kLvbLR5h9-WK6p-fulG0mzU1y0qS2vG0zjr_orWOzWKRw4_yAVD93-8nRutZoaKWqVtkn1ffUaez-ZTR2HYi9D6SyqFUOzeJCx30tsQWhtocRc3nN-Hdn2vZxduazbRxE9j4Z5_vdHtL6U3u9RlbfkfohhVBRWu2INIvdqIfd6YcH9csX5PgV2a-R1U_m7hKp1sjWjnH6jOJ4frK0aHw-M1ofKbZ-adaXuhm0s0Nzo9hdGYeODcpmbtSNkxP97cL36td2QiRF0bVuktW3Rqvl7KZNFA57fsaqPCOLQJUxynrG4W8_gTQclbPqPSSxzymoZKlrWEZyNkEzAQAioxhIMopPyXA2FE5AMflrRgIqZJPhdE2oQFG5i3rERGQcZofwLEpRzBhAIA4VjxU-AlIp7X1Re7PPm2r8_Vy7WNefHWlb54zUFlyQYCwXL-Tzt3HdRypURnFcRt1BTk0dOQVeF3Jc1krrBSfEomFHZ-2iho5UnE5jZHnHgIwmRIignURkxSmY2ztcYexxJCbH28Vz3XWlsAhSgx0LKe3RGZu2dOx9uLqoFGhZbzmSHTECkJSC3QebADPwl5ysMhq9WTO-vKCTQ4tzO4Jqs0H3MplUu-seBrBDYo8tuqMVS1U-opWX6ZjrKyXt9UfeJMeigbwD_AP6KTqRmLntpGwGRrA6LD-5QX_VWGtnoLGMAauUoKuSDGYcLPCRKfx41_hhyWmVsTsL940cTArPkb-5ct9La60HnU6GC6tK6AEKK5BOo4s6XNc8DzIQTWAxCVnr2JpCdRYrSY-1U50huBbEA8IYISi2O3qDehwC6ekktpS1ZUecwgeBmJzEVoj76rJC70aysqZvls3t3a_NEjn4vX01l2r8CvraXOF3FSmd8ofjf3BZayzq60v6VoMsnumr_2jFBfJHme_29LdqwSUJbvo2yZIQmgGpLHQLaaikAfsvzDFAVFATMA2jQoh-SkBJRoUomqdBGYAeYZwWQqqSo2EKzsUTHZKctfpDMqD3og2h_YNKGOeQKoQCFoMQmhOeCKEev9_j8_r7fH3eXl8g6OsPuoWn1Oy7E_Tc8Qd7vYGAt8_v7fPNu4W8lbTXExwI9g70B7wD_UEaQemgJKtYGePPrfXqzv8H_SEXcw"><img src="https://mermaid.ink/img/pako:eNqNVVtTGkkU_ivUPCOFIBh5SFXEuD7oplZdUxXwoZlpYQroZochJohVuImKFoLZVVLEaBKjxqqNl5TuhlLI_hl7Lk_5C9s9zTKDmkp4Gs75zne-PpfuOUHEEhRCQlwBmYRrciiKXPSXzcW4Qa9fktamdviObL_kLvbLR5h9-WK6p-fulG0mzU1y0qS2vG0zjr_orWOzWKRw4_yAVD93-8nRutZoaKWqVtkn1ffUaez-ZTR2HYi9D6SyqFUOzeJCx30tsQWhtocRc3nN-Hdn2vZxduazbRxE9j4Z5_vdHtL6U3u9RlbfkfohhVBRWu2INIvdqIfd6YcH9csX5PgV2a-R1U_m7hKp1sjWjnH6jOJ4frK0aHw-M1ofKbZ-adaXuhm0s0Nzo9hdGYeODcpmbtSNkxP97cL36td2QiRF0bVuktW3Rqvl7KZNFA57fsaqPCOLQJUxynrG4W8_gTQclbPqPSSxzymoZKlrWEZyNkEzAQAioxhIMopPyXA2FE5AMflrRgIqZJPhdE2oQFG5i3rERGQcZofwLEpRzBhAIA4VjxU-AlIp7X1Re7PPm2r8_Vy7WNefHWlb54zUFlyQYCwXL-Tzt3HdRypURnFcRt1BTk0dOQVeF3Jc1krrBSfEomFHZ-2iho5UnE5jZHnHgIwmRIignURkxSmY2ztcYexxJCbH28Vz3XWlsAhSgx0LKe3RGZu2dOx9uLqoFGhZbzmSHTECkJSC3QebADPwl5ysMhq9WTO-vKCTQ4tzO4Jqs0H3MplUu-seBrBDYo8tuqMVS1U-opWX6ZjrKyXt9UfeJMeigbwD_AP6KTqRmLntpGwGRrA6LD-5QX_VWGtnoLGMAauUoKuSDGYcLPCRKfx41_hhyWmVsTsL940cTArPkb-5ct9La60HnU6GC6tK6AEKK5BOo4s6XNc8DzIQTWAxCVnr2JpCdRYrSY-1U50huBbEA8IYISi2O3qDehwC6ekktpS1ZUecwgeBmJzEVoj76rJC70aysqZvls3t3a_NEjn4vX01l2r8CvraXOF3FSmd8ofjf3BZayzq60v6VoMsnumr_2jFBfJHme_29LdqwSUJbvo2yZIQmgGpLHQLaaikAfsvzDFAVFATMA2jQoh-SkBJRoUomqdBGYAeYZwWQqqSo2EKzsUTHZKctfpDMqD3og2h_YNKGOeQKoQCFoMQmhOeCKEev9_j8_r7fH3eXl8g6OsPuoWn1Oy7E_Tc8Qd7vYGAt8_v7fPNu4W8lbTXExwI9g70B7wD_UEaQemgJKtYGePPrfXqzv8H_SEXcw?type=png"></a></p>
+]]></content>
+      <categories>
+        <category>登录流程,mermaid</category>
+      </categories>
+      <tags>
+        <tag>Markdown,mermaid</tag>
+      </tags>
   </entry>
   <entry>
     <title>社保和公积金的补缴问题</title>
@@ -11371,61 +11371,6 @@ graph TD
 <td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
 </tr>
 </tbody></table>
-]]></content>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2025/07/09/%E9%A2%84%E5%88%B6%E4%BD%93Text%E7%BB%84%E4%BB%B6%E9%9D%9E%E7%A9%BA%E6%96%87%E6%9C%AC%E6%9F%A5%E8%AF%A2%E4%B8%8E%E6%B8%85%E9%99%A4/</url>
-    <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>ClearPrefabTextContent</code> 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</p>
-<ol>
-<li>标准 Unity UI Text</li>
-<li>RichText (富文本)</li>
-<li>TextMeshPro (TMP_Text)</li>
-</ol>
-<h2 id="功能说明"><a href="#功能说明" class="headerlink" title="功能说明"></a>功能说明</h2><h3 id="1-查询非空文本控件"><a href="#1-查询非空文本控件" class="headerlink" title="1. 查询非空文本控件"></a>1. 查询非空文本控件</h3><p><strong>菜单路径</strong>: Tools&#x2F;查询非空文本控件</p>
-<p><strong>功能</strong>:</p>
-<ul>
-<li>遍历指定文件夹及其子文件夹中的所有预制体</li>
-<li>查找所有包含非空文本的 UI 组件</li>
-<li>将查询结果保存到桌面上的”非空文本查询结果.txt”文件中</li>
-<li>自动打开保存结果的文件所在位置</li>
-</ul>
-<p><strong>输出格式</strong>:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1预制体：PrefabName </span><br><span class="line">    1文本路径：ParentName/TextComponentName  文本内容：Sample Text</span><br><span class="line">    2文本路径：ParentName/TextComponentName2  文本内容：Another Text</span><br><span class="line">2预制体：AnotherPrefab</span><br><span class="line">    3文本路径：Parent/Text  文本内容：More Text</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-清空文本控件"><a href="#2-清空文本控件" class="headerlink" title="2. 清空文本控件"></a>2. 清空文本控件</h3><p><strong>菜单路径</strong>: Tools&#x2F;清空文本控件</p>
-<p><strong>功能</strong>:</p>
-<ul>
-<li>遍历指定文件夹及其子文件夹中的所有预制体</li>
-<li>查找所有文本组件并将其内容清空</li>
-<li>记录被清空的文本内容到 Unity 控制台</li>
-<li>自动保存修改后的预制体</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><ol>
-<li><strong>关闭预制体编辑界面</strong>：在使用此工具前，请确保关闭所有预制体编辑窗口</li>
-<li><strong>选择操作目录</strong>：工具会提示选择要操作的文件夹，默认路径为 <code>D:/Project/malaysiaMinorPackage2/malaysiaMinor2/Assets/_GameCenter/_Resources/prefab</code></li>
-<li><strong>注意事项</strong>：<br>   - 只能操作位于 Unity 项目 Assets 目录下的文件夹<br>   - 操作前建议备份项目或使用版本控制<br>   - 清空操作不可逆，请谨慎使用</li>
-</ol>
-<h2 id="技术细节"><a href="#技术细节" class="headerlink" title="技术细节"></a>技术细节</h2><ul>
-<li><p><strong>支持的文本组件类型</strong>:<br>  - <code>UnityEngine.UI.Text</code><br>  - <code>RichText</code> (自定义富文本组件)<br>  - <code>TMPro.TMP_Text</code> (TextMeshPro 文本)</p>
-</li>
-<li><p><strong>进度显示</strong>：长时间操作会显示进度条，避免编辑器无响应</p>
-</li>
-<li><p><strong>错误处理</strong>：<br>  - 检测所选文件夹是否在 Assets 目录下<br>  - 处理空文本情况</p>
-</li>
-</ul>
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><ol>
-<li><p><strong>查询非空文本</strong>:<br>   - 点击菜单 “Tools&#x2F;查询非空文本控件”<br>   - 选择包含预制体的文件夹<br>   - 等待操作完成，查看桌面生成的文本文件</p>
-</li>
-<li><p><strong>清空文本</strong>:<br>   - 点击菜单 “Tools&#x2F;清空文本控件”<br>   - 选择包含预制体的文件夹<br>   - 等待操作完成，查看 Unity 控制台中的清理记录</p>
-</li>
-</ol>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
-<li>此工具会直接修改预制体资源，操作前请确保已备份重要数据</li>
-<li>对于大型项目，操作可能需要较长时间</li>
-<li>工具默认路径可能需要根据项目实际情况修改</li>
-</ul>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.IO;</span><br><span class="line">using TMPro;</span><br><span class="line">using UnityEditor;</span><br><span class="line">using UnityEngine;</span><br><span class="line">using UnityEngine.UI;</span><br><span class="line">using System.Linq;</span><br><span class="line">using System;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span><br><span class="line">    1标准 Unity UI Text</span><br><span class="line">    2RichText (富文本)</span><br><span class="line">    3TextMeshPro (TMP_Text)</span><br><span class="line"></span><br><span class="line">&gt;&gt; 查询非空文本控件:</span><br><span class="line">    功能:</span><br><span class="line">        遍历指定文件夹及其子文件夹中的所有预制体</span><br><span class="line">        查找所有包含非空文本的 UI 组件</span><br><span class="line">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span><br><span class="line">        自动打开保存结果的文件所在位置</span><br><span class="line"></span><br><span class="line">&gt;&gt; 清空文本控件:</span><br><span class="line">    功能:</span><br><span class="line">        遍历指定文件夹及其子文件夹中的所有预制体</span><br><span class="line">        查找所有文本组件并将其内容清空</span><br><span class="line">        记录被清空的文本内容到 Unity 控制台</span><br><span class="line">        自动保存修改后的预制</span><br><span class="line">    注意：</span><br><span class="line">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span><br><span class="line">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">public class ClearPrefabTextContent : EditorWindow</span><br><span class="line">&#123;</span><br><span class="line">    private static List&lt;KeyValuePair&lt;string, string&gt;&gt; textDict;</span><br><span class="line">    private Vector2 scrollPosition;</span><br><span class="line">    private static string folderPath, defaultPath = &quot;Assets/_GameCenter/_Resources/prefab&quot;;</span><br><span class="line">    private static string cnt = &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    [MenuItem(&quot;Tools/文本组件管理&quot;)]</span><br><span class="line">    private static void TextComponentManager()</span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void ShowWindow()</span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(&quot;Prefab Text Content Manager&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void OnGUI()</span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(&quot;Prefab Text Content Manager Tool&quot;, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = string.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(&quot;Prefab Folder Path:&quot;, folderPath); //</span><br><span class="line">        if (GUILayout.Button(&quot;...&quot;, GUILayout.Width(30)))</span><br><span class="line">        &#123;</span><br><span class="line">            var path = EditorUtility.OpenFolderPanel(&quot;Select Prefab Folder&quot;, defaultPath, &quot;&quot;);</span><br><span class="line">            if (string.IsNullOrEmpty(path)) return;</span><br><span class="line">            // 转换为相对于Assets的路径</span><br><span class="line">            if (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(&quot;Assets&quot;));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        if (GUILayout.Button(&quot;查询非空文本控件&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = &quot;&quot;;</span><br><span class="line">            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += &quot;Please select a valid folder path first!&quot;;</span><br><span class="line">            else</span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        if (GUILayout.Button(&quot;清空文本控件&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = &quot;&quot;;</span><br><span class="line">            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += &quot;Please select a valid folder path first!&quot;;</span><br><span class="line">            else</span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(&quot;查询结果：&quot;, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(true));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void FindNotEmptyText()</span><br><span class="line">    &#123;</span><br><span class="line">        textDict = new List&lt;KeyValuePair&lt;string, string&gt;&gt;();</span><br><span class="line">        var path = folderPath;</span><br><span class="line">        cnt += string.Format(&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;, path);</span><br><span class="line">        if (!path.Contains(&quot;Assets&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += &quot;所选文件夹不在 Assets 目录下，无法处理！&quot;;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(&quot;Assets&quot;));</span><br><span class="line">        var guids = AssetDatabase.FindAssets(&quot;t:Prefab&quot;, new string[] &#123; path &#125;);</span><br><span class="line">        var prefabCount = 0;</span><br><span class="line">        var textCount = 0;</span><br><span class="line">        if (guids != null &amp;&amp; guids.Length &gt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(&quot;Finding...&quot;, &quot;Start&quot;, 0);</span><br><span class="line">            var progress = 0;</span><br><span class="line">            var lastPrefab = &quot;&quot;;</span><br><span class="line">            foreach (var guid in guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                var assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(&quot;Checking....&quot;, assetsPath, (float)progress / guids.Length);</span><br><span class="line">                var obj = AssetDatabase.LoadAssetAtPath(assetsPath, typeof(GameObject)) as GameObject;</span><br><span class="line">                var lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(true);</span><br><span class="line">                var lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(true);</span><br><span class="line">                var lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(true);</span><br><span class="line">                var allTextComponents = new List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                foreach (var item in allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    var text = &quot;&quot;;</span><br><span class="line">                    if (item is Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    else if (item is RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    //  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span><br><span class="line">                    else if (item is TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    if (lastPrefab != guid &amp;&amp; text != &quot;&quot;)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += string.Format(&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    if (text != &quot;&quot;)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += string.Format(&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(new KeyValuePair&lt;string, string&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += &quot;\n\n查询完成&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void ClearText()</span><br><span class="line">    &#123;</span><br><span class="line">        var folder = folderPath;</span><br><span class="line">        cnt += string.Format(&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;, folder);</span><br><span class="line">        if (!folder.Contains(&quot;Assets&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += &quot;所选文件夹不在 Assets 目录下，无法处理！&quot;;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(&quot;Assets&quot;));</span><br><span class="line">        var guids = AssetDatabase.FindAssets(&quot;t:Prefab&quot;, new string[] &#123; folder &#125;);</span><br><span class="line">        if (guids != null &amp;&amp; guids.Length &gt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(&quot;Clean...&quot;, &quot;Start&quot;, 0);</span><br><span class="line">            var progress = 0;</span><br><span class="line">            foreach (var guid in guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                var path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(&quot;Replace....&quot;, path, (float)progress / guids.Length);</span><br><span class="line">                var prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                var textComponentsDict = new Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; typeof(Text), prefab.GetComponentsInChildren&lt;Text&gt;(true) &#125;,</span><br><span class="line">                    &#123; typeof(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(true) &#125;,</span><br><span class="line">                    &#123; typeof(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(true) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                foreach (var kvp in textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    foreach (var item in kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        if (kvp.Key == typeof(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        else if (kvp.Key == typeof(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        else if (kvp.Key == typeof(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += &quot;\n\n清理完成&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void Clean&lt;T&gt;(Component item, string path, GameObject prefab)</span><br><span class="line">    &#123;</span><br><span class="line">        var textProperty = typeof(T).GetProperty(&quot;text&quot;);</span><br><span class="line">        if (textProperty != null)</span><br><span class="line">        &#123;</span><br><span class="line">            var text = (string)textProperty.GetValue(item);</span><br><span class="line">            if (!string.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += $&quot;\n预制体：&#123;path&#125; 文本路径：&#123;item.transform.parent.name&#125;/&#123;item.name&#125; 文本:&#123;text&#125;&quot;;</span><br><span class="line">                textProperty.SetValue(item, &quot;&quot;);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
   </entry>
 </search>
