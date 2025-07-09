@@ -3498,6 +3498,69 @@
       </tags>
   </entry>
   <entry>
+    <title>Lua语法检测工具文档</title>
+    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li>批量扫描指定目录下的所有Lua文件</li>
+<li>使用原生Lua虚拟机进行语法验证</li>
+<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
+<li>支持递归扫描子目录</li>
+<li>提供简洁直观的GUI界面</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
+<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li>确认或修改Lua文件目录路径</li>
+<li>点击”开始检测”按钮</li>
+<li>查看Unity控制台输出：<ul>
+<li>检测开始和结束的标记信息</li>
+<li>每个文件的检测结果</li>
+<li>语法错误的详细描述</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>正常文件</strong>：不会产生额外输出</li>
+<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
+<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
+<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
+<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
+<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
+<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>StartCheckLua</code>：主检测流程控制</li>
+<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
+<li><code>OnGUI</code>：提供用户界面交互</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具仅检测语法正确性，不执行实际代码</li>
+<li>需要确保Lua文件路径正确且可访问</li>
+<li>检测结果输出到Unity控制台</li>
+<li>工具不会修改任何Lua文件内容</li>
+<li>必须选择Assets目录下的路径</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>unity工具,Lua</category>
+      </categories>
+      <tags>
+        <tag>unity工具,Lua</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Markdown 语法</title>
     <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
@@ -3643,63 +3706,6 @@
       <tags>
         <tag>Markdown</tag>
       </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
-    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
-<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
-<li>批量扫描指定目录下的所有Lua文件</li>
-<li>使用原生Lua虚拟机进行语法验证</li>
-<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
-<li>支持递归扫描子目录</li>
-<li>提供简洁直观的GUI界面</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
-<li>将脚本放置在Unity项目的Editor文件夹下</li>
-<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
-</ol>
-<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
-<ul>
-<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
-<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li>确认或修改Lua文件目录路径</li>
-<li>点击”开始检测”按钮</li>
-<li>查看Unity控制台输出：<ul>
-<li>检测开始和结束的标记信息</li>
-<li>每个文件的检测结果</li>
-<li>语法错误的详细描述</li>
-</ul>
-</li>
-</ol>
-<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
-<li><strong>正常文件</strong>：不会产生额外输出</li>
-<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
-<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
-<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
-<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
-<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
-<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
-<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
-</ol>
-<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
-<li><code>StartCheckLua</code>：主检测流程控制</li>
-<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
-<li><code>OnGUI</code>：提供用户界面交互</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
-<li>工具仅检测语法正确性，不执行实际代码</li>
-<li>需要确保Lua文件路径正确且可访问</li>
-<li>检测结果输出到Unity控制台</li>
-<li>工具不会修改任何Lua文件内容</li>
-<li>必须选择Assets目录下的路径</li>
-</ol>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
   </entry>
   <entry>
     <title>Prefab文本组件管理工具文档</title>
@@ -4889,109 +4895,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
-<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody></table>
-<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1 id="Unity-Jobs"><a href="#Unity-Jobs" class="headerlink" title="Unity Jobs"></a>Unity Jobs</h1><p>Unity <strong>Jobs System</strong> 是 Unity 提供的一种高效并行计算框架，用来帮助开发者更好地利用多核 CPU 的计算能力，提高性能。它是 Unity <strong>Data-Oriented Technology Stack (DOTS)</strong> 的核心组件之一，与 <strong>Burst Compiler</strong> 和 <strong>Entity Component System (ECS)</strong> 密切相关。</p>
@@ -5217,6 +5120,109 @@
       </tags>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
+<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody></table>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -5249,157 +5255,11 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#109;&#x2e;&#x75;&#x6e;&#105;&#116;&#121;&#x2e;&#99;&#x6f;&#108;&#108;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#54;&#46;&#x30;">&#99;&#111;&#109;&#x2e;&#x75;&#x6e;&#105;&#116;&#121;&#x2e;&#99;&#x6f;&#108;&#108;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#54;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#x2e;&#x75;&#110;&#105;&#116;&#121;&#46;&#99;&#111;&#108;&#x6c;&#97;&#98;&#45;&#112;&#114;&#111;&#x78;&#x79;&#x40;&#x32;&#x2e;&#54;&#x2e;&#x30;">&#x63;&#111;&#109;&#x2e;&#x75;&#110;&#105;&#116;&#121;&#46;&#99;&#111;&#108;&#x6c;&#97;&#98;&#45;&#112;&#114;&#111;&#x78;&#x79;&#x40;&#x32;&#x2e;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5811,6 +5671,152 @@
 </ul>
 </li>
 </ol>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
 ]]></content>
   </entry>
   <entry>
@@ -7107,6 +7113,97 @@
       </tags>
   </entry>
   <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>lua 应用</title>
     <url>/2025/02/19/lua-%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>文档：</p>
@@ -8030,97 +8127,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
     <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
     <content><![CDATA[<ol>
@@ -8836,108 +8842,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>vs隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
-<li><p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li><p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li><p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
-<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li><p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li><p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1 id="Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣"><a href="#Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣" class="headerlink" title="Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣"></a><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1><p>在 Unity 中导入插件主要有两种方式：  </p>
@@ -9150,6 +9054,108 @@
 <hr>
 <h3 id="结论："><a href="#结论：" class="headerlink" title="结论："></a><strong>结论：</strong></h3><p>将 <strong>UnityGameFramework 插件</strong> 直接放入 <code>Assets/</code> 父级目录并通过 Git 管理，适合 <strong>小型项目</strong> 或 <strong>定制化需求高的项目</strong>，但对于 <strong>长期维护、多个项目使用的框架</strong>，使用 <strong>UPM</strong> 或 <strong>Git Submodule</strong> 等更合适，因为它们能够更好地管理框架版本、提高代码的可维护性并支持多个项目之间的共享。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>vs隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
+<li><p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li><p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li><p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
+<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li><p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li><p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
   </entry>
   <entry>
     <title>医保</title>
