@@ -3044,6 +3044,136 @@
       </tags>
   </entry>
   <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Jenkins 简介</title>
     <url>/2025/05/08/Jenkins/</url>
     <content><![CDATA[<h3 id="Jenkins-简介"><a href="#Jenkins-简介" class="headerlink" title="Jenkins 简介"></a><strong>Jenkins 简介</strong></h3><p>Jenkins 是一个开源的 <strong>持续集成和持续交付 (CI&#x2F;CD)</strong> 工具，用于自动化构建、测试和部署软件项目。它支持多种编程语言、版本控制系统（如 Git、SVN）和构建工具（如 Maven、Gradle）。</p>
@@ -3240,136 +3370,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lean Cloud</title>
     <url>/2025/01/08/Lean-Cloud/</url>
     <content><![CDATA[<p><strong>LeanCloud</strong> 是一个 <strong>后端即服务（BaaS，Backend as a Service）</strong> 平台，主要为开发者提供一站式的后端服务，帮助开发者快速构建应用程序，无需自己搭建复杂的后端服务器。通过 LeanCloud，开发者可以专注于前端开发和业务逻辑，而后端服务（如数据存储、用户认证、实时消息等）由 LeanCloud 提供并维护。</p>
@@ -3496,63 +3496,6 @@
       <tags>
         <tag>Lean Cloud</tag>
       </tags>
-  </entry>
-  <entry>
-    <title></title>
-    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
-    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
-<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
-<li>批量扫描指定目录下的所有Lua文件</li>
-<li>使用原生Lua虚拟机进行语法验证</li>
-<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
-<li>支持递归扫描子目录</li>
-<li>提供简洁直观的GUI界面</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
-<li>将脚本放置在Unity项目的Editor文件夹下</li>
-<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
-</ol>
-<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
-<ul>
-<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
-<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li>确认或修改Lua文件目录路径</li>
-<li>点击”开始检测”按钮</li>
-<li>查看Unity控制台输出：<ul>
-<li>检测开始和结束的标记信息</li>
-<li>每个文件的检测结果</li>
-<li>语法错误的详细描述</li>
-</ul>
-</li>
-</ol>
-<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
-<li><strong>正常文件</strong>：不会产生额外输出</li>
-<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
-<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
-<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
-<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
-<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
-<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
-<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
-</ol>
-<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
-<li><code>StartCheckLua</code>：主检测流程控制</li>
-<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
-<li><code>OnGUI</code>：提供用户界面交互</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
-<li>工具仅检测语法正确性，不执行实际代码</li>
-<li>需要确保Lua文件路径正确且可访问</li>
-<li>检测结果输出到Unity控制台</li>
-<li>工具不会修改任何Lua文件内容</li>
-<li>必须选择Assets目录下的路径</li>
-</ol>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
   </entry>
   <entry>
     <title>Markdown 语法</title>
@@ -3700,6 +3643,134 @@
       <tags>
         <tag>Markdown</tag>
       </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li>批量扫描指定目录下的所有Lua文件</li>
+<li>使用原生Lua虚拟机进行语法验证</li>
+<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
+<li>支持递归扫描子目录</li>
+<li>提供简洁直观的GUI界面</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
+<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li>确认或修改Lua文件目录路径</li>
+<li>点击”开始检测”按钮</li>
+<li>查看Unity控制台输出：<ul>
+<li>检测开始和结束的标记信息</li>
+<li>每个文件的检测结果</li>
+<li>语法错误的详细描述</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>正常文件</strong>：不会产生额外输出</li>
+<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
+<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
+<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
+<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
+<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
+<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>StartCheckLua</code>：主检测流程控制</li>
+<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
+<li><code>OnGUI</code>：提供用户界面交互</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具仅检测语法正确性，不执行实际代码</li>
+<li>需要确保Lua文件路径正确且可访问</li>
+<li>检测结果输出到Unity控制台</li>
+<li>工具不会修改任何Lua文件内容</li>
+<li>必须选择Assets目录下的路径</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li><strong>批量扫描</strong>：递归查找指定目录下的所有预制体文件</li>
+<li><strong>多类型支持</strong>：同时支持UGUI Text、RichText和TextMeshPro(TMP)组件</li>
+<li><strong>文本查询</strong>：查找并列出所有包含非空文本的组件</li>
+<li><strong>批量清理</strong>：一键清空所有文本组件内容</li>
+<li><strong>详细报告</strong>：提供操作过程和结果的详细输出</li>
+<li><strong>进度显示</strong>：可视化进度条显示处理进度</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/文本组件管理</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改预制体所在目录（默认为<code>Assets/_GameCenter/_Resources/prefab</code>）</li>
+<li><strong>功能按钮</strong>：<ul>
+<li>“查询非空文本控件”：查找并显示所有非空文本组件</li>
+<li>“清空文本控件”：清空所有文本组件内容</li>
+</ul>
+</li>
+<li><strong>结果展示区域</strong>：显示操作过程和结果的详细信息</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li><p><strong>查询非空文本</strong>：</p>
+<ul>
+<li>确认或修改预制体目录路径</li>
+<li>点击”查询非空文本控件”按钮</li>
+<li>查看结果区域中的非空文本列表</li>
+</ul>
+</li>
+<li><p><strong>清空文本内容</strong>：</p>
+<ul>
+<li>确认或修改预制体目录路径</li>
+<li>点击”清空文本控件”按钮</li>
+<li>查看结果区域中的清理报告</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>查询结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体序号 预制体名称</span><br><span class="line">  文本序号 文本路径：父对象/组件名 文本内容：实际文本</span><br></pre></td></tr></table></figure></li>
+<li><strong>清理结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体：路径 文本路径：父对象/组件名 文本:被清理的文本内容</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>预制体扫描</strong>：使用AssetDatabase查找指定目录下的所有预制体</li>
+<li><strong>组件获取</strong>：递归获取预制体中的所有文本组件</li>
+<li><strong>内容处理</strong>：<ul>
+<li>查询模式：收集并显示非空文本信息</li>
+<li>清理模式：将文本内容设置为空字符串</li>
+</ul>
+</li>
+<li><strong>资源保存</strong>：修改后保存预制体变更</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>FindNotEmptyText</code>：查询非空文本组件</li>
+<li><code>ClearText</code>：清空文本组件内容</li>
+<li><code>Clean&lt;T&gt;</code>：通用清理方法，处理具体文本类型</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具会直接修改预制体文件，建议操作前备份项目</li>
+<li>仅处理指定目录下的预制体，不处理场景中的对象</li>
+<li>清理操作不可逆，请谨慎使用</li>
+<li>处理大量预制体时可能需要较长时间</li>
+<li>需要确保路径在Assets目录下</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> TMPro;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span></span><br><span class="line"><span class="comment">    1标准 Unity UI Text</span></span><br><span class="line"><span class="comment">    2RichText (富文本)</span></span><br><span class="line"><span class="comment">    3TextMeshPro (TMP_Text)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 查询非空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有包含非空文本的 UI 组件</span></span><br><span class="line"><span class="comment">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span></span><br><span class="line"><span class="comment">        自动打开保存结果的文件所在位置</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 清空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有文本组件并将其内容清空</span></span><br><span class="line"><span class="comment">        记录被清空的文本内容到 Unity 控制台</span></span><br><span class="line"><span class="comment">        自动保存修改后的预制</span></span><br><span class="line"><span class="comment">    注意：</span></span><br><span class="line"><span class="comment">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span></span><br><span class="line"><span class="comment">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ClearPrefabTextContent</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt; textDict;</span><br><span class="line">    <span class="keyword">private</span> Vector2 scrollPosition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/_Resources/prefab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/文本组件管理&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TextComponentManager</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(<span class="string">&quot;Prefab Text Content Manager&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;Prefab Text Content Manager Tool&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;Prefab Folder Path:&quot;</span>, folderPath); <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;Select Prefab Folder&quot;</span>, defaultPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="comment">// 转换为相对于Assets的路径</span></span><br><span class="line">            <span class="keyword">if</span> (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;查询非空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;清空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;查询结果：&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FindNotEmptyText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        textDict = <span class="keyword">new</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt;();</span><br><span class="line">        <span class="keyword">var</span> path = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, path);</span><br><span class="line">        <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; path &#125;);</span><br><span class="line">        <span class="keyword">var</span> prefabCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">var</span> textCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Finding...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">var</span> lastPrefab = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Checking....&quot;</span>, assetsPath, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> obj = AssetDatabase.LoadAssetAtPath(assetsPath, <span class="keyword">typeof</span>(GameObject)) <span class="keyword">as</span> GameObject;</span><br><span class="line">                <span class="keyword">var</span> lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> allTextComponents = <span class="keyword">new</span> List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> text = <span class="string">&quot;&quot;</span>;</span><br><span class="line">                    <span class="keyword">if</span> (item <span class="keyword">is</span> Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    <span class="comment">//  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span></span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    <span class="keyword">if</span> (lastPrefab != guid &amp;&amp; text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;</span>, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;</span>, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(<span class="keyword">new</span> KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n查询完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ClearText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> folder = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, folder);</span><br><span class="line">        <span class="keyword">if</span> (!folder.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; folder &#125;);</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Clean...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Replace....&quot;</span>, path, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                <span class="keyword">var</span> textComponentsDict = <span class="keyword">new</span> Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(Text), prefab.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> kvp <span class="keyword">in</span> textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n清理完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Clean</span>&lt;<span class="title">T</span>&gt;(<span class="params">Component item, <span class="built_in">string</span> path, GameObject prefab</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> textProperty = <span class="keyword">typeof</span>(T).GetProperty(<span class="string">&quot;text&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (textProperty != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> text = (<span class="built_in">string</span>)textProperty.GetValue(item);</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += <span class="string">$&quot;\n预制体：<span class="subst">&#123;path&#125;</span> 文本路径：<span class="subst">&#123;item.transform.parent.name&#125;</span>/<span class="subst">&#123;item.name&#125;</span> 文本:<span class="subst">&#123;text&#125;</span>&quot;</span>;</span><br><span class="line">                textProperty.SetValue(item, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
   </entry>
   <entry>
     <title>Unity Overdraw 分析</title>
@@ -4203,103 +4274,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity 后置界面截图代替</title>
-    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
-    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
-<hr>
-<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
-<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
-</blockquote>
-<hr>
-<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
-<hr>
-<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
-</blockquote>
-<hr>
-<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
-<ol>
-<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
-<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
-<li>把这个 Texture 设置给 <code>RawImage</code></li>
-<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>推荐做法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>UI 层级很多（嵌套 Canvas）</td>
-<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
-</tr>
-<tr>
-<td>UI 不频繁交互</td>
-<td>完全截图为静态图</td>
-</tr>
-<tr>
-<td>UI 中有动态内容</td>
-<td>考虑部分截图或继续动态更新</td>
-</tr>
-<tr>
-<td>需要点击穿透</td>
-<td><code>RawImage.raycastTarget = false</code></td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
-<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
-<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
-<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
-</ul>
-<hr>
-<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>背包界面被“角色换装界面”全屏遮挡</td>
-<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
-</tr>
-<tr>
-<td>商店全屏 UI 切到签到页面</td>
-<td>商店改为截图，不再实时渲染</td>
-</tr>
-<tr>
-<td>模拟对话剧情</td>
-<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 打图集 - 合批减少DrawCall</title>
     <url>/2025/06/17/Unity%20%E6%89%93%E5%9B%BE%E9%9B%86%20-%20%E5%90%88%E6%89%B9%E5%87%8F%E5%B0%91DrawCall/</url>
     <content><![CDATA[<p>在 Unity 中，通过<strong>打图集（图集打包）+ Canvas 优化策略</strong>可以有效实现 <strong>UI 合批（Batching）</strong>，从而减少 DrawCall 提高性能。下面是详细说明和实战指导：</p>
@@ -4649,6 +4623,103 @@
 </tbody></table>
 <p><strong>优化方式</strong>：将 <code>特效_B</code> 拆分 Canvas 或使用图集贴图代替特效材质，即可合批成功。</p>
 <p>如果你希望我帮你写一个自动检测 UI 中打断合批的节点脚本，也可以告诉我。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 后置界面截图代替</title>
+    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
+    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
+<hr>
+<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
+<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
+</blockquote>
+<hr>
+<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
+<hr>
+<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
+</blockquote>
+<hr>
+<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
+<ol>
+<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
+<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
+<li>把这个 Texture 设置给 <code>RawImage</code></li>
+<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>推荐做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI 层级很多（嵌套 Canvas）</td>
+<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
+</tr>
+<tr>
+<td>UI 不频繁交互</td>
+<td>完全截图为静态图</td>
+</tr>
+<tr>
+<td>UI 中有动态内容</td>
+<td>考虑部分截图或继续动态更新</td>
+</tr>
+<tr>
+<td>需要点击穿透</td>
+<td><code>RawImage.raycastTarget = false</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
+<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
+<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
+<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
+</ul>
+<hr>
+<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>背包界面被“角色换装界面”全屏遮挡</td>
+<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
+</tr>
+<tr>
+<td>商店全屏 UI 切到签到页面</td>
+<td>商店改为截图，不再实时渲染</td>
+</tr>
+<tr>
+<td>模拟对话剧情</td>
+<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -5037,38 +5108,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity UWA &amp; UWP</title>
-    <url>/2025/01/15/Unity-UWA-UWP/</url>
-    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
-<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
-<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
-<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
-</ul>
-<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
-<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
-<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
-</ul>
-<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
-<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
-<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
-</ul>
-<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
-<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
-<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
-<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
-</ul>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
-<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
-<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
-</ul>
-<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity ScriptableObject</title>
     <url>/2025/01/16/Unity-ScriptableObject/</url>
     <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
@@ -5172,11 +5211,189 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity UWA &amp; UWP</title>
+    <url>/2025/01/15/Unity-UWA-UWP/</url>
+    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
+<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
+<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
+<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
+</ul>
+<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
+<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
+<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
+</ul>
+<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
+<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
+<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
+</ul>
+<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
+<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
+<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
+<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
+</ul>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
+<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
+<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
+</ul>
+<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#46;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#108;&#97;&#98;&#x2d;&#112;&#x72;&#111;&#x78;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;">&#x63;&#111;&#109;&#46;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#108;&#97;&#98;&#x2d;&#112;&#x72;&#111;&#x78;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#46;&#x75;&#110;&#x69;&#x74;&#121;&#46;&#99;&#x6f;&#x6c;&#x6c;&#97;&#x62;&#45;&#112;&#114;&#x6f;&#120;&#121;&#x40;&#50;&#x2e;&#54;&#x2e;&#48;">&#x63;&#x6f;&#x6d;&#46;&#x75;&#110;&#x69;&#x74;&#121;&#46;&#99;&#x6f;&#x6c;&#x6c;&#97;&#x62;&#45;&#112;&#114;&#x6f;&#120;&#121;&#x40;&#50;&#x2e;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5588,152 +5805,6 @@
 </ul>
 </li>
 </ol>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
 ]]></content>
   </entry>
   <entry>
