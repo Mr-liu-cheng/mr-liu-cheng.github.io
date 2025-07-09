@@ -1368,6 +1368,77 @@
       </tags>
   </entry>
   <entry>
+    <title>Github-Hexo 部署脚本</title>
+    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
+<li>根目录，不然是不会有action记录，不会执行</li>
+<li>token方式  ，推荐使用GITHUB_TOKEN</li>
+<li>分支</li>
+<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
+<li>只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
+</ul>
+<p>代码1：旧</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
+
+<p>代码2：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
+<hr>
+<h2 id="✅-建议优先使用：代码2（推荐）"><a href="#✅-建议优先使用：代码2（推荐）" class="headerlink" title="✅ 建议优先使用：代码2（推荐）"></a>✅ 建议优先使用：<strong>代码2（推荐）</strong></h2><p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
+<hr>
+<h2 id="✨-对比分析："><a href="#✨-对比分析：" class="headerlink" title="✨ 对比分析："></a>✨ 对比分析：</h2><table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>代码1（自己写 push 脚本）</th>
+<th>✅ 代码2（使用 peaceiris&#x2F;actions-gh-pages）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>简洁性</strong></td>
+<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
+<td>✅ 封装好了所有逻辑，只需设置参数</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>🔐 需要小心 Token 拼接（可能泄露）</td>
+<td>✅ 使用官方方式处理 token，内置防泄露</td>
+</tr>
+<tr>
+<td><strong>维护性</strong></td>
+<td>❌ 需要自己维护 git 逻辑，容易出错</td>
+<td>✅ 官方维护的 Action，可靠稳定</td>
+</tr>
+<tr>
+<td><strong>兼容性</strong></td>
+<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
+<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
+</tr>
+<tr>
+<td><strong>常见性</strong></td>
+<td>❌ 不利于新人阅读维护</td>
+<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-推荐做法："><a href="#✅-推荐做法：" class="headerlink" title="✅ 推荐做法："></a>✅ 推荐做法：</h2><p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
+<hr>
+<h2 id="⛳-如果你未来要部署到其他仓库或服务器："><a href="#⛳-如果你未来要部署到其他仓库或服务器：" class="headerlink" title="⛳ 如果你未来要部署到其他仓库或服务器："></a>⛳ 如果你未来要部署到其他仓库或服务器：</h2><p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
+<hr>
+<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>GitHub,Actions,Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo Categories 语法</title>
     <url>/2025/05/08/Hexo%20Categories%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<p>你提到的困惑很常见，Hexo 的分类嵌套和并列写法在语法上相似，但实际效果完全不同。下面我用具体例子对比说明它们的区别：</p>
@@ -1451,270 +1522,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Github-Hexo 部署脚本</title>
-    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
-<li>根目录，不然是不会有action记录，不会执行</li>
-<li>token方式  ，推荐使用GITHUB_TOKEN</li>
-<li>分支</li>
-<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
-<li>只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
-</ul>
-<p>代码1：旧</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
-
-<p>代码2：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-
-<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
-<hr>
-<h2 id="✅-建议优先使用：代码2（推荐）"><a href="#✅-建议优先使用：代码2（推荐）" class="headerlink" title="✅ 建议优先使用：代码2（推荐）"></a>✅ 建议优先使用：<strong>代码2（推荐）</strong></h2><p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
-<hr>
-<h2 id="✨-对比分析："><a href="#✨-对比分析：" class="headerlink" title="✨ 对比分析："></a>✨ 对比分析：</h2><table>
-<thead>
-<tr>
-<th>比较项</th>
-<th>代码1（自己写 push 脚本）</th>
-<th>✅ 代码2（使用 peaceiris&#x2F;actions-gh-pages）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>简洁性</strong></td>
-<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
-<td>✅ 封装好了所有逻辑，只需设置参数</td>
-</tr>
-<tr>
-<td><strong>安全性</strong></td>
-<td>🔐 需要小心 Token 拼接（可能泄露）</td>
-<td>✅ 使用官方方式处理 token，内置防泄露</td>
-</tr>
-<tr>
-<td><strong>维护性</strong></td>
-<td>❌ 需要自己维护 git 逻辑，容易出错</td>
-<td>✅ 官方维护的 Action，可靠稳定</td>
-</tr>
-<tr>
-<td><strong>兼容性</strong></td>
-<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
-<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
-</tr>
-<tr>
-<td><strong>常见性</strong></td>
-<td>❌ 不利于新人阅读维护</td>
-<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-推荐做法："><a href="#✅-推荐做法：" class="headerlink" title="✅ 推荐做法："></a>✅ 推荐做法：</h2><p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
-<hr>
-<h2 id="⛳-如果你未来要部署到其他仓库或服务器："><a href="#⛳-如果你未来要部署到其他仓库或服务器：" class="headerlink" title="⛳ 如果你未来要部署到其他仓库或服务器："></a>⛳ 如果你未来要部署到其他仓库或服务器：</h2><p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
-<hr>
-<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>GitHub,Actions,Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏后端自动化部署流程</title>
-    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>CI&#x2F;CD 核心调度平台</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>代码版本管理（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>Docker</strong></td>
-<td>容器化部署（可选）</td>
-</tr>
-<tr>
-<td><strong>Kubernetes (K8s)</strong></td>
-<td>容器编排（适用于分布式后端）</td>
-</tr>
-<tr>
-<td><strong>构建工具</strong></td>
-<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
-<thead>
-<tr>
-<th>插件</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker Plugin</strong></td>
-<td>构建 Docker 镜像</td>
-</tr>
-<tr>
-<td><strong>Kubernetes Plugin</strong></td>
-<td>部署到 K8s</td>
-</tr>
-<tr>
-<td><strong>Pipeline</strong></td>
-<td>定义 CI&#x2F;CD 流程</td>
-</tr>
-<tr>
-<td><strong>Publish Over SSH</strong></td>
-<td>远程服务器部署</td>
-</tr>
-<tr>
-<td><strong>SonarQube Scanner</strong></td>
-<td>代码质量检测（可选）</td>
-</tr>
-</tbody></table>
-<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
-<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
-<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
-<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
-</ul>
-<hr>
-<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
-<thead>
-<tr>
-<th>语言</th>
-<th>构建命令</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Java (Maven)</strong></td>
-<td><code>mvn clean package -DskipTests</code></td>
-</tr>
-<tr>
-<td><strong>Go</strong></td>
-<td><code>go build -o bin/server ./cmd/server</code></td>
-</tr>
-<tr>
-<td><strong>Python</strong></td>
-<td><code>pip install -r requirements.txt</code></td>
-</tr>
-</tbody></table>
-<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
-<thead>
-<tr>
-<th>部署方式</th>
-<th>适用场景</th>
-<th>Jenkins 配置</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>SSH 直接部署</strong></td>
-<td>传统服务器</td>
-<td>使用 <code>Publish Over SSH</code> 插件</td>
-</tr>
-<tr>
-<td><strong>Docker Swarm</strong></td>
-<td>小型集群</td>
-<td><code>docker stack deploy</code></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>生产级集群</td>
-<td><code>kubectl set image</code> 或 Helm</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Prometheus + Grafana</strong></td>
-<td>监控服务性能</td>
-</tr>
-<tr>
-<td><strong>Kibana</strong></td>
-<td>日志分析</td>
-</tr>
-<tr>
-<td><strong>Jenkins 回滚脚本</strong></td>
-<td>快速回退到旧版本</td>
-</tr>
-</tbody></table>
-<p><strong>回滚示例</strong>：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>排查方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker 构建失败</strong></td>
-<td>检查 <code>Dockerfile</code> 和构建日志</td>
-</tr>
-<tr>
-<td><strong>K8s 部署超时</strong></td>
-<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
-</tr>
-<tr>
-<td><strong>微服务通信异常</strong></td>
-<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
-<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
-<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
-</ul>
-<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -3042,6 +2849,199 @@
 </tbody></table>
 <p>这样可以 <strong>最大化避免游戏崩溃</strong>，让玩家平稳地进行热更新。🚀</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏后端自动化部署流程</title>
+    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>CI&#x2F;CD 核心调度平台</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>代码版本管理（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>容器化部署（可选）</td>
+</tr>
+<tr>
+<td><strong>Kubernetes (K8s)</strong></td>
+<td>容器编排（适用于分布式后端）</td>
+</tr>
+<tr>
+<td><strong>构建工具</strong></td>
+<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker Plugin</strong></td>
+<td>构建 Docker 镜像</td>
+</tr>
+<tr>
+<td><strong>Kubernetes Plugin</strong></td>
+<td>部署到 K8s</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>定义 CI&#x2F;CD 流程</td>
+</tr>
+<tr>
+<td><strong>Publish Over SSH</strong></td>
+<td>远程服务器部署</td>
+</tr>
+<tr>
+<td><strong>SonarQube Scanner</strong></td>
+<td>代码质量检测（可选）</td>
+</tr>
+</tbody></table>
+<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
+<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
+<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
+<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+</ul>
+<hr>
+<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
+<thead>
+<tr>
+<th>语言</th>
+<th>构建命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Java (Maven)</strong></td>
+<td><code>mvn clean package -DskipTests</code></td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td><code>go build -o bin/server ./cmd/server</code></td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td><code>pip install -r requirements.txt</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
+<thead>
+<tr>
+<th>部署方式</th>
+<th>适用场景</th>
+<th>Jenkins 配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SSH 直接部署</strong></td>
+<td>传统服务器</td>
+<td>使用 <code>Publish Over SSH</code> 插件</td>
+</tr>
+<tr>
+<td><strong>Docker Swarm</strong></td>
+<td>小型集群</td>
+<td><code>docker stack deploy</code></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>生产级集群</td>
+<td><code>kubectl set image</code> 或 Helm</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Prometheus + Grafana</strong></td>
+<td>监控服务性能</td>
+</tr>
+<tr>
+<td><strong>Kibana</strong></td>
+<td>日志分析</td>
+</tr>
+<tr>
+<td><strong>Jenkins 回滚脚本</strong></td>
+<td>快速回退到旧版本</td>
+</tr>
+</tbody></table>
+<p><strong>回滚示例</strong>：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker 构建失败</strong></td>
+<td>检查 <code>Dockerfile</code> 和构建日志</td>
+</tr>
+<tr>
+<td><strong>K8s 部署超时</strong></td>
+<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+</tr>
+<tr>
+<td><strong>微服务通信异常</strong></td>
+<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
+<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
+<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+</ul>
+<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
   </entry>
   <entry>
     <title>Jenkins 游戏打包部署流程</title>
@@ -4980,38 +4980,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity UWA &amp; UWP</title>
-    <url>/2025/01/15/Unity-UWA-UWP/</url>
-    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
-<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
-<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
-<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
-</ul>
-<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
-<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
-<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
-</ul>
-<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
-<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
-<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
-</ul>
-<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
-<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
-<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
-<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
-</ul>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
-<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
-<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
-</ul>
-<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity ScriptableObject</title>
     <url>/2025/01/16/Unity-ScriptableObject/</url>
     <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
@@ -5115,11 +5083,43 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity UWA &amp; UWP</title>
+    <url>/2025/01/15/Unity-UWA-UWP/</url>
+    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
+<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
+<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
+<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
+</ul>
+<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
+<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
+<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
+</ul>
+<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
+<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
+<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
+</ul>
+<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
+<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
+<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
+<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
+</ul>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
+<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
+<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
+</ul>
+<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#105;&#x74;&#121;&#46;&#x63;&#x6f;&#108;&#x6c;&#x61;&#x62;&#x2d;&#112;&#x72;&#x6f;&#x78;&#121;&#64;&#x32;&#46;&#x36;&#46;&#48;">&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#105;&#x74;&#121;&#46;&#x63;&#x6f;&#108;&#x6c;&#x61;&#x62;&#x2d;&#112;&#x72;&#x6f;&#x78;&#121;&#64;&#x32;&#46;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#x2e;&#117;&#110;&#105;&#116;&#121;&#x2e;&#x63;&#x6f;&#x6c;&#x6c;&#97;&#x62;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;">&#x63;&#111;&#x6d;&#x2e;&#117;&#110;&#105;&#116;&#121;&#x2e;&#x63;&#x6f;&#x6c;&#x6c;&#97;&#x62;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5799,6 +5799,18 @@
 ]]></content>
   </entry>
   <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 程序集</title>
     <url>/2025/01/16/Unity-%E7%A8%8B%E5%BA%8F%E9%9B%86/</url>
     <content><![CDATA[<h2 id="常见的四种程序集"><a href="#常见的四种程序集" class="headerlink" title="常见的四种程序集"></a>常见的四种程序集</h2><p>下面是 <strong>Unity 中的预定义程序集</strong>（Predefined Assemblies）、<strong>默认创建的程序集</strong>（Default Assemblies）、<strong>自定义程序集</strong>（Custom Assemblies）和 <strong>预编译程序集</strong>（Precompiled Assemblies）四者的关系与区别的对比表格：</p>
@@ -5983,18 +5995,6 @@
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -6426,6 +6426,109 @@
       </tags>
   </entry>
   <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li><p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
+</li>
+<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
+<li><p>打开 Clash for Windows。</p>
+</li>
+<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong>  </p>
+<ol>
+<li><p>确保规则优先级正确：</p>
+<p>  例如： </p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li><p>测试网络连接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong> </p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo 路径表示</title>
     <url>/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/</url>
     <content><![CDATA[<p>在 Hexo 中，路径表示（即如何表示文件和目录的路径）有几个常见的用法和约定，具体取决于你是在配置站点、创建内容，还是处理资源。以下是常见的路径表示方式和相关解释：</p>
@@ -6567,109 +6670,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
-<ul>
-<li><p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
-</li>
-<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
-</li>
-<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
-<li><p>打开 Clash for Windows。</p>
-</li>
-<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong>  </p>
-<ol>
-<li><p>确保规则优先级正确：</p>
-<p>  例如： </p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li><p>测试网络连接：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-</li>
-</ol>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong> </p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
       </tags>
   </entry>
   <entry>
@@ -6970,6 +6970,97 @@
       <tags>
         <tag>butterfly</tag>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
       </tags>
   </entry>
   <entry>
@@ -7894,97 +7985,6 @@
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
   </entry>
   <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
@@ -9095,34 +9095,6 @@
       </tags>
   </entry>
   <entry>
-    <title>提升</title>
-    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<ol>
-<li>做demo</li>
-<li>看技术文章</li>
-<li>逛社区，看别人的问题和解决方案</li>
-<li>研究GitHub开源项目</li>
-<li>学习新技术，看教程</li>
-<li>刷boss直聘,关注市场技术需求和趋势</li>
-<li>根据unity 官方认证考核要求，系统学习技能点</li>
-<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
-<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
-<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>提升</category>
-      </categories>
-      <tags>
-        <tag>提升</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>团结引擎</title>
     <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
     <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
@@ -9152,6 +9124,34 @@
 </li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
+      </tags>
   </entry>
   <entry>
     <title>文件树状层级图生成</title>
@@ -11250,6 +11250,61 @@ graph TD
 <td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
 </tr>
 </tbody></table>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2025/07/09/%E9%A2%84%E5%88%B6%E4%BD%93Text%E7%BB%84%E4%BB%B6%E9%9D%9E%E7%A9%BA%E6%96%87%E6%9C%AC%E6%9F%A5%E8%AF%A2%E4%B8%8E%E6%B8%85%E9%99%A4/</url>
+    <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><code>ClearPrefabTextContent</code> 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</p>
+<ol>
+<li>标准 Unity UI Text</li>
+<li>RichText (富文本)</li>
+<li>TextMeshPro (TMP_Text)</li>
+</ol>
+<h2 id="功能说明"><a href="#功能说明" class="headerlink" title="功能说明"></a>功能说明</h2><h3 id="1-查询非空文本控件"><a href="#1-查询非空文本控件" class="headerlink" title="1. 查询非空文本控件"></a>1. 查询非空文本控件</h3><p><strong>菜单路径</strong>: Tools&#x2F;查询非空文本控件</p>
+<p><strong>功能</strong>:</p>
+<ul>
+<li>遍历指定文件夹及其子文件夹中的所有预制体</li>
+<li>查找所有包含非空文本的 UI 组件</li>
+<li>将查询结果保存到桌面上的”非空文本查询结果.txt”文件中</li>
+<li>自动打开保存结果的文件所在位置</li>
+</ul>
+<p><strong>输出格式</strong>:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1预制体：PrefabName </span><br><span class="line">    1文本路径：ParentName/TextComponentName  文本内容：Sample Text</span><br><span class="line">    2文本路径：ParentName/TextComponentName2  文本内容：Another Text</span><br><span class="line">2预制体：AnotherPrefab</span><br><span class="line">    3文本路径：Parent/Text  文本内容：More Text</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-清空文本控件"><a href="#2-清空文本控件" class="headerlink" title="2. 清空文本控件"></a>2. 清空文本控件</h3><p><strong>菜单路径</strong>: Tools&#x2F;清空文本控件</p>
+<p><strong>功能</strong>:</p>
+<ul>
+<li>遍历指定文件夹及其子文件夹中的所有预制体</li>
+<li>查找所有文本组件并将其内容清空</li>
+<li>记录被清空的文本内容到 Unity 控制台</li>
+<li>自动保存修改后的预制体</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><ol>
+<li><strong>关闭预制体编辑界面</strong>：在使用此工具前，请确保关闭所有预制体编辑窗口</li>
+<li><strong>选择操作目录</strong>：工具会提示选择要操作的文件夹，默认路径为 <code>D:/Project/malaysiaMinorPackage2/malaysiaMinor2/Assets/_GameCenter/_Resources/prefab</code></li>
+<li><strong>注意事项</strong>：<br>   - 只能操作位于 Unity 项目 Assets 目录下的文件夹<br>   - 操作前建议备份项目或使用版本控制<br>   - 清空操作不可逆，请谨慎使用</li>
+</ol>
+<h2 id="技术细节"><a href="#技术细节" class="headerlink" title="技术细节"></a>技术细节</h2><ul>
+<li><p><strong>支持的文本组件类型</strong>:<br>  - <code>UnityEngine.UI.Text</code><br>  - <code>RichText</code> (自定义富文本组件)<br>  - <code>TMPro.TMP_Text</code> (TextMeshPro 文本)</p>
+</li>
+<li><p><strong>进度显示</strong>：长时间操作会显示进度条，避免编辑器无响应</p>
+</li>
+<li><p><strong>错误处理</strong>：<br>  - 检测所选文件夹是否在 Assets 目录下<br>  - 处理空文本情况</p>
+</li>
+</ul>
+<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><ol>
+<li><p><strong>查询非空文本</strong>:<br>   - 点击菜单 “Tools&#x2F;查询非空文本控件”<br>   - 选择包含预制体的文件夹<br>   - 等待操作完成，查看桌面生成的文本文件</p>
+</li>
+<li><p><strong>清空文本</strong>:<br>   - 点击菜单 “Tools&#x2F;清空文本控件”<br>   - 选择包含预制体的文件夹<br>   - 等待操作完成，查看 Unity 控制台中的清理记录</p>
+</li>
+</ol>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li>此工具会直接修改预制体资源，操作前请确保已备份重要数据</li>
+<li>对于大型项目，操作可能需要较长时间</li>
+<li>工具默认路径可能需要根据项目实际情况修改</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.IO;</span><br><span class="line">using TMPro;</span><br><span class="line">using UnityEditor;</span><br><span class="line">using UnityEngine;</span><br><span class="line">using UnityEngine.UI;</span><br><span class="line">using System.Linq;</span><br><span class="line">using System;</span><br><span class="line"></span><br><span class="line">/*</span><br><span class="line"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span><br><span class="line">    1标准 Unity UI Text</span><br><span class="line">    2RichText (富文本)</span><br><span class="line">    3TextMeshPro (TMP_Text)</span><br><span class="line"></span><br><span class="line">&gt;&gt; 查询非空文本控件:</span><br><span class="line">    功能:</span><br><span class="line">        遍历指定文件夹及其子文件夹中的所有预制体</span><br><span class="line">        查找所有包含非空文本的 UI 组件</span><br><span class="line">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span><br><span class="line">        自动打开保存结果的文件所在位置</span><br><span class="line"></span><br><span class="line">&gt;&gt; 清空文本控件:</span><br><span class="line">    功能:</span><br><span class="line">        遍历指定文件夹及其子文件夹中的所有预制体</span><br><span class="line">        查找所有文本组件并将其内容清空</span><br><span class="line">        记录被清空的文本内容到 Unity 控制台</span><br><span class="line">        自动保存修改后的预制</span><br><span class="line">    注意：</span><br><span class="line">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span><br><span class="line">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span><br><span class="line">*/</span><br><span class="line"></span><br><span class="line">public class ClearPrefabTextContent : EditorWindow</span><br><span class="line">&#123;</span><br><span class="line">    private static List&lt;KeyValuePair&lt;string, string&gt;&gt; textDict;</span><br><span class="line">    private Vector2 scrollPosition;</span><br><span class="line">    private static string folderPath, defaultPath = &quot;Assets/_GameCenter/_Resources/prefab&quot;;</span><br><span class="line">    private static string cnt = &quot;&quot;;</span><br><span class="line"></span><br><span class="line">    [MenuItem(&quot;Tools/文本组件管理&quot;)]</span><br><span class="line">    private static void TextComponentManager()</span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void ShowWindow()</span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(&quot;Prefab Text Content Manager&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void OnGUI()</span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(&quot;Prefab Text Content Manager Tool&quot;, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = string.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(&quot;Prefab Folder Path:&quot;, folderPath); //</span><br><span class="line">        if (GUILayout.Button(&quot;...&quot;, GUILayout.Width(30)))</span><br><span class="line">        &#123;</span><br><span class="line">            var path = EditorUtility.OpenFolderPanel(&quot;Select Prefab Folder&quot;, defaultPath, &quot;&quot;);</span><br><span class="line">            if (string.IsNullOrEmpty(path)) return;</span><br><span class="line">            // 转换为相对于Assets的路径</span><br><span class="line">            if (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(&quot;Assets&quot;));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        if (GUILayout.Button(&quot;查询非空文本控件&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = &quot;&quot;;</span><br><span class="line">            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += &quot;Please select a valid folder path first!&quot;;</span><br><span class="line">            else</span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        if (GUILayout.Button(&quot;清空文本控件&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = &quot;&quot;;</span><br><span class="line">            if (string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += &quot;Please select a valid folder path first!&quot;;</span><br><span class="line">            else</span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(&quot;查询结果：&quot;, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(true));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void FindNotEmptyText()</span><br><span class="line">    &#123;</span><br><span class="line">        textDict = new List&lt;KeyValuePair&lt;string, string&gt;&gt;();</span><br><span class="line">        var path = folderPath;</span><br><span class="line">        cnt += string.Format(&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;, path);</span><br><span class="line">        if (!path.Contains(&quot;Assets&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += &quot;所选文件夹不在 Assets 目录下，无法处理！&quot;;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(&quot;Assets&quot;));</span><br><span class="line">        var guids = AssetDatabase.FindAssets(&quot;t:Prefab&quot;, new string[] &#123; path &#125;);</span><br><span class="line">        var prefabCount = 0;</span><br><span class="line">        var textCount = 0;</span><br><span class="line">        if (guids != null &amp;&amp; guids.Length &gt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(&quot;Finding...&quot;, &quot;Start&quot;, 0);</span><br><span class="line">            var progress = 0;</span><br><span class="line">            var lastPrefab = &quot;&quot;;</span><br><span class="line">            foreach (var guid in guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                var assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(&quot;Checking....&quot;, assetsPath, (float)progress / guids.Length);</span><br><span class="line">                var obj = AssetDatabase.LoadAssetAtPath(assetsPath, typeof(GameObject)) as GameObject;</span><br><span class="line">                var lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(true);</span><br><span class="line">                var lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(true);</span><br><span class="line">                var lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(true);</span><br><span class="line">                var allTextComponents = new List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                foreach (var item in allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    var text = &quot;&quot;;</span><br><span class="line">                    if (item is Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    else if (item is RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    //  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span><br><span class="line">                    else if (item is TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    if (lastPrefab != guid &amp;&amp; text != &quot;&quot;)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += string.Format(&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    if (text != &quot;&quot;)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += string.Format(&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(new KeyValuePair&lt;string, string&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += &quot;\n\n查询完成&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void ClearText()</span><br><span class="line">    &#123;</span><br><span class="line">        var folder = folderPath;</span><br><span class="line">        cnt += string.Format(&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;, folder);</span><br><span class="line">        if (!folder.Contains(&quot;Assets&quot;))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += &quot;所选文件夹不在 Assets 目录下，无法处理！&quot;;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(&quot;Assets&quot;));</span><br><span class="line">        var guids = AssetDatabase.FindAssets(&quot;t:Prefab&quot;, new string[] &#123; folder &#125;);</span><br><span class="line">        if (guids != null &amp;&amp; guids.Length &gt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(&quot;Clean...&quot;, &quot;Start&quot;, 0);</span><br><span class="line">            var progress = 0;</span><br><span class="line">            foreach (var guid in guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                var path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(&quot;Replace....&quot;, path, (float)progress / guids.Length);</span><br><span class="line">                var prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                var textComponentsDict = new Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; typeof(Text), prefab.GetComponentsInChildren&lt;Text&gt;(true) &#125;,</span><br><span class="line">                    &#123; typeof(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(true) &#125;,</span><br><span class="line">                    &#123; typeof(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(true) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                foreach (var kvp in textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    foreach (var item in kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        if (kvp.Key == typeof(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        else if (kvp.Key == typeof(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        else if (kvp.Key == typeof(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += &quot;\n\n清理完成&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static void Clean&lt;T&gt;(Component item, string path, GameObject prefab)</span><br><span class="line">    &#123;</span><br><span class="line">        var textProperty = typeof(T).GetProperty(&quot;text&quot;);</span><br><span class="line">        if (textProperty != null)</span><br><span class="line">        &#123;</span><br><span class="line">            var text = (string)textProperty.GetValue(item);</span><br><span class="line">            if (!string.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += $&quot;\n预制体：&#123;path&#125; 文本路径：&#123;item.transform.parent.name&#125;/&#123;item.name&#125; 文本:&#123;text&#125;&quot;;</span><br><span class="line">                textProperty.SetValue(item, &quot;&quot;);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
   </entry>
 </search>
