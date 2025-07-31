@@ -892,6 +892,24 @@ print(string.gsub(s, "%a+", "#"))  --> # # 123
 - _G全局表：存放全局变量
 - 0为ture
 - 只有nil 和false 为假
+``` lua
+if updateInfo.isNewLogin then
+    isNewLogin = updateInfo.isNewLogin
+end
+
+这种写法无法区分 nil 和 false，因为两者在条件判断中都被视为假值。使用 == 操作符进行严格比较：
+
+-- 判断是否为 nil
+if updateInfo.isNewLogin == nil then
+    print("字段不存在或值为nil")
+end
+
+-- 判断是否为 false
+if updateInfo.isNewLogin == false then
+    print("字段存在且值为false")
+end
+```
+
 - 不支持自增自减操作
 
 - 不等于：~=     等于：==
