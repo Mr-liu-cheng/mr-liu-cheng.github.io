@@ -4046,103 +4046,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity 后置界面截图代替</title>
-    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
-    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
-<hr>
-<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
-<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
-</blockquote>
-<hr>
-<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
-<hr>
-<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
-</blockquote>
-<hr>
-<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
-<ol>
-<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
-<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
-<li>把这个 Texture 设置给 <code>RawImage</code></li>
-<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>推荐做法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>UI 层级很多（嵌套 Canvas）</td>
-<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
-</tr>
-<tr>
-<td>UI 不频繁交互</td>
-<td>完全截图为静态图</td>
-</tr>
-<tr>
-<td>UI 中有动态内容</td>
-<td>考虑部分截图或继续动态更新</td>
-</tr>
-<tr>
-<td>需要点击穿透</td>
-<td><code>RawImage.raycastTarget = false</code></td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
-<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
-<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
-<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
-</ul>
-<hr>
-<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>背包界面被“角色换装界面”全屏遮挡</td>
-<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
-</tr>
-<tr>
-<td>商店全屏 UI 切到签到页面</td>
-<td>商店改为截图，不再实时渲染</td>
-</tr>
-<tr>
-<td>模拟对话剧情</td>
-<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity Scene 优化</title>
     <url>/2025/06/17/Unity%20Scene%20%E4%BC%98%E5%8C%96/</url>
     <content><![CDATA[<p>我做的编辑器拓展开发，卡顿是出现在通过配置生成上万个带指向的3d球体和linerenderer，根据每个点的配置信息来设置球体的旋转偏量，3d空间位置,两个点之间通过linerenderer连接，创建过程耗时很长，卡顿是出现在编辑器静态界面，而非运行状态。当前面临的 <strong>编辑器卡顿问题</strong>，本质上是因为：</p>
@@ -4390,6 +4293,103 @@
 <li>支持动态更新（如某球体移动后线段自动更新）</li>
 <li>不依赖 LineRenderer 或 GL，每次仅绘制 1 个合批对象</li>
 </ul>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 后置界面截图代替</title>
+    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
+    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
+<hr>
+<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
+<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
+</blockquote>
+<hr>
+<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
+<hr>
+<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
+</blockquote>
+<hr>
+<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
+<ol>
+<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
+<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
+<li>把这个 Texture 设置给 <code>RawImage</code></li>
+<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>推荐做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI 层级很多（嵌套 Canvas）</td>
+<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
+</tr>
+<tr>
+<td>UI 不频繁交互</td>
+<td>完全截图为静态图</td>
+</tr>
+<tr>
+<td>UI 中有动态内容</td>
+<td>考虑部分截图或继续动态更新</td>
+</tr>
+<tr>
+<td>需要点击穿透</td>
+<td><code>RawImage.raycastTarget = false</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
+<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
+<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
+<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
+</ul>
+<hr>
+<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>背包界面被“角色换装界面”全屏遮挡</td>
+<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
+</tr>
+<tr>
+<td>商店全屏 UI 切到签到页面</td>
+<td>商店改为截图，不再实时渲染</td>
+</tr>
+<tr>
+<td>模拟对话剧情</td>
+<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -5271,11 +5271,157 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#109;&#x2e;&#117;&#x6e;&#105;&#x74;&#x79;&#x2e;&#x63;&#111;&#108;&#108;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#120;&#x79;&#x40;&#50;&#x2e;&#54;&#46;&#48;">&#99;&#x6f;&#109;&#x2e;&#117;&#x6e;&#105;&#x74;&#x79;&#x2e;&#x63;&#111;&#108;&#108;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#120;&#x79;&#x40;&#50;&#x2e;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#x6d;&#46;&#117;&#110;&#x69;&#x74;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#x6c;&#97;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;">&#99;&#x6f;&#x6d;&#46;&#117;&#110;&#x69;&#x74;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#x6c;&#97;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5690,152 +5836,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -5923,35 +5923,6 @@
 <li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
 <li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
 ]]></content>
   </entry>
   <entry>
@@ -6151,6 +6122,35 @@
       <tags>
         <tag>butterfly</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
+]]></content>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -7129,97 +7129,6 @@
       </tags>
   </entry>
   <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>lua 应用</title>
     <url>/2025/02/19/lua-%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>文档：</p>
@@ -8142,6 +8051,97 @@
 </li>
 </ol>
 ]]></content>
+  </entry>
+  <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
+      </tags>
   </entry>
   <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
@@ -9353,6 +9353,34 @@
       </tags>
   </entry>
   <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>文件树状层级图生成</title>
     <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
@@ -9394,32 +9422,11 @@
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
-    <title>提升</title>
-    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<ol>
-<li>做demo</li>
-<li>看技术文章</li>
-<li>逛社区，看别人的问题和解决方案</li>
-<li>研究GitHub开源项目</li>
-<li>学习新技术，看教程</li>
-<li>刷boss直聘,关注市场技术需求和趋势</li>
-<li>根据unity 官方认证考核要求，系统学习技能点</li>
-<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
-<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
-<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+    <title>游戏流程</title>
+    <url>/2025/08/01/%E6%B8%B8%E6%88%8F%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>游戏流程：</p>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNqlV1tPG0cU_iureahaCVPsxRAs6tYQJ4qERQV9absVGu8O9gp71t2LGpcgJRIQSMNFVUiryG0TpQ08JMBLW9KI9M-wi_kXPbPjvS_GqE_2nDnnO2fPfZaRrCkEFVAmk5GorNFFtVaQqCCYddIkBUHB-hI7NnBbs0x2rulEoi73YkP7Tq5j3RS-uMl4BGHehNOHX0vI_SOhbz4SMpmiQLOfLQNClTQKgoQmjRamgmG2G-QTSZLAgIamF9i_4tzsl6WZhXLl8ztz5YXbpUp5fuE2bpIKprhG9GHZmPyYCRclJKxwjbN0jjQINsgcMTRLlwkoT9Amq3qxu__S3v7B_n3f3l7r_rnq_LMbUJ2TE2djh1PBaNfmi4ePnCfvOQ0ww0dg4co5UaUqpzsna_bW3sXa1vnpofP04dm7v3zBPjxcYcwvVSwv1XTNokqGu6fY-6RbaoMETmCGdo_e2TtPLx5s2dvrHJerxFX78RoY0Pfe_5QZDSsM26jgFgiFjz0_Ob_uwleEbS66UhWrYaqtBpkCY0GgJxyjMgx7Y90-2bcfPe-enuIqo3CjnKMdoF907ndfPeC3589WcTViWgzOVe78fGTvvgIJ-2h9WULh46cS6uVHmMrcfN75zbf8lq41K6Sp6e2S0aay99lRqm9GHAkOESTmrjiOT4v6OarBRylTWW-3TFWjPYiAEJEPyK5oStEEHMwCQLuSx1dwJSf3_fO3ztYheOLixz-6239Dgjl7x0ABVZdd9dPgFWpQ6Ok2J_m8TCwpCnONSms8RUA-TmKsHwjnbzbt92tO57Wz-dZ5_cLZvO90NktTUAs89-zDx84Gq_jBGP2vimtzrTo72YK04e3FOXhh__ITJGqSGKRr8o6lGpB4qR8e26d7zpuXdufArxTe0kpTrNT73fuWpuvw0jkVgzNfrsO793VMa82mRoOWEDl7MaP5AcfCLC3fNXUsm35D5x0Qeki6QB8sXOWNmIcvMU_YuAnMDp0Co_120LBwd_UZZAjvPv6RhTMctpREnrEwyxZIYZUa5jAkzzzBulz3k_faMuE-5VsSDmwy7LkrkvHaNkQclKIvbE7Ytb1JHgvyLRg3Rt2d56k3_hCysNcP7lDVdFcP1kBTyEEbTbl0wcpUYfsL_LDthTMP1gnC0wX8Em5DsQgNjheeMbER6HedkOvDoef3NMtggs-brhN5KbkxpZGDWk655JHODVi_Z6f_nj85AKPsznFv94rXHY0kBxUHROb7G8e8d08hVauWhBbDxZhYDsOrHAf6X-vY1fueq6_vVtYzNJb1aZXAtig-cEGjt1rFttSEULC29Da8sJ-8ECSkwnHynJlaY5wvn47SK91-HcIDj84M3tsu2S0ua7Mp-0JkC_P3s0FCXjIMYnJzpnWCTcigby1imNH4X8MK91lk1HEL3lk6kc2V67SHQFRRcdNL9XwqoluoKdxigoyGUE1XFVRYxA2DDKEm0ZuYndEyk5GQ-yyUECtLhSxi6EkSkugKyIEPvtK0JiqYugWS4Lpa3cexWgo47KYKr0fc9Kk6oTBKpsHJJipkJ0QXBBWW0V1UEEVxeEzMT-Sy4yP50VHxxhBqo0JGzA-PiyMikMZzuYnxnLgyhL531WaHRyay2bHxG6PixOhYbmRsCBFFNTW9wh-47jt35T8lHFGm"><img src="https://mermaid.ink/img/pako:eNqlV1tPG0cU_iureahaCVPsxRAs6tYQJ4qERQV9absVGu8O9gp71t2LGpcgJRIQSMNFVUiryG0TpQ08JMBLW9KI9M-wi_kXPbPjvS_GqE_2nDnnO2fPfZaRrCkEFVAmk5GorNFFtVaQqCCYddIkBUHB-hI7NnBbs0x2rulEoi73YkP7Tq5j3RS-uMl4BGHehNOHX0vI_SOhbz4SMpmiQLOfLQNClTQKgoQmjRamgmG2G-QTSZLAgIamF9i_4tzsl6WZhXLl8ztz5YXbpUp5fuE2bpIKprhG9GHZmPyYCRclJKxwjbN0jjQINsgcMTRLlwkoT9Amq3qxu__S3v7B_n3f3l7r_rnq_LMbUJ2TE2djh1PBaNfmi4ePnCfvOQ0ww0dg4co5UaUqpzsna_bW3sXa1vnpofP04dm7v3zBPjxcYcwvVSwv1XTNokqGu6fY-6RbaoMETmCGdo_e2TtPLx5s2dvrHJerxFX78RoY0Pfe_5QZDSsM26jgFgiFjz0_Ob_uwleEbS66UhWrYaqtBpkCY0GgJxyjMgx7Y90-2bcfPe-enuIqo3CjnKMdoF907ndfPeC3589WcTViWgzOVe78fGTvvgIJ-2h9WULh46cS6uVHmMrcfN75zbf8lq41K6Sp6e2S0aay99lRqm9GHAkOESTmrjiOT4v6OarBRylTWW-3TFWjPYiAEJEPyK5oStEEHMwCQLuSx1dwJSf3_fO3ztYheOLixz-6239Dgjl7x0ABVZdd9dPgFWpQ6Ok2J_m8TCwpCnONSms8RUA-TmKsHwjnbzbt92tO57Wz-dZ5_cLZvO90NktTUAs89-zDx84Gq_jBGP2vimtzrTo72YK04e3FOXhh__ITJGqSGKRr8o6lGpB4qR8e26d7zpuXdufArxTe0kpTrNT73fuWpuvw0jkVgzNfrsO793VMa82mRoOWEDl7MaP5AcfCLC3fNXUsm35D5x0Qeki6QB8sXOWNmIcvMU_YuAnMDp0Co_120LBwd_UZZAjvPv6RhTMctpREnrEwyxZIYZUa5jAkzzzBulz3k_faMuE-5VsSDmwy7LkrkvHaNkQclKIvbE7Ytb1JHgvyLRg3Rt2d56k3_hCysNcP7lDVdFcP1kBTyEEbTbl0wcpUYfsL_LDthTMP1gnC0wX8Em5DsQgNjheeMbER6HedkOvDoef3NMtggs-brhN5KbkxpZGDWk655JHODVi_Z6f_nj85AKPsznFv94rXHY0kBxUHROb7G8e8d08hVauWhBbDxZhYDsOrHAf6X-vY1fueq6_vVtYzNJb1aZXAtig-cEGjt1rFttSEULC29Da8sJ-8ECSkwnHynJlaY5wvn47SK91-HcIDj84M3tsu2S0ua7Mp-0JkC_P3s0FCXjIMYnJzpnWCTcigby1imNH4X8MK91lk1HEL3lk6kc2V67SHQFRRcdNL9XwqoluoKdxigoyGUE1XFVRYxA2DDKEm0ZuYndEyk5GQ-yyUECtLhSxi6EkSkugKyIEPvtK0JiqYugWS4Lpa3cexWgo47KYKr0fc9Kk6oTBKpsHJJipkJ0QXBBWW0V1UEEVxeEzMT-Sy4yP50VHxxhBqo0JGzA-PiyMikMZzuYnxnLgyhL531WaHRyay2bHxG6PixOhYbmRsCBFFNTW9wh-47jt35T8lHFGm?type=png"></a></p>
 ]]></content>
-      <categories>
-        <category>提升</category>
-      </categories>
-      <tags>
-        <tag>提升</tag>
-      </tags>
   </entry>
   <entry>
     <title>部门</title>
