@@ -4911,109 +4911,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
-<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody></table>
-<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1 id="Unity-Jobs"><a href="#Unity-Jobs" class="headerlink" title="Unity Jobs"></a>Unity Jobs</h1><p>Unity <strong>Jobs System</strong> 是 Unity 提供的一种高效并行计算框架，用来帮助开发者更好地利用多核 CPU 的计算能力，提高性能。它是 Unity <strong>Data-Oriented Technology Stack (DOTS)</strong> 的核心组件之一，与 <strong>Burst Compiler</strong> 和 <strong>Entity Component System (ECS)</strong> 密切相关。</p>
@@ -5239,6 +5136,109 @@
       </tags>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
+<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody></table>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -5271,157 +5271,11 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#x6d;&#46;&#117;&#110;&#x69;&#x74;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#x6c;&#97;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;">&#99;&#x6f;&#x6d;&#46;&#117;&#110;&#x69;&#x74;&#x79;&#x2e;&#x63;&#x6f;&#x6c;&#x6c;&#97;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#46;&#117;&#x6e;&#105;&#116;&#x79;&#x2e;&#99;&#x6f;&#108;&#108;&#x61;&#98;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#46;&#54;&#46;&#48;">&#x63;&#111;&#109;&#46;&#117;&#x6e;&#105;&#116;&#x79;&#x2e;&#99;&#x6f;&#108;&#108;&#x61;&#98;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#46;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5836,6 +5690,152 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -5924,6 +5924,47 @@
 <li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
   </entry>
   <entry>
     <title>Unity 程序集</title>
@@ -6109,47 +6150,6 @@
 <p>注意：为防止项目程序集自动引用预编译程序集，您可以禁用其“自动引用”选项。有关更多信息，请参阅插件检查器。</p>
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
 ]]></content>
   </entry>
   <entry>
@@ -6356,6 +6356,22 @@
 ]]></content>
   </entry>
   <entry>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>git修改历史提交</title>
     <url>/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/</url>
     <content><![CDATA[<h1 id="git-reset命令"><a href="#git-reset命令" class="headerlink" title="git reset命令"></a>git reset命令</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --soft 29f9bbd77da69902335cad77a12eac7b022b9f63</span><br></pre></td></tr></table></figure>
@@ -6557,22 +6573,6 @@
 </tbody></table>
 <p>推荐：</p>
 <p><a href="https://x.zhixing.co/devops/the-differences-and-usages-of-git-merge-rebase/">Git merge &amp; rebase 区别和用法</a></p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -7975,7 +7975,7 @@
 <li><p>迭代器</p>
 <ol>
 <li>小于等于零的所有找不到</li>
-<li>pairs比impairs强大，可以遍历所有成员包括小于等于零的索引(不规则的表)</li>
+<li>pairs比ipairs强大，可以遍历所有成员包括小于等于零的索引(不规则的表)</li>
 <li>可以只遍历key</li>
 <li>ipairs 数字下标不连续会中断，pairs 所有通用（使用next函数实现）</li>
 <li>next函数可以用于判断表是否为空</li>
@@ -8050,6 +8050,108 @@
 </ul>
 </li>
 </ol>
+<p>好的，我们来详细讲解一下 Lua 中的迭代器，特别是几种常见的遍历模式。</p>
+<h3 id="核心概念：迭代器与泛型-for"><a href="#核心概念：迭代器与泛型-for" class="headerlink" title="核心概念：迭代器与泛型 for"></a>核心概念：迭代器与泛型 for</h3><p>Lua 的迭代器本质上是一个可以<strong>返回集合中“下一个”元素</strong>的函数。它通常与 <strong>泛型 for 循环（generic for loop）</strong> <code>for ... in ... do</code> 配合使用。</p>
+<p>泛型 for 循环内部会做三件事：</p>
+<ol>
+<li><strong>初始化</strong>：调用迭代器工厂（通常是一个函数），获取迭代函数、不可变状态和控制变量的初始值。</li>
+<li><strong>调用迭代函数</strong>：在每次循环中，用不可变状态和控制变量作为参数调用迭代函数。</li>
+<li><strong>赋值</strong>：将迭代函数返回的值赋给循环变量列表。如果第一个返回值为 <code>nil</code>，循环终止。</li>
+</ol>
+<p>其内部机制类似于：</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> var_1, ..., var_n <span class="keyword">in</span> explist <span class="keyword">do</span></span><br><span class="line">    <span class="comment">-- loop body</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>被解释为：</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">do</span></span><br><span class="line">    <span class="keyword">local</span> _f, _s, _var = explist <span class="comment">-- 初始化，获取迭代函数、状态、控制变量</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">true</span> <span class="keyword">do</span></span><br><span class="line">        <span class="keyword">local</span> var_1, ..., var_n = _f(_s, _var) <span class="comment">-- 调用迭代函数</span></span><br><span class="line">        _var = var_1</span><br><span class="line">        <span class="keyword">if</span> _var == <span class="literal">nil</span> <span class="keyword">then</span> <span class="keyword">break</span> <span class="keyword">end</span> <span class="comment">-- 如果第一个返回值为nil，终止循环</span></span><br><span class="line">        <span class="comment">-- loop body</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="常见的几种遍历模式"><a href="#常见的几种遍历模式" class="headerlink" title="常见的几种遍历模式"></a>常见的几种遍历模式</h3><h4 id="1-数组（数值索引表）的遍历-ipairs"><a href="#1-数组（数值索引表）的遍历-ipairs" class="headerlink" title="1. 数组（数值索引表）的遍历 (ipairs)"></a>1. 数组（数值索引表）的遍历 (ipairs)</h4><p>这是最常用、最高效的遍历数组的方式。</p>
+<ul>
+<li><strong>迭代器工厂</strong>：<code>ipairs(t)</code></li>
+<li><strong>返回值</strong>：<code>i</code> (索引), <code>v</code> (值)</li>
+<li><strong>特点</strong>：<ul>
+<li>从索引 1 开始。</li>
+<li>遇到第一个 <code>nil</code> 值就<strong>停止</strong>。</li>
+<li>不保证遍历到 <code>nil</code> 之后的值，即使它们有数值索引（例如 <code>t[5]</code> 是 <code>nil</code>，但 <code>t[6]</code> 有值，<code>ipairs</code> 不会遍历到 <code>t[6]</code>）。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">local</span> fruits = &#123;<span class="string">&quot;Apple&quot;</span>, <span class="string">&quot;Banana&quot;</span>, <span class="string">&quot;Cherry&quot;</span>, [<span class="number">5</span>] = <span class="string">&quot;Elderberry&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;--- ipairs ---&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> i, v <span class="keyword">in</span> <span class="built_in">ipairs</span>(fruits) <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">print</span>(i, v)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">-- 输出：</span></span><br><span class="line"><span class="comment">-- 1   Apple</span></span><br><span class="line"><span class="comment">-- 2   Banana</span></span><br><span class="line"><span class="comment">-- 3   Cherry</span></span><br><span class="line"><span class="comment">-- (不会输出索引5的Elderberry，因为它在索引4处遇到了nil)</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-表（所有键值对）的遍历-pairs"><a href="#2-表（所有键值对）的遍历-pairs" class="headerlink" title="2. 表（所有键值对）的遍历 (pairs)"></a>2. 表（所有键值对）的遍历 (pairs)</h4><p>这是遍历表中所有元素的通用方法。</p>
+<ul>
+<li><strong>迭代器工厂</strong>：<code>pairs(t)</code></li>
+<li><strong>返回值</strong>：<code>k</code> (键), <code>v</code> (值)</li>
+<li><strong>特点</strong>：<ul>
+<li>遍历表中的<strong>所有</strong>键值对。</li>
+<li>遍历顺序是<strong>不确定的</strong>（与元素的添加顺序或数值索引顺序无关，由表的内部实现决定）。</li>
+<li>可以遍历非数值键（如字符串键）。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="keyword">local</span> person = &#123;</span><br><span class="line">    name = <span class="string">&quot;Bob&quot;</span>,</span><br><span class="line">    age = <span class="number">30</span>,</span><br><span class="line">    [<span class="number">999</span>] = <span class="string">&quot;Number Key&quot;</span>,</span><br><span class="line">    [<span class="literal">true</span>] = <span class="string">&quot;Boolean Key&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;--- pairs ---&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> <span class="built_in">pairs</span>(person) <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">print</span>(k, v)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">-- 可能的输出（顺序可能每次运行都不同）:</span></span><br><span class="line"><span class="comment">-- name    Bob</span></span><br><span class="line"><span class="comment">-- age     30</span></span><br><span class="line"><span class="comment">-- 999     Number Key</span></span><br><span class="line"><span class="comment">-- true    Boolean Key</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="3-数值循环-数值-for"><a href="#3-数值循环-数值-for" class="headerlink" title="3. 数值循环 (数值 for)"></a>3. 数值循环 (数值 for)</h4><p>虽然严格来说这不是一个“迭代器”，但它是遍历连续数字范围的最高效方式。</p>
+<ul>
+<li><strong>语法</strong>：<code>for var = start, finish, step do</code></li>
+<li><strong>特点</strong>：<ul>
+<li>用于遍历一个<strong>连续</strong>的数值范围。</li>
+<li><code>step</code> 可以是正数（递增）或负数（递减），默认为 1。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;--- numeric for ---&quot;</span>)</span><br><span class="line"><span class="comment">-- 正序遍历</span></span><br><span class="line"><span class="keyword">for</span> i = <span class="number">1</span>, <span class="number">5</span> <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">print</span>(i)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">-- 输出：1, 2, 3, 4, 5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 带步长的倒序遍历</span></span><br><span class="line"><span class="keyword">for</span> i = <span class="number">10</span>, <span class="number">1</span>, <span class="number">-2</span> <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">print</span>(i)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">-- 输出：10, 8, 6, 4, 2</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-自定义迭代器"><a href="#4-自定义迭代器" class="headerlink" title="4. 自定义迭代器"></a>4. 自定义迭代器</h4><p>你可以创建自己的迭代器来实现复杂的遍历逻辑。通常使用 <strong>闭包（Closure）</strong> 或 <strong>无状态迭代器</strong>。</p>
+<p><strong>a) 使用闭包（有状态迭代器）</strong></p>
+<p>迭代器函数在创建时就“记住”了它所需的状态（通过 Upvalue）。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 创建一个从 start 到 finish，步长为 step 的迭代器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">range</span><span class="params">(start, finish, step)</span></span></span><br><span class="line">    step = step <span class="keyword">or</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">local</span> current = start - step <span class="comment">-- 初始化当前值</span></span><br><span class="line">    <span class="comment">-- 返回一个闭包（迭代函数）</span></span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="keyword">function</span><span class="params">()</span></span></span><br><span class="line">        current = current + step</span><br><span class="line">        <span class="keyword">if</span> (step &gt; <span class="number">0</span> <span class="keyword">and</span> current &lt;= finish) <span class="keyword">or</span> (step &lt; <span class="number">0</span> <span class="keyword">and</span> current &gt;= finish) <span class="keyword">then</span></span><br><span class="line">            <span class="keyword">return</span> current</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">        <span class="comment">-- 不满足条件时返回nil，循环终止</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;--- custom iterator (range) ---&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> num <span class="keyword">in</span> range(<span class="number">2</span>, <span class="number">10</span>, <span class="number">2</span>) <span class="keyword">do</span> <span class="comment">-- 遍历 2, 4, 6, 8, 10</span></span><br><span class="line">    <span class="built_in">print</span>(num)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> num <span class="keyword">in</span> range(<span class="number">5</span>, <span class="number">1</span>, <span class="number">-1</span>) <span class="keyword">do</span> <span class="comment">-- 遍历 5, 4, 3, 2, 1</span></span><br><span class="line">    <span class="built_in">print</span>(num)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>b) 无状态迭代器</strong></p>
+<p>迭代函数本身不保存任何状态，状态由泛型 for 循环提供的不可变状态 (<code>_s</code>) 和控制变量 (<code>_var</code>) 来维护。<code>ipairs</code> 和 <code>pairs</code> 的内部实现就是这种模式，效率更高。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">-- 遍历数组的偶数索引元素</span></span><br><span class="line"><span class="keyword">local</span> <span class="function"><span class="keyword">function</span> <span class="title">evenIndexIter</span><span class="params">(tbl, lastIndex)</span></span></span><br><span class="line">    <span class="keyword">local</span> newIndex = lastIndex + <span class="number">2</span></span><br><span class="line">    <span class="keyword">local</span> newValue = tbl[newIndex]</span><br><span class="line">    <span class="keyword">if</span> newValue <span class="keyword">then</span></span><br><span class="line">        <span class="keyword">return</span> newIndex, newValue</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="comment">-- 返回nil终止</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 迭代器工厂</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">evenIndexes</span><span class="params">(tbl)</span></span></span><br><span class="line">    <span class="comment">-- 返回迭代函数、不可变状态(tbl)、控制变量的初始值(0)</span></span><br><span class="line">    <span class="keyword">return</span> evenIndexIter, tbl, <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">local</span> numbers = &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>&#125;</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;--- custom stateless iterator (even indexes) ---&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> i, v <span class="keyword">in</span> evenIndexes(numbers) <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">print</span>(i, v)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="comment">-- 输出：</span></span><br><span class="line"><span class="comment">-- 2    20</span></span><br><span class="line"><span class="comment">-- 4    40</span></span><br><span class="line"><span class="comment">-- 6    60</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结与选择指南"><a href="#总结与选择指南" class="headerlink" title="总结与选择指南"></a>总结与选择指南</h3><table>
+<thead>
+<tr>
+<th align="left">模式</th>
+<th align="left">语法</th>
+<th align="left">用途</th>
+<th align="left">特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>数组遍历</strong></td>
+<td align="left"><code>for i, v in ipairs(t) do</code></td>
+<td align="left">遍历<strong>连续数组</strong>（从1开始）</td>
+<td align="left"><strong>遇到 <code>nil</code> 就停止</strong>，高效，顺序确定</td>
+</tr>
+<tr>
+<td align="left"><strong>表遍历</strong></td>
+<td align="left"><code>for k, v in pairs(t) do</code></td>
+<td align="left">遍历表的<strong>所有键值对</strong></td>
+<td align="left">顺序<strong>不确定</strong>，最通用</td>
+</tr>
+<tr>
+<td align="left"><strong>数值循环</strong></td>
+<td align="left"><code>for i = start, end, step do</code></td>
+<td align="left">遍历<strong>连续的数值序列</strong></td>
+<td align="left"><strong>最高效</strong>的数字遍历，<strong>必须连续</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>自定义迭代器</strong></td>
+<td align="left"><code>for ... in myIterator(...) do</code></td>
+<td align="left">实现任何<strong>复杂的遍历逻辑</strong></td>
+<td align="left">灵活强大，可以是有状态（闭包）或无状态</td>
+</tr>
+</tbody></table>
+<p><strong>如何选择？</strong></p>
+<ul>
+<li>遍历<strong>数组</strong>（列表）：**<code>ipairs</code>**</li>
+<li>遍历<strong>字典</strong>（键值对）或需要所有元素：**<code>pairs</code>**</li>
+<li>遍历一个简单的<strong>数字范围</strong>：<strong>数值 for 循环</strong></li>
+<li>需要<strong>自定义遍历逻辑</strong>（如特定步长、过滤条件、遍历文件等）：<strong>自定义迭代器</strong></li>
+</ul>
 ]]></content>
   </entry>
   <entry>
