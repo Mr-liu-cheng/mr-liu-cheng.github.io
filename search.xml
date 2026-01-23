@@ -548,157 +548,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>GitHub + CDN</title>
-    <url>/2025/05/08/GitHub%20+%20CDN/</url>
-    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
-<hr>
-<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
-   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
-   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
-   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
-   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
-
-<ul>
-<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
-<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
-<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
-</ul>
-<hr>
-<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
-<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
-<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
-<li>获取直链：  <ul>
-<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
-<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
-<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
-</ul>
-</li>
-</ol>
-<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
-<ol>
-<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
-<li>在Cloudflare中：  <ul>
-<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
-<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
-</ul>
-</li>
-<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
-<ol>
-<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
-<ul>
-<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
-<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
-<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
-</ul>
-<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
-<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
-<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
-</ul>
-<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
-<li><strong>流量统计</strong>：  <ul>
-<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
-<li>在Cloudflare面板查看CDN请求数。</li>
-</ul>
-</li>
-<li><strong>防滥用</strong>：  <ul>
-<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐方案</th>
-<th>注意事项</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>免费游戏试玩</strong></td>
-<td>GitHub Releases直链</td>
-<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
-</tr>
-<tr>
-<td><strong>开源项目分发</strong></td>
-<td>jsDelivr CDN</td>
-<td>必须公开仓库，适合Demo或工具类游戏。</td>
-</tr>
-<tr>
-<td><strong>商业游戏早期测试</strong></td>
-<td>Cloudflare+B2</td>
-<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
-</tr>
-<tr>
-<td><strong>大规模正式发布</strong></td>
-<td>需迁移至专业CDN&#x2F;自建</td>
-<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
-<thead>
-<tr>
-<th>方案</th>
-<th>存储成本</th>
-<th>流量成本（1TB下载）</th>
-<th>适用阶段</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GitHub直链</strong></td>
-<td>免费</td>
-<td>免费（但有限流风险）</td>
-<td>原型&#x2F;测试</td>
-</tr>
-<tr>
-<td><strong>Cloudflare+B2</strong></td>
-<td>$0.005&#x2F;GB&#x2F;月</td>
-<td>$10~$50</td>
-<td>小规模发布</td>
-</tr>
-<tr>
-<td><strong>AWS S3+CloudFront</strong></td>
-<td>$0.023&#x2F;GB&#x2F;月</td>
-<td>$85~$120</td>
-<td>中等规模</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
-<ol>
-<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
-<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
-<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
-</ol>
-<p>此方案适合：  </p>
-<ul>
-<li>独立开发者验证游戏热度。  </li>
-<li>开源项目或免费游戏分发。  </li>
-<li>规避早期服务器运维成本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GitHub,CDN</category>
-      </categories>
-      <tags>
-        <tag>GitHub,CDN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1167,6 +1016,157 @@
 ]]></content>
   </entry>
   <entry>
+    <title>GitHub + CDN</title>
+    <url>/2025/05/08/GitHub%20+%20CDN/</url>
+    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
+<hr>
+<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
+   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
+   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
+
+<ul>
+<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
+<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
+<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
+</ul>
+<hr>
+<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
+<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
+<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
+<li>获取直链：  <ul>
+<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
+<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
+<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
+</ul>
+</li>
+</ol>
+<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
+<ol>
+<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
+<li>在Cloudflare中：  <ul>
+<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
+<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
+</ul>
+</li>
+<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
+<ol>
+<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
+<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
+<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
+</ul>
+<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
+<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
+<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
+</ul>
+<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
+<li><strong>流量统计</strong>：  <ul>
+<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
+<li>在Cloudflare面板查看CDN请求数。</li>
+</ul>
+</li>
+<li><strong>防滥用</strong>：  <ul>
+<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>免费游戏试玩</strong></td>
+<td>GitHub Releases直链</td>
+<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
+</tr>
+<tr>
+<td><strong>开源项目分发</strong></td>
+<td>jsDelivr CDN</td>
+<td>必须公开仓库，适合Demo或工具类游戏。</td>
+</tr>
+<tr>
+<td><strong>商业游戏早期测试</strong></td>
+<td>Cloudflare+B2</td>
+<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
+</tr>
+<tr>
+<td><strong>大规模正式发布</strong></td>
+<td>需迁移至专业CDN&#x2F;自建</td>
+<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>存储成本</th>
+<th>流量成本（1TB下载）</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub直链</strong></td>
+<td>免费</td>
+<td>免费（但有限流风险）</td>
+<td>原型&#x2F;测试</td>
+</tr>
+<tr>
+<td><strong>Cloudflare+B2</strong></td>
+<td>$0.005&#x2F;GB&#x2F;月</td>
+<td>$10~$50</td>
+<td>小规模发布</td>
+</tr>
+<tr>
+<td><strong>AWS S3+CloudFront</strong></td>
+<td>$0.023&#x2F;GB&#x2F;月</td>
+<td>$85~$120</td>
+<td>中等规模</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
+<ol>
+<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
+<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
+<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
+</ol>
+<p>此方案适合：  </p>
+<ul>
+<li>独立开发者验证游戏热度。  </li>
+<li>开源项目或免费游戏分发。  </li>
+<li>规避早期服务器运维成本。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>GitHub,CDN</category>
+      </categories>
+      <tags>
+        <tag>GitHub,CDN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>GitHub Actions 没有触发的核心原因</title>
     <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
     <content><![CDATA[<p>谢谢提供路径信息。</p>
@@ -1522,6 +1522,199 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏后端自动化部署流程</title>
+    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>CI&#x2F;CD 核心调度平台</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>代码版本管理（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>容器化部署（可选）</td>
+</tr>
+<tr>
+<td><strong>Kubernetes (K8s)</strong></td>
+<td>容器编排（适用于分布式后端）</td>
+</tr>
+<tr>
+<td><strong>构建工具</strong></td>
+<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker Plugin</strong></td>
+<td>构建 Docker 镜像</td>
+</tr>
+<tr>
+<td><strong>Kubernetes Plugin</strong></td>
+<td>部署到 K8s</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>定义 CI&#x2F;CD 流程</td>
+</tr>
+<tr>
+<td><strong>Publish Over SSH</strong></td>
+<td>远程服务器部署</td>
+</tr>
+<tr>
+<td><strong>SonarQube Scanner</strong></td>
+<td>代码质量检测（可选）</td>
+</tr>
+</tbody></table>
+<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
+<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
+<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
+<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+</ul>
+<hr>
+<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
+<thead>
+<tr>
+<th>语言</th>
+<th>构建命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Java (Maven)</strong></td>
+<td><code>mvn clean package -DskipTests</code></td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td><code>go build -o bin/server ./cmd/server</code></td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td><code>pip install -r requirements.txt</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
+<thead>
+<tr>
+<th>部署方式</th>
+<th>适用场景</th>
+<th>Jenkins 配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SSH 直接部署</strong></td>
+<td>传统服务器</td>
+<td>使用 <code>Publish Over SSH</code> 插件</td>
+</tr>
+<tr>
+<td><strong>Docker Swarm</strong></td>
+<td>小型集群</td>
+<td><code>docker stack deploy</code></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>生产级集群</td>
+<td><code>kubectl set image</code> 或 Helm</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Prometheus + Grafana</strong></td>
+<td>监控服务性能</td>
+</tr>
+<tr>
+<td><strong>Kibana</strong></td>
+<td>日志分析</td>
+</tr>
+<tr>
+<td><strong>Jenkins 回滚脚本</strong></td>
+<td>快速回退到旧版本</td>
+</tr>
+</tbody></table>
+<p><strong>回滚示例</strong>：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker 构建失败</strong></td>
+<td>检查 <code>Dockerfile</code> 和构建日志</td>
+</tr>
+<tr>
+<td><strong>K8s 部署超时</strong></td>
+<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+</tr>
+<tr>
+<td><strong>微服务通信异常</strong></td>
+<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
+<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
+<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+</ul>
+<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -2851,9 +3044,9 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Jenkins 游戏后端自动化部署流程</title>
-    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
 <hr>
 <h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
 <thead>
@@ -2864,177 +3057,114 @@
 </thead>
 <tbody><tr>
 <td><strong>Jenkins</strong></td>
-<td>CI&#x2F;CD 核心调度平台</td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
 </tr>
 <tr>
 <td><strong>Git</strong></td>
-<td>代码版本管理（GitHub&#x2F;GitLab）</td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
 </tr>
 <tr>
-<td><strong>Docker</strong></td>
-<td>容器化部署（可选）</td>
-</tr>
-<tr>
-<td><strong>Kubernetes (K8s)</strong></td>
-<td>容器编排（适用于分布式后端）</td>
-</tr>
-<tr>
-<td><strong>构建工具</strong></td>
-<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
 </tr>
 <tr>
 <td><strong>部署目标</strong></td>
-<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
 </tr>
 </tbody></table>
 <hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
-<thead>
-<tr>
-<th>插件</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker Plugin</strong></td>
-<td>构建 Docker 镜像</td>
-</tr>
-<tr>
-<td><strong>Kubernetes Plugin</strong></td>
-<td>部署到 K8s</td>
-</tr>
-<tr>
-<td><strong>Pipeline</strong></td>
-<td>定义 CI&#x2F;CD 流程</td>
-</tr>
-<tr>
-<td><strong>Publish Over SSH</strong></td>
-<td>远程服务器部署</td>
-</tr>
-<tr>
-<td><strong>SonarQube Scanner</strong></td>
-<td>代码质量检测（可选）</td>
-</tr>
-</tbody></table>
-<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
-<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
-<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
-<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
 </ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
 <hr>
-<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
-<thead>
-<tr>
-<th>语言</th>
-<th>构建命令</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Java (Maven)</strong></td>
-<td><code>mvn clean package -DskipTests</code></td>
-</tr>
-<tr>
-<td><strong>Go</strong></td>
-<td><code>go build -o bin/server ./cmd/server</code></td>
-</tr>
-<tr>
-<td><strong>Python</strong></td>
-<td><code>pip install -r requirements.txt</code></td>
-</tr>
-</tbody></table>
-<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
-<thead>
-<tr>
-<th>部署方式</th>
-<th>适用场景</th>
-<th>Jenkins 配置</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>SSH 直接部署</strong></td>
-<td>传统服务器</td>
-<td>使用 <code>Publish Over SSH</code> 插件</td>
-</tr>
-<tr>
-<td><strong>Docker Swarm</strong></td>
-<td>小型集群</td>
-<td><code>docker stack deploy</code></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>生产级集群</td>
-<td><code>kubectl set image</code> 或 Helm</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Prometheus + Grafana</strong></td>
-<td>监控服务性能</td>
-</tr>
-<tr>
-<td><strong>Kibana</strong></td>
-<td>日志分析</td>
-</tr>
-<tr>
-<td><strong>Jenkins 回滚脚本</strong></td>
-<td>快速回退到旧版本</td>
-</tr>
-</tbody></table>
-<p><strong>回滚示例</strong>：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
-
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
 <hr>
-<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
 <thead>
 <tr>
 <th>问题</th>
-<th>排查方法</th>
+<th>解决方案</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><strong>Docker 构建失败</strong></td>
-<td>检查 <code>Dockerfile</code> 和构建日志</td>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
 </tr>
 <tr>
-<td><strong>K8s 部署超时</strong></td>
-<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
 </tr>
 <tr>
-<td><strong>微服务通信异常</strong></td>
-<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
 </tr>
 </tbody></table>
 <hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
-<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
-<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
-<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -3231,136 +3361,6 @@
 <li>遇到问题可查看 <strong>日志</strong> 或 <strong>社区</strong> 寻求帮助。</li>
 </ul>
 <p>如果有具体问题（如 Jenkinsfile 编写、插件配置），可以进一步讨论！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -3708,6 +3708,22 @@
       </tags>
   </entry>
   <entry>
+    <title>Mermaid</title>
+    <url>/2025/07/14/Mermaid/</url>
+    <content><![CDATA[<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
+<blockquote>
+<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a><br>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，不过修改完后你需要重新手动更新链接。<br>Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a><br>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法；<br>可以分享协同编辑，文档存于账户中，链接虽然也不是固定的，但是内容是同步的。</p>
+<p>注意 ：<br>点击【复制 Markdown】生成的链接是根据内容来动态改变的，内容被封装在链接中，所以每次改动图表内容都会改变链接地址，所有引用旧地址的都需要手动更换地址不然访问的内容还是原来的。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Mermaid</category>
+      </categories>
+      <tags>
+        <tag>Mermaid</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Prefab文本组件管理工具文档</title>
     <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
     <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
@@ -3782,22 +3798,6 @@
       </categories>
       <tags>
         <tag>unity工具</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Mermaid</title>
-    <url>/2025/07/14/Mermaid/</url>
-    <content><![CDATA[<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
-<blockquote>
-<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a><br>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，不过修改完后你需要重新手动更新链接。<br>Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a><br>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法；<br>可以分享协同编辑，文档存于账户中，链接虽然也不是固定的，但是内容是同步的。</p>
-<p>注意 ：<br>点击【复制 Markdown】生成的链接是根据内容来动态改变的，内容被封装在链接中，所以每次改动图表内容都会改变链接地址，所有引用旧地址的都需要手动更换地址不然访问的内容还是原来的。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>Mermaid</category>
-      </categories>
-      <tags>
-        <tag>Mermaid</tag>
       </tags>
   </entry>
   <entry>
@@ -5275,7 +5275,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#46;&#117;&#x6e;&#105;&#116;&#121;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#112;&#114;&#x6f;&#120;&#121;&#x40;&#x32;&#x2e;&#54;&#46;&#x30;">&#x63;&#x6f;&#x6d;&#46;&#117;&#x6e;&#105;&#116;&#121;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#112;&#114;&#x6f;&#120;&#121;&#x40;&#x32;&#x2e;&#54;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#121;&#46;&#99;&#111;&#x6c;&#x6c;&#x61;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#46;&#54;&#x2e;&#x30;">&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#121;&#46;&#99;&#111;&#x6c;&#x6c;&#x61;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#46;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5955,6 +5955,18 @@
 ]]></content>
   </entry>
   <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 程序集</title>
     <url>/2025/01/16/Unity-%E7%A8%8B%E5%BA%8F%E9%9B%86/</url>
     <content><![CDATA[<h2 id="常见的四种程序集"><a href="#常见的四种程序集" class="headerlink" title="常见的四种程序集"></a>常见的四种程序集</h2><p>下面是 <strong>Unity 中的预定义程序集</strong>（Predefined Assemblies）、<strong>默认创建的程序集</strong>（Default Assemblies）、<strong>自定义程序集</strong>（Custom Assemblies）和 <strong>预编译程序集</strong>（Precompiled Assemblies）四者的关系与区别的对比表格：</p>
@@ -6139,18 +6151,6 @@
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -7126,97 +7126,6 @@
       <tags>
         <tag>butterfly</tag>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
       </tags>
   </entry>
   <entry>
@@ -8244,6 +8153,97 @@
 <li>需要<strong>自定义遍历逻辑</strong>（如特定步长、过滤条件、遍历文件等）：<strong>自定义迭代器</strong></li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
+      </tags>
   </entry>
   <entry>
     <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
@@ -11701,5 +11701,363 @@ graph TD
 </tr>
 </tbody></table>
 ]]></content>
+  </entry>
+  <entry>
+    <title>通讯协议</title>
+    <url>/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/</url>
+    <content><![CDATA[<p>这是一个非常专业的问题！在游戏网络通信中，除了最基础的TCP和UDP，还有一系列建立在它们之上的<strong>应用层协议</strong>和<strong>技术方案</strong>。游戏开发者会根据不同需求混合使用这些协议。</p>
+<p>下图清晰地展示了游戏网络协议的技术全景与选择逻辑：</p>
+<pre><code class="highlight mermaid">flowchart TD
+    A[游戏网络通信需求] --&gt; B&#123;核心传输层选择&#125;
+    
+    B --&gt; C[TCP&lt;br&gt;可靠有序&lt;br&gt;但延迟高]
+    B --&gt; D[UDP&lt;br&gt;延迟极低&lt;br&gt;但不可靠]
+    B --&gt; E[QUIC/HTTP3&lt;br&gt;可靠且低延迟&lt;br&gt;Web/手游新贵]
+
+    D --&gt; F[在UDP上构建自定义协议]
+    F --&gt; G[可靠性层&lt;br&gt;（类TCP功能）]
+    F --&gt; H[快照/状态同步&lt;br&gt;（FPS/RTS）]
+    F --&gt; I[输入/指令同步&lt;br&gt;（动作游戏）]
+    F --&gt; J[事件/消息同步&lt;br&gt;（MMO/RPG）]
+
+    C --&gt; K[HTTP/HTTPS&lt;br&gt;RESTful/GraphQL API&lt;br&gt;（非实时数据）]
+    C --&gt; L[WebSocket&lt;br&gt;（实时性要求不高的&lt;br&gt;消息/聊天）]
+
+    subgraph M [高级通信模式]
+        N[RPC框架&lt;br&gt;（gRPC, &lt;br&gt;游戏专用RPC）]
+        O[发布订阅&lt;br&gt;（Redis Pub/Sub,&lt;br&gt;MQTT）]
+    end</code></pre>
+
+<p>以下是主流协议的详细解析：</p>
+<hr>
+<h3 id="一、-基于TCP的应用层协议"><a href="#一、-基于TCP的应用层协议" class="headerlink" title="一、 基于TCP的应用层协议"></a>一、 基于TCP的应用层协议</h3><p>这类协议在TCP的可靠连接上工作，适合<strong>对实时性要求不高的非核心玩法</strong>。</p>
+<ol>
+<li><p><strong>HTTP&#x2F;HTTPS (RESTful API, GraphQL)</strong></p>
+<ul>
+<li><strong>用途</strong>： <strong>非实时数据交换</strong>的绝对主力。</li>
+<li><strong>场景</strong>： 登录认证、获取玩家资料、领取每日奖励、访问游戏商店、上传得分到排行榜、社交功能（好友列表）。这些操作要求100%准确，但快慢几秒无所谓。</li>
+</ul>
+</li>
+<li><p><strong>WebSocket</strong></p>
+<ul>
+<li><strong>特点</strong>： 在单个TCP连接上提供<strong>全双工通信</strong>，服务器可以主动向客户端推送消息，无需客户端轮询。</li>
+<li><strong>场景</strong>： 实时聊天系统（世界&#x2F;队伍&#x2F;私聊）、游戏内邮件通知、简单的回合制游戏、需要服务器实时推送状态（如“你的建筑已升级完成”）的策略游戏。<strong>它比HTTP实时，但弱于自定义UDP协议</strong>。</li>
+</ul>
+</li>
+<li><p><strong>gRPC (基于 HTTP&#x2F;2)</strong></p>
+<ul>
+<li><strong>特点</strong>： 高性能、跨语言的RPC框架。使用Protocol Buffers进行高效的二进制序列化。</li>
+<li><strong>场景</strong>： 越来越流行于游戏服务器<strong>微服务</strong>之间的内部通信，或对性能要求较高的客户端-服务器通信（如游戏后台服务）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="二、-基于UDP的应用层协议-方案"><a href="#二、-基于UDP的应用层协议-方案" class="headerlink" title="二、 基于UDP的应用层协议&#x2F;方案"></a>二、 基于UDP的应用层协议&#x2F;方案</h3><p>这是游戏实时联机的核心技术领域。由于UDP本身不可靠，开发者会在其上<strong>自定义协议栈</strong>。</p>
+<ol>
+<li><p><strong>可靠UDP (Reliable UDP, 或自定义可靠协议)</strong></p>
+<ul>
+<li><strong>本质</strong>： <strong>在UDP之上，自己实现一套“部分TCP”的功能</strong>。这是大型网络游戏的核心技术。</li>
+<li><strong>实现机制</strong>：<ul>
+<li><strong>序号、确认、重传</strong>： 对重要的数据（如技能释放、物品购买）施加可靠性保证。</li>
+<li><strong>选择性确认</strong>： 只重传丢失的包，而不是像TCP一样重传之后所有包。</li>
+<li><strong>无序可靠通道</strong>： 保证消息必达，但不保证顺序（适用于状态快照，新的覆盖旧的）。</li>
+</ul>
+</li>
+<li><strong>目标</strong>： 避免TCP的“队头阻塞”问题，只为<strong>真正需要可靠</strong>的消息增加开销。</li>
+</ul>
+</li>
+<li><p><strong>专门为游戏设计的传输层协议</strong></p>
+<ul>
+<li><strong>ENET</strong>： 一个知名的网络库，在UDP上提供了可靠的、有序的、多通道的数据传输，被《我的世界》等多款游戏使用。</li>
+<li><strong>KCP</strong>： 一个以<strong>降低延迟</strong>为目标的快速可靠协议。它比TCP激进得多，通过更快的重传（非延迟ACK）来换取延迟的降低，非常适合实时动作游戏。在国产游戏和独立游戏中很流行。</li>
+<li><strong>WebRTC Data Channel</strong>： 虽然主要用于音视频，但其数据通道支持可靠和不可靠两种模式，基于SCTP（在UDP上封装），非常适合浏览器内的P2P游戏。</li>
+</ul>
+</li>
+<li><p><strong>QUIC &#x2F; HTTP&#x2F;3</strong></p>
+<ul>
+<li><strong>特点</strong>： 这是<strong>未来之星</strong>。QUIC在UDP上重新实现了TCP+TLS+HTTP&#x2F;2的功能，并进行了根本性优化。</li>
+<li><strong>游戏相关优势</strong>：<ul>
+<li><strong>0-RTT&#x2F;1-RTT连接</strong>： 极大降低建立安全连接的延迟。</li>
+<li><strong>改进的多路复用</strong>： 彻底解决TCP队头阻塞，多个数据流独立，一个流丢包不影响其他流。</li>
+<li><strong>连接迁移</strong>： 玩家切换网络（Wi-Fi -&gt; 4G）时，连接不会中断。</li>
+</ul>
+</li>
+<li><strong>场景</strong>： 非常适用于移动端游戏，以及任何需要低延迟、安全传输的场景。目前已在部分大型互联网公司（如Google）的服务中应用，游戏领域正在逐步接纳。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="三、-高级通信模式与框架"><a href="#三、-高级通信模式与框架" class="headerlink" title="三、 高级通信模式与框架"></a>三、 高级通信模式与框架</h3><ol>
+<li><p><strong>RPC框架</strong></p>
+<ul>
+<li><strong>除了gRPC</strong>，游戏行业还有自己的RPC中间件，如<strong>联盟的RPC</strong>（常用于MMO后端），它们深度集成了游戏服务器的逻辑（如AOI兴趣管理），让远程调用像本地函数一样方便。</li>
+</ul>
+</li>
+<li><p><strong>发布&#x2F;订阅模式</strong></p>
+<ul>
+<li><strong>协议</strong>： MQTT, Redis Pub&#x2F;Sub等。</li>
+<li><strong>场景</strong>： 游戏服务器集群内部的消息广播、全局事件通知（如“世界BOSS刷新”）、实时运营活动推送。客户端通常不直接使用，而是通过游戏服务器网关中转。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="四、-游戏同步协议（这是核心设计，而非单一协议）"><a href="#四、-游戏同步协议（这是核心设计，而非单一协议）" class="headerlink" title="四、 游戏同步协议（这是核心设计，而非单一协议）"></a>四、 游戏同步协议（这是核心设计，而非单一协议）</h3><p>这才是游戏网络的灵魂。它们定义了数据如何组织和交换，通常运行在自定义的可靠&#x2F;不可靠UDP或TCP之上。</p>
+<ol>
+<li><p><strong>状态同步</strong></p>
+<ul>
+<li><strong>描述</strong>： 服务器定时（如每秒10-30次）向所有客户端广播整个游戏世界的<strong>状态快照</strong>（玩家位置、血量等）。</li>
+<li><strong>协议特征</strong>： 数据量大，使用<strong>不可靠UDP</strong>发送，因为旧的状态会被新的覆盖。</li>
+<li><strong>游戏</strong>： FPS（CS:GO, 守望先锋）、RTS（星际争霸）常用。</li>
+</ul>
+</li>
+<li><p><strong>帧同步</strong></p>
+<ul>
+<li><strong>描述</strong>： 服务器只转发所有客户端的<strong>操作指令</strong>（按键输入）。每个客户端根据相同的初始状态和相同的指令序列，在自己的机器上<strong>完全 deterministic 地模拟</strong>出整个游戏过程。</li>
+<li><strong>协议特征</strong>： 指令数据量极小，但要求<strong>可靠、严格有序</strong>传输（类似TCP）。对逻辑一致性和防作弊要求极高。</li>
+<li><strong>游戏</strong>： MOBA（王者荣耀、英雄联盟）、格斗游戏、部分RTS。</li>
+</ul>
+</li>
+<li><p><strong>指令同步&#x2F;输入同步</strong></p>
+<ul>
+<li><strong>描述</strong>： 类似帧同步，但权威服务器会计算并验证结果，然后将结果同步给客户端，客户端做一定的预测和插值。</li>
+<li><strong>协议特征</strong>： 混合模式。客户端输入用可靠方式发送，服务器回传的结果用不可靠方式广播。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="总结与选择策略"><a href="#总结与选择策略" class="headerlink" title="总结与选择策略"></a>总结与选择策略</h3><table>
+<thead>
+<tr>
+<th align="left">协议&#x2F;技术</th>
+<th align="left">底层</th>
+<th align="left">主要特点</th>
+<th align="left">典型游戏应用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>TCP</strong></td>
+<td align="left">传输层</td>
+<td align="left">可靠、有序、有延迟</td>
+<td align="left">非实时数据、WebSocket&#x2F;HTTP基础</td>
+</tr>
+<tr>
+<td align="left"><strong>UDP</strong></td>
+<td align="left">传输层</td>
+<td align="left">不可靠、无序、极低延迟</td>
+<td align="left"><strong>所有实时对战游戏的基础</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>可靠UDP &#x2F; KCP</strong></td>
+<td align="left">应用层</td>
+<td align="left">在UDP上实现可控的可靠性</td>
+<td align="left">动作游戏的核心指令、RPC调用</td>
+</tr>
+<tr>
+<td align="left"><strong>HTTP(S)</strong></td>
+<td align="left">应用层</td>
+<td align="left">请求-响应、无状态</td>
+<td align="left">登录、商城、排行榜、社交API</td>
+</tr>
+<tr>
+<td align="left"><strong>WebSocket</strong></td>
+<td align="left">应用层</td>
+<td align="left">长连接、双向推送</td>
+<td align="left">聊天、回合制、实时通知</td>
+</tr>
+<tr>
+<td align="left"><strong>QUIC</strong></td>
+<td align="left">传输层</td>
+<td align="left">安全、快速、无队头阻塞</td>
+<td align="left"><strong>未来移动游戏和Web游戏的理想选择</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>状态同步</strong></td>
+<td align="left">设计模式</td>
+<td align="left">广播快照，数据量大</td>
+<td align="left">FPS、RTS、大世界MMO</td>
+</tr>
+<tr>
+<td align="left"><strong>帧同步</strong></td>
+<td align="left">设计模式</td>
+<td align="left">同步输入，计算确定</td>
+<td align="left">MOBA、格斗、棋牌</td>
+</tr>
+</tbody></table>
+<p><strong>现代网络游戏通常是“协议矩阵”</strong>：</p>
+<ul>
+<li><strong>用 HTTP&#x2F;WebSocket 处理大厅、聊天、非实时请求</strong>。</li>
+<li><strong>用 自定义可靠UDP（或KCP） 处理游戏房间内的核心实时操作</strong>。</li>
+<li><strong>在可靠UDP通道上，运行着“状态同步”或“帧同步”的逻辑</strong>。</li>
+<li><strong>服务器集群内部用 gRPC 或 私有RPC 进行通信</strong>。</li>
+</ul>
+<p>选择协议的根本原则是：<strong>在满足消息可靠性需求的前提下，不惜一切代价降低延迟</strong>。这就是为什么UDP及其衍生技术始终是游戏实时通信的王者。</p>
+<hr>
+<p>太棒了！这是从理论到实践的关键一步。<strong>代码实现上的区别非常直观</strong>，主要体现在<strong>API调用、连接管理、数据发送和错误处理</strong>的复杂度上。</p>
+<p>让我们用一个经典例子来说明：<strong>在多人游戏中实现“玩家移动”这个功能</strong>。</p>
+<hr>
+<h3 id="一、TCP-实现-“打电话”模式"><a href="#一、TCP-实现-“打电话”模式" class="headerlink" title="一、TCP 实现 - “打电话”模式"></a>一、TCP 实现 - “打电话”模式</h3><p>就像打电话，必须建立稳定连接，按顺序说话。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 伪代码示例 - TCP客户端发送移动数据</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 建立连接（耗时，可能失败）</span></span><br><span class="line">tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">tcp_socket.connect((<span class="string">&#x27;server_ip&#x27;</span>, <span class="number">8888</span>))  <span class="comment"># 三次握手，阻塞调用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_player_position</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="comment"># 2. 组织数据（通常带完整头部）</span></span><br><span class="line">    data = <span class="string">f&quot;MOVE|<span class="subst">&#123;player_id&#125;</span>|<span class="subst">&#123;x&#125;</span>|<span class="subst">&#123;y&#125;</span>\n&quot;</span>  <span class="comment"># 文本协议常见，也可用二进制</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 发送（简单！系统保证可靠有序到达）</span></span><br><span class="line">    tcp_socket.sendall(data.encode())  <span class="comment"># 不用管丢包，系统自动重传</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 4. 如果需要响应，就等待（可能阻塞）</span></span><br><span class="line">    <span class="comment"># response = tcp_socket.recv(1024)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏主循环中</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    <span class="comment"># 玩家操作产生新位置</span></span><br><span class="line">    new_x, new_y = get_player_input()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 每帧或定时发送</span></span><br><span class="line">    <span class="keyword">if</span> position_changed:</span><br><span class="line">        send_player_position(new_x, new_y)</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>连接管理重</strong>：需要显式<code>connect()</code>，处理连接断开&#x2F;重连</li>
+<li><strong>发送简单</strong>：<code>send()</code>后不用管，像写文件</li>
+<li><strong>粘包问题</strong>：需要设计<strong>消息边界</strong>（如用<code>\n</code>、长度前缀）</li>
+<li><strong>阻塞风险</strong>：<code>send()</code>&#x2F;<code>recv()</code>可能卡住，需用非阻塞或线程</li>
+</ul>
+<hr>
+<h3 id="二、UDP-实现-“发短信”模式"><a href="#二、UDP-实现-“发短信”模式" class="headerlink" title="二、UDP 实现 - “发短信”模式"></a>二、UDP 实现 - “发短信”模式</h3><p>就像发短信，无需连接，发了就走，但可能丢信。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 伪代码示例 - UDP客户端发送移动数据</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 创建socket（无连接步骤！）</span></span><br><span class="line">udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"><span class="comment"># 没有connect()！或者connect只设置默认地址</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_player_position_udp</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="comment"># 2. 组织数据（必须精简）</span></span><br><span class="line">    <span class="comment"># 二进制协议，紧凑格式</span></span><br><span class="line">    data = struct.pack(<span class="string">&#x27;!BHH&#x27;</span>, <span class="number">0x10</span>, <span class="built_in">int</span>(x*<span class="number">100</span>), <span class="built_in">int</span>(y*<span class="number">100</span>))  <span class="comment"># 操作码+x+y（定点数）</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 直接发送到目标地址</span></span><br><span class="line">    udp_socket.sendto(data, (<span class="string">&#x27;server_ip&#x27;</span>, <span class="number">8888</span>))  <span class="comment"># 每次都要指定地址</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 4. 发送完成！不保证对方收到</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏主循环 - 更高频率发送</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    new_x, new_y = get_player_input()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 可能每帧都发送，即使位置微变</span></span><br><span class="line">    current_time = get_current_time()</span><br><span class="line">    <span class="keyword">if</span> current_time - last_send_time &gt; <span class="number">0.033</span>:  <span class="comment"># 每秒30次</span></span><br><span class="line">        send_player_position_udp(new_x, new_y)</span><br><span class="line">        last_send_time = current_time</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 同时需要接收其他玩家的数据</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        data, addr = udp_socket.recvfrom(<span class="number">1024</span>)  <span class="comment"># 非阻塞</span></span><br><span class="line">        process_incoming_data(data)</span><br><span class="line">    <span class="keyword">except</span> BlockingIOError:</span><br><span class="line">        <span class="keyword">pass</span>  <span class="comment"># 没有数据，继续</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>无连接</strong>：没有<code>connect()</code>，每次<code>sendto()</code>指定地址</li>
+<li><strong>需处理丢包</strong>：发送后石沉大海，需自己实现确认机制</li>
+<li><strong>数据精简</strong>：每个字节都很宝贵，用二进制打包</li>
+<li><strong>非阻塞为主</strong>：通常设置为非阻塞模式</li>
+<li><strong>无粘包</strong>：每个<code>sendto()</code>就是一个完整消息</li>
+</ul>
+<hr>
+<h3 id="三、可靠UDP（自定义协议）实现-“快递追踪”模式"><a href="#三、可靠UDP（自定义协议）实现-“快递追踪”模式" class="headerlink" title="三、可靠UDP（自定义协议）实现 - “快递追踪”模式"></a>三、可靠UDP（自定义协议）实现 - “快递追踪”模式</h3><p>像发快递，可以查物流，知道是否送达。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 伪代码示例 - 自定义可靠UDP（简化版）</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ReliableUDP</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">        <span class="variable language_">self</span>.socket.setblocking(<span class="literal">False</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 可靠性需要的状态</span></span><br><span class="line">        <span class="variable language_">self</span>.packet_buffer = &#123;&#125;  <span class="comment"># 已发送未确认的包 &#123;seq_num: (data, send_time, retry_count)&#125;</span></span><br><span class="line">        <span class="variable language_">self</span>.next_seq = <span class="number">1</span></span><br><span class="line">        <span class="variable language_">self</span>.ack_history = <span class="built_in">set</span>()  <span class="comment"># 已收到的ACK</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">send_reliable</span>(<span class="params">self, data, address</span>):</span><br><span class="line">        <span class="comment"># 1. 分配序列号</span></span><br><span class="line">        seq = <span class="variable language_">self</span>.next_seq</span><br><span class="line">        <span class="variable language_">self</span>.next_seq += <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 添加自定义头部：可靠性信息</span></span><br><span class="line">        header = struct.pack(<span class="string">&#x27;!IHH&#x27;</span>, seq, <span class="number">0x8000</span>, <span class="built_in">len</span>(data))  <span class="comment"># 序列号+标志位+长度</span></span><br><span class="line">        packet = header + data</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 3. 发送并保存副本用于重传</span></span><br><span class="line">        <span class="variable language_">self</span>.socket.sendto(packet, address)</span><br><span class="line">        <span class="variable language_">self</span>.packet_buffer[seq] = &#123;</span><br><span class="line">            <span class="string">&#x27;data&#x27;</span>: packet,</span><br><span class="line">            <span class="string">&#x27;send_time&#x27;</span>: current_time(),</span><br><span class="line">            <span class="string">&#x27;retries&#x27;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&#x27;address&#x27;</span>: address</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 4. 启动重传计时器（非阻塞方式）</span></span><br><span class="line">        <span class="comment"># 实际会加入定时检查队列</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;每帧调用，处理重传和ACK&quot;&quot;&quot;</span></span><br><span class="line">        now = current_time()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 检查超时重传</span></span><br><span class="line">        <span class="keyword">for</span> seq, pkt_info <span class="keyword">in</span> <span class="built_in">list</span>(<span class="variable language_">self</span>.packet_buffer.items()):</span><br><span class="line">            <span class="keyword">if</span> now - pkt_info[<span class="string">&#x27;send_time&#x27;</span>] &gt; <span class="variable language_">self</span>.RETRY_TIMEOUT:</span><br><span class="line">                <span class="keyword">if</span> pkt_info[<span class="string">&#x27;retries&#x27;</span>] &lt; <span class="variable language_">self</span>.MAX_RETRIES:</span><br><span class="line">                    <span class="comment"># 重传！</span></span><br><span class="line">                    <span class="variable language_">self</span>.socket.sendto(pkt_info[<span class="string">&#x27;data&#x27;</span>], pkt_info[<span class="string">&#x27;address&#x27;</span>])</span><br><span class="line">                    pkt_info[<span class="string">&#x27;send_time&#x27;</span>] = now</span><br><span class="line">                    pkt_info[<span class="string">&#x27;retries&#x27;</span>] += <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="comment"># 放弃，通知上层</span></span><br><span class="line">                    <span class="keyword">del</span> <span class="variable language_">self</span>.packet_buffer[seq]</span><br><span class="line">                    on_packet_lost(seq)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 接收ACK</span></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                data, addr = <span class="variable language_">self</span>.socket.recvfrom(<span class="number">1500</span>)</span><br><span class="line">                <span class="keyword">if</span> is_ack_packet(data):</span><br><span class="line">                    ack_seq = parse_ack_seq(data)</span><br><span class="line">                    <span class="keyword">if</span> ack_seq <span class="keyword">in</span> <span class="variable language_">self</span>.packet_buffer:</span><br><span class="line">                        <span class="keyword">del</span> <span class="variable language_">self</span>.packet_buffer[ack_seq]  <span class="comment"># 确认收到！</span></span><br><span class="line">                <span class="keyword">elif</span> is_data_packet(data):</span><br><span class="line">                    <span class="comment"># 处理数据包并发送ACK</span></span><br><span class="line">                    process_data(data)</span><br><span class="line">                    send_ack_for(data)</span><br><span class="line">            <span class="keyword">except</span> BlockingIOError:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用方式</span></span><br><span class="line">rudp = ReliableUDP()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_move_reliable</span>(<span class="params">x, y</span>):</span><br><span class="line">    data = struct.pack(<span class="string">&#x27;!HH&#x27;</span>, <span class="built_in">int</span>(x), <span class="built_in">int</span>(y))</span><br><span class="line">    rudp.send_reliable(data, SERVER_ADDRESS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏循环</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    <span class="comment"># 1. 发送玩家输入</span></span><br><span class="line">    send_move_reliable(player_x, player_y)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 2. 必须每帧更新可靠UDP层</span></span><br><span class="line">    rudp.update()  <span class="comment"># 处理重传、ACK、接收</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 游戏逻辑</span></span><br><span class="line">    game_logic_update()</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>代码复杂度暴增</strong>：需要实现序列号、确认、重传、流量控制</li>
+<li><strong>双逻辑层</strong>：应用层逻辑 + 网络层可靠性逻辑</li>
+<li><strong>定时器管理</strong>：需要跟踪每个包的发送时间</li>
+<li><strong>非阻塞循环</strong>：必须每帧调用<code>update()</code>处理网络事务</li>
+</ul>
+<hr>
+<h3 id="四、WebSocket-实现-“VIP热线”模式"><a href="#四、WebSocket-实现-“VIP热线”模式" class="headerlink" title="四、WebSocket 实现 - “VIP热线”模式"></a>四、WebSocket 实现 - “VIP热线”模式</h3><p>像高级客服热线，保持连接，随时双向沟通。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// JavaScript前端示例 - WebSocket</span></span><br><span class="line"><span class="comment">// 1. 建立连接（类似TCP握手，但升级到WS协议）</span></span><br><span class="line"><span class="keyword">const</span> ws = <span class="keyword">new</span> <span class="title class_">WebSocket</span>(<span class="string">&#x27;wss://game-server.com/ws&#x27;</span>);</span><br><span class="line"></span><br><span class="line">ws.<span class="property">onopen</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;连接已建立&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 发送消息（文本或二进制）</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">sendPlayerPosition</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> msg = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123;</span><br><span class="line">        <span class="attr">type</span>: <span class="string">&#x27;player_move&#x27;</span>,</span><br><span class="line">        <span class="attr">x</span>: x,</span><br><span class="line">        <span class="attr">y</span>: y,</span><br><span class="line">        <span class="attr">timestamp</span>: <span class="title class_">Date</span>.<span class="title function_">now</span>()</span><br><span class="line">    &#125;);</span><br><span class="line">    ws.<span class="title function_">send</span>(msg);  <span class="comment">// 简单！底层TCP保证可靠</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 接收服务器推送</span></span><br><span class="line">ws.<span class="property">onmessage</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> data = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(event.<span class="property">data</span>);</span><br><span class="line">    <span class="keyword">if</span> (data.<span class="property">type</span> === <span class="string">&#x27;world_state&#x27;</span>) &#123;</span><br><span class="line">        <span class="title function_">updateOtherPlayers</span>(data.<span class="property">players</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 错误处理</span></span><br><span class="line">ws.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">error</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;WebSocket错误:&#x27;</span>, error);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>API高级</strong>：浏览器&#x2F;引擎封装好了，使用事件驱动回调</li>
+<li><strong>消息即发</strong>：<code>send()</code>即可，自动处理帧封装</li>
+<li><strong>自动重连</strong>：通常需要自己实现重连逻辑</li>
+<li><strong>支持二进制</strong>：<code>send(ArrayBuffer)</code> 可传二进制数据</li>
+</ul>
+<hr>
+<h3 id="五、HTTP-实现-“寄信”模式"><a href="#五、HTTP-实现-“寄信”模式" class="headerlink" title="五、HTTP 实现 - “寄信”模式"></a>五、HTTP 实现 - “寄信”模式</h3><p>像寄信，每次都要写地址，等回复。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Python示例 - HTTP轮询（最简化版）</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 没有持久连接，每次都是独立请求</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">report_position</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.post(</span><br><span class="line">            <span class="string">&#x27;https://api.game.com/report_position&#x27;</span>,</span><br><span class="line">            json=&#123;<span class="string">&#x27;x&#x27;</span>: x, <span class="string">&#x27;y&#x27;</span>: y&#125;,</span><br><span class="line">            timeout=<span class="number">2.0</span>  <span class="comment"># 重要：设置超时</span></span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            world_state = response.json()</span><br><span class="line">            <span class="keyword">return</span> world_state</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            handle_http_error(response.status_code)</span><br><span class="line">    <span class="keyword">except</span> requests.exceptions.RequestException <span class="keyword">as</span> e:</span><br><span class="line">        handle_network_error(e)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏循环中 - 必须定时轮询</span></span><br><span class="line">last_poll_time = <span class="number">0</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    current_time = time.time()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 发送自己的位置</span></span><br><span class="line">    <span class="keyword">if</span> current_time - last_report_time &gt; <span class="number">0.1</span>:  <span class="comment"># 每秒10次</span></span><br><span class="line">        report_position(player_x, player_y)</span><br><span class="line">        last_report_time = current_time</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 获取他人位置（轮询！）</span></span><br><span class="line">    <span class="keyword">if</span> current_time - last_poll_time &gt; <span class="number">0.5</span>:  <span class="comment"># 每秒2次，避免太频繁</span></span><br><span class="line">        other_players = requests.get(<span class="string">&#x27;https://api.game.com/get_players&#x27;</span>).json()</span><br><span class="line">        update_other_players(other_players)</span><br><span class="line">        last_poll_time = current_time</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>无状态</strong>：每次请求都是独立的</li>
+<li><strong>开销大</strong>：每个请求都有HTTP头部开销</li>
+<li><strong>轮询延迟</strong>：必须主动拉取，无法实时推送</li>
+<li><strong>库支持好</strong>：<code>requests</code>、<code>fetch</code>等封装完善</li>
+</ul>
+<hr>
+<h3 id="直观对比总结表"><a href="#直观对比总结表" class="headerlink" title="直观对比总结表"></a>直观对比总结表</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>TCP</th>
+<th>UDP</th>
+<th>可靠UDP</th>
+<th>WebSocket</th>
+<th>HTTP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>建立连接</strong></td>
+<td><code>connect()</code> 阻塞调用</td>
+<td>无连接，直接<code>sendto()</code></td>
+<td>自定义握手过程</td>
+<td><code>new WebSocket()</code> 异步</td>
+<td>无连接</td>
+</tr>
+<tr>
+<td><strong>发送数据</strong></td>
+<td><code>send()</code> 简单</td>
+<td><code>sendto()</code> 需地址</td>
+<td><code>send_reliable()</code> 自定义</td>
+<td><code>ws.send()</code> 简单</td>
+<td><code>requests.post()</code> 完整请求</td>
+</tr>
+<tr>
+<td><strong>可靠性</strong></td>
+<td>系统保证</td>
+<td>无保证</td>
+<td>自己实现</td>
+<td>系统保证</td>
+<td>系统保证</td>
+</tr>
+<tr>
+<td><strong>消息边界</strong></td>
+<td>需自己处理粘包</td>
+<td>自带边界</td>
+<td>自带边界</td>
+<td>帧自动处理</td>
+<td>请求&#x2F;响应自带边界</td>
+</tr>
+<tr>
+<td><strong>代码复杂度</strong></td>
+<td>低</td>
+<td>低</td>
+<td><strong>极高</strong></td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>典型使用</strong></td>
+<td>数据库连接、RPC</td>
+<td>音视频流、状态广播</td>
+<td><strong>游戏实时操作</strong></td>
+<td>聊天、实时通知</td>
+<td>拉取数据、提交分数</td>
+</tr>
+<tr>
+<td><strong>心跳&#x2F;保活</strong></td>
+<td>可选<code>SO_KEEPALIVE</code></td>
+<td>需自己实现</td>
+<td>需自己实现</td>
+<td>自动Ping&#x2F;Pong</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td><strong>阻塞问题</strong></td>
+<td>严重，需线程&#x2F;非阻塞</td>
+<td>轻微，通常非阻塞</td>
+<td>非阻塞为主</td>
+<td>异步回调</td>
+<td>同步&#x2F;异步可选</td>
+</tr>
+</tbody></table>
+<h3 id="关键直观差异"><a href="#关键直观差异" class="headerlink" title="关键直观差异"></a>关键直观差异</h3><ol>
+<li><p><strong>心智模型不同</strong>：</p>
+<ul>
+<li><strong>TCP&#x2F;WebSocket</strong>： “管道”模型，打开后持续流动</li>
+<li><strong>UDP</strong>： “邮筒”模型，每封信独立</li>
+<li><strong>HTTP</strong>： “快递”模型，每次完整打包寄送</li>
+</ul>
+</li>
+<li><p><strong>代码结构不同</strong>：</p>
+<ul>
+<li><strong>TCP&#x2F;WS</strong>： 连接建立后，主循环简单发送&#x2F;接收</li>
+<li><strong>UDP</strong>： 单socket多用途，需处理多个对端</li>
+<li><strong>可靠UDP</strong>： <strong>状态机驱动</strong>，每帧必须更新网络层</li>
+</ul>
+</li>
+<li><p><strong>调试难度</strong>：</p>
+<ul>
+<li><strong>TCP&#x2F;HTTP&#x2F;WS</strong>： Wireshark直接可读</li>
+<li><strong>自定义UDP</strong>： 需要自定义解析器，调试困难</li>
+</ul>
+</li>
+<li><p><strong>实时游戏的实际选择</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 现代实时游戏的典型混合架构</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GameNetwork</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 1. HTTP用于非实时数据</span></span><br><span class="line">        <span class="variable language_">self</span>.http = HTTPClient()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. WebSocket用于聊天/大厅</span></span><br><span class="line">        <span class="variable language_">self</span>.ws = WebSocketClient()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 3. 可靠UDP用于核心游戏同步（或直接用KCP/ENET库）</span></span><br><span class="line">        <span class="variable language_">self</span>.game_channel = ReliableUDPChannel()</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 每帧必须更新所有通道</span></span><br><span class="line">        <span class="variable language_">self</span>.game_channel.update()  <span class="comment"># 最重要！</span></span><br><span class="line">        <span class="variable language_">self</span>.ws.process_messages()</span><br><span class="line">        <span class="comment"># HTTP通常是异步回调，不需要每帧更新</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>最终建议</strong>：除非你要做硬核实时游戏（MOBA、FPS），否则<strong>优先使用引擎内置的高层网络API</strong>（如Unity的Netcode、Unreal的Replication系统），它们已经封装了底层协议的复杂性，让你更专注于游戏逻辑。只有当这些方案不满足需求时，才考虑从TCP&#x2F;UDP层面自己实现。</p>
+]]></content>
+      <categories>
+        <category>网络编程</category>
+      </categories>
+      <tags>
+        <tag>TCP,UDP,HTTP</tag>
+      </tags>
   </entry>
 </search>

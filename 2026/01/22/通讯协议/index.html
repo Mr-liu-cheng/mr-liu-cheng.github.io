@@ -1,0 +1,721 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>通讯协议 | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="这是一个非常专业的问题！在游戏网络通信中，除了最基础的TCP和UDP，还有一系列建立在它们之上的应用层协议和技术方案。游戏开发者会根据不同需求混合使用这些协议。 下图清晰地展示了游戏网络协议的技术全景与选择逻辑： flowchart TD     A[游戏网络通信需求] --&gt; B&#123;核心传输层选择&#125;          B --&gt; C[TCP&lt;br&gt;可靠有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通讯协议">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="这是一个非常专业的问题！在游戏网络通信中，除了最基础的TCP和UDP，还有一系列建立在它们之上的应用层协议和技术方案。游戏开发者会根据不同需求混合使用这些协议。 下图清晰地展示了游戏网络协议的技术全景与选择逻辑： flowchart TD     A[游戏网络通信需求] --&gt; B&#123;核心传输层选择&#125;          B --&gt; C[TCP&lt;br&gt;可靠有">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2026-01-22T12:06:02.000Z">
+<meta property="article:modified_time" content="2026-01-22T12:06:02.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="TCP,UDP,HTTP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '通讯协议',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">23</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">通讯协议</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">通讯协议</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-22T12:06:02.000Z" title="发表于 2026-01-22 12:06:02">2026-01-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-22T12:06:02.000Z" title="更新于 2026-01-22 12:06:02">2026-01-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/">网络编程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>这是一个非常专业的问题！在游戏网络通信中，除了最基础的TCP和UDP，还有一系列建立在它们之上的<strong>应用层协议</strong>和<strong>技术方案</strong>。游戏开发者会根据不同需求混合使用这些协议。</p>
+<p>下图清晰地展示了游戏网络协议的技术全景与选择逻辑：</p>
+<pre><code class="highlight mermaid">flowchart TD
+    A[游戏网络通信需求] --&gt; B&#123;核心传输层选择&#125;
+    
+    B --&gt; C[TCP&lt;br&gt;可靠有序&lt;br&gt;但延迟高]
+    B --&gt; D[UDP&lt;br&gt;延迟极低&lt;br&gt;但不可靠]
+    B --&gt; E[QUIC/HTTP3&lt;br&gt;可靠且低延迟&lt;br&gt;Web/手游新贵]
+
+    D --&gt; F[在UDP上构建自定义协议]
+    F --&gt; G[可靠性层&lt;br&gt;（类TCP功能）]
+    F --&gt; H[快照/状态同步&lt;br&gt;（FPS/RTS）]
+    F --&gt; I[输入/指令同步&lt;br&gt;（动作游戏）]
+    F --&gt; J[事件/消息同步&lt;br&gt;（MMO/RPG）]
+
+    C --&gt; K[HTTP/HTTPS&lt;br&gt;RESTful/GraphQL API&lt;br&gt;（非实时数据）]
+    C --&gt; L[WebSocket&lt;br&gt;（实时性要求不高的&lt;br&gt;消息/聊天）]
+
+    subgraph M [高级通信模式]
+        N[RPC框架&lt;br&gt;（gRPC, &lt;br&gt;游戏专用RPC）]
+        O[发布订阅&lt;br&gt;（Redis Pub/Sub,&lt;br&gt;MQTT）]
+    end</code></pre>
+
+<p>以下是主流协议的详细解析：</p>
+<hr>
+<h3 id="一、-基于TCP的应用层协议"><a href="#一、-基于TCP的应用层协议" class="headerlink" title="一、 基于TCP的应用层协议"></a>一、 基于TCP的应用层协议</h3><p>这类协议在TCP的可靠连接上工作，适合<strong>对实时性要求不高的非核心玩法</strong>。</p>
+<ol>
+<li><p><strong>HTTP&#x2F;HTTPS (RESTful API, GraphQL)</strong></p>
+<ul>
+<li><strong>用途</strong>： <strong>非实时数据交换</strong>的绝对主力。</li>
+<li><strong>场景</strong>： 登录认证、获取玩家资料、领取每日奖励、访问游戏商店、上传得分到排行榜、社交功能（好友列表）。这些操作要求100%准确，但快慢几秒无所谓。</li>
+</ul>
+</li>
+<li><p><strong>WebSocket</strong></p>
+<ul>
+<li><strong>特点</strong>： 在单个TCP连接上提供<strong>全双工通信</strong>，服务器可以主动向客户端推送消息，无需客户端轮询。</li>
+<li><strong>场景</strong>： 实时聊天系统（世界&#x2F;队伍&#x2F;私聊）、游戏内邮件通知、简单的回合制游戏、需要服务器实时推送状态（如“你的建筑已升级完成”）的策略游戏。<strong>它比HTTP实时，但弱于自定义UDP协议</strong>。</li>
+</ul>
+</li>
+<li><p><strong>gRPC (基于 HTTP&#x2F;2)</strong></p>
+<ul>
+<li><strong>特点</strong>： 高性能、跨语言的RPC框架。使用Protocol Buffers进行高效的二进制序列化。</li>
+<li><strong>场景</strong>： 越来越流行于游戏服务器<strong>微服务</strong>之间的内部通信，或对性能要求较高的客户端-服务器通信（如游戏后台服务）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="二、-基于UDP的应用层协议-方案"><a href="#二、-基于UDP的应用层协议-方案" class="headerlink" title="二、 基于UDP的应用层协议&#x2F;方案"></a>二、 基于UDP的应用层协议&#x2F;方案</h3><p>这是游戏实时联机的核心技术领域。由于UDP本身不可靠，开发者会在其上<strong>自定义协议栈</strong>。</p>
+<ol>
+<li><p><strong>可靠UDP (Reliable UDP, 或自定义可靠协议)</strong></p>
+<ul>
+<li><strong>本质</strong>： <strong>在UDP之上，自己实现一套“部分TCP”的功能</strong>。这是大型网络游戏的核心技术。</li>
+<li><strong>实现机制</strong>：<ul>
+<li><strong>序号、确认、重传</strong>： 对重要的数据（如技能释放、物品购买）施加可靠性保证。</li>
+<li><strong>选择性确认</strong>： 只重传丢失的包，而不是像TCP一样重传之后所有包。</li>
+<li><strong>无序可靠通道</strong>： 保证消息必达，但不保证顺序（适用于状态快照，新的覆盖旧的）。</li>
+</ul>
+</li>
+<li><strong>目标</strong>： 避免TCP的“队头阻塞”问题，只为<strong>真正需要可靠</strong>的消息增加开销。</li>
+</ul>
+</li>
+<li><p><strong>专门为游戏设计的传输层协议</strong></p>
+<ul>
+<li><strong>ENET</strong>： 一个知名的网络库，在UDP上提供了可靠的、有序的、多通道的数据传输，被《我的世界》等多款游戏使用。</li>
+<li><strong>KCP</strong>： 一个以<strong>降低延迟</strong>为目标的快速可靠协议。它比TCP激进得多，通过更快的重传（非延迟ACK）来换取延迟的降低，非常适合实时动作游戏。在国产游戏和独立游戏中很流行。</li>
+<li><strong>WebRTC Data Channel</strong>： 虽然主要用于音视频，但其数据通道支持可靠和不可靠两种模式，基于SCTP（在UDP上封装），非常适合浏览器内的P2P游戏。</li>
+</ul>
+</li>
+<li><p><strong>QUIC &#x2F; HTTP&#x2F;3</strong></p>
+<ul>
+<li><strong>特点</strong>： 这是<strong>未来之星</strong>。QUIC在UDP上重新实现了TCP+TLS+HTTP&#x2F;2的功能，并进行了根本性优化。</li>
+<li><strong>游戏相关优势</strong>：<ul>
+<li><strong>0-RTT&#x2F;1-RTT连接</strong>： 极大降低建立安全连接的延迟。</li>
+<li><strong>改进的多路复用</strong>： 彻底解决TCP队头阻塞，多个数据流独立，一个流丢包不影响其他流。</li>
+<li><strong>连接迁移</strong>： 玩家切换网络（Wi-Fi -&gt; 4G）时，连接不会中断。</li>
+</ul>
+</li>
+<li><strong>场景</strong>： 非常适用于移动端游戏，以及任何需要低延迟、安全传输的场景。目前已在部分大型互联网公司（如Google）的服务中应用，游戏领域正在逐步接纳。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="三、-高级通信模式与框架"><a href="#三、-高级通信模式与框架" class="headerlink" title="三、 高级通信模式与框架"></a>三、 高级通信模式与框架</h3><ol>
+<li><p><strong>RPC框架</strong></p>
+<ul>
+<li><strong>除了gRPC</strong>，游戏行业还有自己的RPC中间件，如<strong>联盟的RPC</strong>（常用于MMO后端），它们深度集成了游戏服务器的逻辑（如AOI兴趣管理），让远程调用像本地函数一样方便。</li>
+</ul>
+</li>
+<li><p><strong>发布&#x2F;订阅模式</strong></p>
+<ul>
+<li><strong>协议</strong>： MQTT, Redis Pub&#x2F;Sub等。</li>
+<li><strong>场景</strong>： 游戏服务器集群内部的消息广播、全局事件通知（如“世界BOSS刷新”）、实时运营活动推送。客户端通常不直接使用，而是通过游戏服务器网关中转。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="四、-游戏同步协议（这是核心设计，而非单一协议）"><a href="#四、-游戏同步协议（这是核心设计，而非单一协议）" class="headerlink" title="四、 游戏同步协议（这是核心设计，而非单一协议）"></a>四、 游戏同步协议（这是核心设计，而非单一协议）</h3><p>这才是游戏网络的灵魂。它们定义了数据如何组织和交换，通常运行在自定义的可靠&#x2F;不可靠UDP或TCP之上。</p>
+<ol>
+<li><p><strong>状态同步</strong></p>
+<ul>
+<li><strong>描述</strong>： 服务器定时（如每秒10-30次）向所有客户端广播整个游戏世界的<strong>状态快照</strong>（玩家位置、血量等）。</li>
+<li><strong>协议特征</strong>： 数据量大，使用<strong>不可靠UDP</strong>发送，因为旧的状态会被新的覆盖。</li>
+<li><strong>游戏</strong>： FPS（CS:GO, 守望先锋）、RTS（星际争霸）常用。</li>
+</ul>
+</li>
+<li><p><strong>帧同步</strong></p>
+<ul>
+<li><strong>描述</strong>： 服务器只转发所有客户端的<strong>操作指令</strong>（按键输入）。每个客户端根据相同的初始状态和相同的指令序列，在自己的机器上<strong>完全 deterministic 地模拟</strong>出整个游戏过程。</li>
+<li><strong>协议特征</strong>： 指令数据量极小，但要求<strong>可靠、严格有序</strong>传输（类似TCP）。对逻辑一致性和防作弊要求极高。</li>
+<li><strong>游戏</strong>： MOBA（王者荣耀、英雄联盟）、格斗游戏、部分RTS。</li>
+</ul>
+</li>
+<li><p><strong>指令同步&#x2F;输入同步</strong></p>
+<ul>
+<li><strong>描述</strong>： 类似帧同步，但权威服务器会计算并验证结果，然后将结果同步给客户端，客户端做一定的预测和插值。</li>
+<li><strong>协议特征</strong>： 混合模式。客户端输入用可靠方式发送，服务器回传的结果用不可靠方式广播。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="总结与选择策略"><a href="#总结与选择策略" class="headerlink" title="总结与选择策略"></a>总结与选择策略</h3><table>
+<thead>
+<tr>
+<th align="left">协议&#x2F;技术</th>
+<th align="left">底层</th>
+<th align="left">主要特点</th>
+<th align="left">典型游戏应用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>TCP</strong></td>
+<td align="left">传输层</td>
+<td align="left">可靠、有序、有延迟</td>
+<td align="left">非实时数据、WebSocket&#x2F;HTTP基础</td>
+</tr>
+<tr>
+<td align="left"><strong>UDP</strong></td>
+<td align="left">传输层</td>
+<td align="left">不可靠、无序、极低延迟</td>
+<td align="left"><strong>所有实时对战游戏的基础</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>可靠UDP &#x2F; KCP</strong></td>
+<td align="left">应用层</td>
+<td align="left">在UDP上实现可控的可靠性</td>
+<td align="left">动作游戏的核心指令、RPC调用</td>
+</tr>
+<tr>
+<td align="left"><strong>HTTP(S)</strong></td>
+<td align="left">应用层</td>
+<td align="left">请求-响应、无状态</td>
+<td align="left">登录、商城、排行榜、社交API</td>
+</tr>
+<tr>
+<td align="left"><strong>WebSocket</strong></td>
+<td align="left">应用层</td>
+<td align="left">长连接、双向推送</td>
+<td align="left">聊天、回合制、实时通知</td>
+</tr>
+<tr>
+<td align="left"><strong>QUIC</strong></td>
+<td align="left">传输层</td>
+<td align="left">安全、快速、无队头阻塞</td>
+<td align="left"><strong>未来移动游戏和Web游戏的理想选择</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>状态同步</strong></td>
+<td align="left">设计模式</td>
+<td align="left">广播快照，数据量大</td>
+<td align="left">FPS、RTS、大世界MMO</td>
+</tr>
+<tr>
+<td align="left"><strong>帧同步</strong></td>
+<td align="left">设计模式</td>
+<td align="left">同步输入，计算确定</td>
+<td align="left">MOBA、格斗、棋牌</td>
+</tr>
+</tbody></table>
+<p><strong>现代网络游戏通常是“协议矩阵”</strong>：</p>
+<ul>
+<li><strong>用 HTTP&#x2F;WebSocket 处理大厅、聊天、非实时请求</strong>。</li>
+<li><strong>用 自定义可靠UDP（或KCP） 处理游戏房间内的核心实时操作</strong>。</li>
+<li><strong>在可靠UDP通道上，运行着“状态同步”或“帧同步”的逻辑</strong>。</li>
+<li><strong>服务器集群内部用 gRPC 或 私有RPC 进行通信</strong>。</li>
+</ul>
+<p>选择协议的根本原则是：<strong>在满足消息可靠性需求的前提下，不惜一切代价降低延迟</strong>。这就是为什么UDP及其衍生技术始终是游戏实时通信的王者。</p>
+<hr>
+<p>太棒了！这是从理论到实践的关键一步。<strong>代码实现上的区别非常直观</strong>，主要体现在<strong>API调用、连接管理、数据发送和错误处理</strong>的复杂度上。</p>
+<p>让我们用一个经典例子来说明：<strong>在多人游戏中实现“玩家移动”这个功能</strong>。</p>
+<hr>
+<h3 id="一、TCP-实现-“打电话”模式"><a href="#一、TCP-实现-“打电话”模式" class="headerlink" title="一、TCP 实现 - “打电话”模式"></a>一、TCP 实现 - “打电话”模式</h3><p>就像打电话，必须建立稳定连接，按顺序说话。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 伪代码示例 - TCP客户端发送移动数据</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 建立连接（耗时，可能失败）</span></span><br><span class="line">tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">tcp_socket.connect((<span class="string">&#x27;server_ip&#x27;</span>, <span class="number">8888</span>))  <span class="comment"># 三次握手，阻塞调用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_player_position</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="comment"># 2. 组织数据（通常带完整头部）</span></span><br><span class="line">    data = <span class="string">f&quot;MOVE|<span class="subst">&#123;player_id&#125;</span>|<span class="subst">&#123;x&#125;</span>|<span class="subst">&#123;y&#125;</span>\n&quot;</span>  <span class="comment"># 文本协议常见，也可用二进制</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 发送（简单！系统保证可靠有序到达）</span></span><br><span class="line">    tcp_socket.sendall(data.encode())  <span class="comment"># 不用管丢包，系统自动重传</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 4. 如果需要响应，就等待（可能阻塞）</span></span><br><span class="line">    <span class="comment"># response = tcp_socket.recv(1024)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏主循环中</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    <span class="comment"># 玩家操作产生新位置</span></span><br><span class="line">    new_x, new_y = get_player_input()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 每帧或定时发送</span></span><br><span class="line">    <span class="keyword">if</span> position_changed:</span><br><span class="line">        send_player_position(new_x, new_y)</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>连接管理重</strong>：需要显式<code>connect()</code>，处理连接断开&#x2F;重连</li>
+<li><strong>发送简单</strong>：<code>send()</code>后不用管，像写文件</li>
+<li><strong>粘包问题</strong>：需要设计<strong>消息边界</strong>（如用<code>\n</code>、长度前缀）</li>
+<li><strong>阻塞风险</strong>：<code>send()</code>&#x2F;<code>recv()</code>可能卡住，需用非阻塞或线程</li>
+</ul>
+<hr>
+<h3 id="二、UDP-实现-“发短信”模式"><a href="#二、UDP-实现-“发短信”模式" class="headerlink" title="二、UDP 实现 - “发短信”模式"></a>二、UDP 实现 - “发短信”模式</h3><p>就像发短信，无需连接，发了就走，但可能丢信。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 伪代码示例 - UDP客户端发送移动数据</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 创建socket（无连接步骤！）</span></span><br><span class="line">udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"><span class="comment"># 没有connect()！或者connect只设置默认地址</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_player_position_udp</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="comment"># 2. 组织数据（必须精简）</span></span><br><span class="line">    <span class="comment"># 二进制协议，紧凑格式</span></span><br><span class="line">    data = struct.pack(<span class="string">&#x27;!BHH&#x27;</span>, <span class="number">0x10</span>, <span class="built_in">int</span>(x*<span class="number">100</span>), <span class="built_in">int</span>(y*<span class="number">100</span>))  <span class="comment"># 操作码+x+y（定点数）</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 直接发送到目标地址</span></span><br><span class="line">    udp_socket.sendto(data, (<span class="string">&#x27;server_ip&#x27;</span>, <span class="number">8888</span>))  <span class="comment"># 每次都要指定地址</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 4. 发送完成！不保证对方收到</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏主循环 - 更高频率发送</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    new_x, new_y = get_player_input()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 可能每帧都发送，即使位置微变</span></span><br><span class="line">    current_time = get_current_time()</span><br><span class="line">    <span class="keyword">if</span> current_time - last_send_time &gt; <span class="number">0.033</span>:  <span class="comment"># 每秒30次</span></span><br><span class="line">        send_player_position_udp(new_x, new_y)</span><br><span class="line">        last_send_time = current_time</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 同时需要接收其他玩家的数据</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        data, addr = udp_socket.recvfrom(<span class="number">1024</span>)  <span class="comment"># 非阻塞</span></span><br><span class="line">        process_incoming_data(data)</span><br><span class="line">    <span class="keyword">except</span> BlockingIOError:</span><br><span class="line">        <span class="keyword">pass</span>  <span class="comment"># 没有数据，继续</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>无连接</strong>：没有<code>connect()</code>，每次<code>sendto()</code>指定地址</li>
+<li><strong>需处理丢包</strong>：发送后石沉大海，需自己实现确认机制</li>
+<li><strong>数据精简</strong>：每个字节都很宝贵，用二进制打包</li>
+<li><strong>非阻塞为主</strong>：通常设置为非阻塞模式</li>
+<li><strong>无粘包</strong>：每个<code>sendto()</code>就是一个完整消息</li>
+</ul>
+<hr>
+<h3 id="三、可靠UDP（自定义协议）实现-“快递追踪”模式"><a href="#三、可靠UDP（自定义协议）实现-“快递追踪”模式" class="headerlink" title="三、可靠UDP（自定义协议）实现 - “快递追踪”模式"></a>三、可靠UDP（自定义协议）实现 - “快递追踪”模式</h3><p>像发快递，可以查物流，知道是否送达。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 伪代码示例 - 自定义可靠UDP（简化版）</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ReliableUDP</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">        <span class="variable language_">self</span>.socket.setblocking(<span class="literal">False</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 可靠性需要的状态</span></span><br><span class="line">        <span class="variable language_">self</span>.packet_buffer = &#123;&#125;  <span class="comment"># 已发送未确认的包 &#123;seq_num: (data, send_time, retry_count)&#125;</span></span><br><span class="line">        <span class="variable language_">self</span>.next_seq = <span class="number">1</span></span><br><span class="line">        <span class="variable language_">self</span>.ack_history = <span class="built_in">set</span>()  <span class="comment"># 已收到的ACK</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">send_reliable</span>(<span class="params">self, data, address</span>):</span><br><span class="line">        <span class="comment"># 1. 分配序列号</span></span><br><span class="line">        seq = <span class="variable language_">self</span>.next_seq</span><br><span class="line">        <span class="variable language_">self</span>.next_seq += <span class="number">1</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. 添加自定义头部：可靠性信息</span></span><br><span class="line">        header = struct.pack(<span class="string">&#x27;!IHH&#x27;</span>, seq, <span class="number">0x8000</span>, <span class="built_in">len</span>(data))  <span class="comment"># 序列号+标志位+长度</span></span><br><span class="line">        packet = header + data</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 3. 发送并保存副本用于重传</span></span><br><span class="line">        <span class="variable language_">self</span>.socket.sendto(packet, address)</span><br><span class="line">        <span class="variable language_">self</span>.packet_buffer[seq] = &#123;</span><br><span class="line">            <span class="string">&#x27;data&#x27;</span>: packet,</span><br><span class="line">            <span class="string">&#x27;send_time&#x27;</span>: current_time(),</span><br><span class="line">            <span class="string">&#x27;retries&#x27;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&#x27;address&#x27;</span>: address</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 4. 启动重传计时器（非阻塞方式）</span></span><br><span class="line">        <span class="comment"># 实际会加入定时检查队列</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;每帧调用，处理重传和ACK&quot;&quot;&quot;</span></span><br><span class="line">        now = current_time()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 检查超时重传</span></span><br><span class="line">        <span class="keyword">for</span> seq, pkt_info <span class="keyword">in</span> <span class="built_in">list</span>(<span class="variable language_">self</span>.packet_buffer.items()):</span><br><span class="line">            <span class="keyword">if</span> now - pkt_info[<span class="string">&#x27;send_time&#x27;</span>] &gt; <span class="variable language_">self</span>.RETRY_TIMEOUT:</span><br><span class="line">                <span class="keyword">if</span> pkt_info[<span class="string">&#x27;retries&#x27;</span>] &lt; <span class="variable language_">self</span>.MAX_RETRIES:</span><br><span class="line">                    <span class="comment"># 重传！</span></span><br><span class="line">                    <span class="variable language_">self</span>.socket.sendto(pkt_info[<span class="string">&#x27;data&#x27;</span>], pkt_info[<span class="string">&#x27;address&#x27;</span>])</span><br><span class="line">                    pkt_info[<span class="string">&#x27;send_time&#x27;</span>] = now</span><br><span class="line">                    pkt_info[<span class="string">&#x27;retries&#x27;</span>] += <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="comment"># 放弃，通知上层</span></span><br><span class="line">                    <span class="keyword">del</span> <span class="variable language_">self</span>.packet_buffer[seq]</span><br><span class="line">                    on_packet_lost(seq)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 接收ACK</span></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                data, addr = <span class="variable language_">self</span>.socket.recvfrom(<span class="number">1500</span>)</span><br><span class="line">                <span class="keyword">if</span> is_ack_packet(data):</span><br><span class="line">                    ack_seq = parse_ack_seq(data)</span><br><span class="line">                    <span class="keyword">if</span> ack_seq <span class="keyword">in</span> <span class="variable language_">self</span>.packet_buffer:</span><br><span class="line">                        <span class="keyword">del</span> <span class="variable language_">self</span>.packet_buffer[ack_seq]  <span class="comment"># 确认收到！</span></span><br><span class="line">                <span class="keyword">elif</span> is_data_packet(data):</span><br><span class="line">                    <span class="comment"># 处理数据包并发送ACK</span></span><br><span class="line">                    process_data(data)</span><br><span class="line">                    send_ack_for(data)</span><br><span class="line">            <span class="keyword">except</span> BlockingIOError:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用方式</span></span><br><span class="line">rudp = ReliableUDP()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_move_reliable</span>(<span class="params">x, y</span>):</span><br><span class="line">    data = struct.pack(<span class="string">&#x27;!HH&#x27;</span>, <span class="built_in">int</span>(x), <span class="built_in">int</span>(y))</span><br><span class="line">    rudp.send_reliable(data, SERVER_ADDRESS)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏循环</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    <span class="comment"># 1. 发送玩家输入</span></span><br><span class="line">    send_move_reliable(player_x, player_y)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 2. 必须每帧更新可靠UDP层</span></span><br><span class="line">    rudp.update()  <span class="comment"># 处理重传、ACK、接收</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 3. 游戏逻辑</span></span><br><span class="line">    game_logic_update()</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>代码复杂度暴增</strong>：需要实现序列号、确认、重传、流量控制</li>
+<li><strong>双逻辑层</strong>：应用层逻辑 + 网络层可靠性逻辑</li>
+<li><strong>定时器管理</strong>：需要跟踪每个包的发送时间</li>
+<li><strong>非阻塞循环</strong>：必须每帧调用<code>update()</code>处理网络事务</li>
+</ul>
+<hr>
+<h3 id="四、WebSocket-实现-“VIP热线”模式"><a href="#四、WebSocket-实现-“VIP热线”模式" class="headerlink" title="四、WebSocket 实现 - “VIP热线”模式"></a>四、WebSocket 实现 - “VIP热线”模式</h3><p>像高级客服热线，保持连接，随时双向沟通。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// JavaScript前端示例 - WebSocket</span></span><br><span class="line"><span class="comment">// 1. 建立连接（类似TCP握手，但升级到WS协议）</span></span><br><span class="line"><span class="keyword">const</span> ws = <span class="keyword">new</span> <span class="title class_">WebSocket</span>(<span class="string">&#x27;wss://game-server.com/ws&#x27;</span>);</span><br><span class="line"></span><br><span class="line">ws.<span class="property">onopen</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;连接已建立&#x27;</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 发送消息（文本或二进制）</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">sendPlayerPosition</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> msg = <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(&#123;</span><br><span class="line">        <span class="attr">type</span>: <span class="string">&#x27;player_move&#x27;</span>,</span><br><span class="line">        <span class="attr">x</span>: x,</span><br><span class="line">        <span class="attr">y</span>: y,</span><br><span class="line">        <span class="attr">timestamp</span>: <span class="title class_">Date</span>.<span class="title function_">now</span>()</span><br><span class="line">    &#125;);</span><br><span class="line">    ws.<span class="title function_">send</span>(msg);  <span class="comment">// 简单！底层TCP保证可靠</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 接收服务器推送</span></span><br><span class="line">ws.<span class="property">onmessage</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> data = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(event.<span class="property">data</span>);</span><br><span class="line">    <span class="keyword">if</span> (data.<span class="property">type</span> === <span class="string">&#x27;world_state&#x27;</span>) &#123;</span><br><span class="line">        <span class="title function_">updateOtherPlayers</span>(data.<span class="property">players</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 错误处理</span></span><br><span class="line">ws.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">error</span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;WebSocket错误:&#x27;</span>, error);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>API高级</strong>：浏览器&#x2F;引擎封装好了，使用事件驱动回调</li>
+<li><strong>消息即发</strong>：<code>send()</code>即可，自动处理帧封装</li>
+<li><strong>自动重连</strong>：通常需要自己实现重连逻辑</li>
+<li><strong>支持二进制</strong>：<code>send(ArrayBuffer)</code> 可传二进制数据</li>
+</ul>
+<hr>
+<h3 id="五、HTTP-实现-“寄信”模式"><a href="#五、HTTP-实现-“寄信”模式" class="headerlink" title="五、HTTP 实现 - “寄信”模式"></a>五、HTTP 实现 - “寄信”模式</h3><p>像寄信，每次都要写地址，等回复。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Python示例 - HTTP轮询（最简化版）</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="comment"># 没有持久连接，每次都是独立请求</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">report_position</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.post(</span><br><span class="line">            <span class="string">&#x27;https://api.game.com/report_position&#x27;</span>,</span><br><span class="line">            json=&#123;<span class="string">&#x27;x&#x27;</span>: x, <span class="string">&#x27;y&#x27;</span>: y&#125;,</span><br><span class="line">            timeout=<span class="number">2.0</span>  <span class="comment"># 重要：设置超时</span></span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            world_state = response.json()</span><br><span class="line">            <span class="keyword">return</span> world_state</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            handle_http_error(response.status_code)</span><br><span class="line">    <span class="keyword">except</span> requests.exceptions.RequestException <span class="keyword">as</span> e:</span><br><span class="line">        handle_network_error(e)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 游戏循环中 - 必须定时轮询</span></span><br><span class="line">last_poll_time = <span class="number">0</span></span><br><span class="line"><span class="keyword">while</span> game_running:</span><br><span class="line">    current_time = time.time()</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 发送自己的位置</span></span><br><span class="line">    <span class="keyword">if</span> current_time - last_report_time &gt; <span class="number">0.1</span>:  <span class="comment"># 每秒10次</span></span><br><span class="line">        report_position(player_x, player_y)</span><br><span class="line">        last_report_time = current_time</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 获取他人位置（轮询！）</span></span><br><span class="line">    <span class="keyword">if</span> current_time - last_poll_time &gt; <span class="number">0.5</span>:  <span class="comment"># 每秒2次，避免太频繁</span></span><br><span class="line">        other_players = requests.get(<span class="string">&#x27;https://api.game.com/get_players&#x27;</span>).json()</span><br><span class="line">        update_other_players(other_players)</span><br><span class="line">        last_poll_time = current_time</span><br></pre></td></tr></table></figure>
+
+<p><strong>直观特点</strong>：</p>
+<ul>
+<li><strong>无状态</strong>：每次请求都是独立的</li>
+<li><strong>开销大</strong>：每个请求都有HTTP头部开销</li>
+<li><strong>轮询延迟</strong>：必须主动拉取，无法实时推送</li>
+<li><strong>库支持好</strong>：<code>requests</code>、<code>fetch</code>等封装完善</li>
+</ul>
+<hr>
+<h3 id="直观对比总结表"><a href="#直观对比总结表" class="headerlink" title="直观对比总结表"></a>直观对比总结表</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>TCP</th>
+<th>UDP</th>
+<th>可靠UDP</th>
+<th>WebSocket</th>
+<th>HTTP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>建立连接</strong></td>
+<td><code>connect()</code> 阻塞调用</td>
+<td>无连接，直接<code>sendto()</code></td>
+<td>自定义握手过程</td>
+<td><code>new WebSocket()</code> 异步</td>
+<td>无连接</td>
+</tr>
+<tr>
+<td><strong>发送数据</strong></td>
+<td><code>send()</code> 简单</td>
+<td><code>sendto()</code> 需地址</td>
+<td><code>send_reliable()</code> 自定义</td>
+<td><code>ws.send()</code> 简单</td>
+<td><code>requests.post()</code> 完整请求</td>
+</tr>
+<tr>
+<td><strong>可靠性</strong></td>
+<td>系统保证</td>
+<td>无保证</td>
+<td>自己实现</td>
+<td>系统保证</td>
+<td>系统保证</td>
+</tr>
+<tr>
+<td><strong>消息边界</strong></td>
+<td>需自己处理粘包</td>
+<td>自带边界</td>
+<td>自带边界</td>
+<td>帧自动处理</td>
+<td>请求&#x2F;响应自带边界</td>
+</tr>
+<tr>
+<td><strong>代码复杂度</strong></td>
+<td>低</td>
+<td>低</td>
+<td><strong>极高</strong></td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr>
+<td><strong>典型使用</strong></td>
+<td>数据库连接、RPC</td>
+<td>音视频流、状态广播</td>
+<td><strong>游戏实时操作</strong></td>
+<td>聊天、实时通知</td>
+<td>拉取数据、提交分数</td>
+</tr>
+<tr>
+<td><strong>心跳&#x2F;保活</strong></td>
+<td>可选<code>SO_KEEPALIVE</code></td>
+<td>需自己实现</td>
+<td>需自己实现</td>
+<td>自动Ping&#x2F;Pong</td>
+<td>不需要</td>
+</tr>
+<tr>
+<td><strong>阻塞问题</strong></td>
+<td>严重，需线程&#x2F;非阻塞</td>
+<td>轻微，通常非阻塞</td>
+<td>非阻塞为主</td>
+<td>异步回调</td>
+<td>同步&#x2F;异步可选</td>
+</tr>
+</tbody></table>
+<h3 id="关键直观差异"><a href="#关键直观差异" class="headerlink" title="关键直观差异"></a>关键直观差异</h3><ol>
+<li><p><strong>心智模型不同</strong>：</p>
+<ul>
+<li><strong>TCP&#x2F;WebSocket</strong>： “管道”模型，打开后持续流动</li>
+<li><strong>UDP</strong>： “邮筒”模型，每封信独立</li>
+<li><strong>HTTP</strong>： “快递”模型，每次完整打包寄送</li>
+</ul>
+</li>
+<li><p><strong>代码结构不同</strong>：</p>
+<ul>
+<li><strong>TCP&#x2F;WS</strong>： 连接建立后，主循环简单发送&#x2F;接收</li>
+<li><strong>UDP</strong>： 单socket多用途，需处理多个对端</li>
+<li><strong>可靠UDP</strong>： <strong>状态机驱动</strong>，每帧必须更新网络层</li>
+</ul>
+</li>
+<li><p><strong>调试难度</strong>：</p>
+<ul>
+<li><strong>TCP&#x2F;HTTP&#x2F;WS</strong>： Wireshark直接可读</li>
+<li><strong>自定义UDP</strong>： 需要自定义解析器，调试困难</li>
+</ul>
+</li>
+<li><p><strong>实时游戏的实际选择</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 现代实时游戏的典型混合架构</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GameNetwork</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 1. HTTP用于非实时数据</span></span><br><span class="line">        <span class="variable language_">self</span>.http = HTTPClient()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 2. WebSocket用于聊天/大厅</span></span><br><span class="line">        <span class="variable language_">self</span>.ws = WebSocketClient()</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 3. 可靠UDP用于核心游戏同步（或直接用KCP/ENET库）</span></span><br><span class="line">        <span class="variable language_">self</span>.game_channel = ReliableUDPChannel()</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 每帧必须更新所有通道</span></span><br><span class="line">        <span class="variable language_">self</span>.game_channel.update()  <span class="comment"># 最重要！</span></span><br><span class="line">        <span class="variable language_">self</span>.ws.process_messages()</span><br><span class="line">        <span class="comment"># HTTP通常是异步回调，不需要每帧更新</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>最终建议</strong>：除非你要做硬核实时游戏（MOBA、FPS），否则<strong>优先使用引擎内置的高层网络API</strong>（如Unity的Netcode、Unreal的Replication系统），它们已经封装了底层协议的复杂性，让你更专注于游戏逻辑。只有当这些方案不满足需求时，才考虑从TCP&#x2F;UDP层面自己实现。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/">https://mr-liu-cheng.github.io/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/TCP-UDP-HTTP/">TCP,UDP,HTTP</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/08/01/%E6%B8%B8%E6%88%8F%E6%B5%81%E7%A8%8B/" title="游戏流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">游戏流程</div></div><div class="info-2"><div class="info-item-1">游戏流程：  </div></div></div></a><a class="pagination-related" href="/2026/01/22/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1/" title="分布式与微服务"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">分布式与微服务</div></div><div class="info-2"><div class="info-item-1">当你选择微服务架构时，你就是在主动选择一个分布式系统。 因为微服务被拆分后，必然要部署到不同的进程、不同的机器上，它们必须通过网络进行通信和协作。所以，微服务架构是分布式系统的一种具体实现形式和应用场景。</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">70</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">23</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81-%E5%9F%BA%E4%BA%8ETCP%E7%9A%84%E5%BA%94%E7%94%A8%E5%B1%82%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.</span> <span class="toc-text">一、 基于TCP的应用层协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81-%E5%9F%BA%E4%BA%8EUDP%E7%9A%84%E5%BA%94%E7%94%A8%E5%B1%82%E5%8D%8F%E8%AE%AE-%E6%96%B9%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">二、 基于UDP的应用层协议&#x2F;方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81-%E9%AB%98%E7%BA%A7%E9%80%9A%E4%BF%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%A1%86%E6%9E%B6"><span class="toc-number">3.</span> <span class="toc-text">三、 高级通信模式与框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81-%E6%B8%B8%E6%88%8F%E5%90%8C%E6%AD%A5%E5%8D%8F%E8%AE%AE%EF%BC%88%E8%BF%99%E6%98%AF%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%EF%BC%8C%E8%80%8C%E9%9D%9E%E5%8D%95%E4%B8%80%E5%8D%8F%E8%AE%AE%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">四、 游戏同步协议（这是核心设计，而非单一协议）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E9%80%89%E6%8B%A9%E7%AD%96%E7%95%A5"><span class="toc-number">5.</span> <span class="toc-text">总结与选择策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81TCP-%E5%AE%9E%E7%8E%B0-%E2%80%9C%E6%89%93%E7%94%B5%E8%AF%9D%E2%80%9D%E6%A8%A1%E5%BC%8F"><span class="toc-number">6.</span> <span class="toc-text">一、TCP 实现 - “打电话”模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81UDP-%E5%AE%9E%E7%8E%B0-%E2%80%9C%E5%8F%91%E7%9F%AD%E4%BF%A1%E2%80%9D%E6%A8%A1%E5%BC%8F"><span class="toc-number">7.</span> <span class="toc-text">二、UDP 实现 - “发短信”模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%8F%AF%E9%9D%A0UDP%EF%BC%88%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8D%8F%E8%AE%AE%EF%BC%89%E5%AE%9E%E7%8E%B0-%E2%80%9C%E5%BF%AB%E9%80%92%E8%BF%BD%E8%B8%AA%E2%80%9D%E6%A8%A1%E5%BC%8F"><span class="toc-number">8.</span> <span class="toc-text">三、可靠UDP（自定义协议）实现 - “快递追踪”模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E3%80%81WebSocket-%E5%AE%9E%E7%8E%B0-%E2%80%9CVIP%E7%83%AD%E7%BA%BF%E2%80%9D%E6%A8%A1%E5%BC%8F"><span class="toc-number">9.</span> <span class="toc-text">四、WebSocket 实现 - “VIP热线”模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%94%E3%80%81HTTP-%E5%AE%9E%E7%8E%B0-%E2%80%9C%E5%AF%84%E4%BF%A1%E2%80%9D%E6%A8%A1%E5%BC%8F"><span class="toc-number">10.</span> <span class="toc-text">五、HTTP 实现 - “寄信”模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B4%E8%A7%82%E5%AF%B9%E6%AF%94%E6%80%BB%E7%BB%93%E8%A1%A8"><span class="toc-number">11.</span> <span class="toc-text">直观对比总结表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E7%9B%B4%E8%A7%82%E5%B7%AE%E5%BC%82"><span class="toc-number">12.</span> <span class="toc-text">关键直观差异</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/22/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1/" title="分布式与微服务">分布式与微服务</a><time datetime="2026-01-22T12:06:02.000Z" title="发表于 2026-01-22 12:06:02">2026-01-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/" title="通讯协议">通讯协议</a><time datetime="2026-01-22T12:06:02.000Z" title="发表于 2026-01-22 12:06:02">2026-01-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/08/01/%E6%B8%B8%E6%88%8F%E6%B5%81%E7%A8%8B/" title="游戏流程">游戏流程</a><time datetime="2025-08-01T11:20:13.000Z" title="发表于 2025-08-01 11:20:13">2025-08-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/07/14/Mermaid/" title="Mermaid">Mermaid</a><time datetime="2025-07-14T18:47:33.000Z" title="发表于 2025-07-14 18:47:33">2025-07-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" title="Lua语法检测工具文档">Lua语法检测工具文档</a><time datetime="2025-07-09T14:16:02.000Z" title="发表于 2025-07-09 14:16:02">2025-07-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '80ca8766f3470498a1afc4e5b6d76cc5'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
