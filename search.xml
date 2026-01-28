@@ -3724,6 +3724,83 @@
       </tags>
   </entry>
   <entry>
+    <title>Prefab文本组件管理工具文档</title>
+    <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li><strong>批量扫描</strong>：递归查找指定目录下的所有预制体文件</li>
+<li><strong>多类型支持</strong>：同时支持UGUI Text、RichText和TextMeshPro(TMP)组件</li>
+<li><strong>文本查询</strong>：查找并列出所有包含非空文本的组件</li>
+<li><strong>批量清理</strong>：一键清空所有文本组件内容</li>
+<li><strong>详细报告</strong>：提供操作过程和结果的详细输出</li>
+<li><strong>进度显示</strong>：可视化进度条显示处理进度</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/文本组件管理</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改预制体所在目录（默认为<code>Assets/_GameCenter/_Resources/prefab</code>）</li>
+<li><strong>功能按钮</strong>：<ul>
+<li>“查询非空文本控件”：查找并显示所有非空文本组件</li>
+<li>“清空文本控件”：清空所有文本组件内容</li>
+</ul>
+</li>
+<li><strong>结果展示区域</strong>：显示操作过程和结果的详细信息</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li><p><strong>查询非空文本</strong>：</p>
+<ul>
+<li>确认或修改预制体目录路径</li>
+<li>点击”查询非空文本控件”按钮</li>
+<li>查看结果区域中的非空文本列表</li>
+</ul>
+</li>
+<li><p><strong>清空文本内容</strong>：</p>
+<ul>
+<li>确认或修改预制体目录路径</li>
+<li>点击”清空文本控件”按钮</li>
+<li>查看结果区域中的清理报告</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>查询结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体序号 预制体名称</span><br><span class="line">  文本序号 文本路径：父对象/组件名 文本内容：实际文本</span><br></pre></td></tr></table></figure></li>
+<li><strong>清理结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体：路径 文本路径：父对象/组件名 文本:被清理的文本内容</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>预制体扫描</strong>：使用AssetDatabase查找指定目录下的所有预制体</li>
+<li><strong>组件获取</strong>：递归获取预制体中的所有文本组件</li>
+<li><strong>内容处理</strong>：<ul>
+<li>查询模式：收集并显示非空文本信息</li>
+<li>清理模式：将文本内容设置为空字符串</li>
+</ul>
+</li>
+<li><strong>资源保存</strong>：修改后保存预制体变更</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>FindNotEmptyText</code>：查询非空文本组件</li>
+<li><code>ClearText</code>：清空文本组件内容</li>
+<li><code>Clean&lt;T&gt;</code>：通用清理方法，处理具体文本类型</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具会直接修改预制体文件，建议操作前备份项目</li>
+<li>仅处理指定目录下的预制体，不处理场景中的对象</li>
+<li>清理操作不可逆，请谨慎使用</li>
+<li>处理大量预制体时可能需要较长时间</li>
+<li>需要确保路径在Assets目录下</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> TMPro;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span></span><br><span class="line"><span class="comment">    1标准 Unity UI Text</span></span><br><span class="line"><span class="comment">    2RichText (富文本)</span></span><br><span class="line"><span class="comment">    3TextMeshPro (TMP_Text)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 查询非空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有包含非空文本的 UI 组件</span></span><br><span class="line"><span class="comment">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span></span><br><span class="line"><span class="comment">        自动打开保存结果的文件所在位置</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 清空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有文本组件并将其内容清空</span></span><br><span class="line"><span class="comment">        记录被清空的文本内容到 Unity 控制台</span></span><br><span class="line"><span class="comment">        自动保存修改后的预制</span></span><br><span class="line"><span class="comment">    注意：</span></span><br><span class="line"><span class="comment">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span></span><br><span class="line"><span class="comment">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ClearPrefabTextContent</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt; textDict;</span><br><span class="line">    <span class="keyword">private</span> Vector2 scrollPosition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/_Resources/prefab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/文本组件管理&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TextComponentManager</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(<span class="string">&quot;Prefab Text Content Manager&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;Prefab Text Content Manager Tool&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;Prefab Folder Path:&quot;</span>, folderPath); <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;Select Prefab Folder&quot;</span>, defaultPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="comment">// 转换为相对于Assets的路径</span></span><br><span class="line">            <span class="keyword">if</span> (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;查询非空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;清空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;查询结果：&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FindNotEmptyText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        textDict = <span class="keyword">new</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt;();</span><br><span class="line">        <span class="keyword">var</span> path = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, path);</span><br><span class="line">        <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; path &#125;);</span><br><span class="line">        <span class="keyword">var</span> prefabCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">var</span> textCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Finding...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">var</span> lastPrefab = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Checking....&quot;</span>, assetsPath, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> obj = AssetDatabase.LoadAssetAtPath(assetsPath, <span class="keyword">typeof</span>(GameObject)) <span class="keyword">as</span> GameObject;</span><br><span class="line">                <span class="keyword">var</span> lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> allTextComponents = <span class="keyword">new</span> List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> text = <span class="string">&quot;&quot;</span>;</span><br><span class="line">                    <span class="keyword">if</span> (item <span class="keyword">is</span> Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    <span class="comment">//  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span></span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    <span class="keyword">if</span> (lastPrefab != guid &amp;&amp; text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;</span>, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;</span>, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(<span class="keyword">new</span> KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n查询完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ClearText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> folder = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, folder);</span><br><span class="line">        <span class="keyword">if</span> (!folder.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; folder &#125;);</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Clean...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Replace....&quot;</span>, path, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                <span class="keyword">var</span> textComponentsDict = <span class="keyword">new</span> Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(Text), prefab.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> kvp <span class="keyword">in</span> textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n清理完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Clean</span>&lt;<span class="title">T</span>&gt;(<span class="params">Component item, <span class="built_in">string</span> path, GameObject prefab</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> textProperty = <span class="keyword">typeof</span>(T).GetProperty(<span class="string">&quot;text&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (textProperty != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> text = (<span class="built_in">string</span>)textProperty.GetValue(item);</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += <span class="string">$&quot;\n预制体：<span class="subst">&#123;path&#125;</span> 文本路径：<span class="subst">&#123;item.transform.parent.name&#125;</span>/<span class="subst">&#123;item.name&#125;</span> 文本:<span class="subst">&#123;text&#125;</span>&quot;</span>;</span><br><span class="line">                textProperty.SetValue(item, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>unity工具</category>
+      </categories>
+      <tags>
+        <tag>unity工具</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Redis分布式锁</title>
     <url>/2026/01/28/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
     <content><![CDATA[<h1 id="Redis-详解：从入门到精通"><a href="#Redis-详解：从入门到精通" class="headerlink" title="Redis 详解：从入门到精通"></a>Redis 详解：从入门到精通</h1><h2 id="一、Redis-到底是什么？"><a href="#一、Redis-到底是什么？" class="headerlink" title="一、Redis 到底是什么？"></a>一、Redis 到底是什么？</h2><p><strong>一句话定义</strong>：Redis（Remote Dictionary Server）是一个<strong>超高性能的内存数据库</strong>，同时支持数据持久化。</p>
@@ -3869,89 +3946,13 @@
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐</span><br><span class="line">│    应用层        │    │    缓存层        │    │    存储层        │</span><br><span class="line">│   (业务逻辑)    │───▶│   (Redis)       │───▶│   (MySQL/等)   │</span><br><span class="line">│                 │    │ 快速响应         │    │ 持久化存储       │</span><br><span class="line">└─────────────────┘    └─────────────────┘    └─────────────────┘</span><br></pre></td></tr></table></figure>
 
 <p><strong>一句话记忆</strong>：Redis 是<strong>内存中的数据结构服务器</strong>，用<strong>空间换时间</strong>，让应用飞起来！</p>
+<p>一、数据存储的“四层金字塔模型”<br>┌─────────────────────────────────────────┐ ← 最快<br>│    第1层：内存数据层（Redis&#x2F;Memcached）    │<br>│    作用：热点数据、会话、计数器           │<br>│    延迟：微秒级                          │<br>├─────────────────────────────────────────┤<br>│    第2层：磁盘缓存层（本地SSD&#x2F;PageCache） │<br>│    作用：文件缓存、临时数据              │<br>│    延迟：毫秒级                          │<br>├─────────────────────────────────────────┤<br>│    第3层：OLTP数据库层（MySQL&#x2F;PostgreSQL）│<br>│    作用：业务核心数据、事务              │<br>│    延迟：几毫秒到几十毫秒                │<br>├─────────────────────────────────────────┤<br>│    第4层：大数据&#x2F;归档层（HDFS&#x2F;对象存储）  │<br>│    作用：历史数据、日志、备份            │<br>│    延迟：秒级到分钟级                    │<br>└─────────────────────────────────────────┘ ← 最慢</p>
 ]]></content>
       <categories>
         <category>网络编程</category>
       </categories>
       <tags>
         <tag>分布式锁.,Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Prefab文本组件管理工具文档</title>
-    <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
-    <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
-<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
-<li><strong>批量扫描</strong>：递归查找指定目录下的所有预制体文件</li>
-<li><strong>多类型支持</strong>：同时支持UGUI Text、RichText和TextMeshPro(TMP)组件</li>
-<li><strong>文本查询</strong>：查找并列出所有包含非空文本的组件</li>
-<li><strong>批量清理</strong>：一键清空所有文本组件内容</li>
-<li><strong>详细报告</strong>：提供操作过程和结果的详细输出</li>
-<li><strong>进度显示</strong>：可视化进度条显示处理进度</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
-<li>将脚本放置在Unity项目的Editor文件夹下</li>
-<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/文本组件管理</code> 打开工具窗口</li>
-</ol>
-<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
-<ul>
-<li><strong>路径选择</strong>：显示和修改预制体所在目录（默认为<code>Assets/_GameCenter/_Resources/prefab</code>）</li>
-<li><strong>功能按钮</strong>：<ul>
-<li>“查询非空文本控件”：查找并显示所有非空文本组件</li>
-<li>“清空文本控件”：清空所有文本组件内容</li>
-</ul>
-</li>
-<li><strong>结果展示区域</strong>：显示操作过程和结果的详细信息</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li><p><strong>查询非空文本</strong>：</p>
-<ul>
-<li>确认或修改预制体目录路径</li>
-<li>点击”查询非空文本控件”按钮</li>
-<li>查看结果区域中的非空文本列表</li>
-</ul>
-</li>
-<li><p><strong>清空文本内容</strong>：</p>
-<ul>
-<li>确认或修改预制体目录路径</li>
-<li>点击”清空文本控件”按钮</li>
-<li>查看结果区域中的清理报告</li>
-</ul>
-</li>
-</ol>
-<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
-<li><strong>查询结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体序号 预制体名称</span><br><span class="line">  文本序号 文本路径：父对象/组件名 文本内容：实际文本</span><br></pre></td></tr></table></figure></li>
-<li><strong>清理结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体：路径 文本路径：父对象/组件名 文本:被清理的文本内容</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
-<li><strong>预制体扫描</strong>：使用AssetDatabase查找指定目录下的所有预制体</li>
-<li><strong>组件获取</strong>：递归获取预制体中的所有文本组件</li>
-<li><strong>内容处理</strong>：<ul>
-<li>查询模式：收集并显示非空文本信息</li>
-<li>清理模式：将文本内容设置为空字符串</li>
-</ul>
-</li>
-<li><strong>资源保存</strong>：修改后保存预制体变更</li>
-</ol>
-<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
-<li><code>FindNotEmptyText</code>：查询非空文本组件</li>
-<li><code>ClearText</code>：清空文本组件内容</li>
-<li><code>Clean&lt;T&gt;</code>：通用清理方法，处理具体文本类型</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
-<li>工具会直接修改预制体文件，建议操作前备份项目</li>
-<li>仅处理指定目录下的预制体，不处理场景中的对象</li>
-<li>清理操作不可逆，请谨慎使用</li>
-<li>处理大量预制体时可能需要较长时间</li>
-<li>需要确保路径在Assets目录下</li>
-</ol>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> TMPro;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span></span><br><span class="line"><span class="comment">    1标准 Unity UI Text</span></span><br><span class="line"><span class="comment">    2RichText (富文本)</span></span><br><span class="line"><span class="comment">    3TextMeshPro (TMP_Text)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 查询非空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有包含非空文本的 UI 组件</span></span><br><span class="line"><span class="comment">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span></span><br><span class="line"><span class="comment">        自动打开保存结果的文件所在位置</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 清空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有文本组件并将其内容清空</span></span><br><span class="line"><span class="comment">        记录被清空的文本内容到 Unity 控制台</span></span><br><span class="line"><span class="comment">        自动保存修改后的预制</span></span><br><span class="line"><span class="comment">    注意：</span></span><br><span class="line"><span class="comment">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span></span><br><span class="line"><span class="comment">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ClearPrefabTextContent</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt; textDict;</span><br><span class="line">    <span class="keyword">private</span> Vector2 scrollPosition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/_Resources/prefab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/文本组件管理&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TextComponentManager</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(<span class="string">&quot;Prefab Text Content Manager&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;Prefab Text Content Manager Tool&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;Prefab Folder Path:&quot;</span>, folderPath); <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;Select Prefab Folder&quot;</span>, defaultPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="comment">// 转换为相对于Assets的路径</span></span><br><span class="line">            <span class="keyword">if</span> (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;查询非空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;清空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;查询结果：&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FindNotEmptyText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        textDict = <span class="keyword">new</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt;();</span><br><span class="line">        <span class="keyword">var</span> path = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, path);</span><br><span class="line">        <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; path &#125;);</span><br><span class="line">        <span class="keyword">var</span> prefabCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">var</span> textCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Finding...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">var</span> lastPrefab = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Checking....&quot;</span>, assetsPath, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> obj = AssetDatabase.LoadAssetAtPath(assetsPath, <span class="keyword">typeof</span>(GameObject)) <span class="keyword">as</span> GameObject;</span><br><span class="line">                <span class="keyword">var</span> lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> allTextComponents = <span class="keyword">new</span> List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> text = <span class="string">&quot;&quot;</span>;</span><br><span class="line">                    <span class="keyword">if</span> (item <span class="keyword">is</span> Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    <span class="comment">//  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span></span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    <span class="keyword">if</span> (lastPrefab != guid &amp;&amp; text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;</span>, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;</span>, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(<span class="keyword">new</span> KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n查询完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ClearText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> folder = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, folder);</span><br><span class="line">        <span class="keyword">if</span> (!folder.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; folder &#125;);</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Clean...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Replace....&quot;</span>, path, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                <span class="keyword">var</span> textComponentsDict = <span class="keyword">new</span> Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(Text), prefab.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> kvp <span class="keyword">in</span> textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n清理完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Clean</span>&lt;<span class="title">T</span>&gt;(<span class="params">Component item, <span class="built_in">string</span> path, GameObject prefab</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> textProperty = <span class="keyword">typeof</span>(T).GetProperty(<span class="string">&quot;text&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (textProperty != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> text = (<span class="built_in">string</span>)textProperty.GetValue(item);</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += <span class="string">$&quot;\n预制体：<span class="subst">&#123;path&#125;</span> 文本路径：<span class="subst">&#123;item.transform.parent.name&#125;</span>/<span class="subst">&#123;item.name&#125;</span> 文本:<span class="subst">&#123;text&#125;</span>&quot;</span>;</span><br><span class="line">                textProperty.SetValue(item, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>unity工具</category>
-      </categories>
-      <tags>
-        <tag>unity工具</tag>
       </tags>
   </entry>
   <entry>
@@ -5425,11 +5426,157 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#46;&#x75;&#110;&#x69;&#x74;&#x79;&#46;&#99;&#x6f;&#108;&#108;&#x61;&#98;&#45;&#x70;&#114;&#111;&#x78;&#121;&#x40;&#x32;&#46;&#54;&#46;&#48;">&#99;&#111;&#x6d;&#46;&#x75;&#110;&#x69;&#x74;&#x79;&#46;&#99;&#x6f;&#108;&#108;&#x61;&#98;&#45;&#x70;&#114;&#111;&#x78;&#121;&#x40;&#x32;&#46;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#x2e;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#x6f;&#108;&#108;&#97;&#x62;&#x2d;&#112;&#114;&#x6f;&#120;&#x79;&#x40;&#50;&#x2e;&#54;&#x2e;&#48;">&#x63;&#x6f;&#109;&#x2e;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#x63;&#x6f;&#108;&#108;&#97;&#x62;&#x2d;&#112;&#114;&#x6f;&#120;&#x79;&#x40;&#50;&#x2e;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5844,152 +5991,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -6107,18 +6108,6 @@
 </ol>
 <p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>Unity 程序集</title>
@@ -6305,6 +6294,18 @@
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -7409,6 +7410,122 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </tags>
   </entry>
   <entry>
+    <title>unity tmp中文显示</title>
+    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>tmp</tag>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
+    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
+    <content><![CDATA[<ol>
+<li><p>去这个网站下载工程：</p>
+<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
+</li>
+<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
+<p><img src="/.io//20241213_141006_image.png"></p>
+</li>
+<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
+</li>
+<li><p>勾选show html element 不然输入后不显示。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>unity</category>
+        <category>webGL</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>webGL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>lua 应用</title>
     <url>/2025/02/19/lua-%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>文档：</p>
@@ -8433,122 +8550,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 <li>需要<strong>自定义遍历逻辑</strong>（如特定步长、过滤条件、遍历文件等）：<strong>自定义迭代器</strong></li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>unity tmp中文显示</title>
-    <url>/2024/12/13/unity-tmp%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>tmp</tag>
-        <tag>unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
-    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
-    <content><![CDATA[<ol>
-<li><p>去这个网站下载工程：</p>
-<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
-</li>
-<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
-<p><img src="/.io//20241213_141006_image.png"></p>
-</li>
-<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
-</li>
-<li><p>勾选show html element 不然输入后不显示。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>unity</category>
-        <category>webGL</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>webGL</tag>
-      </tags>
   </entry>
   <entry>
     <title>unity 打AB包流程</title>
@@ -9925,266 +9926,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
-    <title>部门</title>
-    <url>/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</url>
-    <content><![CDATA[<h1 id="游戏开发中各组件的协作流程"><a href="#游戏开发中各组件的协作流程" class="headerlink" title="游戏开发中各组件的协作流程"></a>游戏开发中各组件的协作流程</h1><p>在游戏开发中，客户端、Web、服务器和数据库这几个核心组件通过协同工作来实现完整的游戏体验。以下是它们的协作方式：</p>
-<h2 id="1-基本协作架构"><a href="#1-基本协作架构" class="headerlink" title="1. 基本协作架构"></a>1. 基本协作架构</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家操作 → 客户端 → (Web层) → 游戏服务器 → 数据库</span><br><span class="line">       ↑        ↓              ↑             ↓</span><br><span class="line">       └────────┴──────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-各组件职责与协作细节"><a href="#2-各组件职责与协作细节" class="headerlink" title="2. 各组件职责与协作细节"></a>2. 各组件职责与协作细节</h2><h3 id="客户端-Client"><a href="#客户端-Client" class="headerlink" title="客户端 (Client)"></a>客户端 (Client)</h3><ul>
-<li><strong>职责</strong>：负责游戏画面渲染、玩家输入处理、本地逻辑计算</li>
-<li><strong>协作方式</strong>：<ul>
-<li>向服务器发送玩家操作（移动、攻击等）</li>
-<li>接收服务器同步的游戏状态</li>
-<li>对于网络游戏，客户端通常不存储关键数据（如玩家等级、装备）</li>
-</ul>
-</li>
-</ul>
-<h3 id="Web层-可选"><a href="#Web层-可选" class="headerlink" title="Web层 (可选)"></a>Web层 (可选)</h3><ul>
-<li><strong>职责</strong>：<ul>
-<li>账号系统、支付系统、公告系统</li>
-<li>游戏官网、社区论坛</li>
-<li>CDN资源分发</li>
-</ul>
-</li>
-<li><strong>协作方式</strong>：<ul>
-<li>处理用户注册&#x2F;登录（通常通过OAuth等协议）</li>
-<li>为客户端提供静态资源（游戏更新包、素材等）</li>
-<li>与游戏服务器交互获取玩家基础数据</li>
-</ul>
-</li>
-</ul>
-<h3 id="游戏服务器-Game-Server"><a href="#游戏服务器-Game-Server" class="headerlink" title="游戏服务器 (Game Server)"></a>游戏服务器 (Game Server)</h3><ul>
-<li><strong>职责</strong>：<ul>
-<li>游戏核心逻辑计算</li>
-<li>反作弊验证</li>
-<li>玩家间同步</li>
-<li>房间&#x2F;匹配管理</li>
-</ul>
-</li>
-<li><strong>协作方式</strong>：<ul>
-<li>接收并验证客户端请求</li>
-<li>处理游戏逻辑（战斗计算、道具使用等）</li>
-<li>向数据库读写持久化数据</li>
-<li>广播游戏状态给相关客户端</li>
-</ul>
-</li>
-</ul>
-<h3 id="数据库-Database"><a href="#数据库-Database" class="headerlink" title="数据库 (Database)"></a>数据库 (Database)</h3><ul>
-<li><strong>职责</strong>：持久化存储游戏数据</li>
-<li><strong>协作方式</strong>：<ul>
-<li>存储玩家档案、物品库存、排行榜等</li>
-<li>提供事务支持确保数据一致性</li>
-<li>通常通过服务器间接访问，客户端不直接操作</li>
-</ul>
-</li>
-</ul>
-<h2 id="3-典型数据流示例"><a href="#3-典型数据流示例" class="headerlink" title="3. 典型数据流示例"></a>3. 典型数据流示例</h2><p><strong>场景</strong>：玩家购买游戏道具</p>
-<ol>
-<li><strong>客户端</strong>：玩家点击购买按钮 → 向Web服务器发送购买请求</li>
-<li><strong>Web层</strong>：验证支付信息 → 向游戏服务器发送道具授予请求</li>
-<li><strong>游戏服务器</strong>：验证请求合法性 → 更新玩家道具数据 → 将变更写入数据库</li>
-<li><strong>数据库</strong>：持久化存储新的道具数据 → 返回成功响应</li>
-<li><strong>游戏服务器</strong>：通知客户端更新道具栏</li>
-<li><strong>客户端</strong>：刷新UI显示新道具</li>
-</ol>
-<h2 id="4-技术实现选择"><a href="#4-技术实现选择" class="headerlink" title="4. 技术实现选择"></a>4. 技术实现选择</h2><ul>
-<li><strong>通信协议</strong>：<ul>
-<li>客户端-服务器：通常使用TCP&#x2F;UDP（如WebSocket、KCP）</li>
-<li>Web-服务器：常用HTTP&#x2F;HTTPS、RESTful API或gRPC</li>
-</ul>
-</li>
-<li><strong>数据库类型</strong>：<ul>
-<li>关系型：MySQL、PostgreSQL（适合结构化数据）</li>
-<li>文档型：MongoDB（适合灵活数据结构）</li>
-<li>内存数据库：Redis（用于缓存和实时数据）</li>
-</ul>
-</li>
-</ul>
-<h2 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5. 注意事项"></a>5. 注意事项</h2><ol>
-<li><strong>安全性</strong>：客户端数据必须经过服务器验证</li>
-<li><strong>性能</strong>：高频更新数据可先缓存在服务器内存，再异步写入数据库</li>
-<li><strong>一致性</strong>：重要操作需要事务支持</li>
-<li><strong>容错</strong>：设计重连机制处理网络中断</li>
-</ol>
-<p>这种协作架构可以根据游戏类型（MMO、竞技、休闲等）进行适当调整，但基本的数据流向和职责划分是相似的。</p>
-<h1 id="Web与游戏服务器的关系"><a href="#Web与游戏服务器的关系" class="headerlink" title="Web与游戏服务器的关系"></a>Web与游戏服务器的关系</h1><p>在游戏开发架构中，Web和游戏服务器确实有明确的关系，但它们通常承担不同的职责，协作方式取决于具体设计。以下是它们的详细关系分析：</p>
-<h2 id="1-基本关系概述"><a href="#1-基本关系概述" class="headerlink" title="1. 基本关系概述"></a>1. 基本关系概述</h2><p>Web和游戏服务器通常是<strong>分离但协作</strong>的两个组件：</p>
-<ul>
-<li><strong>Web服务器</strong>：主要处理HTTP&#x2F;HTTPS请求，负责与游戏官网、账号系统、支付等”外围”功能</li>
-<li><strong>游戏服务器</strong>：处理核心游戏逻辑和实时通信，使用TCP&#x2F;UDP&#x2F;WebSocket等协议</li>
-</ul>
-<h2 id="2-常见协作场景"><a href="#2-常见协作场景" class="headerlink" title="2. 常见协作场景"></a>2. 常见协作场景</h2><h3 id="场景1：账号认证流程"><a href="#场景1：账号认证流程" class="headerlink" title="场景1：账号认证流程"></a>场景1：账号认证流程</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → Web(登录页) → 认证服务 → 游戏服务器</span><br></pre></td></tr></table></figure>
-<ol>
-<li>玩家通过Web页面登录</li>
-<li>Web服务器验证凭证后生成token</li>
-<li>玩家客户端使用该token连接游戏服务器</li>
-<li>游戏服务器向认证服务验证token有效性</li>
-</ol>
-<h3 id="场景2：游戏内支付"><a href="#场景2：游戏内支付" class="headerlink" title="场景2：游戏内支付"></a>场景2：游戏内支付</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → 游戏服务器 → Web(支付网关) → 第三方支付 → 游戏服务器</span><br></pre></td></tr></table></figure>
-<ol>
-<li>玩家在游戏内发起购买</li>
-<li>游戏服务器将请求转发给Web支付网关</li>
-<li>Web处理支付流程后回调通知游戏服务器</li>
-<li>游戏服务器发放道具</li>
-</ol>
-<h3 id="场景3：数据统计展示"><a href="#场景3：数据统计展示" class="headerlink" title="场景3：数据统计展示"></a>场景3：数据统计展示</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">数据库 ← 游戏服务器 → Web(管理后台)</span><br></pre></td></tr></table></figure>
-<p>游戏服务器将数据写入数据库，Web后台从数据库读取数据展示给运营人员</p>
-<h2 id="3-分离设计的原因"><a href="#3-分离设计的原因" class="headerlink" title="3. 分离设计的原因"></a>3. 分离设计的原因</h2><ol>
-<li><p><strong>协议差异</strong>：</p>
-<ul>
-<li>Web基于HTTP&#x2F;HTTPS（无状态、短连接）</li>
-<li>游戏服务器需要长连接、低延迟通信</li>
-</ul>
-</li>
-<li><p><strong>安全隔离</strong>：</p>
-<ul>
-<li>Web暴露在公网，面临更多攻击面</li>
-<li>游戏服务器通常需要更严格的网络隔离</li>
-</ul>
-</li>
-<li><p><strong>扩展性</strong>：</p>
-<ul>
-<li>Web层可以水平扩展应对突发流量</li>
-<li>游戏服务器需要保持玩家会话状态</li>
-</ul>
-</li>
-<li><p><strong>职责分离</strong>：</p>
-<ul>
-<li>Web：用户管理、内容分发、社区功能</li>
-<li>游戏服务器：实时同步、战斗计算等</li>
-</ul>
-</li>
-</ol>
-<h2 id="4-混合架构案例"><a href="#4-混合架构案例" class="headerlink" title="4. 混合架构案例"></a>4. 混合架构案例</h2><p>有些轻量级游戏会采用<strong>WebSocket服务器</strong>同时承担Web和游戏服务器角色：</p>
-<ul>
-<li>使用同一个Node.js&#x2F;Spring等服务同时处理：<ul>
-<li>HTTP请求（官网、API）</li>
-<li>WebSocket连接（游戏实时通信）</li>
-</ul>
-</li>
-<li>优点是架构简单，适合小规模游戏</li>
-</ul>
-<h2 id="5-关键交互点"><a href="#5-关键交互点" class="headerlink" title="5. 关键交互点"></a>5. 关键交互点</h2><p>两者主要通过以下方式交互：</p>
-<ol>
-<li><strong>共享数据库</strong>：都访问同一个用户数据存储</li>
-<li><strong>RPC调用</strong>：通过内部网络API相互调用</li>
-<li><strong>消息队列</strong>：用于异步事件通知（如支付完成事件）</li>
-<li><strong>共享缓存</strong>：如Redis存储会话状态</li>
-</ol>
-<p>是否需要完全分离取决于游戏类型和规模，大型游戏通常保持分离架构，而休闲网页游戏可能合并两者。</p>
-<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><p>在游戏开发架构中，不同类型的数据会存储在不同的位置，根据数据的重要性、访问频率和安全性要求进行分布。以下是客户端、Web服务器、游戏服务器和数据库各自存储的数据类型及位置：</p>
-<hr>
-<h2 id="1-客户端存储的数据"><a href="#1-客户端存储的数据" class="headerlink" title="1. 客户端存储的数据"></a><strong>1. 客户端存储的数据</strong></h2><p><strong>存储位置</strong>：玩家设备（PC&#x2F;手机&#x2F;游戏主机）的本地存储<br><strong>数据类型</strong>（通常是非关键或临时数据）：</p>
-<ul>
-<li><strong>本地设置</strong>：画面质量、音量、键位配置</li>
-<li><strong>缓存资源</strong>：下载的游戏素材（纹理、音效、模型）</li>
-<li><strong>临时状态</strong>：未提交的游戏进度（单机游戏）、会话Token</li>
-<li><strong>预测数据</strong>：客户端预测的玩家位置（网络游戏先显示，后由服务器验证）</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>易丢失（玩家清理缓存或换设备会消失）</li>
-<li>可能被篡改（需服务器验证重要数据）</li>
-</ul>
-<hr>
-<h2 id="2-Web服务器存储的数据"><a href="#2-Web服务器存储的数据" class="headerlink" title="2. Web服务器存储的数据"></a><strong>2. Web服务器存储的数据</strong></h2><p><strong>存储位置</strong>：Web服务器的文件系统或缓存（如CDN）<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>静态资源</strong>：官网HTML&#x2F;JS&#x2F;CSS、游戏补丁下载包</li>
-<li><strong>会话信息</strong>：用户登录状态的Session或JWT Token（短期）</li>
-<li><strong>CDN缓存</strong>：热更新的游戏资源（皮肤、活动素材）</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>通常是无状态的（依赖数据库持久化关键数据）</li>
-<li>高可用性要求（通过负载均衡多节点部署）</li>
-</ul>
-<hr>
-<h2 id="3-游戏服务器存储的数据"><a href="#3-游戏服务器存储的数据" class="headerlink" title="3. 游戏服务器存储的数据"></a><strong>3. 游戏服务器存储的数据</strong></h2><p><strong>存储位置</strong>：服务器内存 + 数据库<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>内存中（临时）</strong>：<ul>
-<li>实时游戏状态（玩家位置、战斗数值）</li>
-<li>房间&#x2F;匹配信息（MOBA&#x2F;吃鸡的战场数据）</li>
-<li>会话连接（Socket连接状态）</li>
-</ul>
-</li>
-<li><strong>持久化到数据库</strong>：<ul>
-<li>玩家档案（等级、装备、成就）</li>
-<li>交易记录（充值、道具购买）</li>
-</ul>
-</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>内存数据追求高性能（Redis&#x2F;Memcached）</li>
-<li>持久化数据需强一致性（MySQL&#x2F;MongoDB事务）</li>
-</ul>
-<hr>
-<h2 id="4-数据库存储的核心数据"><a href="#4-数据库存储的核心数据" class="headerlink" title="4. 数据库存储的核心数据"></a><strong>4. 数据库存储的核心数据</strong></h2><p><strong>存储位置</strong>：独立数据库集群<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>结构化数据</strong>（关系型数据库如MySQL&#x2F;PostgreSQL）：<ul>
-<li>玩家账号信息（用户名、密码哈希、绑定邮箱）</li>
-<li>物品库存（装备、货币数量）</li>
-<li>社交关系（好友列表、公会数据）</li>
-</ul>
-</li>
-<li><strong>非结构化数据</strong>（文档型数据库如MongoDB）：<ul>
-<li>玩家行为日志（分析用）</li>
-<li>动态配置（活动规则、赛季参数）</li>
-</ul>
-</li>
-<li><strong>高速缓存</strong>（Redis等）：<ul>
-<li>排行榜实时数据</li>
-<li>限时活动状态</li>
-</ul>
-</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>高可靠性（主从复制、定期备份）</li>
-<li>敏感数据加密（如密码、支付信息）</li>
-</ul>
-<hr>
-<h2 id="5-数据流向示例"><a href="#5-数据流向示例" class="headerlink" title="5. 数据流向示例"></a><strong>5. 数据流向示例</strong></h2><p>以玩家获得新装备为例：</p>
-<ol>
-<li><strong>客户端</strong>：发送”开宝箱”请求 → 游戏服务器  </li>
-<li><strong>游戏服务器</strong>：  <ul>
-<li>内存中计算掉落概率  </li>
-<li>向数据库写入新装备记录（事务保证原子性）</li>
-</ul>
-</li>
-<li><strong>数据库</strong>：持久化装备数据 → 返回成功  </li>
-<li><strong>游戏服务器</strong>：  <ul>
-<li>更新内存中的玩家装备列表  </li>
-<li>广播给客户端和其他玩家（如MMO中装备特效）</li>
-</ul>
-</li>
-<li><strong>客户端</strong>：本地显示新装备（非权威，以服务器数据为准）</li>
-</ol>
-<hr>
-<h2 id="关键原则"><a href="#关键原则" class="headerlink" title="关键原则"></a><strong>关键原则</strong></h2><ol>
-<li><strong>权威数据在服务端</strong>：客户端只显示，服务器决定真实性  </li>
-<li><strong>分层存储</strong>：  <ul>
-<li>热数据在内存（Redis&#x2F;服务器内存）  </li>
-<li>冷数据在数据库</li>
-</ul>
-</li>
-<li><strong>安全边界</strong>：  <ul>
-<li>客户端 ↔ Web服务器：HTTPS加密  </li>
-<li>Web服务器 ↔ 游戏服务器：内网通信 + API鉴权</li>
-</ul>
-</li>
-<li><strong>防作弊</strong>：关键逻辑（如伤害计算）必须在服务器执行</li>
-</ol>
-<p>不同游戏类型（单机、手游、MMO）会有存储策略差异，但核心原则一致：<strong>确保数据安全、一致，同时提供流畅的玩家体验</strong>。</p>
-]]></content>
-      <categories>
-        <category>游戏研发</category>
-      </categories>
-      <tags>
-        <tag>游戏研发</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>游戏资源服部署</title>
     <url>/2025/02/08/%E6%B8%B8%E6%88%8F%E8%B5%84%E6%BA%90%E6%9C%8D%E9%83%A8%E7%BD%B2/</url>
     <content><![CDATA[<h1 id="unity-游戏开发时要用的ftp-hfs-内网穿透-http-这些干嘛的，局域网共享如何做到？"><a href="#unity-游戏开发时要用的ftp-hfs-内网穿透-http-这些干嘛的，局域网共享如何做到？" class="headerlink" title="unity 游戏开发时要用的ftp hfs 内网穿透 http,这些干嘛的，局域网共享如何做到？"></a>unity 游戏开发时要用的ftp hfs 内网穿透 http,这些干嘛的，局域网共享如何做到？</h1><p>在 Unity 游戏开发中，<strong>FTP</strong>、<strong>HFS</strong>、<strong>内网穿透</strong> 和 <strong>HTTP</strong> 等技术通常用于 <strong>文件传输</strong>、<strong>资源共享</strong> 和 <strong>远程访问</strong>。它们能帮助开发团队更高效地管理资源、进行热更新、以及在开发和测试过程中共享文件。以下是它们的详细用途和如何实现局域网共享。</p>
@@ -10595,6 +10336,266 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 <hr>
 <p><strong>总结</strong><br><strong>如果关闭 Clash 后 Unity 可以正常请求网络，那问题就是 Clash 代理影响了 Unity 的请求。</strong><br>你可以尝试 <strong>关闭 Clash 或者排除 Unity 进程不走代理</strong> 来解决问题。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>部门</title>
+    <url>/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="游戏开发中各组件的协作流程"><a href="#游戏开发中各组件的协作流程" class="headerlink" title="游戏开发中各组件的协作流程"></a>游戏开发中各组件的协作流程</h1><p>在游戏开发中，客户端、Web、服务器和数据库这几个核心组件通过协同工作来实现完整的游戏体验。以下是它们的协作方式：</p>
+<h2 id="1-基本协作架构"><a href="#1-基本协作架构" class="headerlink" title="1. 基本协作架构"></a>1. 基本协作架构</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家操作 → 客户端 → (Web层) → 游戏服务器 → 数据库</span><br><span class="line">       ↑        ↓              ↑             ↓</span><br><span class="line">       └────────┴──────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-各组件职责与协作细节"><a href="#2-各组件职责与协作细节" class="headerlink" title="2. 各组件职责与协作细节"></a>2. 各组件职责与协作细节</h2><h3 id="客户端-Client"><a href="#客户端-Client" class="headerlink" title="客户端 (Client)"></a>客户端 (Client)</h3><ul>
+<li><strong>职责</strong>：负责游戏画面渲染、玩家输入处理、本地逻辑计算</li>
+<li><strong>协作方式</strong>：<ul>
+<li>向服务器发送玩家操作（移动、攻击等）</li>
+<li>接收服务器同步的游戏状态</li>
+<li>对于网络游戏，客户端通常不存储关键数据（如玩家等级、装备）</li>
+</ul>
+</li>
+</ul>
+<h3 id="Web层-可选"><a href="#Web层-可选" class="headerlink" title="Web层 (可选)"></a>Web层 (可选)</h3><ul>
+<li><strong>职责</strong>：<ul>
+<li>账号系统、支付系统、公告系统</li>
+<li>游戏官网、社区论坛</li>
+<li>CDN资源分发</li>
+</ul>
+</li>
+<li><strong>协作方式</strong>：<ul>
+<li>处理用户注册&#x2F;登录（通常通过OAuth等协议）</li>
+<li>为客户端提供静态资源（游戏更新包、素材等）</li>
+<li>与游戏服务器交互获取玩家基础数据</li>
+</ul>
+</li>
+</ul>
+<h3 id="游戏服务器-Game-Server"><a href="#游戏服务器-Game-Server" class="headerlink" title="游戏服务器 (Game Server)"></a>游戏服务器 (Game Server)</h3><ul>
+<li><strong>职责</strong>：<ul>
+<li>游戏核心逻辑计算</li>
+<li>反作弊验证</li>
+<li>玩家间同步</li>
+<li>房间&#x2F;匹配管理</li>
+</ul>
+</li>
+<li><strong>协作方式</strong>：<ul>
+<li>接收并验证客户端请求</li>
+<li>处理游戏逻辑（战斗计算、道具使用等）</li>
+<li>向数据库读写持久化数据</li>
+<li>广播游戏状态给相关客户端</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据库-Database"><a href="#数据库-Database" class="headerlink" title="数据库 (Database)"></a>数据库 (Database)</h3><ul>
+<li><strong>职责</strong>：持久化存储游戏数据</li>
+<li><strong>协作方式</strong>：<ul>
+<li>存储玩家档案、物品库存、排行榜等</li>
+<li>提供事务支持确保数据一致性</li>
+<li>通常通过服务器间接访问，客户端不直接操作</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-典型数据流示例"><a href="#3-典型数据流示例" class="headerlink" title="3. 典型数据流示例"></a>3. 典型数据流示例</h2><p><strong>场景</strong>：玩家购买游戏道具</p>
+<ol>
+<li><strong>客户端</strong>：玩家点击购买按钮 → 向Web服务器发送购买请求</li>
+<li><strong>Web层</strong>：验证支付信息 → 向游戏服务器发送道具授予请求</li>
+<li><strong>游戏服务器</strong>：验证请求合法性 → 更新玩家道具数据 → 将变更写入数据库</li>
+<li><strong>数据库</strong>：持久化存储新的道具数据 → 返回成功响应</li>
+<li><strong>游戏服务器</strong>：通知客户端更新道具栏</li>
+<li><strong>客户端</strong>：刷新UI显示新道具</li>
+</ol>
+<h2 id="4-技术实现选择"><a href="#4-技术实现选择" class="headerlink" title="4. 技术实现选择"></a>4. 技术实现选择</h2><ul>
+<li><strong>通信协议</strong>：<ul>
+<li>客户端-服务器：通常使用TCP&#x2F;UDP（如WebSocket、KCP）</li>
+<li>Web-服务器：常用HTTP&#x2F;HTTPS、RESTful API或gRPC</li>
+</ul>
+</li>
+<li><strong>数据库类型</strong>：<ul>
+<li>关系型：MySQL、PostgreSQL（适合结构化数据）</li>
+<li>文档型：MongoDB（适合灵活数据结构）</li>
+<li>内存数据库：Redis（用于缓存和实时数据）</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5. 注意事项"></a>5. 注意事项</h2><ol>
+<li><strong>安全性</strong>：客户端数据必须经过服务器验证</li>
+<li><strong>性能</strong>：高频更新数据可先缓存在服务器内存，再异步写入数据库</li>
+<li><strong>一致性</strong>：重要操作需要事务支持</li>
+<li><strong>容错</strong>：设计重连机制处理网络中断</li>
+</ol>
+<p>这种协作架构可以根据游戏类型（MMO、竞技、休闲等）进行适当调整，但基本的数据流向和职责划分是相似的。</p>
+<h1 id="Web与游戏服务器的关系"><a href="#Web与游戏服务器的关系" class="headerlink" title="Web与游戏服务器的关系"></a>Web与游戏服务器的关系</h1><p>在游戏开发架构中，Web和游戏服务器确实有明确的关系，但它们通常承担不同的职责，协作方式取决于具体设计。以下是它们的详细关系分析：</p>
+<h2 id="1-基本关系概述"><a href="#1-基本关系概述" class="headerlink" title="1. 基本关系概述"></a>1. 基本关系概述</h2><p>Web和游戏服务器通常是<strong>分离但协作</strong>的两个组件：</p>
+<ul>
+<li><strong>Web服务器</strong>：主要处理HTTP&#x2F;HTTPS请求，负责与游戏官网、账号系统、支付等”外围”功能</li>
+<li><strong>游戏服务器</strong>：处理核心游戏逻辑和实时通信，使用TCP&#x2F;UDP&#x2F;WebSocket等协议</li>
+</ul>
+<h2 id="2-常见协作场景"><a href="#2-常见协作场景" class="headerlink" title="2. 常见协作场景"></a>2. 常见协作场景</h2><h3 id="场景1：账号认证流程"><a href="#场景1：账号认证流程" class="headerlink" title="场景1：账号认证流程"></a>场景1：账号认证流程</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → Web(登录页) → 认证服务 → 游戏服务器</span><br></pre></td></tr></table></figure>
+<ol>
+<li>玩家通过Web页面登录</li>
+<li>Web服务器验证凭证后生成token</li>
+<li>玩家客户端使用该token连接游戏服务器</li>
+<li>游戏服务器向认证服务验证token有效性</li>
+</ol>
+<h3 id="场景2：游戏内支付"><a href="#场景2：游戏内支付" class="headerlink" title="场景2：游戏内支付"></a>场景2：游戏内支付</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → 游戏服务器 → Web(支付网关) → 第三方支付 → 游戏服务器</span><br></pre></td></tr></table></figure>
+<ol>
+<li>玩家在游戏内发起购买</li>
+<li>游戏服务器将请求转发给Web支付网关</li>
+<li>Web处理支付流程后回调通知游戏服务器</li>
+<li>游戏服务器发放道具</li>
+</ol>
+<h3 id="场景3：数据统计展示"><a href="#场景3：数据统计展示" class="headerlink" title="场景3：数据统计展示"></a>场景3：数据统计展示</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">数据库 ← 游戏服务器 → Web(管理后台)</span><br></pre></td></tr></table></figure>
+<p>游戏服务器将数据写入数据库，Web后台从数据库读取数据展示给运营人员</p>
+<h2 id="3-分离设计的原因"><a href="#3-分离设计的原因" class="headerlink" title="3. 分离设计的原因"></a>3. 分离设计的原因</h2><ol>
+<li><p><strong>协议差异</strong>：</p>
+<ul>
+<li>Web基于HTTP&#x2F;HTTPS（无状态、短连接）</li>
+<li>游戏服务器需要长连接、低延迟通信</li>
+</ul>
+</li>
+<li><p><strong>安全隔离</strong>：</p>
+<ul>
+<li>Web暴露在公网，面临更多攻击面</li>
+<li>游戏服务器通常需要更严格的网络隔离</li>
+</ul>
+</li>
+<li><p><strong>扩展性</strong>：</p>
+<ul>
+<li>Web层可以水平扩展应对突发流量</li>
+<li>游戏服务器需要保持玩家会话状态</li>
+</ul>
+</li>
+<li><p><strong>职责分离</strong>：</p>
+<ul>
+<li>Web：用户管理、内容分发、社区功能</li>
+<li>游戏服务器：实时同步、战斗计算等</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-混合架构案例"><a href="#4-混合架构案例" class="headerlink" title="4. 混合架构案例"></a>4. 混合架构案例</h2><p>有些轻量级游戏会采用<strong>WebSocket服务器</strong>同时承担Web和游戏服务器角色：</p>
+<ul>
+<li>使用同一个Node.js&#x2F;Spring等服务同时处理：<ul>
+<li>HTTP请求（官网、API）</li>
+<li>WebSocket连接（游戏实时通信）</li>
+</ul>
+</li>
+<li>优点是架构简单，适合小规模游戏</li>
+</ul>
+<h2 id="5-关键交互点"><a href="#5-关键交互点" class="headerlink" title="5. 关键交互点"></a>5. 关键交互点</h2><p>两者主要通过以下方式交互：</p>
+<ol>
+<li><strong>共享数据库</strong>：都访问同一个用户数据存储</li>
+<li><strong>RPC调用</strong>：通过内部网络API相互调用</li>
+<li><strong>消息队列</strong>：用于异步事件通知（如支付完成事件）</li>
+<li><strong>共享缓存</strong>：如Redis存储会话状态</li>
+</ol>
+<p>是否需要完全分离取决于游戏类型和规模，大型游戏通常保持分离架构，而休闲网页游戏可能合并两者。</p>
+<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><p>在游戏开发架构中，不同类型的数据会存储在不同的位置，根据数据的重要性、访问频率和安全性要求进行分布。以下是客户端、Web服务器、游戏服务器和数据库各自存储的数据类型及位置：</p>
+<hr>
+<h2 id="1-客户端存储的数据"><a href="#1-客户端存储的数据" class="headerlink" title="1. 客户端存储的数据"></a><strong>1. 客户端存储的数据</strong></h2><p><strong>存储位置</strong>：玩家设备（PC&#x2F;手机&#x2F;游戏主机）的本地存储<br><strong>数据类型</strong>（通常是非关键或临时数据）：</p>
+<ul>
+<li><strong>本地设置</strong>：画面质量、音量、键位配置</li>
+<li><strong>缓存资源</strong>：下载的游戏素材（纹理、音效、模型）</li>
+<li><strong>临时状态</strong>：未提交的游戏进度（单机游戏）、会话Token</li>
+<li><strong>预测数据</strong>：客户端预测的玩家位置（网络游戏先显示，后由服务器验证）</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>易丢失（玩家清理缓存或换设备会消失）</li>
+<li>可能被篡改（需服务器验证重要数据）</li>
+</ul>
+<hr>
+<h2 id="2-Web服务器存储的数据"><a href="#2-Web服务器存储的数据" class="headerlink" title="2. Web服务器存储的数据"></a><strong>2. Web服务器存储的数据</strong></h2><p><strong>存储位置</strong>：Web服务器的文件系统或缓存（如CDN）<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>静态资源</strong>：官网HTML&#x2F;JS&#x2F;CSS、游戏补丁下载包</li>
+<li><strong>会话信息</strong>：用户登录状态的Session或JWT Token（短期）</li>
+<li><strong>CDN缓存</strong>：热更新的游戏资源（皮肤、活动素材）</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>通常是无状态的（依赖数据库持久化关键数据）</li>
+<li>高可用性要求（通过负载均衡多节点部署）</li>
+</ul>
+<hr>
+<h2 id="3-游戏服务器存储的数据"><a href="#3-游戏服务器存储的数据" class="headerlink" title="3. 游戏服务器存储的数据"></a><strong>3. 游戏服务器存储的数据</strong></h2><p><strong>存储位置</strong>：服务器内存 + 数据库<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>内存中（临时）</strong>：<ul>
+<li>实时游戏状态（玩家位置、战斗数值）</li>
+<li>房间&#x2F;匹配信息（MOBA&#x2F;吃鸡的战场数据）</li>
+<li>会话连接（Socket连接状态）</li>
+</ul>
+</li>
+<li><strong>持久化到数据库</strong>：<ul>
+<li>玩家档案（等级、装备、成就）</li>
+<li>交易记录（充值、道具购买）</li>
+</ul>
+</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>内存数据追求高性能（Redis&#x2F;Memcached）</li>
+<li>持久化数据需强一致性（MySQL&#x2F;MongoDB事务）</li>
+</ul>
+<hr>
+<h2 id="4-数据库存储的核心数据"><a href="#4-数据库存储的核心数据" class="headerlink" title="4. 数据库存储的核心数据"></a><strong>4. 数据库存储的核心数据</strong></h2><p><strong>存储位置</strong>：独立数据库集群<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>结构化数据</strong>（关系型数据库如MySQL&#x2F;PostgreSQL）：<ul>
+<li>玩家账号信息（用户名、密码哈希、绑定邮箱）</li>
+<li>物品库存（装备、货币数量）</li>
+<li>社交关系（好友列表、公会数据）</li>
+</ul>
+</li>
+<li><strong>非结构化数据</strong>（文档型数据库如MongoDB）：<ul>
+<li>玩家行为日志（分析用）</li>
+<li>动态配置（活动规则、赛季参数）</li>
+</ul>
+</li>
+<li><strong>高速缓存</strong>（Redis等）：<ul>
+<li>排行榜实时数据</li>
+<li>限时活动状态</li>
+</ul>
+</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>高可靠性（主从复制、定期备份）</li>
+<li>敏感数据加密（如密码、支付信息）</li>
+</ul>
+<hr>
+<h2 id="5-数据流向示例"><a href="#5-数据流向示例" class="headerlink" title="5. 数据流向示例"></a><strong>5. 数据流向示例</strong></h2><p>以玩家获得新装备为例：</p>
+<ol>
+<li><strong>客户端</strong>：发送”开宝箱”请求 → 游戏服务器  </li>
+<li><strong>游戏服务器</strong>：  <ul>
+<li>内存中计算掉落概率  </li>
+<li>向数据库写入新装备记录（事务保证原子性）</li>
+</ul>
+</li>
+<li><strong>数据库</strong>：持久化装备数据 → 返回成功  </li>
+<li><strong>游戏服务器</strong>：  <ul>
+<li>更新内存中的玩家装备列表  </li>
+<li>广播给客户端和其他玩家（如MMO中装备特效）</li>
+</ul>
+</li>
+<li><strong>客户端</strong>：本地显示新装备（非权威，以服务器数据为准）</li>
+</ol>
+<hr>
+<h2 id="关键原则"><a href="#关键原则" class="headerlink" title="关键原则"></a><strong>关键原则</strong></h2><ol>
+<li><strong>权威数据在服务端</strong>：客户端只显示，服务器决定真实性  </li>
+<li><strong>分层存储</strong>：  <ul>
+<li>热数据在内存（Redis&#x2F;服务器内存）  </li>
+<li>冷数据在数据库</li>
+</ul>
+</li>
+<li><strong>安全边界</strong>：  <ul>
+<li>客户端 ↔ Web服务器：HTTPS加密  </li>
+<li>Web服务器 ↔ 游戏服务器：内网通信 + API鉴权</li>
+</ul>
+</li>
+<li><strong>防作弊</strong>：关键逻辑（如伤害计算）必须在服务器执行</li>
+</ol>
+<p>不同游戏类型（单机、手游、MMO）会有存储策略差异，但核心原则一致：<strong>确保数据安全、一致，同时提供流畅的玩家体验</strong>。</p>
+]]></content>
+      <categories>
+        <category>游戏研发</category>
+      </categories>
+      <tags>
+        <tag>游戏研发</tag>
+      </tags>
   </entry>
   <entry>
     <title>登录流程</title>
