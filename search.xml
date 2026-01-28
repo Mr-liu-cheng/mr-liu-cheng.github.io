@@ -1,6 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>C# CLR</title>
+    <url>/2025/01/20/C-CLR/</url>
+    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、VB.NET、F# 等）编写的程序。</p>
+<h3 id="CLR-的主要功能："><a href="#CLR-的主要功能：" class="headerlink" title="CLR 的主要功能："></a>CLR 的主要功能：</h3><ol>
+<li><p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
+</li>
+<li><p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
+</li>
+<li><p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
+</li>
+<li><p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
+</li>
+<li><p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 VB.NET 编写的类和方法。</p>
+</li>
+<li><p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
+</li>
+</ol>
+<h3 id="CLR-主要包含的部分："><a href="#CLR-主要包含的部分：" class="headerlink" title="CLR 主要包含的部分："></a>CLR 主要包含的部分：</h3><ul>
+<li><p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
+</li>
+<li><p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
+</li>
+<li><p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
+</li>
+<li><p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
+</li>
+</ul>
+<h3 id="CLR-与其他技术的关系："><a href="#CLR-与其他技术的关系：" class="headerlink" title="CLR 与其他技术的关系："></a>CLR 与其他技术的关系：</h3><ul>
+<li><p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
+</li>
+<li><p>**.NET Core 和 .NET 5&#x2F;6+**：随着 .NET Core 和后来的统一平台 .NET 5&#x2F;6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
+</li>
+</ul>
+<h3 id="CLR-的作用："><a href="#CLR-的作用：" class="headerlink" title="CLR 的作用："></a>CLR 的作用：</h3><ul>
+<li><p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
+</li>
+<li><p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
+</li>
+</ul>
+<h3 id="小结："><a href="#小结：" class="headerlink" title="小结："></a>小结：</h3><p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
+<h2 id="跨平台"><a href="#跨平台" class="headerlink" title="跨平台"></a>跨平台</h2><p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5&#x2F;6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
+<h3 id="CLR-如何实现跨平台支持："><a href="#CLR-如何实现跨平台支持：" class="headerlink" title="CLR 如何实现跨平台支持："></a>CLR 如何实现跨平台支持：</h3><ol>
+<li><p><strong>平台无关性</strong>：</p>
+<ul>
+<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
+<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
+</ul>
+</li>
+<li><p><strong>跨语言互操作性</strong>：</p>
+<ul>
+<li>CLR 支持多种编程语言（例如 C#、F#、VB.NET 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
+</ul>
+</li>
+<li><p><strong>运行时环境的适配</strong>：</p>
+<ul>
+<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：<ul>
+<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
+<li>**.NET Core &#x2F; .NET 5+**：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>垃圾回收与内存管理</strong>：</p>
+<ul>
+<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
+</ul>
+</li>
+<li><p><strong>平台特定实现</strong>：</p>
+<ul>
+<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
+</ul>
+</li>
+<li><p><strong>移植和兼容性</strong>：</p>
+<ul>
+<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
+</ul>
+</li>
+</ol>
+<h3 id="CLR-与-Unity-的跨平台能力："><a href="#CLR-与-Unity-的跨平台能力：" class="headerlink" title="CLR 与 Unity 的跨平台能力："></a>CLR 与 Unity 的跨平台能力：</h3><p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
+<ul>
+<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
+<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
+</ul>
+<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
+<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
+<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
+</ul>
+<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Assetbundle</title>
     <url>/2025/01/20/Assetbundle/</url>
     <content><![CDATA[<h2 id="了解什么是Assetbundle"><a href="#了解什么是Assetbundle" class="headerlink" title="了解什么是Assetbundle"></a>了解什么是Assetbundle</h2><p>严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:</p>
@@ -455,97 +548,155 @@
 ]]></content>
   </entry>
   <entry>
-    <title>C# CLR</title>
-    <url>/2025/01/20/C-CLR/</url>
-    <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、VB.NET、F# 等）编写的程序。</p>
-<h3 id="CLR-的主要功能："><a href="#CLR-的主要功能：" class="headerlink" title="CLR 的主要功能："></a>CLR 的主要功能：</h3><ol>
-<li><p><strong>代码执行</strong>：CLR 是 .NET 程序的执行环境，它将中间语言（IL）代码转换为机器代码，使程序能够在不同的操作系统和硬件平台上运行。</p>
-</li>
-<li><p><strong>内存管理</strong>：CLR 提供了自动垃圾回收功能（GC，Garbage Collection），自动回收不再使用的对象所占用的内存，减少内存泄漏问题。</p>
-</li>
-<li><p><strong>类型安全</strong>：CLR 确保程序的类型安全，防止程序访问未授权的内存或类型错误。</p>
-</li>
-<li><p><strong>异常处理</strong>：CLR 提供了统一的异常处理机制，确保不同语言的程序能够一致地处理错误。</p>
-</li>
-<li><p><strong>跨语言互操作性</strong>：CLR 使得不同编程语言编写的代码能够互操作。例如，C# 编写的代码可以调用 VB.NET 编写的类和方法。</p>
-</li>
-<li><p><strong>安全性</strong>：CLR 提供了多层次的安全性检查（例如代码访问安全性，CAS）来防止恶意代码的执行。</p>
-</li>
-</ol>
-<h3 id="CLR-主要包含的部分："><a href="#CLR-主要包含的部分：" class="headerlink" title="CLR 主要包含的部分："></a>CLR 主要包含的部分：</h3><ul>
-<li><p><strong>JIT 编译器（Just-in-Time Compiler）</strong>：CLR 中的 JIT 编译器负责将中间语言（IL）编译成特定平台上的机器代码。</p>
-</li>
-<li><p><strong>垃圾回收器（GC）</strong>：CLR 包含一个自动垃圾回收机制，它监控程序的内存使用，自动清理不再使用的对象。</p>
-</li>
-<li><p><strong>类型系统</strong>：CLR 定义了 .NET 类型系统（包括值类型、引用类型、数组等），并且管理类型的加载和执行。</p>
-</li>
-<li><p><strong>程序集（Assembly）</strong>：CLR 使用程序集（通常是 .dll 或 .exe 文件）来组织代码，程序集包含了元数据和 IL 代码，供 CLR 运行时执行。</p>
-</li>
-</ul>
-<h3 id="CLR-与其他技术的关系："><a href="#CLR-与其他技术的关系：" class="headerlink" title="CLR 与其他技术的关系："></a>CLR 与其他技术的关系：</h3><ul>
-<li><p><strong>.NET Framework</strong>：CLR 是 .NET Framework 的一部分，提供了核心的运行时支持。其他 .NET 组件（如 BCL，Base Class Library）则提供了编程所需的基础类库。</p>
-</li>
-<li><p>**.NET Core 和 .NET 5&#x2F;6+**：随着 .NET Core 和后来的统一平台 .NET 5&#x2F;6+ 的发展，CLR 在这些新版本中仍然存在，但它在不同平台上的实现进行了优化和统一。</p>
-</li>
-</ul>
-<h3 id="CLR-的作用："><a href="#CLR-的作用：" class="headerlink" title="CLR 的作用："></a>CLR 的作用：</h3><ul>
-<li><p><strong>平台独立性</strong>：CLR 使得开发者能够编写跨平台的代码。在不同的操作系统上运行时，CLR 会将中间语言（IL）代码转换为本地机器代码，保证代码可以在各种平台上执行。</p>
-</li>
-<li><p><strong>语言无关性</strong>：CLR 提供了语言之间的互操作性，不同语言的程序可以在相同的运行时环境下执行，方便跨语言开发。</p>
-</li>
-</ul>
-<h3 id="小结："><a href="#小结：" class="headerlink" title="小结："></a>小结：</h3><p>CLR 是 .NET 平台的核心，它为程序提供了代码执行、内存管理、类型安全、垃圾回收等功能。通过 CLR，开发者可以编写语言无关、平台无关的代码，在多种平台上运行，并享受 .NET 提供的各种功能支持。</p>
-<h2 id="跨平台"><a href="#跨平台" class="headerlink" title="跨平台"></a>跨平台</h2><p><code>CLR</code>（<strong>Common Language Runtime</strong>）与跨平台的关系体现在它作为 .NET 平台的核心组件，为不同平台上的应用程序提供了运行时支持，使得使用 .NET 编写的应用可以在多种平台上运行。这一跨平台能力得到了特别的关注和增强，尤其是随着 <strong>.NET Core</strong> 的发展以及后来的 <strong>.NET 5&#x2F;6+</strong> 的发布，使得 .NET 不再局限于 Windows 平台，而是支持包括 Linux、macOS、iOS、Android、Web 等多种操作系统和设备。</p>
-<h3 id="CLR-如何实现跨平台支持："><a href="#CLR-如何实现跨平台支持：" class="headerlink" title="CLR 如何实现跨平台支持："></a>CLR 如何实现跨平台支持：</h3><ol>
-<li><p><strong>平台无关性</strong>：</p>
+    <title>GitHub + CDN</title>
+    <url>/2025/05/08/GitHub%20+%20CDN/</url>
+    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
+<hr>
+<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
+   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
+   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
+   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
+   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
+
 <ul>
-<li><strong>中间语言（IL）</strong>：CLR 允许将源代码编译为平台无关的 <strong>中间语言（IL）</strong>，这意味着开发者编写的代码不依赖于特定的硬件或操作系统，而是被编译成中间语言后可以在任何支持 CLR 的平台上运行。</li>
-<li>这些中间语言的代码在运行时通过 CLR 进行转换，CLR 将中间语言转换为适合当前操作系统和硬件平台的机器代码。</li>
+<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
+<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
+<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
 </ul>
-</li>
-<li><p><strong>跨语言互操作性</strong>：</p>
-<ul>
-<li>CLR 支持多种编程语言（例如 C#、F#、VB.NET 等），这些语言都可以编译成相同的中间语言，并运行在 CLR 上。因此，无论在何种平台上，CLR 可以确保不同语言的代码能够互相调用和协作运行。这种语言间的互操作性，进一步增强了跨平台开发的灵活性。</li>
-</ul>
-</li>
-<li><p><strong>运行时环境的适配</strong>：</p>
-<ul>
-<li>CLR 并不是固定于某一平台的，它的具体实现会根据不同的操作系统和硬件平台进行适配。例如：<ul>
-<li><strong>Mono</strong>：这是一个开源的 CLR 实现，最初是为 Linux 和 macOS 提供对 .NET 的支持，后来发展成一个跨平台的框架，支持 iOS、Android 等移动平台。</li>
-<li>**.NET Core &#x2F; .NET 5+**：随着 .NET Core 的推出，微软将 CLR 引入了跨平台支持的主流框架中，尤其是在 Linux 和 macOS 上提供了官方支持。<code>dotnet</code> 命令行工具以及 .NET Core runtime 可以在多个平台（如 Linux、macOS、Windows）上运行和部署。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>垃圾回收与内存管理</strong>：</p>
-<ul>
-<li>CLR 的垃圾回收（GC）机制能够在不同平台上高效地管理内存。无论是 Windows 还是 Linux，CLR 都会根据平台的内存管理特性，优化垃圾回收的执行。</li>
-</ul>
-</li>
-<li><p><strong>平台特定实现</strong>：</p>
-<ul>
-<li>在跨平台执行时，CLR 通过抽象化平台特定的实现细节，使得相同的 .NET 应用可以在不同平台之间无缝迁移。例如，在 iOS 上运行的 .NET 应用会使用 Mono 或 .NET MAUI（跨平台 UI 框架）来实现特定于 iOS 的功能，而在 Windows 上则使用 Windows 特有的 API。</li>
-</ul>
-</li>
-<li><p><strong>移植和兼容性</strong>：</p>
-<ul>
-<li>CLR 的设计考虑了不同平台的硬件架构、操作系统特性等差异，因此它能够通过特定的运行时实现（如 Mono 或 .NET Core）来处理各平台上的差异，确保相同的代码可以在多个平台上运行。</li>
+<hr>
+<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
+<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
+<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
+<li>获取直链：  <ul>
+<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
 </ul>
 </li>
 </ol>
-<h3 id="CLR-与-Unity-的跨平台能力："><a href="#CLR-与-Unity-的跨平台能力：" class="headerlink" title="CLR 与 Unity 的跨平台能力："></a>CLR 与 Unity 的跨平台能力：</h3><p>在 Unity 中，Unity 引擎本身使用的是 <strong>Mono</strong>（早期）或 <strong>IL2CPP</strong>（后期）来支持跨平台开发：</p>
+<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
+<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
+<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <ul>
-<li><strong>Mono</strong> 是 Unity 早期支持的 .NET 实现，它是 CLR 的一个跨平台版本，提供了 C# 脚本的执行和管理功能，支持 Windows、macOS、Linux、iOS、Android 等多种平台。</li>
-<li><strong>IL2CPP</strong>（Intermediate Language To C++）是 Unity 的另一种技术，它通过将 C# 代码转换为 C++ 代码，然后使用本地编译器生成目标平台的二进制代码，从而绕过 CLR 的运行时并提高性能。IL2CPP 支持更广泛的平台，包括移动设备、控制台和 WebGL 等。</li>
+<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
 </ul>
-<p>通过这些技术，Unity 实现了广泛的跨平台支持，允许同一份 C# 代码在多种平台上运行。</p>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>CLR</strong> 是 .NET 框架的运行时环境，它通过将代码编译成中间语言（IL）并在运行时将其转换为目标平台的机器代码，提供了强大的 <strong>跨平台能力</strong>。</li>
-<li><strong>跨平台支持</strong> 体现在 CLR 适配了不同平台（如 Windows、Linux、macOS、移动平台等），并提供了通用的执行环境，这使得 .NET 应用可以在多种操作系统和硬件平台上运行。</li>
-<li>在 Unity 中，CLR 的跨平台支持通过 <strong>Mono</strong> 和 <strong>IL2CPP</strong> 实现，确保 Unity 的 C# 脚本可以在多个平台上运行。</li>
+</li>
+</ol>
+<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
+<ol>
+<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
+<li>在Cloudflare中：  <ul>
+<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
+<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
 </ul>
-<p>通过 CLR 和其跨平台机制，开发者可以编写一次代码，在多个平台上运行和部署，极大提高了开发效率。</p>
+</li>
+<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
+<ol>
+<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
+<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
+<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
+</ul>
+<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
+<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
+<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
+</ul>
+<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
+<li><strong>流量统计</strong>：  <ul>
+<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
+<li>在Cloudflare面板查看CDN请求数。</li>
+</ul>
+</li>
+<li><strong>防滥用</strong>：  <ul>
+<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐方案</th>
+<th>注意事项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>免费游戏试玩</strong></td>
+<td>GitHub Releases直链</td>
+<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
+</tr>
+<tr>
+<td><strong>开源项目分发</strong></td>
+<td>jsDelivr CDN</td>
+<td>必须公开仓库，适合Demo或工具类游戏。</td>
+</tr>
+<tr>
+<td><strong>商业游戏早期测试</strong></td>
+<td>Cloudflare+B2</td>
+<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
+</tr>
+<tr>
+<td><strong>大规模正式发布</strong></td>
+<td>需迁移至专业CDN&#x2F;自建</td>
+<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
+<thead>
+<tr>
+<th>方案</th>
+<th>存储成本</th>
+<th>流量成本（1TB下载）</th>
+<th>适用阶段</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub直链</strong></td>
+<td>免费</td>
+<td>免费（但有限流风险）</td>
+<td>原型&#x2F;测试</td>
+</tr>
+<tr>
+<td><strong>Cloudflare+B2</strong></td>
+<td>$0.005&#x2F;GB&#x2F;月</td>
+<td>$10~$50</td>
+<td>小规模发布</td>
+</tr>
+<tr>
+<td><strong>AWS S3+CloudFront</strong></td>
+<td>$0.023&#x2F;GB&#x2F;月</td>
+<td>$85~$120</td>
+<td>中等规模</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
+<ol>
+<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
+<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
+<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
+</ol>
+<p>此方案适合：  </p>
+<ul>
+<li>独立开发者验证游戏热度。  </li>
+<li>开源项目或免费游戏分发。  </li>
+<li>规避早期服务器运维成本。</li>
+</ul>
 ]]></content>
+      <categories>
+        <category>GitHub,CDN</category>
+      </categories>
+      <tags>
+        <tag>GitHub,CDN</tag>
+      </tags>
   </entry>
   <entry>
     <title>Game Framework流程</title>
@@ -1016,190 +1167,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>GitHub + CDN</title>
-    <url>/2025/05/08/GitHub%20+%20CDN/</url>
-    <content><![CDATA[<p>使用 <strong>GitHub + CDN</strong> 作为游戏下载官网的试水方案，是一种<strong>低成本、易上手</strong>的方式，适合独立开发者或小团队快速验证游戏需求，同时规避高额服务器和维护成本。以下是具体操作步骤和优化建议：</p>
-<hr>
-<h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a><strong>1. 核心架构</strong></h3><pre><code class="highlight mermaid">graph LR
-   玩家 --&gt;|访问| GitHub_Pages[GitHub Pages官网]
-   GitHub_Pages --&gt;|下载链接| GitHub_Releases[GitHub Releases]
-   GitHub_Releases --&gt;|大文件| CDN[CDN缓存]
-   CDN --&gt;|回源| 对象存储[Backblaze B2/AWS S3]</code></pre>
-
-<ul>
-<li><strong>GitHub Pages</strong>：托管静态官网（HTML&#x2F;CSS&#x2F;JS）。  </li>
-<li><strong>GitHub Releases</strong>：存放游戏安装包（小文件直接下载）。  </li>
-<li><strong>CDN + 对象存储</strong>：分流大文件（避免GitHub流量限制）。</li>
-</ul>
-<hr>
-<h3 id="2-具体操作步骤"><a href="#2-具体操作步骤" class="headerlink" title="2. 具体操作步骤"></a><strong>2. 具体操作步骤</strong></h3><h4 id="（1）上传游戏文件到GitHub-Releases"><a href="#（1）上传游戏文件到GitHub-Releases" class="headerlink" title="（1）上传游戏文件到GitHub Releases"></a><strong>（1）上传游戏文件到GitHub Releases</strong></h4><ol>
-<li>在GitHub仓库中，点击 <strong>“Releases”</strong> → **”Draft a new release”**。  </li>
-<li>上传游戏包（如 <code>game_windows_v1.0.zip</code>），版本号命名规范（如 <code>v1.0.0</code>）。  </li>
-<li>获取直链：  <ul>
-<li>右键文件 → **”Copy link address”**，格式如：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://github.com/用户名/仓库名/releases/download/v1.0/game.zip</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h4 id="（2）用GitHub-Pages搭建官网"><a href="#（2）用GitHub-Pages搭建官网" class="headerlink" title="（2）用GitHub Pages搭建官网"></a><strong>（2）用GitHub Pages搭建官网</strong></h4><ol>
-<li>创建仓库 <code>用户名.github.io</code>（如 <code>MyGame.github.io</code>），启用GitHub Pages。  </li>
-<li>编写简易官网HTML，添加下载按钮：  <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;https://github.com/MyGame/repo/releases/latest/download/game.zip&quot;</span> </span></span><br><span class="line"><span class="tag">   <span class="attr">class</span>=<span class="string">&quot;download-button&quot;</span>&gt;</span></span><br><span class="line">   下载游戏（Windows）</span><br><span class="line"><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用 <code>latest/download</code> 自动指向最新版本。</li>
-</ul>
-</li>
-</ol>
-<h4 id="（3）设置CDN分流（应对大文件-高流量）"><a href="#（3）设置CDN分流（应对大文件-高流量）" class="headerlink" title="（3）设置CDN分流（应对大文件&#x2F;高流量）"></a><strong>（3）设置CDN分流（应对大文件&#x2F;高流量）</strong></h4><p><strong>方案A：Cloudflare CDN + Backblaze B2（免费层可用）</strong>  </p>
-<ol>
-<li>将游戏包上传至 <strong>Backblaze B2</strong>（免费10GB存储，1GB&#x2F;天下载流量）。  </li>
-<li>在Cloudflare中：  <ul>
-<li>添加B2存储桶为源站，绑定自定义域名（如 <code>download.mygame.com</code>）。  </li>
-<li>开启 <strong>Cache Everything</strong> 和 <strong>Brotli压缩</strong>。</li>
-</ul>
-</li>
-<li>替换官网下载链接为CDN地址：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://download.mygame.com/file/game.zip</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>方案B：jsDelivr（免费CDN，适合开源项目）</strong>  </p>
-<ol>
-<li>通过GitHub Releases的 <code>tag</code> 生成jsDelivr链接：  <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://cdn.jsdelivr.net/gh/用户名/仓库名@v1.0/game.zip</span><br></pre></td></tr></table></figure>
-<ul>
-<li>需公开仓库，且有版本标签（如 <code>v1.0</code>）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="3-优化技巧"><a href="#3-优化技巧" class="headerlink" title="3. 优化技巧"></a><strong>3. 优化技巧</strong></h3><h4 id="（1）绕过GitHub流量限制"><a href="#（1）绕过GitHub流量限制" class="headerlink" title="（1）绕过GitHub流量限制"></a><strong>（1）绕过GitHub流量限制</strong></h4><ul>
-<li><strong>分卷压缩</strong>：将游戏包拆分为多个小文件（如 <code>part1.zip</code>, <code>part2.zip</code>），减少单文件下载压力。  </li>
-<li><strong>多仓库备份</strong>：热门游戏可同步上传到多个GitHub仓库，分散下载请求。</li>
-</ul>
-<h4 id="（2）提升下载速度"><a href="#（2）提升下载速度" class="headerlink" title="（2）提升下载速度"></a><strong>（2）提升下载速度</strong></h4><ul>
-<li><strong>CDN预热</strong>：提前将文件缓存到CDN边缘节点（Cloudflare企业版支持）。  </li>
-<li><strong>P2P分发</strong>：在官网集成 <a href="https://webtorrent.io/">WebTorrent</a>，允许玩家互相分享下载。</li>
-</ul>
-<h4 id="（3）监控与安防"><a href="#（3）监控与安防" class="headerlink" title="（3）监控与安防"></a><strong>（3）监控与安防</strong></h4><ul>
-<li><strong>流量统计</strong>：  <ul>
-<li>用 <strong>Google Analytics</strong> 跟踪官网访问量。  </li>
-<li>在Cloudflare面板查看CDN请求数。</li>
-</ul>
-</li>
-<li><strong>防滥用</strong>：  <ul>
-<li>设置Cloudflare防火墙规则，拦截高频IP（如每秒&gt;5次请求）。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-适用场景与限制"><a href="#4-适用场景与限制" class="headerlink" title="4. 适用场景与限制"></a><strong>4. 适用场景与限制</strong></h3><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>推荐方案</th>
-<th>注意事项</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>免费游戏试玩</strong></td>
-<td>GitHub Releases直链</td>
-<td>文件需&lt;2GB，避免频繁更新触发限流。</td>
-</tr>
-<tr>
-<td><strong>开源项目分发</strong></td>
-<td>jsDelivr CDN</td>
-<td>必须公开仓库，适合Demo或工具类游戏。</td>
-</tr>
-<tr>
-<td><strong>商业游戏早期测试</strong></td>
-<td>Cloudflare+B2</td>
-<td>超出免费流量后成本可控（$0.01&#x2F;GB）。</td>
-</tr>
-<tr>
-<td><strong>大规模正式发布</strong></td>
-<td>需迁移至专业CDN&#x2F;自建</td>
-<td>GitHub不适合高并发（&gt;1000次&#x2F;小时）。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="5-成本对比"><a href="#5-成本对比" class="headerlink" title="5. 成本对比"></a><strong>5. 成本对比</strong></h3><table>
-<thead>
-<tr>
-<th>方案</th>
-<th>存储成本</th>
-<th>流量成本（1TB下载）</th>
-<th>适用阶段</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>GitHub直链</strong></td>
-<td>免费</td>
-<td>免费（但有限流风险）</td>
-<td>原型&#x2F;测试</td>
-</tr>
-<tr>
-<td><strong>Cloudflare+B2</strong></td>
-<td>$0.005&#x2F;GB&#x2F;月</td>
-<td>$10~$50</td>
-<td>小规模发布</td>
-</tr>
-<tr>
-<td><strong>AWS S3+CloudFront</strong></td>
-<td>$0.023&#x2F;GB&#x2F;月</td>
-<td>$85~$120</td>
-<td>中等规模</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><p><strong>GitHub + CDN试水的最佳实践</strong>：  </p>
-<ol>
-<li>用 <strong>GitHub Pages</strong> 快速上线官网，<strong>Releases</strong> 托管小文件。  </li>
-<li>大文件通过 <strong>Cloudflare + Backblaze B2</strong> 分流，月成本可控制在$10以内。  </li>
-<li>监控流量，超出免费层后迁移至专业CDN（如AWS CloudFront）。</li>
-</ol>
-<p>此方案适合：  </p>
-<ul>
-<li>独立开发者验证游戏热度。  </li>
-<li>开源项目或免费游戏分发。  </li>
-<li>规避早期服务器运维成本。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>GitHub,CDN</category>
-      </categories>
-      <tags>
-        <tag>GitHub,CDN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GitHub Actions 没有触发的核心原因</title>
-    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
-    <content><![CDATA[<p>谢谢提供路径信息。</p>
-<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
-<blockquote>
-<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
-<hr>
-<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
-<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-
-<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
-<hr>
-<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
-<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
-<hr>
-<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
-]]></content>
-      <categories>
-        <category>GitHub Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub Actions</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitHub Actions部署流程</title>
     <url>/2025/05/08/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
     <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
@@ -1267,6 +1234,39 @@
 <p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
 <hr>
 <p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
+]]></content>
+      <categories>
+        <category>GitHub Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub Actions 没有触发的核心原因</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
+    <content><![CDATA[<p>谢谢提供路径信息。</p>
+<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
+<blockquote>
+<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
+<hr>
+<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
+<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
+<hr>
+<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
+<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
+<hr>
+<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
 ]]></content>
       <categories>
         <category>GitHub Actions</category>
@@ -3498,69 +3498,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Lua语法检测工具文档</title>
-    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
-    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
-<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
-<li>批量扫描指定目录下的所有Lua文件</li>
-<li>使用原生Lua虚拟机进行语法验证</li>
-<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
-<li>支持递归扫描子目录</li>
-<li>提供简洁直观的GUI界面</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
-<li>将脚本放置在Unity项目的Editor文件夹下</li>
-<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
-</ol>
-<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
-<ul>
-<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
-<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li>确认或修改Lua文件目录路径</li>
-<li>点击”开始检测”按钮</li>
-<li>查看Unity控制台输出：<ul>
-<li>检测开始和结束的标记信息</li>
-<li>每个文件的检测结果</li>
-<li>语法错误的详细描述</li>
-</ul>
-</li>
-</ol>
-<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
-<li><strong>正常文件</strong>：不会产生额外输出</li>
-<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
-<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
-<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
-<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
-<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
-<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
-<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
-</ol>
-<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
-<li><code>StartCheckLua</code>：主检测流程控制</li>
-<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
-<li><code>OnGUI</code>：提供用户界面交互</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
-<li>工具仅检测语法正确性，不执行实际代码</li>
-<li>需要确保Lua文件路径正确且可访问</li>
-<li>检测结果输出到Unity控制台</li>
-<li>工具不会修改任何Lua文件内容</li>
-<li>必须选择Assets目录下的路径</li>
-</ol>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>unity工具,Lua</category>
-      </categories>
-      <tags>
-        <tag>unity工具,Lua</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Markdown 语法</title>
     <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
@@ -3705,6 +3642,69 @@
       </categories>
       <tags>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lua语法检测工具文档</title>
+    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li>批量扫描指定目录下的所有Lua文件</li>
+<li>使用原生Lua虚拟机进行语法验证</li>
+<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
+<li>支持递归扫描子目录</li>
+<li>提供简洁直观的GUI界面</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
+<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li>确认或修改Lua文件目录路径</li>
+<li>点击”开始检测”按钮</li>
+<li>查看Unity控制台输出：<ul>
+<li>检测开始和结束的标记信息</li>
+<li>每个文件的检测结果</li>
+<li>语法错误的详细描述</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>正常文件</strong>：不会产生额外输出</li>
+<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
+<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
+<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
+<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
+<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
+<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>StartCheckLua</code>：主检测流程控制</li>
+<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
+<li><code>OnGUI</code>：提供用户界面交互</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具仅检测语法正确性，不执行实际代码</li>
+<li>需要确保Lua文件路径正确且可访问</li>
+<li>检测结果输出到Unity控制台</li>
+<li>工具不会修改任何Lua文件内容</li>
+<li>必须选择Assets目录下的路径</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>unity工具,Lua</category>
+      </categories>
+      <tags>
+        <tag>unity工具,Lua</tag>
       </tags>
   </entry>
   <entry>
@@ -4399,6 +4399,160 @@
       </tags>
   </entry>
   <entry>
+    <title>Unity 环境安装</title>
+    <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h1 id="unity-模块添加"><a href="#unity-模块添加" class="headerlink" title="unity 模块添加"></a>unity 模块添加</h1><p><a href="https://discussions.unity.com/t/unable-to-add-modules-to-installation-in-unity-hub-3-7-0/935934/12">官方解释</a></p>
+<p>这段官方解释详细说明了为什么 <strong>“Add Modules”</strong> 按钮可能缺失以及如何通过手动方式修复。以下是总结和关键要点：</p>
+<hr>
+<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a><strong>问题原因</strong></h2><ul>
+<li><strong>Unity Hub</strong> 使用 <code>modules.json</code> 文件来记录某个 Unity 编辑器版本的模块安装状态。</li>
+<li>如果该文件缺失或未正确生成，Unity Hub 就无法知道有哪些模块已安装，也无法显示 <strong>“Add Modules”</strong> 按钮。</li>
+<li>如果编辑器是通过非 Unity Hub 安装的（例如手动下载解压安装），默认没有 <code>modules.json</code> 文件，Unity Hub 将无法管理该版本的模块。所以我们安装unity时hub上可能没有列出我们需要的版本，但是我们可以去官网找到对应的版本链接至UnityHub 这样就相当于使用UnityHub下载，支持模块管理。</li>
+</ul>
+<hr>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a><strong>解决方案</strong></h2><p>如果你的 Unity 安装缺失 <strong>“Add Modules”</strong> 按钮，可以尝试以下步骤修复：</p>
+<h3 id="方法一：手动下载模块"><a href="#方法一：手动下载模块" class="headerlink" title="方法一：手动下载模块"></a>方法一：手动下载模块</h3><ol>
+<li>选版本 <a href="https://unity.com/releases/editor/archive">archive</a></li>
+<li><a href="https://unity.com/releases/editor/whats-new/2022.3.20#installers">releases</a>，找到组件对应组件模块，如下：</li>
+</ol>
+<p>   Component installers -&gt;</p>
+<p>   Windows :</p>
+<ul>
+<li>Android Build Support</li>
+<li>iOS Build Support</li>
+<li>tvOS Build Support</li>
+<li>Linux Build Support (IL2CPP)</li>
+<li>Linux Build Support (Mono)</li>
+<li>Linux Dedicated Server Build Support</li>
+<li>Mac Build Support (Mono)</li>
+<li>Mac Dedicated Server Build Support</li>
+<li>Universal Windows Platform Build Support</li>
+<li>WebGL Build Support</li>
+<li>Windows Build Support (IL2CPP)</li>
+<li>Windows Dedicated Server Build Support</li>
+<li>Documentation</li>
+</ul>
+<h3 id="方法二：创建modules-json"><a href="#方法二：创建modules-json" class="headerlink" title="方法二：创建modules.json"></a>方法二：创建modules.json</h3><h4 id="1-检查-Unity-安装路径"><a href="#1-检查-Unity-安装路径" class="headerlink" title="1. 检查 Unity 安装路径"></a><strong>1. 检查 Unity 安装路径</strong></h4><ul>
+<li>打开 Unity Hub 的 <strong>Installs</strong> 页。</li>
+<li>点击 Unity 版本右侧的 <strong>齿轮图标</strong>，选择 <strong>“Show in Explorer”</strong> 或 <strong>“Show in Finder”</strong>。</li>
+<li>在打开的文件夹中，确认是否存在 <code>modules.json</code> 文件。</li>
+</ul>
+<h4 id="2-手动创建-modules-json-文件"><a href="#2-手动创建-modules-json-文件" class="headerlink" title="2. 手动创建 modules.json 文件"></a><strong>2. 手动创建 <code>modules.json</code> 文件</strong></h4><p>如果文件缺失，可以手动创建：</p>
+<ol>
+<li><p>在 Unity 安装目录下新建一个文件，命名为 <code>modules.json</code>。</p>
+<ul>
+<li>注意文件扩展名必须为 <code>.json</code>。</li>
+<li>确保在操作系统中未隐藏扩展名（防止被误命名为 <code>modules.json.txt</code>）。</li>
+</ul>
+</li>
+<li><p>打开文件并添加以下内容：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure></li>
+<li><p>保存并关闭文件。</p>
+</li>
+</ol>
+<h4 id="3-重启-Unity-Hub"><a href="#3-重启-Unity-Hub" class="headerlink" title="3. 重启 Unity Hub"></a><strong>3. 重启 Unity Hub</strong></h4><ul>
+<li>完全退出 Unity Hub，确保它不在系统托盘运行。</li>
+<li>重新打开 Unity Hub，检查 <strong>“Add Modules”</strong> 按钮是否出现。</li>
+</ul>
+<hr>
+<h3 id="重要注意事项"><a href="#重要注意事项" class="headerlink" title="重要注意事项"></a><strong>重要注意事项</strong></h3><ol>
+<li><p><strong>风险提示</strong>：</p>
+<ul>
+<li>如果 <code>modules.json</code> 文件信息不正确，可能会导致 Unity Hub 无法正确管理模块安装&#x2F;卸载。</li>
+<li>如果问题发生，可以删除 <code>modules.json</code> 文件并重试。</li>
+</ul>
+</li>
+<li><p><strong>推荐使用 Unity Hub 安装编辑器</strong>：</p>
+<ul>
+<li>Unity Hub 安装会自动生成 <code>modules.json</code>，并确保模块的正确状态。</li>
+</ul>
+</li>
+<li><p><strong>归档下载的版本建议单独管理</strong>：</p>
+<ul>
+<li>如果从 <a href="https://unity.com/releases/editor/archive">Unity 归档</a>下载的版本，最好直接使用 Unity Hub 安装或按照官方文档的安装步骤手动管理模块。</li>
+</ul>
+</li>
+</ol>
+<h3 id="方法三：卸载，使用Unityhub重新安装-【推荐】"><a href="#方法三：卸载，使用Unityhub重新安装-【推荐】" class="headerlink" title="方法三：卸载，使用Unityhub重新安装 【推荐】"></a>方法三：卸载，使用Unityhub重新安装 【推荐】</h3><p><strong>强调：</strong></p>
+<ol>
+<li>不要使用中国版团结引擎，版本带c的就是</li>
+<li>不要单独下载unity editor 安装器，使用UnityHub下载</li>
+</ol>
+<h2 id="Visual-Studio-的安装"><a href="#Visual-Studio-的安装" class="headerlink" title="Visual Studio 的安装"></a>Visual Studio 的安装</h2><p>在 Unity 开发中，Visual Studio 的安装需要包含以下关键组件，以确保支持 Unity 的所有功能，包括 C# 脚本开发、IL2CPP 构建、调试和测试。</p>
+<hr>
+<h2 id="推荐的安装步骤"><a href="#推荐的安装步骤" class="headerlink" title="推荐的安装步骤"></a><strong>推荐的安装步骤</strong></h2><ol>
+<li>打开 <strong>Visual Studio Installer</strong>。</li>
+<li>选择要安装或修改的 Visual Studio 版本（例如 Visual Studio 2022）。</li>
+<li>点击 <strong>修改</strong>。</li>
+<li>在 <strong>工作负载</strong> 和 <strong>单个组件</strong> 中勾选以下内容。</li>
+</ol>
+<hr>
+<h2 id="必须安装的组件"><a href="#必须安装的组件" class="headerlink" title="必须安装的组件"></a><strong>必须安装的组件</strong></h2><h3 id="工作负载"><a href="#工作负载" class="headerlink" title="工作负载"></a><strong>工作负载</strong></h3><p>以下工作负载是 Unity 开发的基本需求：</p>
+<ol>
+<li><p><strong>Game development with Unity</strong>（使用 Unity 进行游戏开发）：</p>
+<ul>
+<li>Unity 的官方推荐工作负载。</li>
+<li>包含 Unity 相关工具、调试器、测试工具和集成插件。</li>
+</ul>
+</li>
+<li><p><strong>.NET desktop development</strong>（.NET 桌面开发）：</p>
+<ul>
+<li>提供必要的 .NET 和 C# 工具。</li>
+</ul>
+</li>
+<li><p>**Desktop development with C++**（C++ 桌面开发）：</p>
+<ul>
+<li><strong>IL2CPP 构建</strong>所需，用于将 Unity 项目转换为本地 C++ 代码并编译。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="单个组件"><a href="#单个组件" class="headerlink" title="单个组件"></a><strong>单个组件</strong></h3><p>在顶部切换到 <strong>单个组件</strong>，选择以下组件：</p>
+<h4 id="C-和-NET"><a href="#C-和-NET" class="headerlink" title="C# 和 .NET"></a><strong>C# 和 .NET</strong></h4><ol>
+<li><strong>.NET Framework 4.8 SDK</strong></li>
+<li><strong>.NET Framework 4.8 Targeting Pack</strong></li>
+<li><strong>NuGet Package Manager</strong></li>
+</ol>
+<h4 id="C-工具链"><a href="#C-工具链" class="headerlink" title="C++ 工具链"></a><strong>C++ 工具链</strong></h4><ol>
+<li><strong>MSVC v143 - VS 2022 C++ x64&#x2F;x86 build tools</strong></li>
+<li><strong>Windows 10 SDK（10.x.x.x）</strong> 或更新版本：<ul>
+<li>这是 IL2CPP 必需的工具链之一。</li>
+</ul>
+</li>
+<li><strong>C++ CMake tools for Windows</strong></li>
+<li><strong>C++&#x2F;CLI support</strong>（可选，针对 .NET 与 C++ 交互的情况）。</li>
+</ol>
+<h4 id="Unity-工具"><a href="#Unity-工具" class="headerlink" title="Unity 工具"></a><strong>Unity 工具</strong></h4><ol>
+<li><strong>Unity Hub</strong>（可选，如果未安装）。</li>
+<li><strong>Visual Studio Tools for Unity</strong>：<ul>
+<li>提供 Unity 与 Visual Studio 的集成，包括代码提示、调试和错误报告。</li>
+</ul>
+</li>
+</ol>
+<h4 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a><strong>调试工具</strong></h4><ol>
+<li><strong>JavaScript diagnostics</strong>（用于调试 WebGL 项目）。</li>
+<li><strong>Graphics debugger and GPU profiler</strong>（可选，用于调试渲染问题）。</li>
+</ol>
+<hr>
+<h3 id="其他推荐组件"><a href="#其他推荐组件" class="headerlink" title="其他推荐组件"></a><strong>其他推荐组件</strong></h3><ol>
+<li><strong>Azure DevOps</strong>（可选，用于版本控制）。</li>
+<li><strong>MSBuild</strong>（项目构建工具）。</li>
+<li><strong>Live Share</strong>（用于多人协作开发）。</li>
+<li><strong>Performance profiler</strong>（可选，性能分析工具）。</li>
+</ol>
+<hr>
+<h2 id="检查-Unity-项目所需的额外内容"><a href="#检查-Unity-项目所需的额外内容" class="headerlink" title="检查 Unity 项目所需的额外内容"></a><strong>检查 Unity 项目所需的额外内容</strong></h2><p>如果你的 Unity 项目需要构建到特定平台，请安装相关的 SDK 和工具：</p>
+<ul>
+<li><strong>Android</strong>：需要安装 Android SDK 和 NDK，建议通过 Unity Hub 设置。</li>
+<li><strong>iOS</strong>：需要 macOS 和 Xcode。</li>
+<li><strong>WebGL</strong>：安装 Node.js 和 JavaScript 工具（Visual Studio 会自动提供支持）。</li>
+<li><strong>Windows</strong>：确保安装了 <strong>Windows 10 SDK</strong> 和 <strong>C++ 工具链</strong>。</li>
+</ul>
+<hr>
+<p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 打图集 - 合批减少DrawCall</title>
     <url>/2025/06/17/Unity%20%E6%89%93%E5%9B%BE%E9%9B%86%20-%20%E5%90%88%E6%89%B9%E5%87%8F%E5%B0%91DrawCall/</url>
     <content><![CDATA[<p>在 Unity 中，通过<strong>打图集（图集打包）+ Canvas 优化策略</strong>可以有效实现 <strong>UI 合批（Batching）</strong>，从而减少 DrawCall 提高性能。下面是详细说明和实战指导：</p>
@@ -4755,160 +4909,6 @@
       <tags>
         <tag>Unity</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Unity 环境安装</title>
-    <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h1 id="unity-模块添加"><a href="#unity-模块添加" class="headerlink" title="unity 模块添加"></a>unity 模块添加</h1><p><a href="https://discussions.unity.com/t/unable-to-add-modules-to-installation-in-unity-hub-3-7-0/935934/12">官方解释</a></p>
-<p>这段官方解释详细说明了为什么 <strong>“Add Modules”</strong> 按钮可能缺失以及如何通过手动方式修复。以下是总结和关键要点：</p>
-<hr>
-<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a><strong>问题原因</strong></h2><ul>
-<li><strong>Unity Hub</strong> 使用 <code>modules.json</code> 文件来记录某个 Unity 编辑器版本的模块安装状态。</li>
-<li>如果该文件缺失或未正确生成，Unity Hub 就无法知道有哪些模块已安装，也无法显示 <strong>“Add Modules”</strong> 按钮。</li>
-<li>如果编辑器是通过非 Unity Hub 安装的（例如手动下载解压安装），默认没有 <code>modules.json</code> 文件，Unity Hub 将无法管理该版本的模块。所以我们安装unity时hub上可能没有列出我们需要的版本，但是我们可以去官网找到对应的版本链接至UnityHub 这样就相当于使用UnityHub下载，支持模块管理。</li>
-</ul>
-<hr>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a><strong>解决方案</strong></h2><p>如果你的 Unity 安装缺失 <strong>“Add Modules”</strong> 按钮，可以尝试以下步骤修复：</p>
-<h3 id="方法一：手动下载模块"><a href="#方法一：手动下载模块" class="headerlink" title="方法一：手动下载模块"></a>方法一：手动下载模块</h3><ol>
-<li>选版本 <a href="https://unity.com/releases/editor/archive">archive</a></li>
-<li><a href="https://unity.com/releases/editor/whats-new/2022.3.20#installers">releases</a>，找到组件对应组件模块，如下：</li>
-</ol>
-<p>   Component installers -&gt;</p>
-<p>   Windows :</p>
-<ul>
-<li>Android Build Support</li>
-<li>iOS Build Support</li>
-<li>tvOS Build Support</li>
-<li>Linux Build Support (IL2CPP)</li>
-<li>Linux Build Support (Mono)</li>
-<li>Linux Dedicated Server Build Support</li>
-<li>Mac Build Support (Mono)</li>
-<li>Mac Dedicated Server Build Support</li>
-<li>Universal Windows Platform Build Support</li>
-<li>WebGL Build Support</li>
-<li>Windows Build Support (IL2CPP)</li>
-<li>Windows Dedicated Server Build Support</li>
-<li>Documentation</li>
-</ul>
-<h3 id="方法二：创建modules-json"><a href="#方法二：创建modules-json" class="headerlink" title="方法二：创建modules.json"></a>方法二：创建modules.json</h3><h4 id="1-检查-Unity-安装路径"><a href="#1-检查-Unity-安装路径" class="headerlink" title="1. 检查 Unity 安装路径"></a><strong>1. 检查 Unity 安装路径</strong></h4><ul>
-<li>打开 Unity Hub 的 <strong>Installs</strong> 页。</li>
-<li>点击 Unity 版本右侧的 <strong>齿轮图标</strong>，选择 <strong>“Show in Explorer”</strong> 或 <strong>“Show in Finder”</strong>。</li>
-<li>在打开的文件夹中，确认是否存在 <code>modules.json</code> 文件。</li>
-</ul>
-<h4 id="2-手动创建-modules-json-文件"><a href="#2-手动创建-modules-json-文件" class="headerlink" title="2. 手动创建 modules.json 文件"></a><strong>2. 手动创建 <code>modules.json</code> 文件</strong></h4><p>如果文件缺失，可以手动创建：</p>
-<ol>
-<li><p>在 Unity 安装目录下新建一个文件，命名为 <code>modules.json</code>。</p>
-<ul>
-<li>注意文件扩展名必须为 <code>.json</code>。</li>
-<li>确保在操作系统中未隐藏扩展名（防止被误命名为 <code>modules.json.txt</code>）。</li>
-</ul>
-</li>
-<li><p>打开文件并添加以下内容：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">[</span><span class="punctuation">&#123;</span><span class="punctuation">&#125;</span><span class="punctuation">]</span></span><br></pre></td></tr></table></figure></li>
-<li><p>保存并关闭文件。</p>
-</li>
-</ol>
-<h4 id="3-重启-Unity-Hub"><a href="#3-重启-Unity-Hub" class="headerlink" title="3. 重启 Unity Hub"></a><strong>3. 重启 Unity Hub</strong></h4><ul>
-<li>完全退出 Unity Hub，确保它不在系统托盘运行。</li>
-<li>重新打开 Unity Hub，检查 <strong>“Add Modules”</strong> 按钮是否出现。</li>
-</ul>
-<hr>
-<h3 id="重要注意事项"><a href="#重要注意事项" class="headerlink" title="重要注意事项"></a><strong>重要注意事项</strong></h3><ol>
-<li><p><strong>风险提示</strong>：</p>
-<ul>
-<li>如果 <code>modules.json</code> 文件信息不正确，可能会导致 Unity Hub 无法正确管理模块安装&#x2F;卸载。</li>
-<li>如果问题发生，可以删除 <code>modules.json</code> 文件并重试。</li>
-</ul>
-</li>
-<li><p><strong>推荐使用 Unity Hub 安装编辑器</strong>：</p>
-<ul>
-<li>Unity Hub 安装会自动生成 <code>modules.json</code>，并确保模块的正确状态。</li>
-</ul>
-</li>
-<li><p><strong>归档下载的版本建议单独管理</strong>：</p>
-<ul>
-<li>如果从 <a href="https://unity.com/releases/editor/archive">Unity 归档</a>下载的版本，最好直接使用 Unity Hub 安装或按照官方文档的安装步骤手动管理模块。</li>
-</ul>
-</li>
-</ol>
-<h3 id="方法三：卸载，使用Unityhub重新安装-【推荐】"><a href="#方法三：卸载，使用Unityhub重新安装-【推荐】" class="headerlink" title="方法三：卸载，使用Unityhub重新安装 【推荐】"></a>方法三：卸载，使用Unityhub重新安装 【推荐】</h3><p><strong>强调：</strong></p>
-<ol>
-<li>不要使用中国版团结引擎，版本带c的就是</li>
-<li>不要单独下载unity editor 安装器，使用UnityHub下载</li>
-</ol>
-<h2 id="Visual-Studio-的安装"><a href="#Visual-Studio-的安装" class="headerlink" title="Visual Studio 的安装"></a>Visual Studio 的安装</h2><p>在 Unity 开发中，Visual Studio 的安装需要包含以下关键组件，以确保支持 Unity 的所有功能，包括 C# 脚本开发、IL2CPP 构建、调试和测试。</p>
-<hr>
-<h2 id="推荐的安装步骤"><a href="#推荐的安装步骤" class="headerlink" title="推荐的安装步骤"></a><strong>推荐的安装步骤</strong></h2><ol>
-<li>打开 <strong>Visual Studio Installer</strong>。</li>
-<li>选择要安装或修改的 Visual Studio 版本（例如 Visual Studio 2022）。</li>
-<li>点击 <strong>修改</strong>。</li>
-<li>在 <strong>工作负载</strong> 和 <strong>单个组件</strong> 中勾选以下内容。</li>
-</ol>
-<hr>
-<h2 id="必须安装的组件"><a href="#必须安装的组件" class="headerlink" title="必须安装的组件"></a><strong>必须安装的组件</strong></h2><h3 id="工作负载"><a href="#工作负载" class="headerlink" title="工作负载"></a><strong>工作负载</strong></h3><p>以下工作负载是 Unity 开发的基本需求：</p>
-<ol>
-<li><p><strong>Game development with Unity</strong>（使用 Unity 进行游戏开发）：</p>
-<ul>
-<li>Unity 的官方推荐工作负载。</li>
-<li>包含 Unity 相关工具、调试器、测试工具和集成插件。</li>
-</ul>
-</li>
-<li><p><strong>.NET desktop development</strong>（.NET 桌面开发）：</p>
-<ul>
-<li>提供必要的 .NET 和 C# 工具。</li>
-</ul>
-</li>
-<li><p>**Desktop development with C++**（C++ 桌面开发）：</p>
-<ul>
-<li><strong>IL2CPP 构建</strong>所需，用于将 Unity 项目转换为本地 C++ 代码并编译。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="单个组件"><a href="#单个组件" class="headerlink" title="单个组件"></a><strong>单个组件</strong></h3><p>在顶部切换到 <strong>单个组件</strong>，选择以下组件：</p>
-<h4 id="C-和-NET"><a href="#C-和-NET" class="headerlink" title="C# 和 .NET"></a><strong>C# 和 .NET</strong></h4><ol>
-<li><strong>.NET Framework 4.8 SDK</strong></li>
-<li><strong>.NET Framework 4.8 Targeting Pack</strong></li>
-<li><strong>NuGet Package Manager</strong></li>
-</ol>
-<h4 id="C-工具链"><a href="#C-工具链" class="headerlink" title="C++ 工具链"></a><strong>C++ 工具链</strong></h4><ol>
-<li><strong>MSVC v143 - VS 2022 C++ x64&#x2F;x86 build tools</strong></li>
-<li><strong>Windows 10 SDK（10.x.x.x）</strong> 或更新版本：<ul>
-<li>这是 IL2CPP 必需的工具链之一。</li>
-</ul>
-</li>
-<li><strong>C++ CMake tools for Windows</strong></li>
-<li><strong>C++&#x2F;CLI support</strong>（可选，针对 .NET 与 C++ 交互的情况）。</li>
-</ol>
-<h4 id="Unity-工具"><a href="#Unity-工具" class="headerlink" title="Unity 工具"></a><strong>Unity 工具</strong></h4><ol>
-<li><strong>Unity Hub</strong>（可选，如果未安装）。</li>
-<li><strong>Visual Studio Tools for Unity</strong>：<ul>
-<li>提供 Unity 与 Visual Studio 的集成，包括代码提示、调试和错误报告。</li>
-</ul>
-</li>
-</ol>
-<h4 id="调试工具"><a href="#调试工具" class="headerlink" title="调试工具"></a><strong>调试工具</strong></h4><ol>
-<li><strong>JavaScript diagnostics</strong>（用于调试 WebGL 项目）。</li>
-<li><strong>Graphics debugger and GPU profiler</strong>（可选，用于调试渲染问题）。</li>
-</ol>
-<hr>
-<h3 id="其他推荐组件"><a href="#其他推荐组件" class="headerlink" title="其他推荐组件"></a><strong>其他推荐组件</strong></h3><ol>
-<li><strong>Azure DevOps</strong>（可选，用于版本控制）。</li>
-<li><strong>MSBuild</strong>（项目构建工具）。</li>
-<li><strong>Live Share</strong>（用于多人协作开发）。</li>
-<li><strong>Performance profiler</strong>（可选，性能分析工具）。</li>
-</ol>
-<hr>
-<h2 id="检查-Unity-项目所需的额外内容"><a href="#检查-Unity-项目所需的额外内容" class="headerlink" title="检查 Unity 项目所需的额外内容"></a><strong>检查 Unity 项目所需的额外内容</strong></h2><p>如果你的 Unity 项目需要构建到特定平台，请安装相关的 SDK 和工具：</p>
-<ul>
-<li><strong>Android</strong>：需要安装 Android SDK 和 NDK，建议通过 Unity Hub 设置。</li>
-<li><strong>iOS</strong>：需要 macOS 和 Xcode。</li>
-<li><strong>WebGL</strong>：安装 Node.js 和 JavaScript 工具（Visual Studio 会自动提供支持）。</li>
-<li><strong>Windows</strong>：确保安装了 <strong>Windows 10 SDK</strong> 和 <strong>C++ 工具链</strong>。</li>
-</ul>
-<hr>
-<p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
-]]></content>
   </entry>
   <entry>
     <title>Unity Jobs System</title>
@@ -5275,7 +5275,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#121;&#46;&#99;&#111;&#x6c;&#x6c;&#x61;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#46;&#54;&#x2e;&#x30;">&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#121;&#46;&#99;&#111;&#x6c;&#x6c;&#x61;&#98;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#46;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#x2e;&#x75;&#x6e;&#105;&#x74;&#x79;&#46;&#x63;&#111;&#x6c;&#x6c;&#x61;&#x62;&#x2d;&#x70;&#x72;&#111;&#x78;&#121;&#64;&#50;&#46;&#54;&#x2e;&#48;">&#x63;&#111;&#109;&#x2e;&#x75;&#x6e;&#105;&#x74;&#x79;&#46;&#x63;&#111;&#x6c;&#x6c;&#x61;&#x62;&#x2d;&#x70;&#x72;&#111;&#x78;&#121;&#64;&#50;&#46;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -5955,18 +5955,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>butterfly</category>
-      </categories>
-      <tags>
-        <tag>butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 程序集</title>
     <url>/2025/01/16/Unity-%E7%A8%8B%E5%BA%8F%E9%9B%86/</url>
     <content><![CDATA[<h2 id="常见的四种程序集"><a href="#常见的四种程序集" class="headerlink" title="常见的四种程序集"></a>常见的四种程序集</h2><p>下面是 <strong>Unity 中的预定义程序集</strong>（Predefined Assemblies）、<strong>默认创建的程序集</strong>（Default Assemblies）、<strong>自定义程序集</strong>（Custom Assemblies）和 <strong>预编译程序集</strong>（Precompiled Assemblies）四者的关系与区别的对比表格：</p>
@@ -6151,6 +6139,18 @@
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>butterfly</category>
+      </categories>
+      <tags>
+        <tag>butterfly</tag>
+      </tags>
   </entry>
   <entry>
     <title>git submodule</title>
@@ -6987,6 +6987,132 @@
       </categories>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>k8s</title>
+    <url>/2026/01/22/k8s/</url>
+    <content><![CDATA[<p>服务器工作流程：开发-&gt;镜像打包docker-&gt;部署到k8s</p>
+<h2 id="K8s（Kubernetes）通俗解释"><a href="#K8s（Kubernetes）通俗解释" class="headerlink" title="K8s（Kubernetes）通俗解释"></a>K8s（Kubernetes）通俗解释</h2><p><strong>K8s是一个管理大量集装箱（容器）的“智能码头操作系统”</strong>。</p>
+<p>想象一下：你有一个现代化码头，里面要运行成千上万个集装箱（每个集装箱是一个应用服务）。K8s就是这个码头的<strong>自动化管理系统</strong>，它负责：</p>
+<ul>
+<li>自动把集装箱放到合适的货轮上（调度到服务器）</li>
+<li>哪个集装箱坏了就立刻换新的（自愈）</li>
+<li>货多了自动加集装箱，货少了自动减少（自动伸缩）</li>
+<li>确保不同集装箱之间能互相通信（服务发现）</li>
+</ul>
+<hr>
+<h2 id="K8s到底是干什么的？（实际用途）"><a href="#K8s到底是干什么的？（实际用途）" class="headerlink" title="K8s到底是干什么的？（实际用途）"></a>K8s到底是干什么的？（实际用途）</h2><h3 id="1-容器化应用的管理员"><a href="#1-容器化应用的管理员" class="headerlink" title="1. 容器化应用的管理员"></a>1. <strong>容器化应用的管理员</strong></h3><ul>
+<li>你开发的应用用Docker打包成“集装箱”（容器）</li>
+<li>K8s帮你管理成百上千个这样的容器，让它们井井有条地运行</li>
+</ul>
+<h3 id="2-解决“在我的机器上能跑”的问题"><a href="#2-解决“在我的机器上能跑”的问题" class="headerlink" title="2. 解决“在我的机器上能跑”的问题"></a>2. <strong>解决“在我的机器上能跑”的问题</strong></h3><ul>
+<li>开发说：“在我电脑上好好的！”</li>
+<li>运维说：“服务器上怎么就不行了！”</li>
+<li>K8s提供<strong>一致的运行环境</strong>，从开发到生产完全一样</li>
+</ul>
+<h3 id="3-自动化的运维机器人"><a href="#3-自动化的运维机器人" class="headerlink" title="3. 自动化的运维机器人"></a>3. <strong>自动化的运维机器人</strong></h3><p>传统运维：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">凌晨3点电话响了 → 服务器挂了 → 手动登录 → 重启服务 → 检查日志 → 祈祷...</span><br></pre></td></tr></table></figure>
+<p>K8s运维：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">服务器挂了 → K8s自动发现 → 自动重启 → 自动迁移到其他机器 → 你继续睡觉</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-资源的高效利用者"><a href="#4-资源的高效利用者" class="headerlink" title="4. 资源的高效利用者"></a>4. <strong>资源的高效利用者</strong></h3><p>传统部署：一台服务器只跑一个应用，CPU用10%，浪费90%<br>K8s部署：一台服务器跑几十个应用，资源利用率提升到80%+</p>
+<hr>
+<h2 id="K8s核心理论（学什么）"><a href="#K8s核心理论（学什么）" class="headerlink" title="K8s核心理论（学什么）"></a>K8s核心理论（学什么）</h2><h3 id="1-核心架构"><a href="#1-核心架构" class="headerlink" title="1. 核心架构"></a>1. <strong>核心架构</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">控制平面（Control Plane）：大脑</span><br><span class="line">    ├── API Server：总指挥中心（唯一入口）</span><br><span class="line">    ├── Scheduler：调度员（决定Pod放哪）</span><br><span class="line">    ├── Controller Manager：监控管理员</span><br><span class="line">    └── etcd：数据库（记住所有状态）</span><br><span class="line">    </span><br><span class="line">工作节点（Node）：干活的工人</span><br><span class="line">    ├── Kubelet：节点管家</span><br><span class="line">    ├── 容器运行时（如Docker）：真正跑容器的</span><br><span class="line">    └── Kube-proxy：网络代理</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-核心概念（必须掌握的）"><a href="#2-核心概念（必须掌握的）" class="headerlink" title="2. 核心概念（必须掌握的）"></a>2. <strong>核心概念（必须掌握的）</strong></h3><h4 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a><strong>Pod</strong></h4><ul>
+<li><strong>最小部署单元</strong> &#x3D; 一个或多个紧密相关的容器</li>
+<li>就像“豆荚”里的豌豆，共享网络和存储</li>
+<li>通常一个Pod一个容器，但有时需要辅助容器（Sidecar）</li>
+</ul>
+<h4 id="Service"><a href="#Service" class="headerlink" title="Service"></a><strong>Service</strong></h4><ul>
+<li><strong>服务的固定电话号</strong></li>
+<li>Pod可能随时死、随时生、IP会变</li>
+<li>Service提供一个稳定IP和DNS名，让其他服务能找到它</li>
+</ul>
+<h4 id="Deployment"><a href="#Deployment" class="headerlink" title="Deployment"></a><strong>Deployment</strong></h4><ul>
+<li><strong>应用的生命周期管理器</strong></li>
+<li>声明式定义：我想要3个副本的Web应用</li>
+<li>K8s自动创建、更新、回滚，保持永远是3个健康副本</li>
+</ul>
+<h4 id="其他重要概念"><a href="#其他重要概念" class="headerlink" title="其他重要概念"></a><strong>其他重要概念</strong></h4><ul>
+<li><strong>ConfigMap</strong>：把配置从代码中分离（类似“配置文件中心”）</li>
+<li><strong>Secret</strong>：安全地存储密码、密钥</li>
+<li><strong>Volume</strong>：持久化存储（容器重启数据不丢）</li>
+<li><strong>Namespace</strong>：虚拟集群，用于环境隔离（开发&#x2F;测试&#x2F;生产）</li>
+</ul>
+<h3 id="3-核心工作模式：声明式-vs-命令式"><a href="#3-核心工作模式：声明式-vs-命令式" class="headerlink" title="3. 核心工作模式：声明式 vs 命令式"></a>3. <strong>核心工作模式：声明式 vs 命令式</strong></h3><ul>
+<li><strong>命令式</strong>（传统）：<code>docker run...</code>, <code>docker stop...</code> （一步步指挥）</li>
+<li><strong>声明式</strong>（K8s）：写一个YAML文件说“我想要什么状态”<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span>  <span class="comment"># 我想要3个副本</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">containers:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">web</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">nginx:latest</span></span><br></pre></td></tr></table></figure>
+K8s：好的，我保证永远有3个nginx在跑</li>
+</ul>
+<hr>
+<h2 id="学了K8s有什么用？（价值）"><a href="#学了K8s有什么用？（价值）" class="headerlink" title="学了K8s有什么用？（价值）"></a>学了K8s有什么用？（价值）</h2><h3 id="对个人："><a href="#对个人：" class="headerlink" title="对个人："></a>对个人：</h3><ol>
+<li><strong>职业竞争力</strong>：云原生时代的必备技能，薪资溢价30%-50%</li>
+<li><strong>就业方向</strong>：<ul>
+<li>DevOps工程师（月薪25K-50K+）</li>
+<li>云原生工程师（月薪30K-60K+）</li>
+<li>SRE（站点可靠性工程师）（月薪40K-80K+）</li>
+</ul>
+</li>
+<li><strong>技能提升</strong>：从只会写代码 → 懂架构、懂运维、懂分布式系统</li>
+</ol>
+<h3 id="对公司-项目："><a href="#对公司-项目：" class="headerlink" title="对公司&#x2F;项目："></a>对公司&#x2F;项目：</h3><ol>
+<li><p><strong>成本降低</strong>：</p>
+<ul>
+<li>服务器资源利用率从10-20% → 60-80%</li>
+<li>运维人力减少，自动化处理日常故障</li>
+</ul>
+</li>
+<li><p><strong>稳定性提升</strong>：</p>
+<ul>
+<li>99.9% → 99.99%可用性（全年停机从8.7小时→52分钟）</li>
+<li>蓝绿部署、金丝雀发布，更新不影响用户</li>
+</ul>
+</li>
+<li><p><strong>敏捷性飞跃</strong>：</p>
+<ul>
+<li>新应用部署：从几天 → 几分钟</li>
+<li>弹性伸缩：应对双十一流量，自动扩容100倍</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="学习路径建议（从易到难）"><a href="#学习路径建议（从易到难）" class="headerlink" title="学习路径建议（从易到难）"></a>学习路径建议（从易到难）</h2><h3 id="第一阶段：入门（1-2周）"><a href="#第一阶段：入门（1-2周）" class="headerlink" title="第一阶段：入门（1-2周）"></a>第一阶段：入门（1-2周）</h3><ol>
+<li>理解容器基础（先学Docker）</li>
+<li>在本地用Minikube或Kind搭建K8s玩一玩</li>
+<li>部署第一个Pod：<code>kubectl run nginx --image=nginx</code></li>
+<li>学习写简单的YAML文件</li>
+</ol>
+<h3 id="第二阶段：核心掌握（1-2个月）"><a href="#第二阶段：核心掌握（1-2个月）" class="headerlink" title="第二阶段：核心掌握（1-2个月）"></a>第二阶段：核心掌握（1-2个月）</h3><ol>
+<li>掌握Pod、Deployment、Service、ConfigMap</li>
+<li>学习Ingress（外部访问）、Volume（存储）</li>
+<li>理解探针（健康检查）、资源限制</li>
+<li>动手做项目：部署一个完整的Web应用（前端+后端+数据库）</li>
+</ol>
+<h3 id="第三阶段：进阶（3-6个月）"><a href="#第三阶段：进阶（3-6个月）" class="headerlink" title="第三阶段：进阶（3-6个月）"></a>第三阶段：进阶（3-6个月）</h3><ol>
+<li>Helm：应用打包和部署</li>
+<li>监控告警：Prometheus + Grafana</li>
+<li>日志收集：EFK&#x2F;ELK Stack</li>
+<li>服务网格：Istio（高级功能）</li>
+<li>CI&#x2F;CD集成：GitLab + K8s自动部署</li>
+</ol>
+<hr>
+<h2 id="现实应用场景举例"><a href="#现实应用场景举例" class="headerlink" title="现实应用场景举例"></a>现实应用场景举例</h2><h3 id="场景1：电商大促"><a href="#场景1：电商大促" class="headerlink" title="场景1：电商大促"></a>场景1：电商大促</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">双十一前：预估流量增加10倍</span><br><span class="line">传统做法：提前一个月买服务器、装系统、部署、压测...</span><br><span class="line">K8s做法：修改YAML，replicas: 10 → 100，点一下部署，自动扩容</span><br></pre></td></tr></table></figure>
+
+<h3 id="场景2：滚动更新无感知"><a href="#场景2：滚动更新无感知" class="headerlink" title="场景2：滚动更新无感知"></a>场景2：滚动更新无感知</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">老板：凌晨2点更新版本，不能影响用户</span><br><span class="line">传统：挂维护公告，停服30分钟</span><br><span class="line">K8s：滚动更新，先起新Pod，再删旧Pod，用户无感知</span><br></pre></td></tr></table></figure>
+
+<h3 id="场景3：多环境管理"><a href="#场景3：多环境管理" class="headerlink" title="场景3：多环境管理"></a>场景3：多环境管理</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">开发、测试、预生产、生产</span><br><span class="line">传统：4套独立物理机，成本高，环境不一致</span><br><span class="line">K8s：4个Namespace，共用集群，资源动态分配</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="一句话总结"><a href="#一句话总结" class="headerlink" title="一句话总结"></a>一句话总结</h2><p><strong>K8s是云原生时代的操作系统</strong>，它把成百上千台服务器变成一台“超级计算机”，让你用简单的YAML文件就能管理大规模的分布式应用，实现自动化运维、弹性伸缩和高可用。</p>
+<p>如果你现在开始学，3年后回头看，会发现这是职业生涯中最值得的投资之一——就像10年前学习云计算，5年前学习Docker一样。</p>
+]]></content>
+      <categories>
+        <category>网络编程</category>
+      </categories>
+      <tags>
+        <tag>分布式,微服务,集群管理,k8s</tag>
       </tags>
   </entry>
   <entry>
@@ -9499,6 +9625,34 @@
 ]]></content>
   </entry>
   <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>多语言文件批量对比工具文档</title>
     <url>/2025/07/09/%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%89%B9%E9%87%8F%E5%AF%B9%E6%AF%94%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
     <content><![CDATA[<h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>多语言文件批量对比工具是一个Unity编辑器扩展工具，用于批量扫描和对比游戏中的多语言Lua文件，检查不同语言版本之间的键值一致性。该工具能够自动识别同名语言文件组，并对比各组文件中键的差异，帮助开发者快速发现多语言文件中的缺失或多余键值。</p>
@@ -9569,44 +9723,9 @@
       </tags>
   </entry>
   <entry>
-    <title>提升</title>
-    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<ol>
-<li>做demo</li>
-<li>看技术文章</li>
-<li>逛社区，看别人的问题和解决方案</li>
-<li>研究GitHub开源项目</li>
-<li>学习新技术，看教程</li>
-<li>刷boss直聘,关注市场技术需求和趋势</li>
-<li>根据unity 官方认证考核要求，系统学习技能点</li>
-<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
-<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
-<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>提升</category>
-      </categories>
-      <tags>
-        <tag>提升</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>文件树状层级图生成</title>
     <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
     <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
-  </entry>
-  <entry>
-    <title>游戏流程</title>
-    <url>/2025/08/01/%E6%B8%B8%E6%88%8F%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<p>游戏流程：</p>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNqlV1tPG0cU_iureahaCVPsxRAs6tYQJ4qERQV9absVGu8O9gp71t2LGpcgJRIQSMNFVUiryG0TpQ08JMBLW9KI9M-wi_kXPbPjvS_GqE_2nDnnO2fPfZaRrCkEFVAmk5GorNFFtVaQqCCYddIkBUHB-hI7NnBbs0x2rulEoi73YkP7Tq5j3RS-uMl4BGHehNOHX0vI_SOhbz4SMpmiQLOfLQNClTQKgoQmjRamgmG2G-QTSZLAgIamF9i_4tzsl6WZhXLl8ztz5YXbpUp5fuE2bpIKprhG9GHZmPyYCRclJKxwjbN0jjQINsgcMTRLlwkoT9Amq3qxu__S3v7B_n3f3l7r_rnq_LMbUJ2TE2djh1PBaNfmi4ePnCfvOQ0ww0dg4co5UaUqpzsna_bW3sXa1vnpofP04dm7v3zBPjxcYcwvVSwv1XTNokqGu6fY-6RbaoMETmCGdo_e2TtPLx5s2dvrHJerxFX78RoY0Pfe_5QZDSsM26jgFgiFjz0_Ob_uwleEbS66UhWrYaqtBpkCY0GgJxyjMgx7Y90-2bcfPe-enuIqo3CjnKMdoF907ndfPeC3589WcTViWgzOVe78fGTvvgIJ-2h9WULh46cS6uVHmMrcfN75zbf8lq41K6Sp6e2S0aay99lRqm9GHAkOESTmrjiOT4v6OarBRylTWW-3TFWjPYiAEJEPyK5oStEEHMwCQLuSx1dwJSf3_fO3ztYheOLixz-6239Dgjl7x0ABVZdd9dPgFWpQ6Ok2J_m8TCwpCnONSms8RUA-TmKsHwjnbzbt92tO57Wz-dZ5_cLZvO90NktTUAs89-zDx84Gq_jBGP2vimtzrTo72YK04e3FOXhh__ITJGqSGKRr8o6lGpB4qR8e26d7zpuXdufArxTe0kpTrNT73fuWpuvw0jkVgzNfrsO793VMa82mRoOWEDl7MaP5AcfCLC3fNXUsm35D5x0Qeki6QB8sXOWNmIcvMU_YuAnMDp0Co_120LBwd_UZZAjvPv6RhTMctpREnrEwyxZIYZUa5jAkzzzBulz3k_faMuE-5VsSDmwy7LkrkvHaNkQclKIvbE7Ytb1JHgvyLRg3Rt2d56k3_hCysNcP7lDVdFcP1kBTyEEbTbl0wcpUYfsL_LDthTMP1gnC0wX8Em5DsQgNjheeMbER6HedkOvDoef3NMtggs-brhN5KbkxpZGDWk655JHODVi_Z6f_nj85AKPsznFv94rXHY0kBxUHROb7G8e8d08hVauWhBbDxZhYDsOrHAf6X-vY1fueq6_vVtYzNJb1aZXAtig-cEGjt1rFttSEULC29Da8sJ-8ECSkwnHynJlaY5wvn47SK91-HcIDj84M3tsu2S0ua7Mp-0JkC_P3s0FCXjIMYnJzpnWCTcigby1imNH4X8MK91lk1HEL3lk6kc2V67SHQFRRcdNL9XwqoluoKdxigoyGUE1XFVRYxA2DDKEm0ZuYndEyk5GQ-yyUECtLhSxi6EkSkugKyIEPvtK0JiqYugWS4Lpa3cexWgo47KYKr0fc9Kk6oTBKpsHJJipkJ0QXBBWW0V1UEEVxeEzMT-Sy4yP50VHxxhBqo0JGzA-PiyMikMZzuYnxnLgyhL531WaHRyay2bHxG6PixOhYbmRsCBFFNTW9wh-47jt35T8lHFGm"><img src="https://mermaid.ink/img/pako:eNqlV1tPG0cU_iureahaCVPsxRAs6tYQJ4qERQV9absVGu8O9gp71t2LGpcgJRIQSMNFVUiryG0TpQ08JMBLW9KI9M-wi_kXPbPjvS_GqE_2nDnnO2fPfZaRrCkEFVAmk5GorNFFtVaQqCCYddIkBUHB-hI7NnBbs0x2rulEoi73YkP7Tq5j3RS-uMl4BGHehNOHX0vI_SOhbz4SMpmiQLOfLQNClTQKgoQmjRamgmG2G-QTSZLAgIamF9i_4tzsl6WZhXLl8ztz5YXbpUp5fuE2bpIKprhG9GHZmPyYCRclJKxwjbN0jjQINsgcMTRLlwkoT9Amq3qxu__S3v7B_n3f3l7r_rnq_LMbUJ2TE2djh1PBaNfmi4ePnCfvOQ0ww0dg4co5UaUqpzsna_bW3sXa1vnpofP04dm7v3zBPjxcYcwvVSwv1XTNokqGu6fY-6RbaoMETmCGdo_e2TtPLx5s2dvrHJerxFX78RoY0Pfe_5QZDSsM26jgFgiFjz0_Ob_uwleEbS66UhWrYaqtBpkCY0GgJxyjMgx7Y90-2bcfPe-enuIqo3CjnKMdoF907ndfPeC3589WcTViWgzOVe78fGTvvgIJ-2h9WULh46cS6uVHmMrcfN75zbf8lq41K6Sp6e2S0aay99lRqm9GHAkOESTmrjiOT4v6OarBRylTWW-3TFWjPYiAEJEPyK5oStEEHMwCQLuSx1dwJSf3_fO3ztYheOLixz-6239Dgjl7x0ABVZdd9dPgFWpQ6Ok2J_m8TCwpCnONSms8RUA-TmKsHwjnbzbt92tO57Wz-dZ5_cLZvO90NktTUAs89-zDx84Gq_jBGP2vimtzrTo72YK04e3FOXhh__ITJGqSGKRr8o6lGpB4qR8e26d7zpuXdufArxTe0kpTrNT73fuWpuvw0jkVgzNfrsO793VMa82mRoOWEDl7MaP5AcfCLC3fNXUsm35D5x0Qeki6QB8sXOWNmIcvMU_YuAnMDp0Co_120LBwd_UZZAjvPv6RhTMctpREnrEwyxZIYZUa5jAkzzzBulz3k_faMuE-5VsSDmwy7LkrkvHaNkQclKIvbE7Ytb1JHgvyLRg3Rt2d56k3_hCysNcP7lDVdFcP1kBTyEEbTbl0wcpUYfsL_LDthTMP1gnC0wX8Em5DsQgNjheeMbER6HedkOvDoef3NMtggs-brhN5KbkxpZGDWk655JHODVi_Z6f_nj85AKPsznFv94rXHY0kBxUHROb7G8e8d08hVauWhBbDxZhYDsOrHAf6X-vY1fueq6_vVtYzNJb1aZXAtig-cEGjt1rFttSEULC29Da8sJ-8ECSkwnHynJlaY5wvn47SK91-HcIDj84M3tsu2S0ua7Mp-0JkC_P3s0FCXjIMYnJzpnWCTcigby1imNH4X8MK91lk1HEL3lk6kc2V67SHQFRRcdNL9XwqoluoKdxigoyGUE1XFVRYxA2DDKEm0ZuYndEyk5GQ-yyUECtLhSxi6EkSkugKyIEPvtK0JiqYugWS4Lpa3cexWgo47KYKr0fc9Kk6oTBKpsHJJipkJ0QXBBWW0V1UEEVxeEzMT-Sy4yP50VHxxhBqo0JGzA-PiyMikMZzuYnxnLgyhL531WaHRyay2bHxG6PixOhYbmRsCBFFNTW9wh-47jt35T8lHFGm?type=png"></a></p>
-]]></content>
   </entry>
   <entry>
     <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
@@ -9643,6 +9762,13 @@
 </ul>
 <h1 id="Popper"><a href="#Popper" class="headerlink" title="Popper"></a>Popper</h1><p>鼠标进入时事件详情弹窗</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
+    <title>游戏流程</title>
+    <url>/2025/08/01/%E6%B8%B8%E6%88%8F%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>游戏流程：</p>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNqlV1tPG0cU_iureahaCVPsxRAs6tYQJ4qERQV9absVGu8O9gp71t2LGpcgJRIQSMNFVUiryG0TpQ08JMBLW9KI9M-wi_kXPbPjvS_GqE_2nDnnO2fPfZaRrCkEFVAmk5GorNFFtVaQqCCYddIkBUHB-hI7NnBbs0x2rulEoi73YkP7Tq5j3RS-uMl4BGHehNOHX0vI_SOhbz4SMpmiQLOfLQNClTQKgoQmjRamgmG2G-QTSZLAgIamF9i_4tzsl6WZhXLl8ztz5YXbpUp5fuE2bpIKprhG9GHZmPyYCRclJKxwjbN0jjQINsgcMTRLlwkoT9Amq3qxu__S3v7B_n3f3l7r_rnq_LMbUJ2TE2djh1PBaNfmi4ePnCfvOQ0ww0dg4co5UaUqpzsna_bW3sXa1vnpofP04dm7v3zBPjxcYcwvVSwv1XTNokqGu6fY-6RbaoMETmCGdo_e2TtPLx5s2dvrHJerxFX78RoY0Pfe_5QZDSsM26jgFgiFjz0_Ob_uwleEbS66UhWrYaqtBpkCY0GgJxyjMgx7Y90-2bcfPe-enuIqo3CjnKMdoF907ndfPeC3589WcTViWgzOVe78fGTvvgIJ-2h9WULh46cS6uVHmMrcfN75zbf8lq41K6Sp6e2S0aay99lRqm9GHAkOESTmrjiOT4v6OarBRylTWW-3TFWjPYiAEJEPyK5oStEEHMwCQLuSx1dwJSf3_fO3ztYheOLixz-6239Dgjl7x0ABVZdd9dPgFWpQ6Ok2J_m8TCwpCnONSms8RUA-TmKsHwjnbzbt92tO57Wz-dZ5_cLZvO90NktTUAs89-zDx84Gq_jBGP2vimtzrTo72YK04e3FOXhh__ITJGqSGKRr8o6lGpB4qR8e26d7zpuXdufArxTe0kpTrNT73fuWpuvw0jkVgzNfrsO793VMa82mRoOWEDl7MaP5AcfCLC3fNXUsm35D5x0Qeki6QB8sXOWNmIcvMU_YuAnMDp0Co_120LBwd_UZZAjvPv6RhTMctpREnrEwyxZIYZUa5jAkzzzBulz3k_faMuE-5VsSDmwy7LkrkvHaNkQclKIvbE7Ytb1JHgvyLRg3Rt2d56k3_hCysNcP7lDVdFcP1kBTyEEbTbl0wcpUYfsL_LDthTMP1gnC0wX8Em5DsQgNjheeMbER6HedkOvDoef3NMtggs-brhN5KbkxpZGDWk655JHODVi_Z6f_nj85AKPsznFv94rXHY0kBxUHROb7G8e8d08hVauWhBbDxZhYDsOrHAf6X-vY1fueq6_vVtYzNJb1aZXAtig-cEGjt1rFttSEULC29Da8sJ-8ECSkwnHynJlaY5wvn47SK91-HcIDj84M3tsu2S0ua7Mp-0JkC_P3s0FCXjIMYnJzpnWCTcigby1imNH4X8MK91lk1HEL3lk6kc2V67SHQFRRcdNL9XwqoluoKdxigoyGUE1XFVRYxA2DDKEm0ZuYndEyk5GQ-yyUECtLhSxi6EkSkugKyIEPvtK0JiqYugWS4Lpa3cexWgo47KYKr0fc9Kk6oTBKpsHJJipkJ0QXBBWW0V1UEEVxeEzMT-Sy4yP50VHxxhBqo0JGzA-PiyMikMZzuYnxnLgyhL531WaHRyay2bHxG6PixOhYbmRsCBFFNTW9wh-47jt35T8lHFGm"><img src="https://mermaid.ink/img/pako:eNqlV1tPG0cU_iureahaCVPsxRAs6tYQJ4qERQV9absVGu8O9gp71t2LGpcgJRIQSMNFVUiryG0TpQ08JMBLW9KI9M-wi_kXPbPjvS_GqE_2nDnnO2fPfZaRrCkEFVAmk5GorNFFtVaQqCCYddIkBUHB-hI7NnBbs0x2rulEoi73YkP7Tq5j3RS-uMl4BGHehNOHX0vI_SOhbz4SMpmiQLOfLQNClTQKgoQmjRamgmG2G-QTSZLAgIamF9i_4tzsl6WZhXLl8ztz5YXbpUp5fuE2bpIKprhG9GHZmPyYCRclJKxwjbN0jjQINsgcMTRLlwkoT9Amq3qxu__S3v7B_n3f3l7r_rnq_LMbUJ2TE2djh1PBaNfmi4ePnCfvOQ0ww0dg4co5UaUqpzsna_bW3sXa1vnpofP04dm7v3zBPjxcYcwvVSwv1XTNokqGu6fY-6RbaoMETmCGdo_e2TtPLx5s2dvrHJerxFX78RoY0Pfe_5QZDSsM26jgFgiFjz0_Ob_uwleEbS66UhWrYaqtBpkCY0GgJxyjMgx7Y90-2bcfPe-enuIqo3CjnKMdoF907ndfPeC3589WcTViWgzOVe78fGTvvgIJ-2h9WULh46cS6uVHmMrcfN75zbf8lq41K6Sp6e2S0aay99lRqm9GHAkOESTmrjiOT4v6OarBRylTWW-3TFWjPYiAEJEPyK5oStEEHMwCQLuSx1dwJSf3_fO3ztYheOLixz-6239Dgjl7x0ABVZdd9dPgFWpQ6Ok2J_m8TCwpCnONSms8RUA-TmKsHwjnbzbt92tO57Wz-dZ5_cLZvO90NktTUAs89-zDx84Gq_jBGP2vimtzrTo72YK04e3FOXhh__ITJGqSGKRr8o6lGpB4qR8e26d7zpuXdufArxTe0kpTrNT73fuWpuvw0jkVgzNfrsO793VMa82mRoOWEDl7MaP5AcfCLC3fNXUsm35D5x0Qeki6QB8sXOWNmIcvMU_YuAnMDp0Co_120LBwd_UZZAjvPv6RhTMctpREnrEwyxZIYZUa5jAkzzzBulz3k_faMuE-5VsSDmwy7LkrkvHaNkQclKIvbE7Ytb1JHgvyLRg3Rt2d56k3_hCysNcP7lDVdFcP1kBTyEEbTbl0wcpUYfsL_LDthTMP1gnC0wX8Em5DsQgNjheeMbER6HedkOvDoef3NMtggs-brhN5KbkxpZGDWk655JHODVi_Z6f_nj85AKPsznFv94rXHY0kBxUHROb7G8e8d08hVauWhBbDxZhYDsOrHAf6X-vY1fueq6_vVtYzNJb1aZXAtig-cEGjt1rFttSEULC29Da8sJ-8ECSkwnHynJlaY5wvn47SK91-HcIDj84M3tsu2S0ua7Mp-0JkC_P3s0FCXjIMYnJzpnWCTcigby1imNH4X8MK91lk1HEL3lk6kc2V67SHQFRRcdNL9XwqoluoKdxigoyGUE1XFVRYxA2DDKEm0ZuYndEyk5GQ-yyUECtLhSxi6EkSkugKyIEPvtK0JiqYugWS4Lpa3cexWgo47KYKr0fc9Kk6oTBKpsHJJipkJ0QXBBWW0V1UEEVxeEzMT-Sy4yP50VHxxhBqo0JGzA-PiyMikMZzuYnxnLgyhL531WaHRyay2bHxG6PixOhYbmRsCBFFNTW9wh-47jt35T8lHFGm?type=png"></a></p>
+]]></content>
   </entry>
   <entry>
     <title>部门</title>
@@ -10317,235 +10443,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>登录流程</title>
-    <url>/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
-<hr>
-<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
-  participant 玩家
-  participant 客户端
-  participant 服务器
-  玩家--&gt;&gt;客户端: 选择游客登陆
-  客户端-&gt;&gt;玩家: 成功回调
-
-  loop 递归
-      玩家-&gt;&gt;玩家: 接收消息
-  end
-  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
-
-
-<hr>
-<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
-<p>login</p>
-</blockquote>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
-        C--&gt;Request.Login--&gt;LoginWithProcess
-
-        subgraph 共同请求模块
-            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
-        end
-        
-    end
-
-   subgraph 新登录流程
-        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
-        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
-        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
-        
-        subgraph 合并请求回复的数据
-            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
-            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
-        end
-
-        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
-
-
-
-        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
-
-        ReadyToEnter--&gt;|Guest|NewAccountLogin
-        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
-        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
-    
-        subgraph 各登录方式请求所需的数据
-            FacebookLogin:InitData
-            GuestLogin:InitData
-            RoyalLogin:InitData
-        end
-
-        subgraph 各登录方式请求的成功回调
-            ProcessingAccountLoginTokenInfoData
-            ProcessingGuestLoginTokenInfoData
-            ProcessingFacebookLoginTokenInfoData
-        end
-
-      
-    
-    end
-    
-
-
-
-</code></pre>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect
-        --&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-    end</code></pre>
-<blockquote>
-<p>loading</p>
-</blockquote>
-<pre><code class="highlight mermaid">
-graph TD
-    subgraph 登录模块
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        子游戏接口--&gt;z
-    end
-
-    subgraph 加载模块
-    
-        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
-        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
-        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
-        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
-        SafeQuit--&gt;|编辑器|zz
-        SafeQuit--&gt;|非编辑器|Application.Quit
-        bv--&gt;|等于|az[指定版本检查]
-        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
-        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
-        bv--&gt;|小于|zz
-        hotResVersion判断--&gt;|不热更|zz
-    end
-
-    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-    LoginViewCtr:OnSocketConnect
-    --&gt; LoginViewCtr:ReadyToEnter
-    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
-<blockquote>
-<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，并且Mermaid可以点击【分享Kroki】来全屏预览。不过为了确保数据不会丢失最好在文档中记录一份。Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法，并且自带全屏预览效果，不用分享Kroki。</p>
-</blockquote>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI"><img src="https://mermaid.ink/img/pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI?type=png"></a></p>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ"><img src="https://mermaid.ink/img/pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ?type=png"></a></p>
-]]></content>
-      <categories>
-        <category>登录流程,mermaid</category>
-      </categories>
-      <tags>
-        <tag>Markdown,mermaid</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>社保和公积金的补缴问题</title>
     <url>/2025/05/17/%E7%A4%BE%E4%BF%9D%E5%92%8C%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84%E8%A1%A5%E7%BC%B4%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>离职后，社保和公积金的补缴问题与个人权益密切相关，以下是需要关注的要点及原因解析：</p>
@@ -10904,6 +10801,235 @@ graph TD
 <li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>登录流程</title>
+    <url>/2025/06/03/%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
+<hr>
+<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
+  participant 玩家
+  participant 客户端
+  participant 服务器
+  玩家--&gt;&gt;客户端: 选择游客登陆
+  客户端-&gt;&gt;玩家: 成功回调
+
+  loop 递归
+      玩家-&gt;&gt;玩家: 接收消息
+  end
+  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
+
+
+<hr>
+<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
+<p>login</p>
+</blockquote>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
+        C--&gt;Request.Login--&gt;LoginWithProcess
+
+        subgraph 共同请求模块
+            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
+        end
+        
+    end
+
+   subgraph 新登录流程
+        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
+        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
+        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
+        
+        subgraph 合并请求回复的数据
+            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
+            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
+        end
+
+        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+
+
+
+        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
+
+        ReadyToEnter--&gt;|Guest|NewAccountLogin
+        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
+        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
+    
+        subgraph 各登录方式请求所需的数据
+            FacebookLogin:InitData
+            GuestLogin:InitData
+            RoyalLogin:InitData
+        end
+
+        subgraph 各登录方式请求的成功回调
+            ProcessingAccountLoginTokenInfoData
+            ProcessingGuestLoginTokenInfoData
+            ProcessingFacebookLoginTokenInfoData
+        end
+
+      
+    
+    end
+    
+
+
+
+</code></pre>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect
+        --&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+    end</code></pre>
+<blockquote>
+<p>loading</p>
+</blockquote>
+<pre><code class="highlight mermaid">
+graph TD
+    subgraph 登录模块
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        子游戏接口--&gt;z
+    end
+
+    subgraph 加载模块
+    
+        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
+        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
+        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
+        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
+        SafeQuit--&gt;|编辑器|zz
+        SafeQuit--&gt;|非编辑器|Application.Quit
+        bv--&gt;|等于|az[指定版本检查]
+        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
+        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
+        bv--&gt;|小于|zz
+        hotResVersion判断--&gt;|不热更|zz
+    end
+
+    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+    LoginViewCtr:OnSocketConnect
+    --&gt; LoginViewCtr:ReadyToEnter
+    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
+<blockquote>
+<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，并且Mermaid可以点击【分享Kroki】来全屏预览。不过为了确保数据不会丢失最好在文档中记录一份。Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法，并且自带全屏预览效果，不用分享Kroki。</p>
+</blockquote>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI"><img src="https://mermaid.ink/img/pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI?type=png"></a></p>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ"><img src="https://mermaid.ink/img/pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ?type=png"></a></p>
+]]></content>
+      <categories>
+        <category>登录流程,mermaid</category>
+      </categories>
+      <tags>
+        <tag>Markdown,mermaid</tag>
+      </tags>
   </entry>
   <entry>
     <title>算法脑筋急转弯</title>
