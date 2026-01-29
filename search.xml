@@ -1695,6 +1695,361 @@
       </tags>
   </entry>
   <entry>
+    <title>Harbor-企业级容器镜像仓库</title>
+    <url>/2026/01/29/Harbor-%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93/</url>
+    <content><![CDATA[<h1 id="Harbor-详解：企业级容器镜像仓库"><a href="#Harbor-详解：企业级容器镜像仓库" class="headerlink" title="Harbor 详解：企业级容器镜像仓库"></a>Harbor 详解：企业级容器镜像仓库</h1><h2 id="一、Harbor-是什么？"><a href="#一、Harbor-是什么？" class="headerlink" title="一、Harbor 是什么？"></a>一、Harbor 是什么？</h2><h3 id="1-官方定义-vs-通俗理解"><a href="#1-官方定义-vs-通俗理解" class="headerlink" title="1. 官方定义 vs 通俗理解"></a>1. <strong>官方定义 vs 通俗理解</strong></h3><p><strong>官方定义：</strong></p>
+<blockquote>
+<p>Harbor 是一个<strong>企业级的容器镜像仓库</strong>，提供镜像的存储、分发、安全扫描、漏洞分析、签名验证、复制和管理功能。</p>
+</blockquote>
+<p><strong>通俗比喻：</strong></p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>类比</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>GitHub</strong></td>
+<td><strong>代码图书馆</strong></td>
+<td>存放源代码的地方</td>
+</tr>
+<tr>
+<td><strong>Docker Hub</strong></td>
+<td><strong>公共应用商店</strong></td>
+<td>所有人都能下载的免费软件</td>
+</tr>
+<tr>
+<td><strong>Harbor</strong></td>
+<td><strong>企业私有仓库</strong></td>
+<td>公司内部的私有软件仓库</td>
+</tr>
+<tr>
+<td><strong>镜像</strong></td>
+<td><strong>软件安装包</strong></td>
+<td>包含完整运行环境的软件包</td>
+</tr>
+</tbody></table>
+<p><strong>更形象的比喻：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你的公司需要管理各种软件：</span><br><span class="line">- 公共软件（如 Office、Chrome）→ Docker Hub（公共镜像）</span><br><span class="line">- 公司内部软件（自研系统、内部工具）→ Harbor（私有镜像）</span><br><span class="line">- 带敏感信息的软件（数据库、财务系统）→ Harbor + 安全控制</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Harbor-的核心定位"><a href="#2-Harbor-的核心定位" class="headerlink" title="2. Harbor 的核心定位"></a>2. <strong>Harbor 的核心定位</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Harbor = Docker Registry 增强版 + 企业级功能</span><br><span class="line">        （基础镜像存储）   （安全+管理+高可用）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二、为什么需要-Harbor？Docker-Hub-不够用吗？"><a href="#二、为什么需要-Harbor？Docker-Hub-不够用吗？" class="headerlink" title="二、为什么需要 Harbor？Docker Hub 不够用吗？"></a>二、为什么需要 Harbor？Docker Hub 不够用吗？</h2><h3 id="对比表：Docker-Hub-vs-Harbor"><a href="#对比表：Docker-Hub-vs-Harbor" class="headerlink" title="对比表：Docker Hub vs Harbor"></a>对比表：Docker Hub vs Harbor</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Docker Hub（公共）</th>
+<th>Harbor（私有）</th>
+<th>企业需求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>隐私性</strong></td>
+<td>❌ 公共或有限私有</td>
+<td>✅ 完全私有</td>
+<td>保护商业机密</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>⭐ 基础扫描</td>
+<td>⭐⭐⭐ 深度扫描+策略</td>
+<td>安全合规</td>
+</tr>
+<tr>
+<td><strong>控制权</strong></td>
+<td>⭐ 有限控制</td>
+<td>⭐⭐⭐ 完全控制</td>
+<td>自主管理</td>
+</tr>
+<tr>
+<td><strong>网络速度</strong></td>
+<td>⭐ 依赖外网</td>
+<td>⭐⭐⭐ 内网高速</td>
+<td>快速部署</td>
+</tr>
+<tr>
+<td><strong>成本</strong></td>
+<td>💰 免费+付费套餐</td>
+<td>🆓 开源免费</td>
+<td>成本控制</td>
+</tr>
+<tr>
+<td><strong>高可用</strong></td>
+<td>✅ 但不可控</td>
+<td>✅ 自主部署</td>
+<td>业务连续性</td>
+</tr>
+<tr>
+<td><strong>定制化</strong></td>
+<td>❌ 不可定制</td>
+<td>✅ 完全定制</td>
+<td>符合企业流程</td>
+</tr>
+<tr>
+<td><strong>数据主权</strong></td>
+<td>❌ 数据在国外</td>
+<td>✅ 数据在企业内部</td>
+<td>数据合规</td>
+</tr>
+</tbody></table>
+<h3 id="实际场景对比"><a href="#实际场景对比" class="headerlink" title="实际场景对比"></a>实际场景对比</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 场景1：使用 Docker Hub（问题示例）</span></span><br><span class="line">docker pull mysql:8.0              <span class="comment"># ✅ 可以，但：</span></span><br><span class="line">1. 从国外下载，速度慢</span><br><span class="line">2. 无法控制版本更新</span><br><span class="line">3. 可能有安全漏洞</span><br><span class="line">4. 公司审计无法追踪</span><br><span class="line"></span><br><span class="line"><span class="comment"># 场景2：使用 Harbor（解决方案）</span></span><br><span class="line">docker pull harbor.mycompany.com/library/mysql:8.0</span><br><span class="line"><span class="comment"># ✅ 好处：</span></span><br><span class="line"><span class="comment"># 1. 内网下载，秒级完成</span></span><br><span class="line"><span class="comment"># 2. 经过安全扫描的版本</span></span><br><span class="line"><span class="comment"># 3. 版本更新受控</span></span><br><span class="line"><span class="comment"># 4. 完整的操作日志</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、Harbor-的核心功能架构"><a href="#三、Harbor-的核心功能架构" class="headerlink" title="三、Harbor 的核心功能架构"></a>三、Harbor 的核心功能架构</h2><h3 id="1-整体架构图"><a href="#1-整体架构图" class="headerlink" title="1. 整体架构图"></a>1. <strong>整体架构图</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────┐</span><br><span class="line">│                     Harbor 服务集群                        │</span><br><span class="line">│                                                         │</span><br><span class="line">│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  │</span><br><span class="line">│  │  Core   │  │ Registry│  │ Job     │  │ Portal  │  │</span><br><span class="line">│  │ 服务     │  │ 服务     │  │ 服务     │  │ Web界面  │  │</span><br><span class="line">│  └─────────┘  └─────────┘  └─────────┘  └─────────┘  │</span><br><span class="line">│                                                         │</span><br><span class="line">│  ┌─────────────────────────────────────────────────┐  │</span><br><span class="line">│  │                 存储后端                          │  │</span><br><span class="line">│  │  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐            │  │</span><br><span class="line">│  │  │ 文件│  │ S3  │  │ GCS │  │ Swift│            │  │</span><br><span class="line">│  │  │系统 │  │     │  │     │  │      │            │  │</span><br><span class="line">│  │  └─────┘  └─────┘  └─────┘  └─────┘            │  │</span><br><span class="line">│  └─────────────────────────────────────────────────┘  │</span><br><span class="line">└─────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-八大核心功能模块"><a href="#2-八大核心功能模块" class="headerlink" title="2. 八大核心功能模块"></a>2. <strong>八大核心功能模块</strong></h3><h4 id="功能1：镜像存储与分发（基础）"><a href="#功能1：镜像存储与分发（基础）" class="headerlink" title="功能1：镜像存储与分发（基础）"></a><strong>功能1：镜像存储与分发（基础）</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">作用：安全地存储和管理 Docker 镜像</span><br><span class="line">场景：</span><br><span class="line">- 开发者 push 新版本的镜像</span><br><span class="line">- 测试环境 pull 镜像进行测试</span><br><span class="line">- 生产环境部署时快速拉取</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能2：镜像安全扫描（核心）"><a href="#功能2：镜像安全扫描（核心）" class="headerlink" title="功能2：镜像安全扫描（核心）"></a><strong>功能2：镜像安全扫描（核心）</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">扫描引擎：Trivy、Clair、Anchore</span><br><span class="line">扫描内容：</span><br><span class="line">1. OS 包漏洞（CVE 数据库）</span><br><span class="line">2. 应用依赖漏洞（npm, pip, maven）</span><br><span class="line">3. 配置安全问题</span><br><span class="line">4. 许可证合规检查</span><br><span class="line"></span><br><span class="line">示例：推送镜像后的自动扫描</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 推送镜像到 Harbor</span></span><br><span class="line">docker push harbor.mycompany.com/myapp:v1.0</span><br><span class="line"></span><br><span class="line"><span class="comment"># Harbor 自动执行：</span></span><br><span class="line">1. 下载最新 CVE 数据库</span><br><span class="line">2. 扫描镜像每一层</span><br><span class="line">3. 生成漏洞报告</span><br><span class="line">4. 根据策略决定是否阻止部署</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能3：镜像签名与验证"><a href="#功能3：镜像签名与验证" class="headerlink" title="功能3：镜像签名与验证"></a><strong>功能3：镜像签名与验证</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">作用：确保镜像来源可信，防止篡改</span><br><span class="line">流程：</span><br><span class="line">开发者 → 签名镜像 → 推送到 Harbor → 验证签名 → 部署</span><br><span class="line"></span><br><span class="line">实现：Notary 服务（TUF 框架）</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能4：多租户与权限控制"><a href="#功能4：多租户与权限控制" class="headerlink" title="功能4：多租户与权限控制"></a><strong>功能4：多租户与权限控制</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">企业组织结构：</span><br><span class="line">公司（Organization）</span><br><span class="line">├── 研发部（Projects）</span><br><span class="line">│   ├── 前端组（frontend-team）→ 读写权限</span><br><span class="line">│   ├── 后端组（backend-team）→ 读写权限</span><br><span class="line">│   └── 测试组（qa-team）→ 只读权限</span><br><span class="line">├── 运维部（Projects）</span><br><span class="line">│   └── 基础设施组（infra-team）→ 管理员权限</span><br><span class="line">└── 外部合作伙伴（Projects）</span><br><span class="line">    └── 供应商（vendor）→ 受限访问权限</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能5：镜像复制与同步"><a href="#功能5：镜像复制与同步" class="headerlink" title="功能5：镜像复制与同步"></a><strong>功能5：镜像复制与同步</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">场景：多数据中心、混合云部署</span><br><span class="line"></span><br><span class="line">北京数据中心 ←─镜像复制─→ 上海数据中心</span><br><span class="line">      ↓                          ↓</span><br><span class="line">  生产环境                     灾备环境</span><br><span class="line"></span><br><span class="line">配置方式：</span><br><span class="line">1. 基于策略的复制（定时/实时）</span><br><span class="line">2. 过滤规则（只复制特定标签）</span><br><span class="line">3. 带宽控制</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能6：垃圾回收"><a href="#功能6：垃圾回收" class="headerlink" title="功能6：垃圾回收"></a><strong>功能6：垃圾回收</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">问题：镜像被删除后，底层数据仍占用空间</span><br><span class="line">解决：Harbor 自动清理未被引用的数据层</span><br><span class="line"></span><br><span class="line">示例：镜像 myapp:v1.0 和 myapp:v2.0 共享基础层</span><br><span class="line">删除 v1.0 → 只删除独有层，共享层保留</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能7：Webhook-与集成"><a href="#功能7：Webhook-与集成" class="headerlink" title="功能7：Webhook 与集成"></a><strong>功能7：Webhook 与集成</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">触发事件：镜像推送、扫描完成、复制完成</span><br><span class="line">目标系统：Jenkins、K8s、监控系统、通知系统</span><br><span class="line"></span><br><span class="line">示例流程：</span><br><span class="line">1. 镜像推送到 Harbor</span><br><span class="line">2. Harbor 触发 Webhook</span><br><span class="line">3. Jenkins 收到通知，开始部署</span><br><span class="line">4. 发送部署结果到 Slack</span><br></pre></td></tr></table></figure>
+
+<h4 id="功能8：审计日志"><a href="#功能8：审计日志" class="headerlink" title="功能8：审计日志"></a><strong>功能8：审计日志</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">记录所有操作：</span><br><span class="line">- 谁（用户/机器人）</span><br><span class="line">- 什么时候（时间戳）</span><br><span class="line">- 做了什么（操作类型）</span><br><span class="line">- 对什么资源（镜像/项目）</span><br><span class="line"></span><br><span class="line">合规要求：满足 SOC2、ISO27001 等审计要求</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、企业使用-Harbor-的完整工作流"><a href="#四、企业使用-Harbor-的完整工作流" class="headerlink" title="四、企业使用 Harbor 的完整工作流"></a>四、企业使用 Harbor 的完整工作流</h2><h3 id="场景：电商公司的容器化部署流程"><a href="#场景：电商公司的容器化部署流程" class="headerlink" title="场景：电商公司的容器化部署流程"></a>场景：电商公司的容器化部署流程</h3><pre><code class="highlight mermaid">graph TD
+    A[开发完成代码] --&gt; B[Git提交触发CI]
+    B --&gt; C[Jenkins构建镜像]
+    C --&gt; D[推送到Harbor]
+    D --&gt; E[Harbor自动安全扫描]
+    E --&gt; F&#123;扫描通过?&#125;
+    F --&gt;|是| G[标记为可部署]
+    F --&gt;|否| H[通知开发修复]
+    G --&gt; I[同步到生产Harbor]
+    I --&gt; J[K8s拉取镜像部署]
+    J --&gt; K[监控运行状态]</code></pre>
+
+<h3 id="详细步骤说明："><a href="#详细步骤说明：" class="headerlink" title="详细步骤说明："></a>详细步骤说明：</h3><h4 id="步骤1：开发与构建"><a href="#步骤1：开发与构建" class="headerlink" title="步骤1：开发与构建"></a><strong>步骤1：开发与构建</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Jenkins Pipeline 片段</span></span><br><span class="line">stage(<span class="string">&#x27;Build and Push to Harbor&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            // 1. 构建镜像</span><br><span class="line">            docker.build(<span class="string">&quot;myapp:<span class="variable">$&#123;BUILD_NUMBER&#125;</span>&quot;</span>)</span><br><span class="line">            </span><br><span class="line">            // 2. 打上 Harbor 标签</span><br><span class="line">            docker.tag(</span><br><span class="line">                <span class="string">&quot;myapp:<span class="variable">$&#123;BUILD_NUMBER&#125;</span>&quot;</span>, </span><br><span class="line">                <span class="string">&quot;harbor.mycompany.com/dev/myapp:<span class="variable">$&#123;BUILD_NUMBER&#125;</span>&quot;</span></span><br><span class="line">            )</span><br><span class="line">            </span><br><span class="line">            // 3. 登录 Harbor</span><br><span class="line">            withCredentials([usernamePassword(</span><br><span class="line">                credentialsId: <span class="string">&#x27;harbor-dev&#x27;</span>,</span><br><span class="line">                usernameVariable: <span class="string">&#x27;HARBOR_USER&#x27;</span>,</span><br><span class="line">                passwordVariable: <span class="string">&#x27;HARBOR_PASS&#x27;</span></span><br><span class="line">            )]) &#123;</span><br><span class="line">                sh <span class="string">&quot;&quot;</span><span class="string">&quot;</span></span><br><span class="line"><span class="string">                    docker login harbor.mycompany.com \</span></span><br><span class="line"><span class="string">                    -u <span class="variable">$&#123;HARBOR_USER&#125;</span> \</span></span><br><span class="line"><span class="string">                    -p <span class="variable">$&#123;HARBOR_PASS&#125;</span></span></span><br><span class="line"><span class="string">                &quot;</span><span class="string">&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            // 4. 推送到 Harbor</span><br><span class="line">            docker.push(<span class="string">&quot;harbor.mycompany.com/dev/myapp:<span class="variable">$&#123;BUILD_NUMBER&#125;</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="步骤2：安全扫描与审批"><a href="#步骤2：安全扫描与审批" class="headerlink" title="步骤2：安全扫描与审批"></a><strong>步骤2：安全扫描与审批</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Harbor Web 界面显示：</span><br><span class="line">=================================</span><br><span class="line">镜像：harbor.mycompany.com/dev/myapp:123</span><br><span class="line">安全状态：⚠️ 有风险</span><br><span class="line">漏洞统计：</span><br><span class="line">- 高危：2个</span><br><span class="line">- 中危：5个</span><br><span class="line">- 低危：12个</span><br><span class="line"></span><br><span class="line">详细漏洞：</span><br><span class="line">1. CVE-2023-1234（高危）</span><br><span class="line">   - 影响：openssl 版本 &lt; 1.1.1t</span><br><span class="line">   - 修复：升级到 openssl 1.1.1u</span><br><span class="line">   - 所在层：base layer</span><br><span class="line"></span><br><span class="line">2. CVE-2023-5678（中危）</span><br><span class="line">   - 影响：python 3.9 漏洞</span><br><span class="line">   - 修复：升级到 python 3.9.16</span><br><span class="line">   - 所在层：dependency layer</span><br><span class="line">=================================</span><br><span class="line"></span><br><span class="line">操作：❌ 阻止推送到生产环境</span><br></pre></td></tr></table></figure>
+
+<h4 id="步骤3：镜像晋级流程"><a href="#步骤3：镜像晋级流程" class="headerlink" title="步骤3：镜像晋级流程"></a><strong>步骤3：镜像晋级流程</strong></h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Harbor 镜像晋级策略配置</span></span><br><span class="line"><span class="attr">version:</span> <span class="number">1.0</span></span><br><span class="line"><span class="attr">rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;开发到测试晋级&quot;</span></span><br><span class="line">    <span class="attr">source_project:</span> <span class="string">&quot;dev&quot;</span></span><br><span class="line">    <span class="attr">target_project:</span> <span class="string">&quot;test&quot;</span></span><br><span class="line">    <span class="attr">conditions:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;vulnerability&quot;</span></span><br><span class="line">        <span class="attr">severity:</span> <span class="string">&quot;high&quot;</span></span><br><span class="line">        <span class="attr">max_count:</span> <span class="number">0</span>      <span class="comment"># 不允许有高危漏洞</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;vulnerability&quot;</span>  </span><br><span class="line">        <span class="attr">severity:</span> <span class="string">&quot;medium&quot;</span></span><br><span class="line">        <span class="attr">max_count:</span> <span class="number">3</span>      <span class="comment"># 中危漏洞不超过3个</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;signature&quot;</span></span><br><span class="line">        <span class="attr">required:</span> <span class="literal">true</span>    <span class="comment"># 必须签名</span></span><br><span class="line">    <span class="attr">actions:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;replication&quot;</span></span><br><span class="line">        <span class="attr">trigger:</span> <span class="string">&quot;manual&quot;</span> <span class="comment"># 手动触发</span></span><br><span class="line">        <span class="attr">override:</span> <span class="literal">true</span>    <span class="comment"># 覆盖目标镜像</span></span><br><span class="line">  </span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;测试到生产晋级&quot;</span></span><br><span class="line">    <span class="attr">source_project:</span> <span class="string">&quot;test&quot;</span></span><br><span class="line">    <span class="attr">target_project:</span> <span class="string">&quot;prod&quot;</span></span><br><span class="line">    <span class="attr">conditions:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;vulnerability&quot;</span></span><br><span class="line">        <span class="attr">severity:</span> <span class="string">&quot;high,medium&quot;</span></span><br><span class="line">        <span class="attr">max_count:</span> <span class="number">0</span>      <span class="comment"># 不允许有高中危漏洞</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;approval&quot;</span></span><br><span class="line">        <span class="attr">required:</span> <span class="literal">true</span>    <span class="comment"># 需要人工审批</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">&quot;test_result&quot;</span></span><br><span class="line">        <span class="attr">required:</span> <span class="literal">true</span>    <span class="comment"># 需要测试报告</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="步骤4：生产环境部署"><a href="#步骤4：生产环境部署" class="headerlink" title="步骤4：生产环境部署"></a><strong>步骤4：生产环境部署</strong></h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># K8s 部署配置使用 Harbor 镜像</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: myapp</span><br><span class="line">spec:</span><br><span class="line">  replicas: 3</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: myapp</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: myapp</span><br><span class="line">    spec:</span><br><span class="line">      imagePullSecrets:</span><br><span class="line">      - name: harbor-pull-secret  <span class="comment"># Harbor 访问凭证</span></span><br><span class="line">      containers:</span><br><span class="line">      - name: myapp</span><br><span class="line">        image: harbor.mycompany.com/prod/myapp:v1.2.3  <span class="comment"># Harbor 镜像</span></span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8080</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、Harbor-在企业中的实际应用场景"><a href="#五、Harbor-在企业中的实际应用场景" class="headerlink" title="五、Harbor 在企业中的实际应用场景"></a>五、Harbor 在企业中的实际应用场景</h2><h3 id="场景1：金融行业-安全合规"><a href="#场景1：金融行业-安全合规" class="headerlink" title="场景1：金融行业 - 安全合规"></a>场景1：金融行业 - 安全合规</h3><p><strong>需求特点：</strong></p>
+<ul>
+<li>严格的监管要求（银保监会、证监会）</li>
+<li>敏感数据不能出境</li>
+<li>完整的审计追溯</li>
+<li>强制安全扫描</li>
+</ul>
+<p><strong>Harbor 配置：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Harbor 安全策略配置</span></span><br><span class="line"><span class="attr">security:</span></span><br><span class="line">  <span class="comment"># 1. 漏洞扫描策略</span></span><br><span class="line">  <span class="attr">scan_on_push:</span> <span class="literal">true</span>  <span class="comment"># 推送时自动扫描</span></span><br><span class="line">  <span class="attr">severity_threshold:</span> <span class="string">medium</span>  <span class="comment"># 中危及以上阻止</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 2. 镜像签名策略</span></span><br><span class="line">  <span class="attr">require_signature:</span> <span class="literal">true</span>  <span class="comment"># 必须签名</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 3. 内容信任策略</span></span><br><span class="line">  <span class="attr">enable_content_trust:</span> <span class="literal">true</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 4. 访问控制</span></span><br><span class="line">  <span class="attr">project_creation_restriction:</span> <span class="string">adminonly</span>  <span class="comment"># 只有管理员能创建项目</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># 5. 保留策略</span></span><br><span class="line">  <span class="attr">tag_immutability:</span> <span class="literal">true</span>  <span class="comment"># 生产镜像标签不可变</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="场景2：游戏公司-全球分发"><a href="#场景2：游戏公司-全球分发" class="headerlink" title="场景2：游戏公司 - 全球分发"></a>场景2：游戏公司 - 全球分发</h3><p><strong>需求特点：</strong></p>
+<ul>
+<li>全球多个数据中心</li>
+<li>大镜像文件（游戏客户端）</li>
+<li>快速部署更新</li>
+<li>版本灰度发布</li>
+</ul>
+<p><strong>Harbor 配置：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 多中心复制配置</span></span><br><span class="line"><span class="attr">replication:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;beijing-dc&quot;</span></span><br><span class="line">      <span class="attr">url:</span> <span class="string">&quot;https://harbor-bj.mycompany.com&quot;</span></span><br><span class="line">      <span class="attr">credential:</span></span><br><span class="line">        <span class="attr">access_key:</span> <span class="string">&quot;...&quot;</span></span><br><span class="line">        <span class="attr">access_secret:</span> <span class="string">&quot;...&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;shanghai-dc&quot;</span> </span><br><span class="line">      <span class="attr">url:</span> <span class="string">&quot;https://harbor-sh.mycompany.com&quot;</span></span><br><span class="line">      <span class="attr">credential:</span></span><br><span class="line">        <span class="attr">access_key:</span> <span class="string">&quot;...&quot;</span></span><br><span class="line">        <span class="attr">access_secret:</span> <span class="string">&quot;...&quot;</span></span><br><span class="line">    </span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;frankfurt-dc&quot;</span></span><br><span class="line">      <span class="attr">url:</span> <span class="string">&quot;https://harbor-de.mycompany.com&quot;</span></span><br><span class="line">      <span class="attr">credential:</span></span><br><span class="line">        <span class="attr">access_key:</span> <span class="string">&quot;...&quot;</span></span><br><span class="line">        <span class="attr">access_secret:</span> <span class="string">&quot;...&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">policies:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">&quot;prod-replication&quot;</span></span><br><span class="line">      <span class="attr">description:</span> <span class="string">&quot;生产镜像全球同步&quot;</span></span><br><span class="line">      <span class="attr">src_registry:</span> <span class="string">&quot;beijing-dc&quot;</span></span><br><span class="line">      <span class="attr">dest_registry:</span> [<span class="string">&quot;shanghai-dc&quot;</span>, <span class="string">&quot;frankfurt-dc&quot;</span>]</span><br><span class="line">      <span class="attr">filters:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">kind:</span> <span class="string">&quot;name&quot;</span></span><br><span class="line">          <span class="attr">value:</span> <span class="string">&quot;prod/.*&quot;</span>  <span class="comment"># 只复制生产环境的镜像</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">kind:</span> <span class="string">&quot;tag&quot;</span></span><br><span class="line">          <span class="attr">value:</span> <span class="string">&quot;v[0-9]+.*&quot;</span>  <span class="comment"># 只复制版本标签</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">type:</span> <span class="string">&quot;event_based&quot;</span>  <span class="comment"># 事件触发</span></span><br><span class="line">        <span class="attr">trigger_settings:</span></span><br><span class="line">          <span class="attr">cron:</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 不设置定时，实时复制</span></span><br><span class="line">      <span class="attr">deletion:</span> <span class="literal">false</span>  <span class="comment"># 不删除目标镜像</span></span><br><span class="line">      <span class="attr">override:</span> <span class="literal">true</span>  <span class="comment"># 覆盖目标镜像</span></span><br><span class="line">      <span class="attr">enabled:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="场景3：制造业-边缘计算"><a href="#场景3：制造业-边缘计算" class="headerlink" title="场景3：制造业 - 边缘计算"></a>场景3：制造业 - 边缘计算</h3><p><strong>需求特点：</strong></p>
+<ul>
+<li>工厂环境网络不稳定</li>
+<li>设备资源有限</li>
+<li>离线部署需求</li>
+<li>版本一致性要求</li>
+</ul>
+<p><strong>解决方案：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">中心 Harbor（总部）</span><br><span class="line">    ↓ 镜像同步</span><br><span class="line">边缘 Harbor（工厂1）  边缘 Harbor（工厂2）  边缘 Harbor（工厂3）</span><br><span class="line">    ↓                    ↓                    ↓</span><br><span class="line">生产线设备          生产线设备          生产线设备</span><br><span class="line"></span><br><span class="line">特点：</span><br><span class="line">1. 中心统一管理所有镜像</span><br><span class="line">2. 边缘缓存常用镜像</span><br><span class="line">3. 网络断开时仍可部署</span><br><span class="line">4. 统一的版本控制</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、Harbor-部署架构"><a href="#六、Harbor-部署架构" class="headerlink" title="六、Harbor 部署架构"></a>六、Harbor 部署架构</h2><h3 id="1-单机部署（小型企业）"><a href="#1-单机部署（小型企业）" class="headerlink" title="1. 单机部署（小型企业）"></a>1. <strong>单机部署（小型企业）</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">单台服务器：</span><br><span class="line">┌─────────────────────────────────┐</span><br><span class="line">│         Harbor 单节点             │</span><br><span class="line">│  ┌─────────────────────────┐   │</span><br><span class="line">│  │  Nginx（反向代理）        │   │</span><br><span class="line">│  ├─────────────────────────┤   │</span><br><span class="line">│  │  Harbor Core           │   │</span><br><span class="line">│  ├─────────────────────────┤   │</span><br><span class="line">│  │  Registry              │   │</span><br><span class="line">│  ├─────────────────────────┤   │</span><br><span class="line">│  │  PostgreSQL（数据库）    │   │</span><br><span class="line">│  ├─────────────────────────┤   │</span><br><span class="line">│  │  Redis（缓存）          │   │</span><br><span class="line">│  └─────────────────────────┘   │</span><br><span class="line">└─────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-高可用部署（中大型企业）"><a href="#2-高可用部署（中大型企业）" class="headerlink" title="2. 高可用部署（中大型企业）"></a>2. <strong>高可用部署（中大型企业）</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">多节点集群：</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│                负载均衡器（HAProxy/Nginx）         │</span><br><span class="line">├──────────────┬──────────────┬──────────────┤</span><br><span class="line">│  Harbor节点1  │  Harbor节点2  │  Harbor节点3  │</span><br><span class="line">│              │              │              │</span><br><span class="line">├──────────────┼──────────────┼──────────────┤</span><br><span class="line">│  共享存储      │  共享存储      │  共享存储      │</span><br><span class="line">│ （Ceph/S3）   │ （Ceph/S3）   │ （Ceph/S3）   │</span><br><span class="line">└──────────────┴──────────────┴──────────────┘</span><br><span class="line">              │</span><br><span class="line">        ┌─────┴─────┐</span><br><span class="line">        │  外部数据库 │</span><br><span class="line">        │  PostgreSQL│</span><br><span class="line">        │  集群      │</span><br><span class="line">        └───────────┘</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署配置示例"><a href="#3-部署配置示例" class="headerlink" title="3. 部署配置示例"></a>3. <strong>部署配置示例</strong></h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># harbor.yml - Harbor 配置文件</span></span><br><span class="line"><span class="attr">hostname:</span> <span class="string">harbor.mycompany.com</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># HTTP 配置</span></span><br><span class="line"><span class="attr">http:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">80</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># HTTPS 配置（生产环境必须）</span></span><br><span class="line"><span class="attr">https:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">443</span></span><br><span class="line">  <span class="attr">certificate:</span> <span class="string">/data/cert/server.crt</span></span><br><span class="line">  <span class="attr">private_key:</span> <span class="string">/data/cert/server.key</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据库配置</span></span><br><span class="line"><span class="attr">database:</span></span><br><span class="line">  <span class="attr">password:</span> <span class="string">&quot;root123&quot;</span></span><br><span class="line">  <span class="attr">max_idle_conns:</span> <span class="number">50</span></span><br><span class="line">  <span class="attr">max_open_conns:</span> <span class="number">100</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据存储配置</span></span><br><span class="line"><span class="attr">data_volume:</span> <span class="string">/data</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 存储后端（支持多种）</span></span><br><span class="line"><span class="attr">storage_service:</span></span><br><span class="line">  <span class="comment"># 文件系统存储（默认）</span></span><br><span class="line">  <span class="attr">filesystem:</span></span><br><span class="line">    <span class="attr">rootdirectory:</span> <span class="string">/data/registry</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment"># S3 兼容存储</span></span><br><span class="line">  <span class="attr">s3:</span></span><br><span class="line">    <span class="attr">region:</span> <span class="string">us-east-1</span></span><br><span class="line">    <span class="attr">bucket:</span> <span class="string">my-harbor-bucket</span></span><br><span class="line">    <span class="attr">accesskey:</span> <span class="string">AKIAIOSFODNN7EXAMPLE</span></span><br><span class="line">    <span class="attr">secretkey:</span> <span class="string">wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</span></span><br><span class="line">    <span class="attr">secure:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">v4auth:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">chunksize:</span> <span class="number">5242880</span></span><br><span class="line">    <span class="attr">rootdirectory:</span> <span class="string">/harbor</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制配置</span></span><br><span class="line"><span class="attr">replication:</span></span><br><span class="line">  <span class="comment"># 启用复制功能</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># 漏洞扫描</span></span><br><span class="line"><span class="attr">trivy:</span></span><br><span class="line">  <span class="comment"># 使用 Trivy 作为扫描器</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">ignore_unfixed:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">severity:</span> <span class="string">high,medium,low</span></span><br><span class="line">  <span class="attr">skip_update:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">offline_scan:</span> <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 通知配置</span></span><br><span class="line"><span class="attr">notification:</span></span><br><span class="line">  <span class="attr">webhook_job_max_retry:</span> <span class="number">3</span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># 日志配置</span></span><br><span class="line"><span class="attr">log:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">rotate_count:</span> <span class="number">50</span></span><br><span class="line">  <span class="attr">rotate_size:</span> <span class="string">200M</span></span><br><span class="line">  <span class="attr">location:</span> <span class="string">/var/log/harbor</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、Harbor-与其他工具集成"><a href="#七、Harbor-与其他工具集成" class="headerlink" title="七、Harbor 与其他工具集成"></a>七、Harbor 与其他工具集成</h2><h3 id="1-与-Kubernetes-集成"><a href="#1-与-Kubernetes-集成" class="headerlink" title="1. 与 Kubernetes 集成"></a>1. <strong>与 Kubernetes 集成</strong></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在 K8s 中创建 Harbor 访问凭证</span></span><br><span class="line">kubectl create secret docker-registry harbor-secret \</span><br><span class="line">  --docker-server=harbor.mycompany.com \</span><br><span class="line">  --docker-username=admin \</span><br><span class="line">  --docker-password=Harbor12345 \</span><br><span class="line">  --docker-email=admin@mycompany.com \</span><br><span class="line">  -n production</span><br><span class="line"></span><br><span class="line"><span class="comment"># K8s 部署配置中使用</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">spec:</span><br><span class="line">  template:</span><br><span class="line">    spec:</span><br><span class="line">      imagePullSecrets:</span><br><span class="line">      - name: harbor-secret</span><br><span class="line">      containers:</span><br><span class="line">      - name: app</span><br><span class="line">        image: harbor.mycompany.com/prod/myapp:v1.0</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-与-Jenkins-集成"><a href="#2-与-Jenkins-集成" class="headerlink" title="2. 与 Jenkins 集成"></a>2. <strong>与 Jenkins 集成</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Jenkinsfile 中使用 Harbor</span></span><br><span class="line">pipeline &#123;</span><br><span class="line">    environment &#123;</span><br><span class="line">        HARBOR_URL = <span class="string">&#x27;harbor.mycompany.com&#x27;</span></span><br><span class="line">        HARBOR_PROJECT = <span class="string">&#x27;dev&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(<span class="string">&#x27;Build and Push&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 构建镜像</span></span><br><span class="line">                    docker.build(<span class="string">&quot;$&#123;HARBOR_URL&#125;/$&#123;HARBOR_PROJECT&#125;/myapp:$&#123;BUILD_NUMBER&#125;&quot;</span>)</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 使用 Jenkins Credentials 登录 Harbor</span></span><br><span class="line">                    withCredentials([usernamePassword(</span><br><span class="line">                        <span class="symbol">credentialsId:</span> <span class="string">&#x27;harbor-credentials&#x27;</span>,</span><br><span class="line">                        <span class="symbol">usernameVariable:</span> <span class="string">&#x27;HARBOR_USER&#x27;</span>,</span><br><span class="line">                        <span class="symbol">passwordVariable:</span> <span class="string">&#x27;HARBOR_PASS&#x27;</span></span><br><span class="line">                    )]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker login $&#123;HARBOR_URL&#125; \</span></span><br><span class="line"><span class="string">                                -u $&#123;HARBOR_USER&#125; \</span></span><br><span class="line"><span class="string">                                -p $&#123;HARBOR_PASS&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 推送镜像</span></span><br><span class="line">                    docker.push(<span class="string">&quot;$&#123;HARBOR_URL&#125;/$&#123;HARBOR_PROJECT&#125;/myapp:$&#123;BUILD_NUMBER&#125;&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        stage(<span class="string">&#x27;Wait for Security Scan&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 等待 Harbor 安全扫描完成</span></span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="keyword">def</span> scanResult = waitForHarborScan(</span><br><span class="line">                        <span class="symbol">image:</span> <span class="string">&quot;$&#123;HARBOR_URL&#125;/$&#123;HARBOR_PROJECT&#125;/myapp:$&#123;BUILD_NUMBER&#125;&quot;</span>,</span><br><span class="line">                        <span class="symbol">timeout:</span> <span class="number">300</span>  <span class="comment">// 5分钟超时</span></span><br><span class="line">                    )</span><br><span class="line">                    </span><br><span class="line">                    <span class="keyword">if</span> (scanResult.vulnerabilities.critical &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        error(<span class="string">&#x27;镜像存在严重漏洞，部署被阻止&#x27;</span>)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-与-GitLab-集成"><a href="#3-与-GitLab-集成" class="headerlink" title="3. 与 GitLab 集成"></a>3. <strong>与 GitLab 集成</strong></h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># .gitlab-ci.yml</span></span><br><span class="line"><span class="attr">variables:</span></span><br><span class="line">  <span class="attr">HARBOR_URL:</span> <span class="string">&quot;harbor.mycompany.com&quot;</span></span><br><span class="line">  <span class="attr">HARBOR_PROJECT:</span> <span class="string">&quot;ci&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">stages:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">build</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">test</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">push</span></span><br><span class="line"></span><br><span class="line"><span class="attr">build-image:</span></span><br><span class="line">  <span class="attr">stage:</span> <span class="string">build</span></span><br><span class="line">  <span class="attr">script:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">docker</span> <span class="string">build</span> <span class="string">-t</span> <span class="string">$&#123;HARBOR_URL&#125;/$&#123;HARBOR_PROJECT&#125;/$&#123;CI_PROJECT_NAME&#125;:$&#123;CI_COMMIT_SHA&#125;</span> <span class="string">.</span></span><br><span class="line">    </span><br><span class="line"><span class="attr">push-to-harbor:</span></span><br><span class="line">  <span class="attr">stage:</span> <span class="string">push</span></span><br><span class="line">  <span class="attr">script:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">echo</span> <span class="string">$HARBOR_PASSWORD</span> <span class="string">|</span> <span class="string">docker</span> <span class="string">login</span> <span class="string">$&#123;HARBOR_URL&#125;</span> <span class="string">-u</span> <span class="string">$&#123;HARBOR_USERNAME&#125;</span> <span class="string">--password-stdin</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">docker</span> <span class="string">push</span> <span class="string">$&#123;HARBOR_URL&#125;/$&#123;HARBOR_PROJECT&#125;/$&#123;CI_PROJECT_NAME&#125;:$&#123;CI_COMMIT_SHA&#125;</span></span><br><span class="line">  <span class="attr">only:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、Harbor-运维管理"><a href="#八、Harbor-运维管理" class="headerlink" title="八、Harbor 运维管理"></a>八、Harbor 运维管理</h2><h3 id="1-监控指标"><a href="#1-监控指标" class="headerlink" title="1. 监控指标"></a>1. <strong>监控指标</strong></h3><p><strong>关键监控项：</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 存储使用情况</span></span><br><span class="line">harbor_storage_used_bytes</span><br><span class="line">harbor_storage_available_bytes</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 镜像统计</span></span><br><span class="line">harbor_project_count</span><br><span class="line">harbor_repository_count</span><br><span class="line">harbor_artifact_count</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 请求性能</span></span><br><span class="line">harbor_http_request_duration_seconds</span><br><span class="line">harbor_http_requests_total</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 扫描状态</span></span><br><span class="line">harbor_scan_completed_total</span><br><span class="line">harbor_scan_failed_total</span><br><span class="line">harbor_vulnerability_count</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 复制状态</span></span><br><span class="line">harbor_replication_tasks_total</span><br><span class="line">harbor_replication_success_total</span><br><span class="line">harbor_replication_failed_total</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-备份与恢复"><a href="#2-备份与恢复" class="headerlink" title="2. 备份与恢复"></a>2. <strong>备份与恢复</strong></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Harbor 备份脚本</span></span><br><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line">BACKUP_DIR=<span class="string">&quot;/backup/harbor-<span class="subst">$(date +%Y%m%d)</span>&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 停止 Harbor 服务</span></span><br><span class="line">docker-compose -f /opt/harbor/docker-compose.yml down</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 备份数据库</span></span><br><span class="line">pg_dump -h localhost -U postgres registry &gt; <span class="variable">$&#123;BACKUP_DIR&#125;</span>/registry.sql</span><br><span class="line">pg_dump -h localhost -U postgres notaryserver &gt; <span class="variable">$&#123;BACKUP_DIR&#125;</span>/notaryserver.sql</span><br><span class="line">pg_dump -h localhost -U postgres notarysigner &gt; <span class="variable">$&#123;BACKUP_DIR&#125;</span>/notarysigner.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 备份配置文件</span></span><br><span class="line"><span class="built_in">cp</span> -r /opt/harbor/harbor.yml <span class="variable">$&#123;BACKUP_DIR&#125;</span>/</span><br><span class="line"><span class="built_in">cp</span> -r /data/secret <span class="variable">$&#123;BACKUP_DIR&#125;</span>/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 备份镜像数据</span></span><br><span class="line"><span class="comment"># 如果使用文件系统存储</span></span><br><span class="line"><span class="built_in">cp</span> -r /data/registry <span class="variable">$&#123;BACKUP_DIR&#125;</span>/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 启动 Harbor 服务</span></span><br><span class="line">docker-compose -f /opt/harbor/docker-compose.yml up -d</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 压缩备份</span></span><br><span class="line">tar -czf <span class="variable">$&#123;BACKUP_DIR&#125;</span>.tar.gz <span class="variable">$&#123;BACKUP_DIR&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-性能优化"><a href="#3-性能优化" class="headerlink" title="3. 性能优化"></a>3. <strong>性能优化</strong></h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Harbor 性能调优配置</span></span><br><span class="line"><span class="comment"># 1. 数据库连接池优化</span></span><br><span class="line"><span class="attr">database:</span></span><br><span class="line">  <span class="attr">max_idle_conns:</span> <span class="number">100</span>    <span class="comment"># 增加空闲连接</span></span><br><span class="line">  <span class="attr">max_open_conns:</span> <span class="number">200</span>    <span class="comment"># 增加最大连接数</span></span><br><span class="line">  <span class="attr">conn_max_lifetime:</span> <span class="number">300</span> <span class="comment"># 连接最大生命周期（秒）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. Redis 缓存优化</span></span><br><span class="line"><span class="attr">redis:</span></span><br><span class="line">  <span class="comment"># 使用更快的序列化方式</span></span><br><span class="line">  <span class="attr">pool:</span></span><br><span class="line">    <span class="attr">max_active:</span> <span class="number">200</span></span><br><span class="line">    <span class="attr">max_idle:</span> <span class="number">50</span></span><br><span class="line">    <span class="attr">idle_timeout:</span> <span class="number">300</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 调整工作线程数</span></span><br><span class="line"><span class="attr">core:</span></span><br><span class="line">  <span class="attr">workers:</span> <span class="number">10</span>  <span class="comment"># 根据 CPU 核心数调整</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 启用镜像层缓存</span></span><br><span class="line"><span class="attr">proxy:</span></span><br><span class="line">  <span class="attr">cache:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">expire_hours:</span> <span class="number">24</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="九、Harbor-vs-其他镜像仓库"><a href="#九、Harbor-vs-其他镜像仓库" class="headerlink" title="九、Harbor vs 其他镜像仓库"></a>九、Harbor vs 其他镜像仓库</h2><h3 id="功能对比表"><a href="#功能对比表" class="headerlink" title="功能对比表"></a>功能对比表</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Harbor</th>
+<th>Docker Registry</th>
+<th>Nexus</th>
+<th>GitLab Registry</th>
+<th>JFrog Artifactory</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>开源免费</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅（内置）</td>
+<td>❌ 商业</td>
+</tr>
+<tr>
+<td><strong>企业级功能</strong></td>
+<td>✅⭐⭐</td>
+<td>❌</td>
+<td>✅⭐</td>
+<td>✅⭐</td>
+<td>✅⭐⭐⭐</td>
+</tr>
+<tr>
+<td><strong>安全扫描</strong></td>
+<td>✅ 内置</td>
+<td>❌</td>
+<td>✅ 插件</td>
+<td>✅ 集成</td>
+<td>✅ 高级</td>
+</tr>
+<tr>
+<td><strong>镜像签名</strong></td>
+<td>✅ Notary</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>多租户</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>复制同步</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>✅ 有限</td>
+<td>✅ 有限</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Web UI</strong></td>
+<td>✅ 优秀</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>RBAC</strong></td>
+<td>✅ 精细</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Helm 支持</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>部署复杂度</strong></td>
+<td>中等</td>
+<td>简单</td>
+<td>中等</td>
+<td>简单</td>
+<td>复杂</td>
+</tr>
+</tbody></table>
+<h3 id="选型建议"><a href="#选型建议" class="headerlink" title="选型建议"></a>选型建议</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">选择 Harbor 当：</span><br><span class="line">1. 需要完全开源的解决方案</span><br><span class="line">2. 有严格的安全合规要求</span><br><span class="line">3. 需要多数据中心复制</span><br><span class="line">4. 预算有限但需要企业功能</span><br><span class="line">5. 团队熟悉 Docker 生态</span><br><span class="line"></span><br><span class="line">选择其他方案当：</span><br><span class="line">1. 只需要基础镜像存储 → Docker Registry</span><br><span class="line">2. 已经有 GitLab → GitLab Registry</span><br><span class="line">3. 需要全语言包管理 → Nexus/Artifactory</span><br><span class="line">4. 企业级商业支持 → JFrog Artifactory</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十、实际案例：大型互联网公司的-Harbor-实践"><a href="#十、实际案例：大型互联网公司的-Harbor-实践" class="headerlink" title="十、实际案例：大型互联网公司的 Harbor 实践"></a>十、实际案例：大型互联网公司的 Harbor 实践</h2><h3 id="案例背景"><a href="#案例背景" class="headerlink" title="案例背景"></a>案例背景</h3><ul>
+<li>公司规模：5000+ 员工，200+ 开发团队</li>
+<li>镜像数量：50,000+ 个镜像</li>
+<li>日均推送：3000+ 次</li>
+<li>存储量：50TB+</li>
+<li>全球部署：5个数据中心</li>
+</ul>
+<h3 id="Harbor-集群架构"><a href="#Harbor-集群架构" class="headerlink" title="Harbor 集群架构"></a>Harbor 集群架构</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">全局 Harbor 集群：</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│               全局管理 Harbor（北京）               │</span><br><span class="line">│                   （只管理元数据）                  │</span><br><span class="line">└─────────────────────────────────────────────────┘</span><br><span class="line">                ↓ 配置同步</span><br><span class="line">┌──────────┬──────────┬──────────┬──────────┐</span><br><span class="line">│ 区域Harbor│ 区域Harbor│ 区域Harbor│ 区域Harbor│</span><br><span class="line">│  北京     │  上海     │  深圳     │  美国     │</span><br><span class="line">└──────────┴──────────┴──────────┴──────────┘</span><br><span class="line">    ↓          ↓          ↓          ↓</span><br><span class="line">  华北业务    华东业务    华南业务    海外业务</span><br></pre></td></tr></table></figure>
+
+<h3 id="实施效果"><a href="#实施效果" class="headerlink" title="实施效果"></a>实施效果</h3><p><strong>实施前：</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 问题清单：</span></span><br><span class="line">1. 镜像存储在各自团队的服务器上</span><br><span class="line">2. 安全漏洞无法统一管理</span><br><span class="line">3. 镜像版本混乱，回滚困难</span><br><span class="line">4. 跨国部署速度极慢</span><br><span class="line">5. 审计日志不完整</span><br></pre></td></tr></table></figure>
+
+<p><strong>实施后：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">✅ 统一管理：所有镜像集中存储</span><br><span class="line">✅ 安全可控：每个镜像都经过安全扫描</span><br><span class="line">✅ 快速部署：区域缓存，秒级拉取</span><br><span class="line">✅ 版本清晰：完整的版本历史和晋级流程</span><br><span class="line">✅ 合规审计：满足各种监管要求</span><br><span class="line">✅ 成本节约：减少重复存储，优化带宽</span><br></pre></td></tr></table></figure>
+
+<h3 id="关键配置"><a href="#关键配置" class="headerlink" title="关键配置"></a>关键配置</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 大型企业 Harbor 配置要点</span></span><br><span class="line"><span class="attr">deployment:</span></span><br><span class="line">  <span class="attr">mode:</span> <span class="string">cluster</span>  <span class="comment"># 集群模式</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span>    <span class="comment"># 每个服务3副本</span></span><br><span class="line"></span><br><span class="line"><span class="attr">storage:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">s3</span>       <span class="comment"># 使用对象存储</span></span><br><span class="line">  <span class="attr">s3:</span></span><br><span class="line">    <span class="attr">endpoint:</span> <span class="string">https://s3.mycompany.com</span></span><br><span class="line">    <span class="attr">bucket:</span> <span class="string">harbor-prod</span></span><br><span class="line">    <span class="attr">encryption:</span> <span class="literal">true</span>  <span class="comment"># 启用加密</span></span><br><span class="line"></span><br><span class="line"><span class="attr">cache:</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="attr">cluster:</span> <span class="literal">true</span>  <span class="comment"># Redis 集群模式</span></span><br><span class="line">    <span class="attr">nodes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis-1:6379</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis-2:6379</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">redis-3:6379</span></span><br><span class="line"></span><br><span class="line"><span class="attr">scanning:</span></span><br><span class="line">  <span class="attr">concurrency:</span> <span class="number">10</span>  <span class="comment"># 并行扫描数量</span></span><br><span class="line">  <span class="attr">offline_update:</span> <span class="literal">true</span>  <span class="comment"># 离线更新漏洞库</span></span><br><span class="line"></span><br><span class="line"><span class="attr">replication:</span></span><br><span class="line">  <span class="attr">max_concurrency:</span> <span class="number">5</span>  <span class="comment"># 最大并发复制数</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结：Harbor-的核心价值"><a href="#总结：Harbor-的核心价值" class="headerlink" title="总结：Harbor 的核心价值"></a>总结：Harbor 的核心价值</h2><h3 id="一句话总结"><a href="#一句话总结" class="headerlink" title="一句话总结"></a>一句话总结</h3><p><strong>Harbor 是企业级私有容器镜像仓库，提供安全、可靠、高效的镜像全生命周期管理。</strong></p>
+<h3 id="三大核心价值"><a href="#三大核心价值" class="headerlink" title="三大核心价值"></a>三大核心价值</h3><h4 id="1-安全合规价值"><a href="#1-安全合规价值" class="headerlink" title="1. 安全合规价值"></a>1. <strong>安全合规价值</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输入：不可信的镜像</span><br><span class="line">处理：安全扫描 + 签名验证 + 访问控制</span><br><span class="line">输出：可信的、安全的镜像</span><br><span class="line">结果：降低安全风险，满足合规要求</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-运维管理价值"><a href="#2-运维管理价值" class="headerlink" title="2. 运维管理价值"></a>2. <strong>运维管理价值</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">问题：镜像分散、版本混乱、部署缓慢</span><br><span class="line">方案：集中存储 + 版本管理 + 智能复制</span><br><span class="line">结果：标准化流程，提升部署效率</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-成本控制价值"><a href="#3-成本控制价值" class="headerlink" title="3. 成本控制价值"></a>3. <strong>成本控制价值</strong></h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">节省：重复存储、跨境带宽、人工管理</span><br><span class="line">实现：存储优化、区域缓存、自动化流程</span><br><span class="line">效果：降低IT成本，提升资源利用率</span><br></pre></td></tr></table></figure>
+
+<h3 id="适用场景判断"><a href="#适用场景判断" class="headerlink" title="适用场景判断"></a>适用场景判断</h3><p><strong>应该使用 Harbor 当：</strong></p>
+<ul>
+<li>✅ 公司有超过 20 个微服务</li>
+<li>✅ 需要满足安全合规要求</li>
+<li>✅ 有多个环境（开发、测试、生产）</li>
+<li>✅ 团队分布在多个地理位置</li>
+<li>✅ 需要完整的审计追溯</li>
+</ul>
+<p><strong>可以不用 Harbor 当：</strong></p>
+<ul>
+<li>❌ 个人学习或小型项目</li>
+<li>❌ 只有几个简单的容器应用</li>
+<li>❌ 不需要安全扫描和签名</li>
+<li>❌ 所有服务都在单地域部署</li>
+</ul>
+<p><strong>Harbor 不是：</strong></p>
+<ul>
+<li>❌ 不是代码仓库（那是 Git）</li>
+<li>❌ 不是 CI&#x2F;CD 工具（那是 Jenkins&#x2F;GitLab CI）</li>
+<li>❌ 不是容器编排平台（那是 Kubernetes）</li>
+<li>❌ 不是监控系统（那是 Prometheus）</li>
+</ul>
+<p><strong>Harbor 是：</strong></p>
+<ul>
+<li>✅ 容器镜像的”保险库” + “质检中心” + “分发中心”</li>
+<li>✅ 连接开发（构建）和运维（部署）的关键桥梁</li>
+<li>✅ 企业容器化转型的基础设施</li>
+</ul>
+<p>通过 Harbor，企业可以实现从”能用容器”到”用好容器”的跨越，真正发挥容器技术的全部潜力。</p>
+]]></content>
+      <categories>
+        <category>Harbor</category>
+      </categories>
+      <tags>
+        <tag>Harbor,镜像仓库</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo Categories 语法</title>
     <url>/2025/05/08/Hexo%20Categories%20%E8%AF%AD%E6%B3%95/</url>
     <content><![CDATA[<p>你提到的困惑很常见，Hexo 的分类嵌套和并列写法在语法上相似，但实际效果完全不同。下面我用具体例子对比说明它们的区别：</p>
@@ -3290,136 +3645,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Jenkins 游戏打包部署流程</title>
-    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>主 CI&#x2F;CD 服务器</td>
-</tr>
-<tr>
-<td><strong>Unity</strong></td>
-<td>安装 Unity Hub 和指定版本 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>版本控制（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>构建节点</strong></td>
-<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
-<li><strong>Git Plugin</strong>（拉取代码）</li>
-<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
-<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
-<li><strong>Publish Over SSH</strong>（远程部署）</li>
-<li><strong>Email Extension</strong>（构建通知）</li>
-</ul>
-<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
-<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
-<ul>
-<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
-<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
-</ul>
-</li>
-<li><p><strong>添加 Unity License</strong>：</p>
-<ul>
-<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
-<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
-</ul>
-<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
-<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
-<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
-</ul>
-</li>
-<li><strong>在 Jenkins 配置触发器</strong>：<ul>
-<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>解决方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Unity 打包失败</strong></td>
-<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
-</tr>
-<tr>
-<td><strong>构建节点无 Unity</strong></td>
-<td>在 Agent 节点安装 Unity Editor</td>
-</tr>
-<tr>
-<td><strong>SSH 部署失败</strong></td>
-<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
-</tr>
-<tr>
-<td><strong>Android&#x2F;iOS 打包问题</strong></td>
-<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
-<li><strong>使用 Docker 镜像</strong>：<ul>
-<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>并行构建多平台</strong>：<ul>
-<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
-</ul>
-</li>
-<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
-<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
-<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
-<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
-</ul>
-<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Jenkins 游戏后端自动化部署流程</title>
     <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
@@ -3604,6 +3829,136 @@
 <li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
 </ul>
 <p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Jenkins 游戏打包部署流程</title>
+    <url>/2025/05/08/Jenkins%20%E6%B8%B8%E6%88%8F%E6%89%93%E5%8C%85%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏打包部署流程（以-Unity-游戏为例）"><a href="#Jenkins-游戏打包部署流程（以-Unity-游戏为例）" class="headerlink" title="Jenkins 游戏打包部署流程（以 Unity 游戏为例）"></a><strong>Jenkins 游戏打包部署流程（以 Unity 游戏为例）</strong></h3><p>以下是使用 Jenkins 自动化构建和部署 Unity 游戏的完整流程，涵盖 <strong>代码拉取、Unity 打包、测试、部署到服务器</strong> 等关键步骤。</p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>主 CI&#x2F;CD 服务器</td>
+</tr>
+<tr>
+<td><strong>Unity</strong></td>
+<td>安装 Unity Hub 和指定版本 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>版本控制（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>构建节点</strong></td>
+<td>Windows&#x2F;Linux 代理机（用于 Unity 打包）</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>FTP&#x2F;SSH&#x2F;云存储（如阿里云 OSS）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><ul>
+<li><strong>Git Plugin</strong>（拉取代码）</li>
+<li><strong>Unity3d Plugin</strong>（Unity 构建支持）</li>
+<li><strong>Pipeline</strong>（定义 CI&#x2F;CD 流程）</li>
+<li><strong>Publish Over SSH</strong>（远程部署）</li>
+<li><strong>Email Extension</strong>（构建通知）</li>
+</ul>
+<h3 id="2-配置-Unity-环境"><a href="#2-配置-Unity-环境" class="headerlink" title="(2) 配置 Unity 环境"></a><strong>(2) 配置 Unity 环境</strong></h3><ol>
+<li><p><strong>在 Jenkins 全局工具中配置 Unity</strong>：</p>
+<ul>
+<li><strong>Manage Jenkins → Global Tool Configuration</strong>  </li>
+<li>指定 Unity 安装路径（如 <code>C:\Program Files\Unity\Hub\Editor\2021.3.0f1\Editor\Unity.exe</code>）</li>
+</ul>
+</li>
+<li><p><strong>添加 Unity License</strong>：</p>
+<ul>
+<li>在构建节点上提前激活 Unity 许可证（命令行或手动激活）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="3-创建-Jenkins-Pipeline"><a href="#3-创建-Jenkins-Pipeline" class="headerlink" title="3. 创建 Jenkins Pipeline"></a><strong>3. 创建 Jenkins Pipeline</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义构建流程：</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        UNITY_PATH = <span class="string">&quot;C:/Program Files/Unity/Hub/Editor/2021.3.0f1/Editor/Unity.exe&quot;</span> <span class="comment">// Windows</span></span><br><span class="line">        <span class="comment">// UNITY_PATH = &quot;/Applications/Unity/Hub/Editor/2021.3.0f1/Unity.app/Contents/MacOS/Unity&quot; // macOS</span></span><br><span class="line">        BUILD_TARGET = <span class="string">&quot;Win64&quot;</span> <span class="comment">// 可选：Win64、Android、iOS、WebGL</span></span><br><span class="line">        OUTPUT_DIR = <span class="string">&quot;build/$&#123;BUILD_TARGET&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;https://github.com/your-game-repo.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：Unity 打包</span></span><br><span class="line">        stage(<span class="string">&#x27;Build&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 清理旧构建</span></span><br><span class="line">                    bat <span class="string">&quot;rmdir /s /q $&#123;OUTPUT_DIR&#125;&quot;</span>  <span class="comment">// Windows</span></span><br><span class="line">                    <span class="comment">// sh &quot;rm -rf $&#123;OUTPUT_DIR&#125;&quot;    // Linux/macOS</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 执行 Unity 打包命令</span></span><br><span class="line">                    bat <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                        &quot;$&#123;UNITY_PATH&#125;&quot; \</span></span><br><span class="line"><span class="string">                        -batchmode \</span></span><br><span class="line"><span class="string">                        -nographics \</span></span><br><span class="line"><span class="string">                        -silent-crashes \</span></span><br><span class="line"><span class="string">                        -logFile &quot;unity-build.log&quot; \</span></span><br><span class="line"><span class="string">                        -projectPath &quot;.&quot; \</span></span><br><span class="line"><span class="string">                        -buildTarget $&#123;BUILD_TARGET&#125; \</span></span><br><span class="line"><span class="string">                        -executeMethod BuildScript.PerformBuild \</span></span><br><span class="line"><span class="string">                        -quit</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            post &#123;</span><br><span class="line">                success &#123;</span><br><span class="line">                    archiveArtifacts <span class="attr">artifacts:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**/*&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">                failure &#123;</span><br><span class="line">                    emailext <span class="attr">body:</span> <span class="string">&#x27;Unity 构建失败，请检查日志！&#x27;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;team@example.com&#x27;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行单元测试或自动化测试</span></span><br><span class="line">                bat <span class="string">&quot;nunit-console Tests/bin/Debug/Tests.dll&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到服务器</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 方式 1：通过 SSH 上传到游戏服务器</span></span><br><span class="line">                    sshPublisher(</span><br><span class="line">                        <span class="symbol">publishers:</span> [</span><br><span class="line">                            sshPublisherDesc(</span><br><span class="line">                                <span class="symbol">configName:</span> <span class="string">&#x27;game-server&#x27;</span>,</span><br><span class="line">                                <span class="symbol">transfers:</span> [</span><br><span class="line">                                    sshTransfer(</span><br><span class="line">                                        <span class="symbol">sourceFiles:</span> <span class="string">&quot;$&#123;OUTPUT_DIR&#125;/**&quot;</span>,</span><br><span class="line">                                        <span class="symbol">remoteDirectory:</span> <span class="string">&quot;/var/www/game&quot;</span>,</span><br><span class="line">                                        <span class="symbol">execCommand:</span> <span class="string">&quot;chmod -R 755 /var/www/game&quot;</span></span><br><span class="line">                                    )</span><br><span class="line">                                ]</span><br><span class="line">                            )</span><br><span class="line">                        ]</span><br><span class="line">                    )</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 方式 2：上传到云存储（如阿里云 OSS）</span></span><br><span class="line">                    withCredentials([usernamePassword(<span class="attr">credentialsId:</span> <span class="string">&#x27;oss-credentials&#x27;</span>, <span class="attr">usernameVariable:</span> <span class="string">&#x27;OSS_KEY&#x27;</span>, <span class="attr">passwordVariable:</span> <span class="string">&#x27;OSS_SECRET&#x27;</span>)]) &#123;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            aliyun oss cp $&#123;OUTPUT_DIR&#125; oss://your-bucket/game/ --recursive \</span></span><br><span class="line"><span class="string">                            --access-key-id $&#123;OSS_KEY&#125; \</span></span><br><span class="line"><span class="string">                            --access-key-secret $&#123;OSS_SECRET&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-Unity-构建脚本"><a href="#4-Unity-构建脚本" class="headerlink" title="4. Unity 构建脚本"></a><strong>4. Unity 构建脚本</strong></h2><p>在 Unity 项目中创建 **<code>BuildScript.cs</code>**（放在 <code>Assets/Editor/</code> 目录下）：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">BuildScript</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PerformBuild</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputDir = Path.Combine(Directory.GetCurrentDirectory(), <span class="string">&quot;build/&quot;</span> + EditorUserBuildSettings.activeBuildTarget);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputDir))</span><br><span class="line">            Directory.CreateDirectory(outputDir);</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildPlayer(</span><br><span class="line">            scenes: EditorBuildSettings.scenes.Where(s =&gt; s.enabled).Select(s =&gt; s.path).ToArray(),</span><br><span class="line">            locationPathName: Path.Combine(outputDir, <span class="string">&quot;Game.exe&quot;</span>),  <span class="comment">// Windows</span></span><br><span class="line">            target: EditorUserBuildSettings.activeBuildTarget,</span><br><span class="line">            options: BuildOptions.None</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-触发构建"><a href="#5-触发构建" class="headerlink" title="5. 触发构建"></a><strong>5. 触发构建</strong></h2><h3 id="1-手动触发"><a href="#1-手动触发" class="headerlink" title="(1) 手动触发"></a><strong>(1) 手动触发</strong></h3><ul>
+<li>在 Jenkins 界面点击 <strong>Build Now</strong>。</li>
+</ul>
+<h3 id="2-自动触发（Git-Webhook）"><a href="#2-自动触发（Git-Webhook）" class="headerlink" title="(2) 自动触发（Git Webhook）"></a><strong>(2) 自动触发（Git Webhook）</strong></h3><ol>
+<li><strong>在 GitHub&#x2F;GitLab 设置 Webhook</strong>：<ul>
+<li>Payload URL: <code>http://&lt;JENKINS_IP&gt;/github-webhook/</code></li>
+</ul>
+</li>
+<li><strong>在 Jenkins 配置触发器</strong>：<ul>
+<li><strong>Build Triggers → GitHub hook trigger for GITScm polling</strong>。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="6-常见问题"><a href="#6-常见问题" class="headerlink" title="6. 常见问题"></a><strong>6. 常见问题</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Unity 打包失败</strong></td>
+<td>检查 <code>unity-build.log</code>，确保 License 已激活</td>
+</tr>
+<tr>
+<td><strong>构建节点无 Unity</strong></td>
+<td>在 Agent 节点安装 Unity Editor</td>
+</tr>
+<tr>
+<td><strong>SSH 部署失败</strong></td>
+<td>检查 Jenkins 的 Publish Over SSH 插件配置</td>
+</tr>
+<tr>
+<td><strong>Android&#x2F;iOS 打包问题</strong></td>
+<td>配置 JDK&#x2F;NDK&#x2F;Xcode 环境</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="7-优化建议"><a href="#7-优化建议" class="headerlink" title="7. 优化建议"></a><strong>7. 优化建议</strong></h2><ol>
+<li><strong>使用 Docker 镜像</strong>：<ul>
+<li>预装 Unity 的 Docker 镜像（如 <code>unityci/editor</code>）可避免环境问题。<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">agent &#123;</span><br><span class="line">    docker &#123;</span><br><span class="line">        image <span class="string">&#x27;unityci/editor:2021.3.0f1-android-1.0.0&#x27;</span></span><br><span class="line">        args <span class="string">&#x27;-v /tmp:/tmp&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>并行构建多平台</strong>：<ul>
+<li>使用 <code>parallel</code> 阶段同时构建 Win&#x2F;Android&#x2F;iOS。</li>
+</ul>
+</li>
+<li><strong>存档 APK&#x2F;IPA</strong>：<ul>
+<li>使用 <code>archiveArtifacts</code> 保存构建产物。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="8-最终效果"><a href="#8-最终效果" class="headerlink" title="8. 最终效果"></a><strong>8. 最终效果</strong></h2><ul>
+<li><strong>代码提交 → 自动触发 Jenkins → Unity 打包 → 测试 → 部署到服务器</strong>  </li>
+<li><strong>团队收到构建成功&#x2F;失败邮件通知</strong></li>
+</ul>
+<p>如果有具体需求（如 Android 签名、iOS 证书配置），可以进一步调整流程！ 🎮</p>
 ]]></content>
       <categories>
         <category>Jenkins</category>
@@ -4147,22 +4502,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Mermaid</title>
-    <url>/2025/07/14/Mermaid/</url>
-    <content><![CDATA[<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
-<blockquote>
-<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a><br>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，不过修改完后你需要重新手动更新链接。<br>Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a><br>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法；<br>可以分享协同编辑，文档存于账户中，链接虽然也不是固定的，但是内容是同步的。</p>
-<p>注意 ：<br>点击【复制 Markdown】生成的链接是根据内容来动态改变的，内容被封装在链接中，所以每次改动图表内容都会改变链接地址，所有引用旧地址的都需要手动更换地址不然访问的内容还是原来的。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>Mermaid</category>
-      </categories>
-      <tags>
-        <tag>Mermaid</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Prefab文本组件管理工具文档</title>
     <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
     <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
@@ -4237,6 +4576,114 @@
       </categories>
       <tags>
         <tag>unity工具</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mermaid</title>
+    <url>/2025/07/14/Mermaid/</url>
+    <content><![CDATA[<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
+<blockquote>
+<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a><br>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，不过修改完后你需要重新手动更新链接。<br>Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a><br>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法；<br>可以分享协同编辑，文档存于账户中，链接虽然也不是固定的，但是内容是同步的。</p>
+<p>注意 ：<br>点击【复制 Markdown】生成的链接是根据内容来动态改变的，内容被封装在链接中，所以每次改动图表内容都会改变链接地址，所有引用旧地址的都需要手动更换地址不然访问的内容还是原来的。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Mermaid</category>
+      </categories>
+      <tags>
+        <tag>Mermaid</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity Overdraw 分析</title>
+    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
+<hr>
+<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 编辑器。</li>
+<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
+<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
+<li>选择 <strong>“Overdraw”</strong> 模式。</li>
+</ol>
+<blockquote>
+<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
+</blockquote>
+<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
+<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
+<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
+</ul>
+<hr>
+<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
+<li>点击左上角的 <strong>Enable</strong>。</li>
+<li>运行游戏，进入你要查看的 UI 界面。</li>
+<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
+</ol>
+<blockquote>
+<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
+</blockquote>
+<hr>
+<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
+<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
+</li>
+<li><p>切换到 <strong>Rendering</strong> 模块。</p>
+</li>
+<li><p>查看：</p>
+<ul>
+<li><strong>Draw Calls（绘制调用次数）</strong></li>
+<li><strong>Batches（批处理）</strong></li>
+<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
+</ul>
+</li>
+</ol>
+<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
+<hr>
+<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
+<ol>
+<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
+<li>捕捉一帧 UI 显示画面。</li>
+<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
+</ol>
+<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
+<hr>
+<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>优点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scene View 的 Overdraw 模式</td>
+<td>快速查看 UI 哪些地方重叠</td>
+<td>快速可视化</td>
+</tr>
+<tr>
+<td>Frame Debugger</td>
+<td>精确分析哪些 UI 元素被重复绘制</td>
+<td>精准</td>
+</tr>
+<tr>
+<td>Profiler</td>
+<td>查看整体 UI 渲染开销</td>
+<td>性能趋势</td>
+</tr>
+<tr>
+<td>RenderDoc</td>
+<td>专业 GPU 分析工具</td>
+<td>最精细</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
+<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -4395,98 +4842,6 @@
       </categories>
       <tags>
         <tag>分布式锁.,Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity Overdraw 分析</title>
-    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
-<hr>
-<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 编辑器。</li>
-<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
-<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
-<li>选择 <strong>“Overdraw”</strong> 模式。</li>
-</ol>
-<blockquote>
-<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
-</blockquote>
-<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
-<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
-<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
-</ul>
-<hr>
-<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
-<li>点击左上角的 <strong>Enable</strong>。</li>
-<li>运行游戏，进入你要查看的 UI 界面。</li>
-<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
-</ol>
-<blockquote>
-<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
-</blockquote>
-<hr>
-<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
-<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
-</li>
-<li><p>切换到 <strong>Rendering</strong> 模块。</p>
-</li>
-<li><p>查看：</p>
-<ul>
-<li><strong>Draw Calls（绘制调用次数）</strong></li>
-<li><strong>Batches（批处理）</strong></li>
-<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
-</ul>
-</li>
-</ol>
-<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
-<hr>
-<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
-<ol>
-<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
-<li>捕捉一帧 UI 显示画面。</li>
-<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
-</ol>
-<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
-<hr>
-<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-<th>优点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Scene View 的 Overdraw 模式</td>
-<td>快速查看 UI 哪些地方重叠</td>
-<td>快速可视化</td>
-</tr>
-<tr>
-<td>Frame Debugger</td>
-<td>精确分析哪些 UI 元素被重复绘制</td>
-<td>精准</td>
-</tr>
-<tr>
-<td>Profiler</td>
-<td>查看整体 UI 渲染开销</td>
-<td>性能趋势</td>
-</tr>
-<tr>
-<td>RenderDoc</td>
-<td>专业 GPU 分析工具</td>
-<td>最精细</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
-<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -5508,6 +5863,109 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
+<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody></table>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1 id="Unity-Jobs"><a href="#Unity-Jobs" class="headerlink" title="Unity Jobs"></a>Unity Jobs</h1><p>Unity <strong>Jobs System</strong> 是 Unity 提供的一种高效并行计算框架，用来帮助开发者更好地利用多核 CPU 的计算能力，提高性能。它是 Unity <strong>Data-Oriented Technology Stack (DOTS)</strong> 的核心组件之一，与 <strong>Burst Compiler</strong> 和 <strong>Entity Component System (ECS)</strong> 密切相关。</p>
@@ -5733,109 +6191,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
-<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody></table>
-<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -5872,7 +6227,7 @@
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#109;&#46;&#x75;&#110;&#105;&#x74;&#121;&#46;&#x63;&#x6f;&#x6c;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#111;&#120;&#121;&#x40;&#x32;&#46;&#x36;&#x2e;&#x30;">&#99;&#x6f;&#109;&#46;&#x75;&#110;&#105;&#x74;&#121;&#46;&#x63;&#x6f;&#x6c;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#111;&#120;&#121;&#x40;&#x32;&#46;&#x36;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#x79;&#x2e;&#99;&#111;&#108;&#108;&#x61;&#98;&#45;&#x70;&#114;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;">&#x63;&#x6f;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#x79;&#x2e;&#99;&#111;&#108;&#108;&#x61;&#98;&#45;&#x70;&#114;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -6433,35 +6788,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 托管代码与非托管代码</title>
     <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
@@ -6549,6 +6875,35 @@
 <li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
 <li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
 </ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
 ]]></content>
   </entry>
   <entry>
@@ -9684,6 +10039,108 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
+    <title>vs隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
+<li><p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li><p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li><p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
+<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li><p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li><p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>unity</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity插件导入方式</title>
     <url>/2025/02/05/unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1 id="Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣"><a href="#Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣" class="headerlink" title="Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣"></a><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1><p>在 Unity 中导入插件主要有两种方式：  </p>
@@ -9898,106 +10355,35 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
-    <title>vs隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/vs%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
-<li><p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
+    <title>团结引擎</title>
+    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
+    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
+<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
+<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
+<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
+<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
+<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
+<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
+<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
+<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
+<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
+<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
+<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
+<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
+<li><p>专为中国开发者定制</p>
+<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
 </li>
-<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
+<li><p>本土科技生态支持</p>
+<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
 </li>
-<li><p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
+<li><p>微信小游戏解决方案</p>
+<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
 </li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
+<li><p>车机定制编辑器</p>
+<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
 </li>
-<li><p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
 </ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
-<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li><p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li><p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
 ]]></content>
-      <categories>
-        <category>unity</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-      </tags>
   </entry>
   <entry>
     <title>分布式与微服务</title>
@@ -10189,37 +10575,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       <tags>
         <tag>医保</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>团结引擎</title>
-    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
-    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
-<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
-<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
-<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
-<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
-<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
-<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
-<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
-<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
-<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
-<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
-<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
-<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
-<li><p>专为中国开发者定制</p>
-<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
-</li>
-<li><p>本土科技生态支持</p>
-<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
-</li>
-<li><p>微信小游戏解决方案</p>
-<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
-</li>
-<li><p>车机定制编辑器</p>
-<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
-</li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>多语言文件批量对比工具文档</title>
@@ -11578,94 +11933,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>笔记本拓展屏+平板</title>
-    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
-    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br><a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
-<h2 id="Spacedesk-版本介绍"><a href="#Spacedesk-版本介绍" class="headerlink" title="Spacedesk 版本介绍"></a>Spacedesk 版本介绍</h2><p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
-<hr>
-<h3 id="免费功能："><a href="#免费功能：" class="headerlink" title="免费功能："></a><strong>免费功能</strong>：</h3><ol>
-<li><p><strong>基本屏幕扩展</strong>：</p>
-<ul>
-<li>支持将平板或手机作为电脑的扩展显示器。</li>
-<li>支持 Wi-Fi 和 USB 连接。</li>
-</ul>
-</li>
-<li><p><strong>多设备连接</strong>：</p>
-<ul>
-<li>可以同时连接多个设备作为扩展屏幕。</li>
-</ul>
-</li>
-<li><p><strong>跨平台支持</strong>：</p>
-<ul>
-<li>支持 Windows 电脑与 Android&#x2F;iOS 设备连接。</li>
-</ul>
-</li>
-<li><p><strong>基本分辨率支持</strong>：</p>
-<ul>
-<li>提供足够的分辨率用于日常办公和娱乐。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="可能收费或需要捐赠的功能："><a href="#可能收费或需要捐赠的功能：" class="headerlink" title="可能收费或需要捐赠的功能："></a><strong>可能收费或需要捐赠的功能</strong>：</h3><ol>
-<li><p><strong>更高分辨率和刷新率</strong>：</p>
-<ul>
-<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
-</ul>
-</li>
-<li><p><strong>高级功能</strong>：</p>
-<ul>
-<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
-</ul>
-</li>
-<li><p><strong>商业用途</strong>：</p>
-<ul>
-<li>如果用于商业环境，可能需要购买许可证。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="捐赠支持："><a href="#捐赠支持：" class="headerlink" title="捐赠支持："></a><strong>捐赠支持</strong>：</h3><ul>
-<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
-</ul>
-<hr>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
-<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
-</ul>
-<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
-<h2 id="将电脑屏幕投射到平板电脑"><a href="#将电脑屏幕投射到平板电脑" class="headerlink" title="将电脑屏幕投射到平板电脑"></a>将电脑屏幕投射到平板电脑</h2><p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
-<h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><ol>
-<li><p><strong>下载软件</strong>：</p>
-<ul>
-<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
-<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
-</ul>
-</li>
-<li><p><strong>确保设备在同一网络</strong>：</p>
-<ul>
-<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
-</ul>
-</li>
-</ol>
-<h4 id="在平板电脑上："><a href="#在平板电脑上：" class="headerlink" title="在平板电脑上："></a>在平板电脑上：</h4><ol>
-<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
-<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
-<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
-</ol>
-<p><img src="/.io//image.png"><br>注意：</p>
-<ul>
-<li>WiFi连接需要同在一个局域网下</li>
-<li>WiFi有延迟</li>
-<li>USB需要打开显示器设备的开发者选项的调试模式</li>
-<li>Local Area Network： WiFi连接开关</li>
-<li>USB Cable Android：USB连接开关</li>
-<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
-<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>社保和公积金的补缴问题</title>
     <url>/2025/05/17/%E7%A4%BE%E4%BF%9D%E5%92%8C%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84%E8%A1%A5%E7%BC%B4%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>离职后，社保和公积金的补缴问题与个人权益密切相关，以下是需要关注的要点及原因解析：</p>
@@ -11936,6 +12203,94 @@ graph TD
       <tags>
         <tag>社保,公积金</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>笔记本拓展屏+平板</title>
+    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
+    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br><a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
+<h2 id="Spacedesk-版本介绍"><a href="#Spacedesk-版本介绍" class="headerlink" title="Spacedesk 版本介绍"></a>Spacedesk 版本介绍</h2><p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
+<hr>
+<h3 id="免费功能："><a href="#免费功能：" class="headerlink" title="免费功能："></a><strong>免费功能</strong>：</h3><ol>
+<li><p><strong>基本屏幕扩展</strong>：</p>
+<ul>
+<li>支持将平板或手机作为电脑的扩展显示器。</li>
+<li>支持 Wi-Fi 和 USB 连接。</li>
+</ul>
+</li>
+<li><p><strong>多设备连接</strong>：</p>
+<ul>
+<li>可以同时连接多个设备作为扩展屏幕。</li>
+</ul>
+</li>
+<li><p><strong>跨平台支持</strong>：</p>
+<ul>
+<li>支持 Windows 电脑与 Android&#x2F;iOS 设备连接。</li>
+</ul>
+</li>
+<li><p><strong>基本分辨率支持</strong>：</p>
+<ul>
+<li>提供足够的分辨率用于日常办公和娱乐。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="可能收费或需要捐赠的功能："><a href="#可能收费或需要捐赠的功能：" class="headerlink" title="可能收费或需要捐赠的功能："></a><strong>可能收费或需要捐赠的功能</strong>：</h3><ol>
+<li><p><strong>更高分辨率和刷新率</strong>：</p>
+<ul>
+<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
+</ul>
+</li>
+<li><p><strong>高级功能</strong>：</p>
+<ul>
+<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
+</ul>
+</li>
+<li><p><strong>商业用途</strong>：</p>
+<ul>
+<li>如果用于商业环境，可能需要购买许可证。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="捐赠支持："><a href="#捐赠支持：" class="headerlink" title="捐赠支持："></a><strong>捐赠支持</strong>：</h3><ul>
+<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
+</ul>
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
+<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
+</ul>
+<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
+<h2 id="将电脑屏幕投射到平板电脑"><a href="#将电脑屏幕投射到平板电脑" class="headerlink" title="将电脑屏幕投射到平板电脑"></a>将电脑屏幕投射到平板电脑</h2><p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
+<h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><ol>
+<li><p><strong>下载软件</strong>：</p>
+<ul>
+<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
+<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
+</ul>
+</li>
+<li><p><strong>确保设备在同一网络</strong>：</p>
+<ul>
+<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
+</ul>
+</li>
+</ol>
+<h4 id="在平板电脑上："><a href="#在平板电脑上：" class="headerlink" title="在平板电脑上："></a>在平板电脑上：</h4><ol>
+<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
+<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
+<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
+</ol>
+<p><img src="/.io//image.png"><br>注意：</p>
+<ul>
+<li>WiFi连接需要同在一个局域网下</li>
+<li>WiFi有延迟</li>
+<li>USB需要打开显示器设备的开发者选项的调试模式</li>
+<li>Local Area Network： WiFi连接开关</li>
+<li>USB Cable Android：USB连接开关</li>
+<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
+<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>算法脑筋急转弯</title>
@@ -12390,6 +12745,132 @@ graph TD
 ]]></content>
   </entry>
   <entry>
+    <title>软件、工具推荐</title>
+    <url>/2025/05/01/%E8%BD%AF%E4%BB%B6%E3%80%81%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
+    <content><![CDATA[<h1 id="电脑软件"><a href="#电脑软件" class="headerlink" title="电脑软件"></a>电脑软件</h1><p>开发软件</p>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>软件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Markdown Monster</td>
+<td>Markdown文本编辑器</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FileZilla</td>
+<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
+</tr>
+</tbody></table>
+<p>系统软件</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>软件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>WinDirStat</td>
+<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Snipaste</td>
+<td>截图贴图软件</td>
+</tr>
+</tbody></table>
+<p>开源工程</p>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>工程</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>TEngine</td>
+<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>UnityGameFramework</td>
+<td>EllanJiang<a href="https://gameframework.cn/">官网</a>,<a href="https://github.com/EllanJiang/UnityGameFramework">git</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>WebGLInput</td>
+<td><a href="https://github.com/kou-yeung/WebGLInput">支持TMP,支持“复制粘贴”支持“tab”和“shift+tab”切换焦点到其他InputField支持移动设备</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>TowerDefense-GameFramework</td>
+<td><a href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo">花桑</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>StarForce</td>
+<td><a href="https://github.com/EllanJiang/StarForce">EllanJiang游戏演示</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>QFramework</td>
+<td><a href="https://github.com/liangxiegame/QFramework">凉鞋</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hybridclr_unity</td>
+<td><a href="https://github.com/focus-creative-games/hybridclr_unity">华佗</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hybridclr_trial</td>
+<td><a href="https://github.com/focus-creative-games/hybridclr_trial">框架</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>GameFramework</td>
+<td>框架工程<a href="https://github.com/EllanJiang/GameFramework">EllanJiang</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>ET-release9.0</td>
+<td><a href="https://github.com/egametang/ET">egametang</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Deer_GameFramework_Wolong</td>
+<td>wolong热更新框架 <a href="https://github.com/It-Life/Deer_GameFramework_Wolong">基于GameFrame+HybridCLR</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>HybridCLR</td>
+<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LuaFramework_UGUI</td>
+<td><a href="https://github.com/jarjin/LuaFramework_UGUI">lua开源框架</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>GameFramework-Next</td>
+<td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
+</tr>
+</tbody></table>
+]]></content>
+  </entry>
+  <entry>
     <title>转产品经理</title>
     <url>/2025/02/11/%E8%BD%AC%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86/</url>
     <content><![CDATA[<h1 id="产品专员岗位的晋升空间和难度"><a href="#产品专员岗位的晋升空间和难度" class="headerlink" title="产品专员岗位的晋升空间和难度"></a>产品专员岗位的晋升空间和难度</h1><p><strong>晋升路径</strong>：</p>
@@ -12732,132 +13213,6 @@ graph TD
 <li>行业分析可找行业报告通读</li>
 <li>产品可找行业头部，腰部，或新颖的产品做分析</li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>软件、工具推荐</title>
-    <url>/2025/05/01/%E8%BD%AF%E4%BB%B6%E3%80%81%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
-    <content><![CDATA[<h1 id="电脑软件"><a href="#电脑软件" class="headerlink" title="电脑软件"></a>电脑软件</h1><p>开发软件</p>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>软件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>Markdown Monster</td>
-<td>Markdown文本编辑器</td>
-</tr>
-<tr>
-<td>2</td>
-<td>FileZilla</td>
-<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
-</tr>
-</tbody></table>
-<p>系统软件</p>
-<hr>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>软件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>WinDirStat</td>
-<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Snipaste</td>
-<td>截图贴图软件</td>
-</tr>
-</tbody></table>
-<p>开源工程</p>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>工程</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>TEngine</td>
-<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
-</tr>
-<tr>
-<td>2</td>
-<td>UnityGameFramework</td>
-<td>EllanJiang<a href="https://gameframework.cn/">官网</a>,<a href="https://github.com/EllanJiang/UnityGameFramework">git</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>WebGLInput</td>
-<td><a href="https://github.com/kou-yeung/WebGLInput">支持TMP,支持“复制粘贴”支持“tab”和“shift+tab”切换焦点到其他InputField支持移动设备</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>TowerDefense-GameFramework</td>
-<td><a href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo">花桑</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>StarForce</td>
-<td><a href="https://github.com/EllanJiang/StarForce">EllanJiang游戏演示</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>QFramework</td>
-<td><a href="https://github.com/liangxiegame/QFramework">凉鞋</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>hybridclr_unity</td>
-<td><a href="https://github.com/focus-creative-games/hybridclr_unity">华佗</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>hybridclr_trial</td>
-<td><a href="https://github.com/focus-creative-games/hybridclr_trial">框架</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>GameFramework</td>
-<td>框架工程<a href="https://github.com/EllanJiang/GameFramework">EllanJiang</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>ET-release9.0</td>
-<td><a href="https://github.com/egametang/ET">egametang</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>Deer_GameFramework_Wolong</td>
-<td>wolong热更新框架 <a href="https://github.com/It-Life/Deer_GameFramework_Wolong">基于GameFrame+HybridCLR</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>HybridCLR</td>
-<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
-</tr>
-<tr>
-<td>2</td>
-<td>LuaFramework_UGUI</td>
-<td><a href="https://github.com/jarjin/LuaFramework_UGUI">lua开源框架</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>GameFramework-Next</td>
-<td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
-</tr>
-</tbody></table>
 ]]></content>
   </entry>
   <entry>
