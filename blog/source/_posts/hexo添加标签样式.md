@@ -2,11 +2,12 @@
 title: hexo添加标签样式
 date: 2024-12-15 20:16:16
 updated: 2024-12-25 14:28:12
-tags: hexo
-categories: hexo
+tags: [Hexo,Butterfly]
+categories: [Hexo,Butterfly]
 description: 
 keywords:
-  - hexo
+  - Hexo
+  - Butterfly
   - 标签
   - 样式
 ---
