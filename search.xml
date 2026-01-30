@@ -563,6 +563,120 @@
 ]]></content>
   </entry>
   <entry>
+    <title>GitHub Actions 没有触发的核心原因</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
+    <content><![CDATA[<p>谢谢提供路径信息。</p>
+<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
+<blockquote>
+<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
+<hr>
+<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
+<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
+<hr>
+<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
+<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
+<hr>
+<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
+]]></content>
+      <categories>
+        <category>代码托管平台</category>
+        <category>Github</category>
+        <category>Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
+        <tag>Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub Actions部署流程</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
+<hr>
+<h3 id="🧾-YAML-脚本结构快速回顾"><a href="#🧾-YAML-脚本结构快速回顾" class="headerlink" title="🧾 YAML 脚本结构快速回顾"></a>🧾 YAML 脚本结构快速回顾</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="✅-含义："><a href="#✅-含义：" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
+<li><code>name</code>: 工作流的名称，显示在 GitHub Actions 页中。</li>
+<li><code>on.push.branches</code>: 表示当你向 <code>master</code> 分支推送代码时，会自动触发这个部署工作流。</li>
+</ul>
+<hr>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="✅-含义：-1"><a href="#✅-含义：-1" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
+<li>定义了一个名为 <code>build</code> 的任务（job）</li>
+<li><code>runs-on: ubuntu-latest</code> 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务</li>
+</ul>
+<hr>
+<h3 id="🚀-核心步骤一览"><a href="#🚀-核心步骤一览" class="headerlink" title="🚀 核心步骤一览"></a>🚀 核心步骤一览</h3><hr>
+<h4 id="1️⃣-获取仓库代码"><a href="#1️⃣-获取仓库代码" class="headerlink" title="1️⃣ 获取仓库代码"></a>1️⃣ 获取仓库代码</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 使用官方的 <code>checkout</code> Action 把当前仓库的源码拉下来。</p>
+<hr>
+<h4 id="2️⃣-设置-Node-js-环境"><a href="#2️⃣-设置-Node-js-环境" class="headerlink" title="2️⃣ 设置 Node.js 环境"></a>2️⃣ 设置 Node.js 环境</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">node-version:</span> <span class="string">&#x27;20&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 安装指定版本的 Node.js 环境，因为 Hexo 是基于 Node.js 的静态站点生成器。</p>
+<hr>
+<h4 id="3️⃣-安装依赖"><a href="#3️⃣-安装依赖" class="headerlink" title="3️⃣ 安装依赖"></a>3️⃣ 安装依赖</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Dependencies</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 安装你 <code>package.json</code> 中定义的所有 Hexo 插件、主题依赖（比如主题支持的 <code>hexo-renderer-*</code>、<code>hexo-generator-*</code> 等）。</p>
+<hr>
+<h4 id="4️⃣-安装部署插件和-Hexo-CLI"><a href="#4️⃣-安装部署插件和-Hexo-CLI" class="headerlink" title="4️⃣ 安装部署插件和 Hexo CLI"></a>4️⃣ 安装部署插件和 Hexo CLI</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">Git</span> <span class="string">Deployer</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">    npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ <code>hexo-deployer-git</code>: 用于将生成的静态文件部署到 GitHub Pages<br>✅ <code>hexo-cli -g</code>: 全局安装 Hexo 命令行工具，后面需要执行 <code>hexo generate</code> 命令</p>
+<hr>
+<h4 id="5️⃣-生成静态页面"><a href="#5️⃣-生成静态页面" class="headerlink" title="5️⃣ 生成静态页面"></a>5️⃣ 生成静态页面</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">and</span> <span class="string">Generate</span> <span class="string">Static</span> <span class="string">Files</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    hexo clean</span></span><br><span class="line"><span class="string">    hexo generate</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ <code>hexo clean</code>: 清理之前生成的 <code>public/</code><br>✅ <code>hexo generate</code>: 将 Markdown 和配置转化为静态网站内容，放入 <code>public/</code> 文件夹</p>
+<hr>
+<h4 id="6️⃣-配置-Git-信息（用于提交）"><a href="#6️⃣-配置-Git-信息（用于提交）" class="headerlink" title="6️⃣ 配置 Git 信息（用于提交）"></a>6️⃣ 配置 Git 信息（用于提交）</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Git</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    git config --global user.name &#x27;github-actions[bot]&#x27;</span></span><br><span class="line"><span class="string">    git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 配置 Git 用户信息，避免提交时报错。</p>
+<hr>
+<h4 id="7️⃣-推送到-GitHub-Pages"><a href="#7️⃣-推送到-GitHub-Pages" class="headerlink" title="7️⃣ 推送到 GitHub Pages"></a>7️⃣ 推送到 GitHub Pages</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">  <span class="attr">env:</span></span><br><span class="line">    <span class="attr">GH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GH_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    cd public/</span></span><br><span class="line"><span class="string">    git init</span></span><br><span class="line"><span class="string">    git add -A</span></span><br><span class="line"><span class="string">    git commit -m &quot;Create by workflows&quot;</span></span><br><span class="line"><span class="string">    git remote add origin https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span></span><br><span class="line"><span class="string">    git push origin HEAD:gh-pages -f</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 这段代码作用：</p>
+<ul>
+<li>进入 Hexo 生成的 <code>public/</code> 静态目录</li>
+<li>初始化 Git 仓库</li>
+<li>用你设置的 <code>GH_TOKEN</code>（GitHub Token）认证身份</li>
+<li>将 <code>public/</code> 目录的内容强制推送到部署仓库（<code>gh-pages</code> 分支）</li>
+</ul>
+<p>这样 GitHub Pages 就可以用 <code>gh-pages</code> 分支中的内容部署网页。</p>
+<hr>
+<h3 id="🔒-GH-TOKEN-是干什么用的？"><a href="#🔒-GH-TOKEN-是干什么用的？" class="headerlink" title="🔒 GH_TOKEN 是干什么用的？"></a>🔒 <code>GH_TOKEN</code> 是干什么用的？</h3><p>这是一个 <strong>私密令牌（Personal Access Token）</strong>，用于允许 GitHub Actions 自动推送内容到仓库。</p>
+<p>你需要在源仓库的 <strong>Settings &gt; Secrets</strong> 中添加：</p>
+<ul>
+<li>名称：<code>GH_TOKEN</code></li>
+<li>内容：GitHub PAT，要求权限包含：<code>repo</code>（公开仓库也可不选）</li>
+</ul>
+<hr>
+<h3 id="✅-总结：这个-Actions-脚本做了什么？"><a href="#✅-总结：这个-Actions-脚本做了什么？" class="headerlink" title="✅ 总结：这个 Actions 脚本做了什么？"></a>✅ 总结：这个 Actions 脚本做了什么？</h3><p>简要流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 git push 文章 --&gt; GitHub 触发 Action --&gt; 自动安装依赖并构建静态网站 --&gt; 自动部署 public/ 到 gh-pages</span><br></pre></td></tr></table></figure>
+
+<p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
+<hr>
+<p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
+]]></content>
+      <categories>
+        <category>GitHub</category>
+        <category>Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
+        <tag>Actions</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1029,119 +1143,6 @@
 </ul>
 <p>通过这种方式，你可以实现 <strong>灵活的热更新系统</strong>，无论是 <strong>C# 代码</strong> 还是 <strong>游戏资源</strong>，都能够根据需要动态更新，并确保两者的匹配和协调工作。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>GitHub Actions 没有触发的核心原因</title>
-    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
-    <content><![CDATA[<p>谢谢提供路径信息。</p>
-<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
-<blockquote>
-<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
-<hr>
-<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
-<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-
-<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
-<hr>
-<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
-<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
-<hr>
-<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
-]]></content>
-      <categories>
-        <category>GitHub</category>
-        <category>Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub</tag>
-        <tag>Actions</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GitHub Actions部署流程</title>
-    <url>/2025/05/08/GitHub%20Actions%20%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2%20%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
-<hr>
-<h3 id="🧾-YAML-脚本结构快速回顾"><a href="#🧾-YAML-脚本结构快速回顾" class="headerlink" title="🧾 YAML 脚本结构快速回顾"></a>🧾 YAML 脚本结构快速回顾</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="✅-含义："><a href="#✅-含义：" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
-<li><code>name</code>: 工作流的名称，显示在 GitHub Actions 页中。</li>
-<li><code>on.push.branches</code>: 表示当你向 <code>master</code> 分支推送代码时，会自动触发这个部署工作流。</li>
-</ul>
-<hr>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="✅-含义：-1"><a href="#✅-含义：-1" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
-<li>定义了一个名为 <code>build</code> 的任务（job）</li>
-<li><code>runs-on: ubuntu-latest</code> 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务</li>
-</ul>
-<hr>
-<h3 id="🚀-核心步骤一览"><a href="#🚀-核心步骤一览" class="headerlink" title="🚀 核心步骤一览"></a>🚀 核心步骤一览</h3><hr>
-<h4 id="1️⃣-获取仓库代码"><a href="#1️⃣-获取仓库代码" class="headerlink" title="1️⃣ 获取仓库代码"></a>1️⃣ 获取仓库代码</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 使用官方的 <code>checkout</code> Action 把当前仓库的源码拉下来。</p>
-<hr>
-<h4 id="2️⃣-设置-Node-js-环境"><a href="#2️⃣-设置-Node-js-环境" class="headerlink" title="2️⃣ 设置 Node.js 环境"></a>2️⃣ 设置 Node.js 环境</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">node-version:</span> <span class="string">&#x27;20&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 安装指定版本的 Node.js 环境，因为 Hexo 是基于 Node.js 的静态站点生成器。</p>
-<hr>
-<h4 id="3️⃣-安装依赖"><a href="#3️⃣-安装依赖" class="headerlink" title="3️⃣ 安装依赖"></a>3️⃣ 安装依赖</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Dependencies</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 安装你 <code>package.json</code> 中定义的所有 Hexo 插件、主题依赖（比如主题支持的 <code>hexo-renderer-*</code>、<code>hexo-generator-*</code> 等）。</p>
-<hr>
-<h4 id="4️⃣-安装部署插件和-Hexo-CLI"><a href="#4️⃣-安装部署插件和-Hexo-CLI" class="headerlink" title="4️⃣ 安装部署插件和 Hexo CLI"></a>4️⃣ 安装部署插件和 Hexo CLI</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">Git</span> <span class="string">Deployer</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">    npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ <code>hexo-deployer-git</code>: 用于将生成的静态文件部署到 GitHub Pages<br>✅ <code>hexo-cli -g</code>: 全局安装 Hexo 命令行工具，后面需要执行 <code>hexo generate</code> 命令</p>
-<hr>
-<h4 id="5️⃣-生成静态页面"><a href="#5️⃣-生成静态页面" class="headerlink" title="5️⃣ 生成静态页面"></a>5️⃣ 生成静态页面</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">and</span> <span class="string">Generate</span> <span class="string">Static</span> <span class="string">Files</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    hexo clean</span></span><br><span class="line"><span class="string">    hexo generate</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ <code>hexo clean</code>: 清理之前生成的 <code>public/</code><br>✅ <code>hexo generate</code>: 将 Markdown 和配置转化为静态网站内容，放入 <code>public/</code> 文件夹</p>
-<hr>
-<h4 id="6️⃣-配置-Git-信息（用于提交）"><a href="#6️⃣-配置-Git-信息（用于提交）" class="headerlink" title="6️⃣ 配置 Git 信息（用于提交）"></a>6️⃣ 配置 Git 信息（用于提交）</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Git</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    git config --global user.name &#x27;github-actions[bot]&#x27;</span></span><br><span class="line"><span class="string">    git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 配置 Git 用户信息，避免提交时报错。</p>
-<hr>
-<h4 id="7️⃣-推送到-GitHub-Pages"><a href="#7️⃣-推送到-GitHub-Pages" class="headerlink" title="7️⃣ 推送到 GitHub Pages"></a>7️⃣ 推送到 GitHub Pages</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">  <span class="attr">env:</span></span><br><span class="line">    <span class="attr">GH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GH_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    cd public/</span></span><br><span class="line"><span class="string">    git init</span></span><br><span class="line"><span class="string">    git add -A</span></span><br><span class="line"><span class="string">    git commit -m &quot;Create by workflows&quot;</span></span><br><span class="line"><span class="string">    git remote add origin https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span></span><br><span class="line"><span class="string">    git push origin HEAD:gh-pages -f</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 这段代码作用：</p>
-<ul>
-<li>进入 Hexo 生成的 <code>public/</code> 静态目录</li>
-<li>初始化 Git 仓库</li>
-<li>用你设置的 <code>GH_TOKEN</code>（GitHub Token）认证身份</li>
-<li>将 <code>public/</code> 目录的内容强制推送到部署仓库（<code>gh-pages</code> 分支）</li>
-</ul>
-<p>这样 GitHub Pages 就可以用 <code>gh-pages</code> 分支中的内容部署网页。</p>
-<hr>
-<h3 id="🔒-GH-TOKEN-是干什么用的？"><a href="#🔒-GH-TOKEN-是干什么用的？" class="headerlink" title="🔒 GH_TOKEN 是干什么用的？"></a>🔒 <code>GH_TOKEN</code> 是干什么用的？</h3><p>这是一个 <strong>私密令牌（Personal Access Token）</strong>，用于允许 GitHub Actions 自动推送内容到仓库。</p>
-<p>你需要在源仓库的 <strong>Settings &gt; Secrets</strong> 中添加：</p>
-<ul>
-<li>名称：<code>GH_TOKEN</code></li>
-<li>内容：GitHub PAT，要求权限包含：<code>repo</code>（公开仓库也可不选）</li>
-</ul>
-<hr>
-<h3 id="✅-总结：这个-Actions-脚本做了什么？"><a href="#✅-总结：这个-Actions-脚本做了什么？" class="headerlink" title="✅ 总结：这个 Actions 脚本做了什么？"></a>✅ 总结：这个 Actions 脚本做了什么？</h3><p>简要流程如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 git push 文章 --&gt; GitHub 触发 Action --&gt; 自动安装依赖并构建静态网站 --&gt; 自动部署 public/ 到 gh-pages</span><br></pre></td></tr></table></figure>
-
-<p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
-<hr>
-<p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
-]]></content>
-      <categories>
-        <category>GitHub</category>
-        <category>Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub</tag>
-        <tag>Actions</tag>
-      </tags>
   </entry>
   <entry>
     <title>GitHub action 自动发布博客</title>
@@ -6742,7 +6743,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#x2e;&#117;&#110;&#x69;&#116;&#x79;&#46;&#99;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#112;&#x72;&#111;&#120;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;">&#99;&#111;&#x6d;&#x2e;&#117;&#110;&#x69;&#116;&#x79;&#46;&#99;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#112;&#x72;&#111;&#120;&#121;&#64;&#x32;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#x79;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#112;&#x72;&#111;&#120;&#121;&#x40;&#50;&#x2e;&#54;&#46;&#48;">&#x63;&#111;&#x6d;&#46;&#117;&#110;&#105;&#x74;&#x79;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#112;&#x72;&#111;&#120;&#121;&#x40;&#50;&#x2e;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -8014,22 +8015,6 @@ graph TD
 ]]></content>
   </entry>
   <entry>
-    <title>git学习</title>
-    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
-]]></content>
-      <categories>
-        <category>git</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>git修改历史提交</title>
     <url>/2024/12/09/git%E4%BF%AE%E6%94%B9%E5%8E%86%E5%8F%B2%E6%8F%90%E4%BA%A4/</url>
     <content><![CDATA[<h1 id="git-reset命令"><a href="#git-reset命令" class="headerlink" title="git reset命令"></a>git reset命令</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git reset --soft 29f9bbd77da69902335cad77a12eac7b022b9f63</span><br></pre></td></tr></table></figure>
@@ -8240,100 +8225,13 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>git无法访问外网</title>
-    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
-    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
-<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
-<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
-<p>怀疑是网络问题，没添加代理：</p>
-<p>给vscode添加代理<br>给git添加代理</p>
-<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
-<p>开启 system proxy<br>启用 global 规则</p>
-<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
-<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
-<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
-<p>找到罪魁祸首是：tun mode</p>
-<hr>
-<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
-<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
-<ul>
-<li><p><strong>TUN 的工作原理</strong> ：</p>
-<ul>
-<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
-</li>
-<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>与系统代理的区别</strong> ：</p>
-<ul>
-<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
-</li>
-<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
-<li><strong>默认拦截所有流量</strong> ：</li>
-</ol>
-<ul>
-<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
-</ul>
-<ol start="2">
-<li><strong>规则优先级问题</strong> ：</li>
-</ol>
-<ul>
-<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
-</ul>
-<ol start="3">
-<li><strong>与其他代理冲突</strong> ：</li>
-</ol>
-<ul>
-<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
-</li>
-<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
-</li>
-<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
-</li>
-</ul>
-<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
-<li><p>打开 Clash for Windows。</p>
-</li>
-<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
-</li>
-<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
-</li>
-</ol>
-<p><strong>调整代理规则</strong>  </p>
-<ol>
-<li><p>确保规则优先级正确：</p>
-<p>  例如： </p>
-<ul>
-<li>将 <code>Direct</code> 设置为默认策略。</li>
-<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
-</ul>
-</li>
-<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
-</li>
-<li><p>测试网络连接：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
-<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
-</li>
-</ol>
-<ul>
-<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
-<li>打开 Clash 设置。</li>
-<li>取消勾选 <strong>TUN Mode</strong> 。</li>
-<li>确保 <strong>System Proxy</strong>  启用。</li>
-</ol>
-</li>
-</ul>
-<p><strong>TUN 模式的适用场景</strong> </p>
-<ul>
-<li>用于拦截不支持手动代理配置的程序流量。</li>
-<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
-</ul>
+    <title>git学习</title>
+    <url>/2024/12/11/git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
 ]]></content>
       <categories>
         <category>git</category>
@@ -8487,6 +8385,109 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>git无法访问外网</title>
+    <url>/2024/12/31/git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
+    <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
+<p>莫名其妙出现 github ssh 22端口无法访问的情况：</p>
+<p>尝试过切换成443端口<br>使用https访问远程，但是github客户端可以访问</p>
+<p>怀疑是网络问题，没添加代理：</p>
+<p>给vscode添加代理<br>给git添加代理</p>
+<p>怀疑clash for windows 没开系统代理或者规则错误：</p>
+<p>开启 system proxy<br>启用 global 规则</p>
+<p>使用vscode、 cmd 、powershell和git ping Google.com 和 ping github.com都无效，只能ping 国内网站。</p>
+<p>使用git bash clone 远程仓库一般都是没问题的，但是还是失败了，</p>
+<p>致使明白翻墙工具的系统代理没开成功，遂比较另一台电脑，执行ping Google.com可以，对比翻墙工具的设置，</p>
+<p>找到罪魁祸首是：tun mode</p>
+<hr>
+<h2 id="Clash-for-Windows-的-TUN-模式"><a href="#Clash-for-Windows-的-TUN-模式" class="headerlink" title="Clash for Windows 的 TUN 模式"></a>Clash for Windows 的 TUN 模式</h2><p>是一种用于透明代理的高级功能，可以影响网络流量的路由方式。以下是详细说明：</p>
+<p><strong>什么是 TUN 模式？</strong><br>TUN 模式是基于操作系统的虚拟网络接口（TUN&#x2F;TAP）的工作方式，用于拦截和重定向网络流量。通过 TUN 模式，Clash 可以透明地代理应用程序的流量，而无需每个应用程序单独设置代理。</p>
+<ul>
+<li><p><strong>TUN 的工作原理</strong> ：</p>
+<ul>
+<li><p>它创建一个虚拟网卡，接收系统的所有网络流量。</p>
+</li>
+<li><p>根据 Clash 的代理规则，对网络请求进行分流或直接代理。</p>
+</li>
+</ul>
+</li>
+<li><p><strong>与系统代理的区别</strong> ：</p>
+<ul>
+<li><p>系统代理需要应用程序支持 HTTP&#x2F;HTTPS 或 SOCKS 协议，并手动配置代理。</p>
+</li>
+<li><p>TUN 模式可以自动拦截所有网络请求，适用于不支持代理配置的程序（如部分游戏或终端工具）。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="TUN-模式对系统代理的影响-为什么影响系统代理？"><a href="#TUN-模式对系统代理的影响-为什么影响系统代理？" class="headerlink" title="TUN 模式对系统代理的影响 为什么影响系统代理？"></a><strong>TUN 模式对系统代理的影响</strong> <strong>为什么影响系统代理？</strong></h3><ol>
+<li><strong>默认拦截所有流量</strong> ：</li>
+</ol>
+<ul>
+<li>TUN 模式接管了系统的大部分网络流量，可能会导致一些程序不再使用系统代理。</li>
+</ul>
+<ol start="2">
+<li><strong>规则优先级问题</strong> ：</li>
+</ol>
+<ul>
+<li>如果 Clash 的规则设置不正确，可能导致部分流量未能正确代理或被错误路由。</li>
+</ul>
+<ol start="3">
+<li><strong>与其他代理冲突</strong> ：</li>
+</ol>
+<ul>
+<li><p>如果系统已经配置了其他代理设置，TUN 模式可能会导致冲突，从而影响代理功能。<br><strong>常见问题</strong>  </p>
+</li>
+<li><p><strong>系统代理无效</strong> ：TUN 模式可能覆盖了系统代理设置。</p>
+</li>
+<li><p><strong>部分应用程序无法联网</strong> ：TUN 模式可能未正确配置分流规则，导致流量被错误处理。</p>
+</li>
+</ul>
+<h3 id="解决方法-启用-TUN-模式的正确方式"><a href="#解决方法-启用-TUN-模式的正确方式" class="headerlink" title="解决方法 启用 TUN 模式的正确方式"></a><strong>解决方法</strong> <strong>启用 TUN 模式的正确方式</strong></h3><ol>
+<li><p>打开 Clash for Windows。</p>
+</li>
+<li><p>在设置中启用 TUN 模式：  <strong>General &gt; TUN Mode</strong>  勾选开启。</p>
+</li>
+<li><p>确保 DNS 设置启用：   在 <strong>DNS Settings</strong>  中启用 “Enable”。</p>
+</li>
+</ol>
+<p><strong>调整代理规则</strong>  </p>
+<ol>
+<li><p>确保规则优先级正确：</p>
+<p>  例如： </p>
+<ul>
+<li>将 <code>Direct</code> 设置为默认策略。</li>
+<li>对需要代理的流量（如 GitHub）添加规则，强制走代理。</li>
+</ul>
+</li>
+<li><p>检查规则文件是否准确无误（可以通过日志查看流量是否正确路由）。</p>
+</li>
+<li><p>测试网络连接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping https://github.com</span><br></pre></td></tr></table></figure>
+<p><strong>关闭 TUN 模式（如果不需要）</strong></p>
+</li>
+</ol>
+<ul>
+<li>如果系统代理已经满足需求，可以关闭 TUN 模式：<ol>
+<li>打开 Clash 设置。</li>
+<li>取消勾选 <strong>TUN Mode</strong> 。</li>
+<li>确保 <strong>System Proxy</strong>  启用。</li>
+</ol>
+</li>
+</ul>
+<p><strong>TUN 模式的适用场景</strong> </p>
+<ul>
+<li>用于拦截不支持手动代理配置的程序流量。</li>
+<li>适用于需要全局透明代理的环境，如部分终端工具或游戏。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo butterfly 添加rightside 按钮</title>
     <url>/2025/01/21/hexo-butterfly-%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
     <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
@@ -8536,54 +8537,6 @@ graph TD
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>hexo 图片加载方案</title>
-    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h1 id="安装-hexo-asset-image-插件"><a href="#安装-hexo-asset-image-插件" class="headerlink" title="安装 hexo-asset-image 插件"></a>安装 hexo-asset-image 插件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-
-<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>修改代码为如下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
-
-<h2 id="页签页md文档中插入图片"><a href="#页签页md文档中插入图片" class="headerlink" title="页签页md文档中插入图片"></a>页签页md文档中插入图片</h2><p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
-<p>打开_config.yml ，修改如下：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="1-trailing-index"><a href="#1-trailing-index" class="headerlink" title="1. trailing_index"></a>1. trailing_index</h3><p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
-<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
-<h3 id="2-trailing-html"><a href="#2-trailing-html" class="headerlink" title="2. trailing_html"></a>2. trailing_html</h3><p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
-<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<p>这个方式的好处在于：</p>
-<ul>
-<li>支持vscode中正常预览</li>
-<li>无需修改Ctrl+V粘贴的路径</li>
-<li>本地构建的网站和正式部署的网站都能正常显示</li>
-</ul>
-<h1 id="html-脚本中添加图片"><a href="#html-脚本中添加图片" class="headerlink" title="html 脚本中添加图片"></a>html 脚本中添加图片</h1><p>我们直接复制粘贴的路径：<br>将路径</p>
-<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
-<p>粘贴到scr中</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
-<p>src : index&#x2F;image.png</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
-<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
-<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
-<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>hexo添加标签样式</title>
@@ -8643,6 +8596,54 @@ graph TD
     <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Supabase</span>
     <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">TailwindCSS</span>
 </div>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo 图片加载方案</title>
+    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1 id="安装-hexo-asset-image-插件"><a href="#安装-hexo-asset-image-插件" class="headerlink" title="安装 hexo-asset-image 插件"></a>安装 hexo-asset-image 插件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>修改代码为如下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
+
+<h2 id="页签页md文档中插入图片"><a href="#页签页md文档中插入图片" class="headerlink" title="页签页md文档中插入图片"></a>页签页md文档中插入图片</h2><p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
+<p>打开_config.yml ，修改如下：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-trailing-index"><a href="#1-trailing-index" class="headerlink" title="1. trailing_index"></a>1. trailing_index</h3><p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
+<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
+<h3 id="2-trailing-html"><a href="#2-trailing-html" class="headerlink" title="2. trailing_html"></a>2. trailing_html</h3><p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
+<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>这个方式的好处在于：</p>
+<ul>
+<li>支持vscode中正常预览</li>
+<li>无需修改Ctrl+V粘贴的路径</li>
+<li>本地构建的网站和正式部署的网站都能正常显示</li>
+</ul>
+<h1 id="html-脚本中添加图片"><a href="#html-脚本中添加图片" class="headerlink" title="html 脚本中添加图片"></a>html 脚本中添加图片</h1><p>我们直接复制粘贴的路径：<br>将路径</p>
+<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
+<p>粘贴到scr中</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
+<p>src : index&#x2F;image.png</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
+<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
+<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
+<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>Hexo</category>
@@ -8917,6 +8918,31 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </categories>
       <tags>
         <tag>分布式,微服务,集群管理,k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
+    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
+    <content><![CDATA[<ol>
+<li><p>去这个网站下载工程：</p>
+<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
+</li>
+<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
+<p><img src="/.io//20241213_141006_image.png"></p>
+</li>
+<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
+</li>
+<li><p>勾选show html element 不然输入后不显示。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>WebGL</category>
+      </categories>
+      <tags>
+        <tag>unity</tag>
+        <tag>webGL</tag>
       </tags>
   </entry>
   <entry>
@@ -9944,31 +9970,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 <li>需要<strong>自定义遍历逻辑</strong>（如特定步长、过滤条件、遍历文件等）：<strong>自定义迭代器</strong></li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>unity webGL 移动端 输入框无法弹出虚拟键盘</title>
-    <url>/2024/12/13/unity-webGL-%E7%A7%BB%E5%8A%A8%E7%AB%AF-%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
-    <content><![CDATA[<ol>
-<li><p>去这个网站下载工程：</p>
-<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
-</li>
-<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
-<p><img src="/.io//20241213_141006_image.png"></p>
-</li>
-<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
-</li>
-<li><p>勾选show html element 不然输入后不显示。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Unity</category>
-        <category>WebGL</category>
-      </categories>
-      <tags>
-        <tag>unity</tag>
-        <tag>webGL</tag>
-      </tags>
   </entry>
   <entry>
     <title>unity 打AB包流程</title>
@@ -11070,11 +11071,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </tags>
   </entry>
   <entry>
-    <title>文件树状层级图生成</title>
-    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
-    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
-  </entry>
-  <entry>
     <title>提升</title>
     <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
     <content><![CDATA[<ol>
@@ -11101,6 +11097,11 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       <tags>
         <tag>提升</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>文件树状层级图生成</title>
+    <url>/2025/05/01/%E6%96%87%E4%BB%B6%E6%A0%91%E7%8A%B6%E5%B1%82%E7%BA%A7%E5%9B%BE%E7%94%9F%E6%88%90/</url>
+    <content><![CDATA[<figure class="highlight py"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pyperclip  <span class="comment"># 需要安装 pip install pyperclip</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_tab_tree</span>(<span class="params">directory, level=<span class="number">0</span>, exclude_dirs=[], exclude_exts=[]</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        files = <span class="built_in">sorted</span>(os.listdir(directory))  <span class="comment"># 按字母排序，方便阅读</span></span><br><span class="line">    <span class="keyword">except</span> PermissionError:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>  <span class="comment"># 避免访问无权限目录时报错</span></span><br><span class="line"></span><br><span class="line">    content = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">        path = os.path.join(directory, file)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定的文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path) <span class="keyword">and</span> file <span class="keyword">in</span> exclude_dirs:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 过滤掉指定后缀的文件</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isfile(path) <span class="keyword">and</span> <span class="built_in">any</span>(file.endswith(ext) <span class="keyword">for</span> ext <span class="keyword">in</span> exclude_exts):</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 使用制表符（Tab）进行缩进</span></span><br><span class="line">        content += <span class="string">&quot;\t&quot;</span> * level + file + <span class="string">&quot;\n&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 递归处理子文件夹</span></span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(path):</span><br><span class="line">            content += generate_tab_tree(path, level + <span class="number">1</span>, exclude_dirs, exclude_exts)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置你的目标文件夹路径</span></span><br><span class="line">directory = <span class="string">r&quot;C:\malaysiaMainPackage\malaysiaMainPackage\Assets\_GameWrap\Editor&quot;</span>  <span class="comment"># 你可以修改为你的目录路径</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件夹</span></span><br><span class="line">exclude_dirs = [<span class="string">&quot;ThirdParty&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置要排除的文件后缀（如 .lua、.meta、.proto） &quot;.lua&quot;, </span></span><br><span class="line">exclude_exts = [<span class="string">&quot;.meta&quot;</span>, <span class="string">&quot;.proto&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成树状结构</span></span><br><span class="line">tree_structure = generate_tab_tree(directory, exclude_dirs=exclude_dirs, exclude_exts=exclude_exts)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制到剪贴板</span></span><br><span class="line">pyperclip.copy(tree_structure)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;层级结构已复制到剪贴板，可以直接粘贴！🎯&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
@@ -13092,6 +13093,132 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
+    <title>软件、工具推荐</title>
+    <url>/2025/05/01/%E8%BD%AF%E4%BB%B6%E3%80%81%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
+    <content><![CDATA[<h1 id="电脑软件"><a href="#电脑软件" class="headerlink" title="电脑软件"></a>电脑软件</h1><p>开发软件</p>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>软件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Markdown Monster</td>
+<td>Markdown文本编辑器</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FileZilla</td>
+<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
+</tr>
+</tbody></table>
+<p>系统软件</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>软件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>WinDirStat</td>
+<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Snipaste</td>
+<td>截图贴图软件</td>
+</tr>
+</tbody></table>
+<p>开源工程</p>
+<table>
+<thead>
+<tr>
+<th>num</th>
+<th>工程</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>TEngine</td>
+<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
+</tr>
+<tr>
+<td>2</td>
+<td>UnityGameFramework</td>
+<td>EllanJiang<a href="https://gameframework.cn/">官网</a>,<a href="https://github.com/EllanJiang/UnityGameFramework">git</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>WebGLInput</td>
+<td><a href="https://github.com/kou-yeung/WebGLInput">支持TMP,支持“复制粘贴”支持“tab”和“shift+tab”切换焦点到其他InputField支持移动设备</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>TowerDefense-GameFramework</td>
+<td><a href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo">花桑</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>StarForce</td>
+<td><a href="https://github.com/EllanJiang/StarForce">EllanJiang游戏演示</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>QFramework</td>
+<td><a href="https://github.com/liangxiegame/QFramework">凉鞋</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hybridclr_unity</td>
+<td><a href="https://github.com/focus-creative-games/hybridclr_unity">华佗</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>hybridclr_trial</td>
+<td><a href="https://github.com/focus-creative-games/hybridclr_trial">框架</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>GameFramework</td>
+<td>框架工程<a href="https://github.com/EllanJiang/GameFramework">EllanJiang</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>ET-release9.0</td>
+<td><a href="https://github.com/egametang/ET">egametang</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Deer_GameFramework_Wolong</td>
+<td>wolong热更新框架 <a href="https://github.com/It-Life/Deer_GameFramework_Wolong">基于GameFrame+HybridCLR</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>HybridCLR</td>
+<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
+</tr>
+<tr>
+<td>2</td>
+<td>LuaFramework_UGUI</td>
+<td><a href="https://github.com/jarjin/LuaFramework_UGUI">lua开源框架</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>GameFramework-Next</td>
+<td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
+</tr>
+</tbody></table>
+]]></content>
+  </entry>
+  <entry>
     <title>转产品经理</title>
     <url>/2025/02/11/%E8%BD%AC%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86/</url>
     <content><![CDATA[<h1 id="产品专员岗位的晋升空间和难度"><a href="#产品专员岗位的晋升空间和难度" class="headerlink" title="产品专员岗位的晋升空间和难度"></a>产品专员岗位的晋升空间和难度</h1><p><strong>晋升路径</strong>：</p>
@@ -13434,132 +13561,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 <li>行业分析可找行业报告通读</li>
 <li>产品可找行业头部，腰部，或新颖的产品做分析</li>
 </ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>软件、工具推荐</title>
-    <url>/2025/05/01/%E8%BD%AF%E4%BB%B6%E3%80%81%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</url>
-    <content><![CDATA[<h1 id="电脑软件"><a href="#电脑软件" class="headerlink" title="电脑软件"></a>电脑软件</h1><p>开发软件</p>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>软件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>Markdown Monster</td>
-<td>Markdown文本编辑器</td>
-</tr>
-<tr>
-<td>2</td>
-<td>FileZilla</td>
-<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
-</tr>
-</tbody></table>
-<p>系统软件</p>
-<hr>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>软件</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>WinDirStat</td>
-<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
-</tr>
-<tr>
-<td>2</td>
-<td>Snipaste</td>
-<td>截图贴图软件</td>
-</tr>
-</tbody></table>
-<p>开源工程</p>
-<table>
-<thead>
-<tr>
-<th>num</th>
-<th>工程</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>TEngine</td>
-<td>扫描磁盘或文件夹，以图形化区块显示文件和文件夹大小</td>
-</tr>
-<tr>
-<td>2</td>
-<td>UnityGameFramework</td>
-<td>EllanJiang<a href="https://gameframework.cn/">官网</a>,<a href="https://github.com/EllanJiang/UnityGameFramework">git</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>WebGLInput</td>
-<td><a href="https://github.com/kou-yeung/WebGLInput">支持TMP,支持“复制粘贴”支持“tab”和“shift+tab”切换焦点到其他InputField支持移动设备</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>TowerDefense-GameFramework</td>
-<td><a href="https://github.com/DrFlower/TowerDefense-GameFramework-Demo">花桑</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>StarForce</td>
-<td><a href="https://github.com/EllanJiang/StarForce">EllanJiang游戏演示</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>QFramework</td>
-<td><a href="https://github.com/liangxiegame/QFramework">凉鞋</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>hybridclr_unity</td>
-<td><a href="https://github.com/focus-creative-games/hybridclr_unity">华佗</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>hybridclr_trial</td>
-<td><a href="https://github.com/focus-creative-games/hybridclr_trial">框架</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>GameFramework</td>
-<td>框架工程<a href="https://github.com/EllanJiang/GameFramework">EllanJiang</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>ET-release9.0</td>
-<td><a href="https://github.com/egametang/ET">egametang</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>Deer_GameFramework_Wolong</td>
-<td>wolong热更新框架 <a href="https://github.com/It-Life/Deer_GameFramework_Wolong">基于GameFrame+HybridCLR</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>HybridCLR</td>
-<td>文件传输工具，主要用于在本地计算机与远程服务器之间高效、安全地上传、下载和管理文件</td>
-</tr>
-<tr>
-<td>2</td>
-<td>LuaFramework_UGUI</td>
-<td><a href="https://github.com/jarjin/LuaFramework_UGUI">lua开源框架</a></td>
-</tr>
-<tr>
-<td>2</td>
-<td>GameFramework-Next</td>
-<td><a href="https://github.com/Alex-Rachel/GameFramework-Next">GameFramework、YooAsset、UniTask、luban、hybridclr</a></td>
-</tr>
-</tbody></table>
 ]]></content>
   </entry>
   <entry>
