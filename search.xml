@@ -1,6 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CDN</title>
+    <url>/2026/01/30/CDN/</url>
+    <content><![CDATA[<h1 id="CDN：给玩家的网络”顺风车”"><a href="#CDN：给玩家的网络”顺风车”" class="headerlink" title="CDN：给玩家的网络”顺风车”"></a>CDN：给玩家的网络”顺风车”</h1><h2 id="一、一句话说清楚"><a href="#一、一句话说清楚" class="headerlink" title="一、一句话说清楚"></a>一、一句话说清楚</h2><p><strong>CDN &#x3D; 把你游戏的文件，提前放到玩家家门口的网络快递站</strong></p>
+<hr>
+<h2 id="二、真实例子：没有CDN-vs-有CDN"><a href="#二、真实例子：没有CDN-vs-有CDN" class="headerlink" title="二、真实例子：没有CDN vs 有CDN"></a>二、真实例子：没有CDN vs 有CDN</h2><h3 id="🐌-没有CDN的情况（你现在的方案）"><a href="#🐌-没有CDN的情况（你现在的方案）" class="headerlink" title="🐌 没有CDN的情况（你现在的方案）"></a>🐌 <strong>没有CDN的情况（你现在的方案）</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">假设：</span><br><span class="line">- 你在杭州（服务器在杭州）</span><br><span class="line">- 玩家A在广州</span><br><span class="line">- 玩家B在哈尔滨</span><br><span class="line">- 玩家C在美国</span><br><span class="line"></span><br><span class="line">下载流程：</span><br><span class="line">广州玩家 → 杭州服务器（2000公里）→ 慢</span><br><span class="line">哈尔滨玩家 → 杭州服务器（2500公里）→ 更慢  </span><br><span class="line">美国玩家 → 杭州服务器（10000公里）→ 卡死了！</span><br><span class="line"></span><br><span class="line">问题：所有人都在&quot;跨省/跨国&quot;下载</span><br></pre></td></tr></table></figure>
+
+<h3 id="🚀-有CDN的情况"><a href="#🚀-有CDN的情况" class="headerlink" title="🚀 有CDN的情况"></a>🚀 <strong>有CDN的情况</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CDN做的事情：</span><br><span class="line">1. 把你的游戏文件复制到全国/全球多个节点</span><br><span class="line">   - 北京节点、上海节点、广州节点、美国节点...</span><br><span class="line"></span><br><span class="line">2. 玩家自动连接到最近的节点</span><br><span class="line">   广州玩家 → 广州CDN节点（50公里）→ 飞快！</span><br><span class="line">   哈尔滨玩家 → 北京CDN节点（800公里）→ 快</span><br><span class="line">   美国玩家 → 美国CDN节点（本地）→ 也快</span><br><span class="line"></span><br><span class="line">效果：每个玩家都像是&quot;在本地下载&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、CDN的工作方式（快递站比喻）"><a href="#三、CDN的工作方式（快递站比喻）" class="headerlink" title="三、CDN的工作方式（快递站比喻）"></a>三、CDN的工作方式（快递站比喻）</h2><h3 id="📦-快递站网络"><a href="#📦-快递站网络" class="headerlink" title="📦 快递站网络"></a>📦 <strong>快递站网络</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你的仓库（杭州） = 源站（游戏文件原位置）</span><br><span class="line">各地快递站 = CDN节点（缓存你的文件）</span><br><span class="line"></span><br><span class="line">流程：</span><br><span class="line">1. 第一次有人从广州要货</span><br><span class="line">   - 快递站没货 → 从杭州仓库调货 → 送到广州 → 同时快递站留一份</span><br><span class="line"></span><br><span class="line">2. 第二次广州人再要</span><br><span class="line">   - 快递站有货 → 直接给 → 飞快！</span><br><span class="line"></span><br><span class="line">3. 第N次...</span><br><span class="line">   - 所有经常有人要的地方，快递站都有货</span><br></pre></td></tr></table></figure>
+
+<h3 id="🗺️-实际网络拓扑"><a href="#🗺️-实际网络拓扑" class="headerlink" title="🗺️ 实际网络拓扑"></a>🗺️ <strong>实际网络拓扑</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → DNS智能解析 → 最近的CDN节点</span><br><span class="line">                     ↓（有缓存）</span><br><span class="line">                   直接返回文件</span><br><span class="line">                     ↓（无缓存）</span><br><span class="line">                   回源到你的服务器 → 缓存起来 → 下次就用缓存</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、独立游戏为什么需要CDN？"><a href="#四、独立游戏为什么需要CDN？" class="headerlink" title="四、独立游戏为什么需要CDN？"></a>四、独立游戏为什么需要CDN？</h2><h3 id="🎯-核心痛点解决"><a href="#🎯-核心痛点解决" class="headerlink" title="🎯 核心痛点解决"></a>🎯 <strong>核心痛点解决</strong></h3><table>
+<thead>
+<tr>
+<th>玩家位置</th>
+<th>没有CDN</th>
+<th>有CDN</th>
+<th>体验差距</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>同城玩家</strong></td>
+<td>10MB&#x2F;s</td>
+<td>10MB&#x2F;s</td>
+<td>没区别</td>
+</tr>
+<tr>
+<td><strong>跨省玩家</strong></td>
+<td>1-2MB&#x2F;s</td>
+<td>8-10MB&#x2F;s</td>
+<td><strong>快5-10倍</strong></td>
+</tr>
+<tr>
+<td><strong>海外玩家</strong></td>
+<td>100KB&#x2F;s</td>
+<td>5-10MB&#x2F;s</td>
+<td><strong>快50-100倍</strong></td>
+</tr>
+<tr>
+<td><strong>移动网络</strong></td>
+<td>经常断</td>
+<td>稳定</td>
+<td>不断流</td>
+</tr>
+</tbody></table>
+<h3 id="💰-成本对比（实际数字）"><a href="#💰-成本对比（实际数字）" class="headerlink" title="💰 成本对比（实际数字）"></a>💰 <strong>成本对比（实际数字）</strong></h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">场景：你的游戏更新包</span> <span class="string">100MB，1000个玩家更新</span></span><br><span class="line"></span><br><span class="line"><span class="string">方案A：直接OSS（没有CDN）</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">流量费用：100MB</span> <span class="string">×</span> <span class="number">1000</span> <span class="string">×</span> <span class="number">0.25</span><span class="string">元/GB</span> <span class="string">=</span> <span class="number">25</span><span class="string">元</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">玩家体验：差的要死，各种抱怨</span></span><br><span class="line"></span><br><span class="line"><span class="string">方案B：OSS</span> <span class="string">+</span> <span class="string">CDN（推荐）</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">流量费用：100MB</span> <span class="string">×</span> <span class="number">1000</span> <span class="string">×</span> <span class="number">0.24</span><span class="string">元/GB</span> <span class="string">=</span> <span class="number">24</span><span class="string">元（几乎一样）</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">CDN费用：基本免费（阿里云免费20GB）</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">玩家体验：丝般顺滑</span></span><br><span class="line"></span><br><span class="line"><span class="string">结果：**几乎不花钱，体验提升10倍**</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="五、CDN怎么用？（极简步骤）"><a href="#五、CDN怎么用？（极简步骤）" class="headerlink" title="五、CDN怎么用？（极简步骤）"></a>五、CDN怎么用？（极简步骤）</h2><h3 id="🚀-5分钟启用CDN"><a href="#🚀-5分钟启用CDN" class="headerlink" title="🚀 5分钟启用CDN"></a>🚀 <strong>5分钟启用CDN</strong></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 你只需要做：</span></span><br><span class="line">1. 在阿里云控制台点<span class="string">&quot;CDN&quot;</span></span><br><span class="line">2. 添加加速域名：update.yourgame.com</span><br><span class="line">3. 源站设置：你的OSS地址</span><br><span class="line">4. 等10分钟生效</span><br><span class="line">5. 把version.json里的URL改成CDN域名</span><br><span class="line"></span><br><span class="line"><span class="comment"># 之前：</span></span><br><span class="line">https://your-game.oss-cn-hangzhou.aliyuncs.com/file.ab</span><br><span class="line"></span><br><span class="line"><span class="comment"># 之后：</span></span><br><span class="line">https://update.yourgame.com/file.ab  <span class="comment"># 自动找最近节点</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="🛠️-代码改动（几乎不用改）"><a href="#🛠️-代码改动（几乎不用改）" class="headerlink" title="🛠️ 代码改动（几乎不用改）"></a>🛠️ <strong>代码改动（几乎不用改）</strong></h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 只需要改一个地方：</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GameUpdater</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 之前：直接连OSS</span></span><br><span class="line">    <span class="comment">// string baseUrl = &quot;https://your-game.oss-cn-hangzhou.aliyuncs.com/&quot;;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 之后：用CDN域名</span></span><br><span class="line">    <span class="built_in">string</span> baseUrl = <span class="string">&quot;https://update.yourgame.com/&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 其他代码完全不变！</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="六、CDN的隐藏好处"><a href="#六、CDN的隐藏好处" class="headerlink" title="六、CDN的隐藏好处"></a>六、CDN的隐藏好处</h2><h3 id="🛡️-1-防攻击"><a href="#🛡️-1-防攻击" class="headerlink" title="🛡️ 1. 防攻击"></a>🛡️ <strong>1. 防攻击</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">没有CDN：攻击直接打你的服务器 → 游戏崩了</span><br><span class="line">有CDN：攻击打在CDN上 → CDN扛住，游戏正常</span><br></pre></td></tr></table></figure>
+
+<h3 id="📊-2-省带宽费"><a href="#📊-2-省带宽费" class="headerlink" title="📊 2. 省带宽费"></a>📊 <strong>2. 省带宽费</strong></h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">CDN的流量费：0.24元/GB</span></span><br><span class="line"><span class="string">直接OSS流量费：0.25元/GB</span></span><br><span class="line"><span class="string">云服务器带宽费：1元/GB起</span></span><br><span class="line"></span><br><span class="line"><span class="string">实际上CDN更便宜，而且：</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">CDN有免费额度</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">多节点分担，不会单点贵</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="🔍-3-数据分析"><a href="#🔍-3-数据分析" class="headerlink" title="🔍 3. 数据分析"></a>🔍 <strong>3. 数据分析</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CDN告诉你：</span><br><span class="line">- 哪个地区玩家最多（看节点流量）</span><br><span class="line">- 下载成功率多少</span><br><span class="line">- 什么时间玩家活跃</span><br><span class="line">- 哪些文件最热门</span><br><span class="line"></span><br><span class="line">这些数据免费看，帮你做运营决策</span><br></pre></td></tr></table></figure>
+
+<h3 id="🔄-4-自动优化"><a href="#🔄-4-自动优化" class="headerlink" title="🔄 4. 自动优化"></a>🔄 <strong>4. 自动优化</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CDN自动做：</span><br><span class="line">- 智能路由（选最快线路）</span><br><span class="line">- 协议优化（HTTP/2, QUIC）</span><br><span class="line">- 压缩传输（gzip, brotli）</span><br><span class="line">- 图片优化（WebP自动转换）</span><br><span class="line"></span><br><span class="line">你不用写一行代码，全自动</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、什么时候必须用CDN？"><a href="#七、什么时候必须用CDN？" class="headerlink" title="七、什么时候必须用CDN？"></a>七、什么时候必须用CDN？</h2><h3 id="✅-立即用CDN的情况："><a href="#✅-立即用CDN的情况：" class="headerlink" title="✅ 立即用CDN的情况："></a>✅ <strong>立即用CDN的情况：</strong></h3><ol>
+<li><strong>有海外玩家</strong> - 跨国必须CDN</li>
+<li><strong>文件 &gt; 50MB</strong> - 大文件必须加速</li>
+<li><strong>玩家 &gt; 100人</strong> - 人多需要分担</li>
+<li><strong>移动网络多</strong> - 需要稳定性</li>
+</ol>
+<h3 id="⏰-可以等等的情况："><a href="#⏰-可以等等的情况：" class="headerlink" title="⏰ 可以等等的情况："></a>⏰ <strong>可以等等的情况：</strong></h3><ol>
+<li>只有本地测试</li>
+<li>玩家&lt;10人</li>
+<li>文件&lt;10MB</li>
+<li>都是WiFi环境</li>
+</ol>
+<hr>
+<h2 id="八、独立游戏CDN配置模板"><a href="#八、独立游戏CDN配置模板" class="headerlink" title="八、独立游戏CDN配置模板"></a>八、独立游戏CDN配置模板</h2><h3 id="📝-阿里云CDN极简配置"><a href="#📝-阿里云CDN极简配置" class="headerlink" title="📝 阿里云CDN极简配置"></a>📝 <strong>阿里云CDN极简配置</strong></h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在阿里云控制台这样配：</span></span><br><span class="line"><span class="string">加速域名:</span> <span class="string">update.yourgame.com</span></span><br><span class="line"><span class="string">源站信息:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">类型:</span> <span class="string">OSS域名</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">地址:</span> <span class="string">your-game.oss-cn-hangzhou.aliyuncs.com</span></span><br><span class="line">  </span><br><span class="line"><span class="string">缓存配置（默认就好）:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">静态文件:</span> <span class="string">缓存30天</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">图片:</span> <span class="string">缓存7天</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">版本文件:</span> <span class="string">缓存5分钟（经常变）</span></span><br><span class="line">  </span><br><span class="line"><span class="string">HTTPS（一定要开）:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">免费SSL证书（自动申请）</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">强制HTTPS（更安全）</span></span><br><span class="line">  </span><br><span class="line"><span class="string">费用控制:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">开启用量封顶:</span> <span class="number">100</span><span class="string">元/月</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">超出自动停服（防止意外）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="💸-费用预估（小游戏）"><a href="#💸-费用预估（小游戏）" class="headerlink" title="💸 费用预估（小游戏）"></a>💸 <strong>费用预估（小游戏）</strong></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">免费额度: 20GB流量/月</span><br><span class="line">你的用量预估:</span><br><span class="line">- 100个玩家 × 100MB更新 = 10GB</span><br><span class="line">- 日常小更新: 5GB</span><br><span class="line">总用量: 15GB &lt; 20GB</span><br><span class="line"></span><br><span class="line">结果: 完全免费！</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="九、常见问题解答"><a href="#九、常见问题解答" class="headerlink" title="九、常见问题解答"></a>九、常见问题解答</h2><h3 id="❓-Q1-CDN要额外写代码吗？"><a href="#❓-Q1-CDN要额外写代码吗？" class="headerlink" title="❓ Q1: CDN要额外写代码吗？"></a>❓ <strong>Q1: CDN要额外写代码吗？</strong></h3><p><strong>A: 几乎不用。</strong> 就改个域名，其他完全透明。</p>
+<h3 id="❓-Q2-文件更新了，CDN还是旧的怎么办？"><a href="#❓-Q2-文件更新了，CDN还是旧的怎么办？" class="headerlink" title="❓ Q2: 文件更新了，CDN还是旧的怎么办？"></a>❓ <strong>Q2: 文件更新了，CDN还是旧的怎么办？</strong></h3><p><strong>A: CDN自动处理。</strong> 你更新OSS文件后，CDN检测到变化会自动刷新。也可以手动点”刷新缓存”（控制台点一下）。</p>
+<h3 id="❓-Q3-CDN挂了怎么办？"><a href="#❓-Q3-CDN挂了怎么办？" class="headerlink" title="❓ Q3: CDN挂了怎么办？"></a>❓ <strong>Q3: CDN挂了怎么办？</strong></h3><p><strong>A: 自动回源。</strong> CDN故障时，玩家会自动回源到你的OSS，只是慢点，不会玩不了。</p>
+<h3 id="❓-Q4-小游戏值得用吗？"><a href="#❓-Q4-小游戏值得用吗？" class="headerlink" title="❓ Q4: 小游戏值得用吗？"></a>❓ <strong>Q4: 小游戏值得用吗？</strong></h3><p><strong>A: 值得。</strong> 因为：</p>
+<ol>
+<li>免费额度够用</li>
+<li>配置只要5分钟</li>
+<li>未来扩展无忧</li>
+<li>玩家体验提升明显</li>
+</ol>
+<h3 id="❓-Q5-多个游戏可以用同一个CDN吗？"><a href="#❓-Q5-多个游戏可以用同一个CDN吗？" class="headerlink" title="❓ Q5: 多个游戏可以用同一个CDN吗？"></a>❓ <strong>Q5: 多个游戏可以用同一个CDN吗？</strong></h3><p><strong>A: 可以。</strong> 用子域名区分：</p>
+<ul>
+<li>game1.update.yourgame.com</li>
+<li>game2.update.yourgame.com<br>都指向同一个CDN配置。</li>
+</ul>
+<hr>
+<h2 id="十、给你的行动清单"><a href="#十、给你的行动清单" class="headerlink" title="十、给你的行动清单"></a>十、给你的行动清单</h2><h3 id="🎯-今天就能做的："><a href="#🎯-今天就能做的：" class="headerlink" title="🎯 今天就能做的："></a>🎯 <strong>今天就能做的：</strong></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 步骤1：注册/登录阿里云（已有跳过）</span></span><br><span class="line">open https://www.aliyun.com</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤2：开通CDN（免费开通）</span></span><br><span class="line">控制台 → 产品 → CDN → 立即开通</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤3：添加加速域名（5分钟）</span></span><br><span class="line">1. 域名: update.yourgame.com（你已备案的域名）</span><br><span class="line">2. 源站: 你的OSS地址</span><br><span class="line">3. 下一步 → 提交</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤4：修改Unity代码（2分钟）</span></span><br><span class="line">把下载URL从OSS地址改为CDN地址</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤5：测试（3分钟）</span></span><br><span class="line">本地跑一下，感受速度差异</span><br></pre></td></tr></table></figure>
+
+<h3 id="📊-效果对比："><a href="#📊-效果对比：" class="headerlink" title="📊 效果对比："></a>📊 <strong>效果对比：</strong></h3><table>
+<thead>
+<tr>
+<th>指标</th>
+<th>无CDN</th>
+<th>有CDN</th>
+<th>提升</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>跨省下载速度</strong></td>
+<td>1-3 MB&#x2F;s</td>
+<td>8-15 MB&#x2F;s</td>
+<td><strong>3-5倍</strong></td>
+</tr>
+<tr>
+<td><strong>海外下载速度</strong></td>
+<td>0.1-0.5 MB&#x2F;s</td>
+<td>3-8 MB&#x2F;s</td>
+<td><strong>10-50倍</strong></td>
+</tr>
+<tr>
+<td><strong>下载成功率</strong></td>
+<td>90%</td>
+<td>99.9%</td>
+<td><strong>更稳定</strong></td>
+</tr>
+<tr>
+<td><strong>你的工作量</strong></td>
+<td>0</td>
+<td>30分钟配置</td>
+<td><strong>一次投入</strong></td>
+</tr>
+<tr>
+<td><strong>每月成本</strong></td>
+<td>基本一样</td>
+<td>基本一样</td>
+<td><strong>没增加</strong></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结：给独立游戏开发者的建议"><a href="#总结：给独立游戏开发者的建议" class="headerlink" title="总结：给独立游戏开发者的建议"></a>总结：给独立游戏开发者的建议</h2><h3 id="🎮-一句话：用CDN"><a href="#🎮-一句话：用CDN" class="headerlink" title="🎮 一句话：用CDN"></a>🎮 <strong>一句话：用CDN</strong></h3><p><strong>为什么？</strong></p>
+<ul>
+<li><strong>几乎免费</strong>（小游戏完全在免费额度内）</li>
+<li><strong>配置简单</strong>（30分钟搞定）</li>
+<li><strong>效果显著</strong>（玩家下载快10倍）</li>
+<li><strong>一次设置，终身受益</strong></li>
+</ul>
+<p><strong>别想的太复杂：</strong></p>
+<ul>
+<li>不是什么高科技</li>
+<li>就是网络快递站</li>
+<li>你只需要改个快递单号（域名）</li>
+<li>快递公司（CDN）负责把货送到最近站点</li>
+</ul>
+<p><strong>现在就去开CDN：</strong></p>
+<ol>
+<li>打开阿里云控制台</li>
+<li>搜索”CDN”</li>
+<li>点”添加域名”</li>
+<li>输入你的OSS地址</li>
+<li>完成</li>
+</ol>
+<p><strong>今晚你的玩家下载速度就能快5-10倍，而你可能一杯咖啡都没喝完。</strong></p>
+<p>有任何配置问题，把截图发我，我告诉你怎么点！</p>
+]]></content>
+      <categories>
+        <category>CDN</category>
+      </categories>
+      <tags>
+        <tag>CDN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C# CLR</title>
     <url>/2025/01/20/C#-CLR/</url>
     <content><![CDATA[<p>CLR 是 <strong>Common Language Runtime</strong> 的缩写，翻译为 <strong>公共语言运行时</strong>。它是 .NET 框架的核心组件，负责执行由 .NET 编程语言（如 C#、VB.NET、F# 等）编写的程序。</p>
@@ -1194,6 +1369,73 @@
       </tags>
   </entry>
   <entry>
+    <title>GitHub 作为热更服务器</title>
+    <url>/2025/01/22/GitHub%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
+<li><p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li><p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
+<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li><p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
+]]></content>
+      <categories>
+        <category>GitHub</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>GitHub-Hexo 部署脚本</title>
     <url>/2025/05/12/GitHub-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
     <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
@@ -1264,73 +1506,6 @@
         <tag>GitHub</tag>
         <tag>Actions</tag>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>GitHub 作为热更服务器</title>
-    <url>/2025/01/22/GitHub%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
-<li><p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li><p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
-<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li><p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
-]]></content>
-      <categories>
-        <category>GitHub</category>
-      </categories>
-      <tags>
-        <tag>GitHub</tag>
       </tags>
   </entry>
   <entry>
@@ -6920,6 +7095,98 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity Overdraw 分析</title>
+    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
+<hr>
+<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 编辑器。</li>
+<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
+<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
+<li>选择 <strong>“Overdraw”</strong> 模式。</li>
+</ol>
+<blockquote>
+<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
+</blockquote>
+<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
+<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
+<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
+</ul>
+<hr>
+<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
+<li>点击左上角的 <strong>Enable</strong>。</li>
+<li>运行游戏，进入你要查看的 UI 界面。</li>
+<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
+</ol>
+<blockquote>
+<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
+</blockquote>
+<hr>
+<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
+<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
+</li>
+<li><p>切换到 <strong>Rendering</strong> 模块。</p>
+</li>
+<li><p>查看：</p>
+<ul>
+<li><strong>Draw Calls（绘制调用次数）</strong></li>
+<li><strong>Batches（批处理）</strong></li>
+<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
+</ul>
+</li>
+</ol>
+<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
+<hr>
+<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
+<ol>
+<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
+<li>捕捉一帧 UI 显示画面。</li>
+<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
+</ol>
+<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
+<hr>
+<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>优点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scene View 的 Overdraw 模式</td>
+<td>快速查看 UI 哪些地方重叠</td>
+<td>快速可视化</td>
+</tr>
+<tr>
+<td>Frame Debugger</td>
+<td>精确分析哪些 UI 元素被重复绘制</td>
+<td>精准</td>
+</tr>
+<tr>
+<td>Profiler</td>
+<td>查看整体 UI 渲染开销</td>
+<td>性能趋势</td>
+</tr>
+<tr>
+<td>RenderDoc</td>
+<td>专业 GPU 分析工具</td>
+<td>最精细</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
+<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity Assetbundle</title>
     <url>/2025/01/20/Unity%20Assetbundle/</url>
     <content><![CDATA[<h2 id="了解什么是Assetbundle"><a href="#了解什么是Assetbundle" class="headerlink" title="了解什么是Assetbundle"></a>了解什么是Assetbundle</h2><p>严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:</p>
@@ -7379,98 +7646,6 @@ graph TD
       <tags>
         <tag>Unity</tag>
         <tag>AssetBundle</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity Overdraw 分析</title>
-    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
-<hr>
-<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 编辑器。</li>
-<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
-<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
-<li>选择 <strong>“Overdraw”</strong> 模式。</li>
-</ol>
-<blockquote>
-<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
-</blockquote>
-<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
-<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
-<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
-</ul>
-<hr>
-<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
-<li>点击左上角的 <strong>Enable</strong>。</li>
-<li>运行游戏，进入你要查看的 UI 界面。</li>
-<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
-</ol>
-<blockquote>
-<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
-</blockquote>
-<hr>
-<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
-<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
-</li>
-<li><p>切换到 <strong>Rendering</strong> 模块。</p>
-</li>
-<li><p>查看：</p>
-<ul>
-<li><strong>Draw Calls（绘制调用次数）</strong></li>
-<li><strong>Batches（批处理）</strong></li>
-<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
-</ul>
-</li>
-</ol>
-<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
-<hr>
-<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
-<ol>
-<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
-<li>捕捉一帧 UI 显示画面。</li>
-<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
-</ol>
-<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
-<hr>
-<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-<th>优点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Scene View 的 Overdraw 模式</td>
-<td>快速查看 UI 哪些地方重叠</td>
-<td>快速可视化</td>
-</tr>
-<tr>
-<td>Frame Debugger</td>
-<td>精确分析哪些 UI 元素被重复绘制</td>
-<td>精准</td>
-</tr>
-<tr>
-<td>Profiler</td>
-<td>查看整体 UI 渲染开销</td>
-<td>性能趋势</td>
-</tr>
-<tr>
-<td>RenderDoc</td>
-<td>专业 GPU 分析工具</td>
-<td>最精细</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
-<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -9494,7 +9669,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#x6d;&#x2e;&#117;&#x6e;&#x69;&#116;&#121;&#46;&#99;&#111;&#108;&#x6c;&#x61;&#x62;&#x2d;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#46;&#54;&#46;&#48;">&#99;&#x6f;&#x6d;&#x2e;&#117;&#x6e;&#x69;&#116;&#121;&#46;&#99;&#111;&#108;&#x6c;&#x61;&#x62;&#x2d;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#46;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#x2e;&#117;&#110;&#105;&#116;&#x79;&#46;&#99;&#x6f;&#108;&#108;&#97;&#98;&#x2d;&#112;&#114;&#111;&#x78;&#121;&#x40;&#x32;&#46;&#x36;&#x2e;&#x30;">&#x63;&#x6f;&#109;&#x2e;&#117;&#110;&#105;&#116;&#x79;&#46;&#99;&#x6f;&#108;&#108;&#97;&#98;&#x2d;&#112;&#114;&#111;&#x78;&#121;&#x40;&#x32;&#46;&#x36;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -10163,41 +10338,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>unity 插件工具</title>
     <url>/2025/01/06/Unity-%E6%8F%92%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p><a href="https://blog.csdn.net/weixin_43705303/article/details/126761956">Unity常见插件汇总 csdn</a><br><a href="https://zhuanlan.zhihu.com/p/62471100">知乎</a><br><a href="https://blog.csdn.net/u014361280/article/details/122806834">详细</a><br><a href="https://www.gcores.com/articles/191584#nopop_e204c">cato 使用的20个插件</a></p>
@@ -10398,6 +10538,41 @@ graph TD
       </categories>
       <tags>
         <tag>Unity Plugins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -11232,44 +11407,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>团结引擎</title>
-    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
-    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
-<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
-<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
-<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
-<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
-<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
-<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
-<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
-<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
-<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
-<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
-<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
-<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
-<li><p>专为中国开发者定制</p>
-<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
-</li>
-<li><p>本土科技生态支持</p>
-<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
-</li>
-<li><p>微信小游戏解决方案</p>
-<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
-</li>
-<li><p>车机定制编辑器</p>
-<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Unity</category>
-        <category>团结引擎</category>
-      </categories>
-      <tags>
-        <tag>团结引擎</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>多语言文件批量对比工具文档</title>
     <url>/2025/07/09/%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%89%B9%E9%87%8F%E5%AF%B9%E6%AF%94%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
     <content><![CDATA[<h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>多语言文件批量对比工具是一个Unity编辑器扩展工具，用于批量扫描和对比游戏中的多语言Lua文件，检查不同语言版本之间的键值一致性。该工具能够自动识别同名语言文件组，并对比各组文件中键的差异，帮助开发者快速发现多语言文件中的缺失或多余键值。</p>
@@ -11340,6 +11477,44 @@ graph TD
         <tag>Lua</tag>
         <tag>unity工具</tag>
         <tag>多语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>团结引擎</title>
+    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
+    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
+<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
+<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
+<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
+<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
+<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
+<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
+<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
+<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
+<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
+<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
+<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
+<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
+<li><p>专为中国开发者定制</p>
+<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
+</li>
+<li><p>本土科技生态支持</p>
+<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
+</li>
+<li><p>微信小游戏解决方案</p>
+<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
+</li>
+<li><p>车机定制编辑器</p>
+<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>团结引擎</category>
+      </categories>
+      <tags>
+        <tag>团结引擎</tag>
       </tags>
   </entry>
   <entry>
@@ -11887,8 +12062,8 @@ graph TD
         <category>游戏下载</category>
       </categories>
       <tags>
-        <tag>GitHub</tag>
         <tag>CDN</tag>
+        <tag>GitHub</tag>
         <tag>游戏下载</tag>
       </tags>
   </entry>
@@ -12037,266 +12212,6 @@ graph TD
       <tags>
         <tag>游戏流程</tag>
         <tag>Royal Empire</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>部门</title>
-    <url>/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</url>
-    <content><![CDATA[<h1 id="游戏开发中各组件的协作流程"><a href="#游戏开发中各组件的协作流程" class="headerlink" title="游戏开发中各组件的协作流程"></a>游戏开发中各组件的协作流程</h1><p>在游戏开发中，客户端、Web、服务器和数据库这几个核心组件通过协同工作来实现完整的游戏体验。以下是它们的协作方式：</p>
-<h2 id="1-基本协作架构"><a href="#1-基本协作架构" class="headerlink" title="1. 基本协作架构"></a>1. 基本协作架构</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家操作 → 客户端 → (Web层) → 游戏服务器 → 数据库</span><br><span class="line">       ↑        ↓              ↑             ↓</span><br><span class="line">       └────────┴──────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-各组件职责与协作细节"><a href="#2-各组件职责与协作细节" class="headerlink" title="2. 各组件职责与协作细节"></a>2. 各组件职责与协作细节</h2><h3 id="客户端-Client"><a href="#客户端-Client" class="headerlink" title="客户端 (Client)"></a>客户端 (Client)</h3><ul>
-<li><strong>职责</strong>：负责游戏画面渲染、玩家输入处理、本地逻辑计算</li>
-<li><strong>协作方式</strong>：<ul>
-<li>向服务器发送玩家操作（移动、攻击等）</li>
-<li>接收服务器同步的游戏状态</li>
-<li>对于网络游戏，客户端通常不存储关键数据（如玩家等级、装备）</li>
-</ul>
-</li>
-</ul>
-<h3 id="Web层-可选"><a href="#Web层-可选" class="headerlink" title="Web层 (可选)"></a>Web层 (可选)</h3><ul>
-<li><strong>职责</strong>：<ul>
-<li>账号系统、支付系统、公告系统</li>
-<li>游戏官网、社区论坛</li>
-<li>CDN资源分发</li>
-</ul>
-</li>
-<li><strong>协作方式</strong>：<ul>
-<li>处理用户注册&#x2F;登录（通常通过OAuth等协议）</li>
-<li>为客户端提供静态资源（游戏更新包、素材等）</li>
-<li>与游戏服务器交互获取玩家基础数据</li>
-</ul>
-</li>
-</ul>
-<h3 id="游戏服务器-Game-Server"><a href="#游戏服务器-Game-Server" class="headerlink" title="游戏服务器 (Game Server)"></a>游戏服务器 (Game Server)</h3><ul>
-<li><strong>职责</strong>：<ul>
-<li>游戏核心逻辑计算</li>
-<li>反作弊验证</li>
-<li>玩家间同步</li>
-<li>房间&#x2F;匹配管理</li>
-</ul>
-</li>
-<li><strong>协作方式</strong>：<ul>
-<li>接收并验证客户端请求</li>
-<li>处理游戏逻辑（战斗计算、道具使用等）</li>
-<li>向数据库读写持久化数据</li>
-<li>广播游戏状态给相关客户端</li>
-</ul>
-</li>
-</ul>
-<h3 id="数据库-Database"><a href="#数据库-Database" class="headerlink" title="数据库 (Database)"></a>数据库 (Database)</h3><ul>
-<li><strong>职责</strong>：持久化存储游戏数据</li>
-<li><strong>协作方式</strong>：<ul>
-<li>存储玩家档案、物品库存、排行榜等</li>
-<li>提供事务支持确保数据一致性</li>
-<li>通常通过服务器间接访问，客户端不直接操作</li>
-</ul>
-</li>
-</ul>
-<h2 id="3-典型数据流示例"><a href="#3-典型数据流示例" class="headerlink" title="3. 典型数据流示例"></a>3. 典型数据流示例</h2><p><strong>场景</strong>：玩家购买游戏道具</p>
-<ol>
-<li><strong>客户端</strong>：玩家点击购买按钮 → 向Web服务器发送购买请求</li>
-<li><strong>Web层</strong>：验证支付信息 → 向游戏服务器发送道具授予请求</li>
-<li><strong>游戏服务器</strong>：验证请求合法性 → 更新玩家道具数据 → 将变更写入数据库</li>
-<li><strong>数据库</strong>：持久化存储新的道具数据 → 返回成功响应</li>
-<li><strong>游戏服务器</strong>：通知客户端更新道具栏</li>
-<li><strong>客户端</strong>：刷新UI显示新道具</li>
-</ol>
-<h2 id="4-技术实现选择"><a href="#4-技术实现选择" class="headerlink" title="4. 技术实现选择"></a>4. 技术实现选择</h2><ul>
-<li><strong>通信协议</strong>：<ul>
-<li>客户端-服务器：通常使用TCP&#x2F;UDP（如WebSocket、KCP）</li>
-<li>Web-服务器：常用HTTP&#x2F;HTTPS、RESTful API或gRPC</li>
-</ul>
-</li>
-<li><strong>数据库类型</strong>：<ul>
-<li>关系型：MySQL、PostgreSQL（适合结构化数据）</li>
-<li>文档型：MongoDB（适合灵活数据结构）</li>
-<li>内存数据库：Redis（用于缓存和实时数据）</li>
-</ul>
-</li>
-</ul>
-<h2 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5. 注意事项"></a>5. 注意事项</h2><ol>
-<li><strong>安全性</strong>：客户端数据必须经过服务器验证</li>
-<li><strong>性能</strong>：高频更新数据可先缓存在服务器内存，再异步写入数据库</li>
-<li><strong>一致性</strong>：重要操作需要事务支持</li>
-<li><strong>容错</strong>：设计重连机制处理网络中断</li>
-</ol>
-<p>这种协作架构可以根据游戏类型（MMO、竞技、休闲等）进行适当调整，但基本的数据流向和职责划分是相似的。</p>
-<h1 id="Web与游戏服务器的关系"><a href="#Web与游戏服务器的关系" class="headerlink" title="Web与游戏服务器的关系"></a>Web与游戏服务器的关系</h1><p>在游戏开发架构中，Web和游戏服务器确实有明确的关系，但它们通常承担不同的职责，协作方式取决于具体设计。以下是它们的详细关系分析：</p>
-<h2 id="1-基本关系概述"><a href="#1-基本关系概述" class="headerlink" title="1. 基本关系概述"></a>1. 基本关系概述</h2><p>Web和游戏服务器通常是<strong>分离但协作</strong>的两个组件：</p>
-<ul>
-<li><strong>Web服务器</strong>：主要处理HTTP&#x2F;HTTPS请求，负责与游戏官网、账号系统、支付等”外围”功能</li>
-<li><strong>游戏服务器</strong>：处理核心游戏逻辑和实时通信，使用TCP&#x2F;UDP&#x2F;WebSocket等协议</li>
-</ul>
-<h2 id="2-常见协作场景"><a href="#2-常见协作场景" class="headerlink" title="2. 常见协作场景"></a>2. 常见协作场景</h2><h3 id="场景1：账号认证流程"><a href="#场景1：账号认证流程" class="headerlink" title="场景1：账号认证流程"></a>场景1：账号认证流程</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → Web(登录页) → 认证服务 → 游戏服务器</span><br></pre></td></tr></table></figure>
-<ol>
-<li>玩家通过Web页面登录</li>
-<li>Web服务器验证凭证后生成token</li>
-<li>玩家客户端使用该token连接游戏服务器</li>
-<li>游戏服务器向认证服务验证token有效性</li>
-</ol>
-<h3 id="场景2：游戏内支付"><a href="#场景2：游戏内支付" class="headerlink" title="场景2：游戏内支付"></a>场景2：游戏内支付</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → 游戏服务器 → Web(支付网关) → 第三方支付 → 游戏服务器</span><br></pre></td></tr></table></figure>
-<ol>
-<li>玩家在游戏内发起购买</li>
-<li>游戏服务器将请求转发给Web支付网关</li>
-<li>Web处理支付流程后回调通知游戏服务器</li>
-<li>游戏服务器发放道具</li>
-</ol>
-<h3 id="场景3：数据统计展示"><a href="#场景3：数据统计展示" class="headerlink" title="场景3：数据统计展示"></a>场景3：数据统计展示</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">数据库 ← 游戏服务器 → Web(管理后台)</span><br></pre></td></tr></table></figure>
-<p>游戏服务器将数据写入数据库，Web后台从数据库读取数据展示给运营人员</p>
-<h2 id="3-分离设计的原因"><a href="#3-分离设计的原因" class="headerlink" title="3. 分离设计的原因"></a>3. 分离设计的原因</h2><ol>
-<li><p><strong>协议差异</strong>：</p>
-<ul>
-<li>Web基于HTTP&#x2F;HTTPS（无状态、短连接）</li>
-<li>游戏服务器需要长连接、低延迟通信</li>
-</ul>
-</li>
-<li><p><strong>安全隔离</strong>：</p>
-<ul>
-<li>Web暴露在公网，面临更多攻击面</li>
-<li>游戏服务器通常需要更严格的网络隔离</li>
-</ul>
-</li>
-<li><p><strong>扩展性</strong>：</p>
-<ul>
-<li>Web层可以水平扩展应对突发流量</li>
-<li>游戏服务器需要保持玩家会话状态</li>
-</ul>
-</li>
-<li><p><strong>职责分离</strong>：</p>
-<ul>
-<li>Web：用户管理、内容分发、社区功能</li>
-<li>游戏服务器：实时同步、战斗计算等</li>
-</ul>
-</li>
-</ol>
-<h2 id="4-混合架构案例"><a href="#4-混合架构案例" class="headerlink" title="4. 混合架构案例"></a>4. 混合架构案例</h2><p>有些轻量级游戏会采用<strong>WebSocket服务器</strong>同时承担Web和游戏服务器角色：</p>
-<ul>
-<li>使用同一个Node.js&#x2F;Spring等服务同时处理：<ul>
-<li>HTTP请求（官网、API）</li>
-<li>WebSocket连接（游戏实时通信）</li>
-</ul>
-</li>
-<li>优点是架构简单，适合小规模游戏</li>
-</ul>
-<h2 id="5-关键交互点"><a href="#5-关键交互点" class="headerlink" title="5. 关键交互点"></a>5. 关键交互点</h2><p>两者主要通过以下方式交互：</p>
-<ol>
-<li><strong>共享数据库</strong>：都访问同一个用户数据存储</li>
-<li><strong>RPC调用</strong>：通过内部网络API相互调用</li>
-<li><strong>消息队列</strong>：用于异步事件通知（如支付完成事件）</li>
-<li><strong>共享缓存</strong>：如Redis存储会话状态</li>
-</ol>
-<p>是否需要完全分离取决于游戏类型和规模，大型游戏通常保持分离架构，而休闲网页游戏可能合并两者。</p>
-<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><p>在游戏开发架构中，不同类型的数据会存储在不同的位置，根据数据的重要性、访问频率和安全性要求进行分布。以下是客户端、Web服务器、游戏服务器和数据库各自存储的数据类型及位置：</p>
-<hr>
-<h2 id="1-客户端存储的数据"><a href="#1-客户端存储的数据" class="headerlink" title="1. 客户端存储的数据"></a><strong>1. 客户端存储的数据</strong></h2><p><strong>存储位置</strong>：玩家设备（PC&#x2F;手机&#x2F;游戏主机）的本地存储<br><strong>数据类型</strong>（通常是非关键或临时数据）：</p>
-<ul>
-<li><strong>本地设置</strong>：画面质量、音量、键位配置</li>
-<li><strong>缓存资源</strong>：下载的游戏素材（纹理、音效、模型）</li>
-<li><strong>临时状态</strong>：未提交的游戏进度（单机游戏）、会话Token</li>
-<li><strong>预测数据</strong>：客户端预测的玩家位置（网络游戏先显示，后由服务器验证）</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>易丢失（玩家清理缓存或换设备会消失）</li>
-<li>可能被篡改（需服务器验证重要数据）</li>
-</ul>
-<hr>
-<h2 id="2-Web服务器存储的数据"><a href="#2-Web服务器存储的数据" class="headerlink" title="2. Web服务器存储的数据"></a><strong>2. Web服务器存储的数据</strong></h2><p><strong>存储位置</strong>：Web服务器的文件系统或缓存（如CDN）<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>静态资源</strong>：官网HTML&#x2F;JS&#x2F;CSS、游戏补丁下载包</li>
-<li><strong>会话信息</strong>：用户登录状态的Session或JWT Token（短期）</li>
-<li><strong>CDN缓存</strong>：热更新的游戏资源（皮肤、活动素材）</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>通常是无状态的（依赖数据库持久化关键数据）</li>
-<li>高可用性要求（通过负载均衡多节点部署）</li>
-</ul>
-<hr>
-<h2 id="3-游戏服务器存储的数据"><a href="#3-游戏服务器存储的数据" class="headerlink" title="3. 游戏服务器存储的数据"></a><strong>3. 游戏服务器存储的数据</strong></h2><p><strong>存储位置</strong>：服务器内存 + 数据库<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>内存中（临时）</strong>：<ul>
-<li>实时游戏状态（玩家位置、战斗数值）</li>
-<li>房间&#x2F;匹配信息（MOBA&#x2F;吃鸡的战场数据）</li>
-<li>会话连接（Socket连接状态）</li>
-</ul>
-</li>
-<li><strong>持久化到数据库</strong>：<ul>
-<li>玩家档案（等级、装备、成就）</li>
-<li>交易记录（充值、道具购买）</li>
-</ul>
-</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>内存数据追求高性能（Redis&#x2F;Memcached）</li>
-<li>持久化数据需强一致性（MySQL&#x2F;MongoDB事务）</li>
-</ul>
-<hr>
-<h2 id="4-数据库存储的核心数据"><a href="#4-数据库存储的核心数据" class="headerlink" title="4. 数据库存储的核心数据"></a><strong>4. 数据库存储的核心数据</strong></h2><p><strong>存储位置</strong>：独立数据库集群<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>结构化数据</strong>（关系型数据库如MySQL&#x2F;PostgreSQL）：<ul>
-<li>玩家账号信息（用户名、密码哈希、绑定邮箱）</li>
-<li>物品库存（装备、货币数量）</li>
-<li>社交关系（好友列表、公会数据）</li>
-</ul>
-</li>
-<li><strong>非结构化数据</strong>（文档型数据库如MongoDB）：<ul>
-<li>玩家行为日志（分析用）</li>
-<li>动态配置（活动规则、赛季参数）</li>
-</ul>
-</li>
-<li><strong>高速缓存</strong>（Redis等）：<ul>
-<li>排行榜实时数据</li>
-<li>限时活动状态</li>
-</ul>
-</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>高可靠性（主从复制、定期备份）</li>
-<li>敏感数据加密（如密码、支付信息）</li>
-</ul>
-<hr>
-<h2 id="5-数据流向示例"><a href="#5-数据流向示例" class="headerlink" title="5. 数据流向示例"></a><strong>5. 数据流向示例</strong></h2><p>以玩家获得新装备为例：</p>
-<ol>
-<li><strong>客户端</strong>：发送”开宝箱”请求 → 游戏服务器  </li>
-<li><strong>游戏服务器</strong>：  <ul>
-<li>内存中计算掉落概率  </li>
-<li>向数据库写入新装备记录（事务保证原子性）</li>
-</ul>
-</li>
-<li><strong>数据库</strong>：持久化装备数据 → 返回成功  </li>
-<li><strong>游戏服务器</strong>：  <ul>
-<li>更新内存中的玩家装备列表  </li>
-<li>广播给客户端和其他玩家（如MMO中装备特效）</li>
-</ul>
-</li>
-<li><strong>客户端</strong>：本地显示新装备（非权威，以服务器数据为准）</li>
-</ol>
-<hr>
-<h2 id="关键原则"><a href="#关键原则" class="headerlink" title="关键原则"></a><strong>关键原则</strong></h2><ol>
-<li><strong>权威数据在服务端</strong>：客户端只显示，服务器决定真实性  </li>
-<li><strong>分层存储</strong>：  <ul>
-<li>热数据在内存（Redis&#x2F;服务器内存）  </li>
-<li>冷数据在数据库</li>
-</ul>
-</li>
-<li><strong>安全边界</strong>：  <ul>
-<li>客户端 ↔ Web服务器：HTTPS加密  </li>
-<li>Web服务器 ↔ 游戏服务器：内网通信 + API鉴权</li>
-</ul>
-</li>
-<li><strong>防作弊</strong>：关键逻辑（如伤害计算）必须在服务器执行</li>
-</ol>
-<p>不同游戏类型（单机、手游、MMO）会有存储策略差异，但核心原则一致：<strong>确保数据安全、一致，同时提供流畅的玩家体验</strong>。</p>
-]]></content>
-      <categories>
-        <category>游戏研发</category>
-      </categories>
-      <tags>
-        <tag>游戏研发</tag>
       </tags>
   </entry>
   <entry>
@@ -12580,6 +12495,266 @@ graph TD
       <tags>
         <tag>游戏热更</tag>
         <tag>分发系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>部门</title>
+    <url>/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="游戏开发中各组件的协作流程"><a href="#游戏开发中各组件的协作流程" class="headerlink" title="游戏开发中各组件的协作流程"></a>游戏开发中各组件的协作流程</h1><p>在游戏开发中，客户端、Web、服务器和数据库这几个核心组件通过协同工作来实现完整的游戏体验。以下是它们的协作方式：</p>
+<h2 id="1-基本协作架构"><a href="#1-基本协作架构" class="headerlink" title="1. 基本协作架构"></a>1. 基本协作架构</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家操作 → 客户端 → (Web层) → 游戏服务器 → 数据库</span><br><span class="line">       ↑        ↓              ↑             ↓</span><br><span class="line">       └────────┴──────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-各组件职责与协作细节"><a href="#2-各组件职责与协作细节" class="headerlink" title="2. 各组件职责与协作细节"></a>2. 各组件职责与协作细节</h2><h3 id="客户端-Client"><a href="#客户端-Client" class="headerlink" title="客户端 (Client)"></a>客户端 (Client)</h3><ul>
+<li><strong>职责</strong>：负责游戏画面渲染、玩家输入处理、本地逻辑计算</li>
+<li><strong>协作方式</strong>：<ul>
+<li>向服务器发送玩家操作（移动、攻击等）</li>
+<li>接收服务器同步的游戏状态</li>
+<li>对于网络游戏，客户端通常不存储关键数据（如玩家等级、装备）</li>
+</ul>
+</li>
+</ul>
+<h3 id="Web层-可选"><a href="#Web层-可选" class="headerlink" title="Web层 (可选)"></a>Web层 (可选)</h3><ul>
+<li><strong>职责</strong>：<ul>
+<li>账号系统、支付系统、公告系统</li>
+<li>游戏官网、社区论坛</li>
+<li>CDN资源分发</li>
+</ul>
+</li>
+<li><strong>协作方式</strong>：<ul>
+<li>处理用户注册&#x2F;登录（通常通过OAuth等协议）</li>
+<li>为客户端提供静态资源（游戏更新包、素材等）</li>
+<li>与游戏服务器交互获取玩家基础数据</li>
+</ul>
+</li>
+</ul>
+<h3 id="游戏服务器-Game-Server"><a href="#游戏服务器-Game-Server" class="headerlink" title="游戏服务器 (Game Server)"></a>游戏服务器 (Game Server)</h3><ul>
+<li><strong>职责</strong>：<ul>
+<li>游戏核心逻辑计算</li>
+<li>反作弊验证</li>
+<li>玩家间同步</li>
+<li>房间&#x2F;匹配管理</li>
+</ul>
+</li>
+<li><strong>协作方式</strong>：<ul>
+<li>接收并验证客户端请求</li>
+<li>处理游戏逻辑（战斗计算、道具使用等）</li>
+<li>向数据库读写持久化数据</li>
+<li>广播游戏状态给相关客户端</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据库-Database"><a href="#数据库-Database" class="headerlink" title="数据库 (Database)"></a>数据库 (Database)</h3><ul>
+<li><strong>职责</strong>：持久化存储游戏数据</li>
+<li><strong>协作方式</strong>：<ul>
+<li>存储玩家档案、物品库存、排行榜等</li>
+<li>提供事务支持确保数据一致性</li>
+<li>通常通过服务器间接访问，客户端不直接操作</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-典型数据流示例"><a href="#3-典型数据流示例" class="headerlink" title="3. 典型数据流示例"></a>3. 典型数据流示例</h2><p><strong>场景</strong>：玩家购买游戏道具</p>
+<ol>
+<li><strong>客户端</strong>：玩家点击购买按钮 → 向Web服务器发送购买请求</li>
+<li><strong>Web层</strong>：验证支付信息 → 向游戏服务器发送道具授予请求</li>
+<li><strong>游戏服务器</strong>：验证请求合法性 → 更新玩家道具数据 → 将变更写入数据库</li>
+<li><strong>数据库</strong>：持久化存储新的道具数据 → 返回成功响应</li>
+<li><strong>游戏服务器</strong>：通知客户端更新道具栏</li>
+<li><strong>客户端</strong>：刷新UI显示新道具</li>
+</ol>
+<h2 id="4-技术实现选择"><a href="#4-技术实现选择" class="headerlink" title="4. 技术实现选择"></a>4. 技术实现选择</h2><ul>
+<li><strong>通信协议</strong>：<ul>
+<li>客户端-服务器：通常使用TCP&#x2F;UDP（如WebSocket、KCP）</li>
+<li>Web-服务器：常用HTTP&#x2F;HTTPS、RESTful API或gRPC</li>
+</ul>
+</li>
+<li><strong>数据库类型</strong>：<ul>
+<li>关系型：MySQL、PostgreSQL（适合结构化数据）</li>
+<li>文档型：MongoDB（适合灵活数据结构）</li>
+<li>内存数据库：Redis（用于缓存和实时数据）</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5. 注意事项"></a>5. 注意事项</h2><ol>
+<li><strong>安全性</strong>：客户端数据必须经过服务器验证</li>
+<li><strong>性能</strong>：高频更新数据可先缓存在服务器内存，再异步写入数据库</li>
+<li><strong>一致性</strong>：重要操作需要事务支持</li>
+<li><strong>容错</strong>：设计重连机制处理网络中断</li>
+</ol>
+<p>这种协作架构可以根据游戏类型（MMO、竞技、休闲等）进行适当调整，但基本的数据流向和职责划分是相似的。</p>
+<h1 id="Web与游戏服务器的关系"><a href="#Web与游戏服务器的关系" class="headerlink" title="Web与游戏服务器的关系"></a>Web与游戏服务器的关系</h1><p>在游戏开发架构中，Web和游戏服务器确实有明确的关系，但它们通常承担不同的职责，协作方式取决于具体设计。以下是它们的详细关系分析：</p>
+<h2 id="1-基本关系概述"><a href="#1-基本关系概述" class="headerlink" title="1. 基本关系概述"></a>1. 基本关系概述</h2><p>Web和游戏服务器通常是<strong>分离但协作</strong>的两个组件：</p>
+<ul>
+<li><strong>Web服务器</strong>：主要处理HTTP&#x2F;HTTPS请求，负责与游戏官网、账号系统、支付等”外围”功能</li>
+<li><strong>游戏服务器</strong>：处理核心游戏逻辑和实时通信，使用TCP&#x2F;UDP&#x2F;WebSocket等协议</li>
+</ul>
+<h2 id="2-常见协作场景"><a href="#2-常见协作场景" class="headerlink" title="2. 常见协作场景"></a>2. 常见协作场景</h2><h3 id="场景1：账号认证流程"><a href="#场景1：账号认证流程" class="headerlink" title="场景1：账号认证流程"></a>场景1：账号认证流程</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → Web(登录页) → 认证服务 → 游戏服务器</span><br></pre></td></tr></table></figure>
+<ol>
+<li>玩家通过Web页面登录</li>
+<li>Web服务器验证凭证后生成token</li>
+<li>玩家客户端使用该token连接游戏服务器</li>
+<li>游戏服务器向认证服务验证token有效性</li>
+</ol>
+<h3 id="场景2：游戏内支付"><a href="#场景2：游戏内支付" class="headerlink" title="场景2：游戏内支付"></a>场景2：游戏内支付</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → 游戏服务器 → Web(支付网关) → 第三方支付 → 游戏服务器</span><br></pre></td></tr></table></figure>
+<ol>
+<li>玩家在游戏内发起购买</li>
+<li>游戏服务器将请求转发给Web支付网关</li>
+<li>Web处理支付流程后回调通知游戏服务器</li>
+<li>游戏服务器发放道具</li>
+</ol>
+<h3 id="场景3：数据统计展示"><a href="#场景3：数据统计展示" class="headerlink" title="场景3：数据统计展示"></a>场景3：数据统计展示</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">数据库 ← 游戏服务器 → Web(管理后台)</span><br></pre></td></tr></table></figure>
+<p>游戏服务器将数据写入数据库，Web后台从数据库读取数据展示给运营人员</p>
+<h2 id="3-分离设计的原因"><a href="#3-分离设计的原因" class="headerlink" title="3. 分离设计的原因"></a>3. 分离设计的原因</h2><ol>
+<li><p><strong>协议差异</strong>：</p>
+<ul>
+<li>Web基于HTTP&#x2F;HTTPS（无状态、短连接）</li>
+<li>游戏服务器需要长连接、低延迟通信</li>
+</ul>
+</li>
+<li><p><strong>安全隔离</strong>：</p>
+<ul>
+<li>Web暴露在公网，面临更多攻击面</li>
+<li>游戏服务器通常需要更严格的网络隔离</li>
+</ul>
+</li>
+<li><p><strong>扩展性</strong>：</p>
+<ul>
+<li>Web层可以水平扩展应对突发流量</li>
+<li>游戏服务器需要保持玩家会话状态</li>
+</ul>
+</li>
+<li><p><strong>职责分离</strong>：</p>
+<ul>
+<li>Web：用户管理、内容分发、社区功能</li>
+<li>游戏服务器：实时同步、战斗计算等</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-混合架构案例"><a href="#4-混合架构案例" class="headerlink" title="4. 混合架构案例"></a>4. 混合架构案例</h2><p>有些轻量级游戏会采用<strong>WebSocket服务器</strong>同时承担Web和游戏服务器角色：</p>
+<ul>
+<li>使用同一个Node.js&#x2F;Spring等服务同时处理：<ul>
+<li>HTTP请求（官网、API）</li>
+<li>WebSocket连接（游戏实时通信）</li>
+</ul>
+</li>
+<li>优点是架构简单，适合小规模游戏</li>
+</ul>
+<h2 id="5-关键交互点"><a href="#5-关键交互点" class="headerlink" title="5. 关键交互点"></a>5. 关键交互点</h2><p>两者主要通过以下方式交互：</p>
+<ol>
+<li><strong>共享数据库</strong>：都访问同一个用户数据存储</li>
+<li><strong>RPC调用</strong>：通过内部网络API相互调用</li>
+<li><strong>消息队列</strong>：用于异步事件通知（如支付完成事件）</li>
+<li><strong>共享缓存</strong>：如Redis存储会话状态</li>
+</ol>
+<p>是否需要完全分离取决于游戏类型和规模，大型游戏通常保持分离架构，而休闲网页游戏可能合并两者。</p>
+<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><p>在游戏开发架构中，不同类型的数据会存储在不同的位置，根据数据的重要性、访问频率和安全性要求进行分布。以下是客户端、Web服务器、游戏服务器和数据库各自存储的数据类型及位置：</p>
+<hr>
+<h2 id="1-客户端存储的数据"><a href="#1-客户端存储的数据" class="headerlink" title="1. 客户端存储的数据"></a><strong>1. 客户端存储的数据</strong></h2><p><strong>存储位置</strong>：玩家设备（PC&#x2F;手机&#x2F;游戏主机）的本地存储<br><strong>数据类型</strong>（通常是非关键或临时数据）：</p>
+<ul>
+<li><strong>本地设置</strong>：画面质量、音量、键位配置</li>
+<li><strong>缓存资源</strong>：下载的游戏素材（纹理、音效、模型）</li>
+<li><strong>临时状态</strong>：未提交的游戏进度（单机游戏）、会话Token</li>
+<li><strong>预测数据</strong>：客户端预测的玩家位置（网络游戏先显示，后由服务器验证）</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>易丢失（玩家清理缓存或换设备会消失）</li>
+<li>可能被篡改（需服务器验证重要数据）</li>
+</ul>
+<hr>
+<h2 id="2-Web服务器存储的数据"><a href="#2-Web服务器存储的数据" class="headerlink" title="2. Web服务器存储的数据"></a><strong>2. Web服务器存储的数据</strong></h2><p><strong>存储位置</strong>：Web服务器的文件系统或缓存（如CDN）<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>静态资源</strong>：官网HTML&#x2F;JS&#x2F;CSS、游戏补丁下载包</li>
+<li><strong>会话信息</strong>：用户登录状态的Session或JWT Token（短期）</li>
+<li><strong>CDN缓存</strong>：热更新的游戏资源（皮肤、活动素材）</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>通常是无状态的（依赖数据库持久化关键数据）</li>
+<li>高可用性要求（通过负载均衡多节点部署）</li>
+</ul>
+<hr>
+<h2 id="3-游戏服务器存储的数据"><a href="#3-游戏服务器存储的数据" class="headerlink" title="3. 游戏服务器存储的数据"></a><strong>3. 游戏服务器存储的数据</strong></h2><p><strong>存储位置</strong>：服务器内存 + 数据库<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>内存中（临时）</strong>：<ul>
+<li>实时游戏状态（玩家位置、战斗数值）</li>
+<li>房间&#x2F;匹配信息（MOBA&#x2F;吃鸡的战场数据）</li>
+<li>会话连接（Socket连接状态）</li>
+</ul>
+</li>
+<li><strong>持久化到数据库</strong>：<ul>
+<li>玩家档案（等级、装备、成就）</li>
+<li>交易记录（充值、道具购买）</li>
+</ul>
+</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>内存数据追求高性能（Redis&#x2F;Memcached）</li>
+<li>持久化数据需强一致性（MySQL&#x2F;MongoDB事务）</li>
+</ul>
+<hr>
+<h2 id="4-数据库存储的核心数据"><a href="#4-数据库存储的核心数据" class="headerlink" title="4. 数据库存储的核心数据"></a><strong>4. 数据库存储的核心数据</strong></h2><p><strong>存储位置</strong>：独立数据库集群<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>结构化数据</strong>（关系型数据库如MySQL&#x2F;PostgreSQL）：<ul>
+<li>玩家账号信息（用户名、密码哈希、绑定邮箱）</li>
+<li>物品库存（装备、货币数量）</li>
+<li>社交关系（好友列表、公会数据）</li>
+</ul>
+</li>
+<li><strong>非结构化数据</strong>（文档型数据库如MongoDB）：<ul>
+<li>玩家行为日志（分析用）</li>
+<li>动态配置（活动规则、赛季参数）</li>
+</ul>
+</li>
+<li><strong>高速缓存</strong>（Redis等）：<ul>
+<li>排行榜实时数据</li>
+<li>限时活动状态</li>
+</ul>
+</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>高可靠性（主从复制、定期备份）</li>
+<li>敏感数据加密（如密码、支付信息）</li>
+</ul>
+<hr>
+<h2 id="5-数据流向示例"><a href="#5-数据流向示例" class="headerlink" title="5. 数据流向示例"></a><strong>5. 数据流向示例</strong></h2><p>以玩家获得新装备为例：</p>
+<ol>
+<li><strong>客户端</strong>：发送”开宝箱”请求 → 游戏服务器  </li>
+<li><strong>游戏服务器</strong>：  <ul>
+<li>内存中计算掉落概率  </li>
+<li>向数据库写入新装备记录（事务保证原子性）</li>
+</ul>
+</li>
+<li><strong>数据库</strong>：持久化装备数据 → 返回成功  </li>
+<li><strong>游戏服务器</strong>：  <ul>
+<li>更新内存中的玩家装备列表  </li>
+<li>广播给客户端和其他玩家（如MMO中装备特效）</li>
+</ul>
+</li>
+<li><strong>客户端</strong>：本地显示新装备（非权威，以服务器数据为准）</li>
+</ol>
+<hr>
+<h2 id="关键原则"><a href="#关键原则" class="headerlink" title="关键原则"></a><strong>关键原则</strong></h2><ol>
+<li><strong>权威数据在服务端</strong>：客户端只显示，服务器决定真实性  </li>
+<li><strong>分层存储</strong>：  <ul>
+<li>热数据在内存（Redis&#x2F;服务器内存）  </li>
+<li>冷数据在数据库</li>
+</ul>
+</li>
+<li><strong>安全边界</strong>：  <ul>
+<li>客户端 ↔ Web服务器：HTTPS加密  </li>
+<li>Web服务器 ↔ 游戏服务器：内网通信 + API鉴权</li>
+</ul>
+</li>
+<li><strong>防作弊</strong>：关键逻辑（如伤害计算）必须在服务器执行</li>
+</ol>
+<p>不同游戏类型（单机、手游、MMO）会有存储策略差异，但核心原则一致：<strong>确保数据安全、一致，同时提供流畅的玩家体验</strong>。</p>
+]]></content>
+      <categories>
+        <category>游戏研发</category>
+      </categories>
+      <tags>
+        <tag>游戏研发</tag>
       </tags>
   </entry>
   <entry>
