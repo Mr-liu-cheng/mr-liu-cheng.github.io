@@ -2,9 +2,9 @@
 title: Redis分布式锁
 date: 2026-01-28 12:06:02
 updated: 2026-01-28 12:06:02
-tags: 分布式锁.,Redis
+tags: [分布式锁,Redis]
 categories: 网络编程
-keywords: 分布式锁.,Redis
+keywords: [分布式锁,Redis]
 description: 
 ---
 # Redis 详解：从入门到精通
