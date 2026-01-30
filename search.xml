@@ -101,154 +101,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Git Submodule</title>
-    <url>/2025/02/06/Git%20Submodule/</url>
-    <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
-<h3 id="Git-Submodule-的版本管理和开发分支"><a href="#Git-Submodule-的版本管理和开发分支" class="headerlink" title="Git Submodule 的版本管理和开发分支"></a><strong>Git Submodule 的版本管理和开发分支</strong></h3><ol>
-<li><p><strong>独立版本管理：</strong></p>
-<ul>
-<li>每个子模块（例如 Game Framework 插件）有自己的 Git 仓库，使用自己独立的版本号和提交记录。</li>
-<li>当你将子模块添加到主项目时，Git 会记录子模块的<strong>当前提交版本</strong>，并将该信息存储在主项目的 <code>.gitmodules</code> 文件和 <code>.git/config</code> 配置文件中。</li>
-<li>例如，当你添加一个子模块时，Git 会记录子模块在主项目中的具体版本（即该子模块的某个提交ID）。</li>
-</ul>
-</li>
-<li><p><strong>子模块的分支管理：</strong></p>
-<ul>
-<li>每个子模块都有自己的分支管理方式，你可以在子模块内创建、切换和管理分支，就像处理主项目中的分支一样。</li>
-<li>当你执行 <code>git submodule update --remote</code> 命令时，Git 会将子模块的代码更新为子模块远程仓库的默认分支（通常是 <code>master</code> 或 <code>main</code>，但你也可以设置其他分支）。</li>
-</ul>
-</li>
-<li><p><strong>管理子模块的版本：</strong></p>
-<ul>
-<li>子模块的版本控制非常灵活，可以选择将子模块固定在某个版本（提交哈希）或某个分支的最新提交。</li>
-<li>在主项目中，如果你想更新子模块到最新版本，只需进入子模块目录并执行：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch-name&gt;  <span class="comment"># 切换到需要的分支</span></span><br><span class="line">git pull origin &lt;branch-name&gt;  <span class="comment"># 拉取最新代码</span></span><br></pre></td></tr></table></figure></li>
-<li>然后在主项目目录中，使用以下命令提交子模块的新版本：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;submodule-directory&gt;</span><br><span class="line">git commit -m <span class="string">&quot;Update submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p><strong>子模块的分支切换：</strong></p>
-<ul>
-<li>如果你想切换子模块的分支，可以进入子模块目录，使用 <code>git checkout &lt;branch&gt;</code> 来切换分支：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> Packages/GameFramework  <span class="comment"># 进入子模块目录</span></span><br><span class="line">git checkout develop  <span class="comment"># 切换到开发分支</span></span><br><span class="line">git pull origin develop  <span class="comment"># 更新子模块到开发分支的最新代码</span></span><br></pre></td></tr></table></figure></li>
-<li>切换完成后，记得回到主项目目录并提交子模块的更新：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Switch submodule to develop branch&quot;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h3 id="如何管理子模块的版本"><a href="#如何管理子模块的版本" class="headerlink" title="如何管理子模块的版本"></a><strong>如何管理子模块的版本</strong></h3><ul>
-<li><p><strong>固定子模块版本：</strong><br>如果你希望将子模块固定在特定版本（例如某个提交哈希），可以通过以下命令将子模块指向特定的提交：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-<p>这将确保子模块锁定在特定的提交哈希，而不是拉取该分支的最新版本。</p>
-</li>
-<li><p><strong>更新子模块到最新提交：</strong><br>如果你想将子模块更新为其远程仓库的最新提交（通常是远程 <code>master</code> 或 <code>main</code> 分支），可以使用以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>子模块版本管理文件：</strong><br>子模块的提交信息被保存在主项目的 <code>.gitmodules</code> 和 <code>.git/config</code> 文件中。你可以手动编辑这些文件来指定子模块的 URL 和分支信息，也可以使用 Git 命令行工具来管理。</p>
-</li>
-</ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>独立版本和分支管理</strong>：每个子模块有自己的版本历史和分支，你可以独立管理子模块的版本和分支，不会影响主项目。</li>
-<li><strong>灵活的更新和切换</strong>：你可以选择将子模块固定在某个版本，或者随时更新到远程仓库的最新提交。</li>
-<li><strong>主项目和子模块的分离</strong>：主项目和子模块是相互独立的 Git 仓库，便于独立管理和协作开发。</li>
-</ul>
-<p>如果你需要更具体的操作示例或遇到任何问题，随时告诉我！我会帮助你更好地管理子模块。</p>
-<h2 id="🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 为什么使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 为什么使用 Git Submodule 导入 Game Framework 插件？</strong></h2><p>使用 <strong>Git Submodule</strong> 方式导入 <strong>Game Framework 插件</strong> 也是一个非常不错的选择，尤其是在团队协作或者需要频繁更新插件代码的情况下。它的优势和适用场景如下：</p>
-<h3 id="✅-优势："><a href="#✅-优势：" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ol>
-<li><p><strong>版本控制和更新管理：</strong></p>
-<ul>
-<li>Git Submodule 允许你将 <strong>Game Framework 插件的 Git 仓库</strong> 作为子模块引入主项目，这样你就可以单独管理插件的版本。</li>
-<li>如果插件有更新，只需在主项目中执行 <code>git submodule update --remote</code> 来拉取插件的最新版本。</li>
-</ul>
-</li>
-<li><p><strong>保持项目结构清晰：</strong></p>
-<ul>
-<li>插件代码会作为子模块独立存在于特定文件夹（如 <code>Packages/GameFramework</code>），不会和主项目代码混在一起，保持项目结构的整洁。</li>
-</ul>
-</li>
-<li><p><strong>便于团队协作：</strong></p>
-<ul>
-<li>你可以将子模块添加到 Git 仓库中，团队成员可以同步子模块版本，确保大家使用相同版本的插件。</li>
-<li>团队成员可以通过 <code>git submodule update --init</code> 拉取最新插件，避免了手动导入和更新插件的麻烦。</li>
-</ul>
-</li>
-<li><p><strong>灵活的自定义：</strong></p>
-<ul>
-<li>如果你需要修改框架的代码，直接进入子模块目录，进行修改，不会影响主项目的其他部分。</li>
-<li>你可以将 Game Framework 插件单独进行版本管理，并与主项目的版本控制隔离开。</li>
-</ul>
-</li>
-<li><p><strong>保持一致性：</strong></p>
-<ul>
-<li>使用 Git Submodule 确保每次从版本库拉取时，插件和主项目的版本一致，避免了手动复制和拖动导致的版本错乱。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="❌-可能的缺点："><a href="#❌-可能的缺点：" class="headerlink" title="❌ 可能的缺点："></a><strong>❌ 可能的缺点：</strong></h3><ol>
-<li><p><strong>稍微复杂的操作：</strong></p>
-<ul>
-<li>子模块需要一些额外的 Git 命令支持，比如初始化子模块、更新子模块等。</li>
-<li>如果团队成员不熟悉 Git Submodule，可能需要一些培训。</li>
-</ul>
-</li>
-<li><p><strong>子模块更新需要显式操作：</strong></p>
-<ul>
-<li>在子模块更新时，开发者需要显式执行 <code>git submodule update</code> 命令来拉取插件的最新代码，而不像 UPM 那样自动处理版本更新。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 如何使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 如何使用 Git Submodule 导入 Game Framework 插件？</strong></h2><h3 id="步骤-1：初始化子模块"><a href="#步骤-1：初始化子模块" class="headerlink" title="步骤 1：初始化子模块"></a><strong>步骤 1：初始化子模块</strong></h3><p>首先，假设你已经有一个主项目，接下来将 Game Framework 插件作为子模块添加到你的项目中。</p>
-<ol>
-<li><p><strong>进入主项目目录：</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>添加 Game Framework 插件作为子模块：</strong><br>假设你要使用的 Game Framework 插件在 GitHub 上，你可以使用以下命令将插件仓库添加为子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule add https://github.com/YourUsername/UnityGameFramework.git Packages/GameFramework</span><br></pre></td></tr></table></figure>
-
-<p>这个命令会将 Game Framework 插件添加到 <code>Packages/GameFramework</code> 目录，并将其作为 Git 子模块加入到主项目中。</p>
-</li>
-<li><p><strong>初始化子模块：</strong><br>如果你是第一次使用子模块，需要执行以下命令初始化它：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>提交主项目的变化：</strong><br>完成子模块添加后，你需要将 <code>git submodule</code> 的变动提交到主项目中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Add UnityGameFramework as a submodule&quot;</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h3 id="步骤-2：更新子模块"><a href="#步骤-2：更新子模块" class="headerlink" title="步骤 2：更新子模块"></a><strong>步骤 2：更新子模块</strong></h3><p>当插件更新时，你可以通过以下步骤更新子模块：</p>
-<ol>
-<li><p><strong>更新子模块到最新版本：</strong><br>如果 Game Framework 插件有更新，可以执行以下命令拉取最新代码：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>提交更新后的子模块：</strong><br>更新完成后，你需要提交主项目对子模块的更新：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>推送更新：</strong><br>更新完成后，推送到远程 Git 仓库：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h3 id="步骤-3：团队协作中使用子模块"><a href="#步骤-3：团队协作中使用子模块" class="headerlink" title="步骤 3：团队协作中使用子模块"></a><strong>步骤 3：团队协作中使用子模块</strong></h3><ol>
-<li><p><strong>克隆主项目时包含子模块：</strong><br>当团队成员从 Git 仓库克隆主项目时，需要添加 <code>--recurse-submodules</code> 参数来同步子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/YourUsername/YourUnityProject.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>更新子模块：</strong><br>如果已经克隆过主项目，可以使用以下命令更新子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h2 id="🔹-适用场景"><a href="#🔹-适用场景" class="headerlink" title="🔹 适用场景"></a><strong>🔹 适用场景</strong></h2><ul>
-<li><strong>长期维护的项目</strong>：如果你使用的 <strong>Game Framework 插件是外部维护的</strong>，Git Submodule 是一个好选择，因为你可以方便地控制插件的版本，避免插件代码直接嵌入到主项目中导致的混乱。</li>
-<li><strong>需要修改框架代码</strong>：如果你需要在项目中修改 <strong>Game Framework 插件的代码</strong>，Git Submodule 使得代码独立且可控，避免了直接修改 <code>Assets/</code> 目录中的框架代码。</li>
-<li><strong>多人协作开发</strong>：在团队开发中，子模块保证了每个开发者都在使用相同版本的框架，避免了版本不一致导致的错误。</li>
-</ul>
-<hr>
-<h2 id="🔹-总结"><a href="#🔹-总结" class="headerlink" title="🔹 总结"></a><strong>🔹 总结</strong></h2><p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
-<p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -722,6 +574,154 @@
       <tags>
         <tag>Unity</tag>
         <tag>框架</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git Submodule</title>
+    <url>/2025/02/06/Git%20Submodule/</url>
+    <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
+<h3 id="Git-Submodule-的版本管理和开发分支"><a href="#Git-Submodule-的版本管理和开发分支" class="headerlink" title="Git Submodule 的版本管理和开发分支"></a><strong>Git Submodule 的版本管理和开发分支</strong></h3><ol>
+<li><p><strong>独立版本管理：</strong></p>
+<ul>
+<li>每个子模块（例如 Game Framework 插件）有自己的 Git 仓库，使用自己独立的版本号和提交记录。</li>
+<li>当你将子模块添加到主项目时，Git 会记录子模块的<strong>当前提交版本</strong>，并将该信息存储在主项目的 <code>.gitmodules</code> 文件和 <code>.git/config</code> 配置文件中。</li>
+<li>例如，当你添加一个子模块时，Git 会记录子模块在主项目中的具体版本（即该子模块的某个提交ID）。</li>
+</ul>
+</li>
+<li><p><strong>子模块的分支管理：</strong></p>
+<ul>
+<li>每个子模块都有自己的分支管理方式，你可以在子模块内创建、切换和管理分支，就像处理主项目中的分支一样。</li>
+<li>当你执行 <code>git submodule update --remote</code> 命令时，Git 会将子模块的代码更新为子模块远程仓库的默认分支（通常是 <code>master</code> 或 <code>main</code>，但你也可以设置其他分支）。</li>
+</ul>
+</li>
+<li><p><strong>管理子模块的版本：</strong></p>
+<ul>
+<li>子模块的版本控制非常灵活，可以选择将子模块固定在某个版本（提交哈希）或某个分支的最新提交。</li>
+<li>在主项目中，如果你想更新子模块到最新版本，只需进入子模块目录并执行：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch-name&gt;  <span class="comment"># 切换到需要的分支</span></span><br><span class="line">git pull origin &lt;branch-name&gt;  <span class="comment"># 拉取最新代码</span></span><br></pre></td></tr></table></figure></li>
+<li>然后在主项目目录中，使用以下命令提交子模块的新版本：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;submodule-directory&gt;</span><br><span class="line">git commit -m <span class="string">&quot;Update submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>子模块的分支切换：</strong></p>
+<ul>
+<li>如果你想切换子模块的分支，可以进入子模块目录，使用 <code>git checkout &lt;branch&gt;</code> 来切换分支：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> Packages/GameFramework  <span class="comment"># 进入子模块目录</span></span><br><span class="line">git checkout develop  <span class="comment"># 切换到开发分支</span></span><br><span class="line">git pull origin develop  <span class="comment"># 更新子模块到开发分支的最新代码</span></span><br></pre></td></tr></table></figure></li>
+<li>切换完成后，记得回到主项目目录并提交子模块的更新：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Switch submodule to develop branch&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h3 id="如何管理子模块的版本"><a href="#如何管理子模块的版本" class="headerlink" title="如何管理子模块的版本"></a><strong>如何管理子模块的版本</strong></h3><ul>
+<li><p><strong>固定子模块版本：</strong><br>如果你希望将子模块固定在特定版本（例如某个提交哈希），可以通过以下命令将子模块指向特定的提交：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+<p>这将确保子模块锁定在特定的提交哈希，而不是拉取该分支的最新版本。</p>
+</li>
+<li><p><strong>更新子模块到最新提交：</strong><br>如果你想将子模块更新为其远程仓库的最新提交（通常是远程 <code>master</code> 或 <code>main</code> 分支），可以使用以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>子模块版本管理文件：</strong><br>子模块的提交信息被保存在主项目的 <code>.gitmodules</code> 和 <code>.git/config</code> 文件中。你可以手动编辑这些文件来指定子模块的 URL 和分支信息，也可以使用 Git 命令行工具来管理。</p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>独立版本和分支管理</strong>：每个子模块有自己的版本历史和分支，你可以独立管理子模块的版本和分支，不会影响主项目。</li>
+<li><strong>灵活的更新和切换</strong>：你可以选择将子模块固定在某个版本，或者随时更新到远程仓库的最新提交。</li>
+<li><strong>主项目和子模块的分离</strong>：主项目和子模块是相互独立的 Git 仓库，便于独立管理和协作开发。</li>
+</ul>
+<p>如果你需要更具体的操作示例或遇到任何问题，随时告诉我！我会帮助你更好地管理子模块。</p>
+<h2 id="🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 为什么使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 为什么使用 Git Submodule 导入 Game Framework 插件？</strong></h2><p>使用 <strong>Git Submodule</strong> 方式导入 <strong>Game Framework 插件</strong> 也是一个非常不错的选择，尤其是在团队协作或者需要频繁更新插件代码的情况下。它的优势和适用场景如下：</p>
+<h3 id="✅-优势："><a href="#✅-优势：" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ol>
+<li><p><strong>版本控制和更新管理：</strong></p>
+<ul>
+<li>Git Submodule 允许你将 <strong>Game Framework 插件的 Git 仓库</strong> 作为子模块引入主项目，这样你就可以单独管理插件的版本。</li>
+<li>如果插件有更新，只需在主项目中执行 <code>git submodule update --remote</code> 来拉取插件的最新版本。</li>
+</ul>
+</li>
+<li><p><strong>保持项目结构清晰：</strong></p>
+<ul>
+<li>插件代码会作为子模块独立存在于特定文件夹（如 <code>Packages/GameFramework</code>），不会和主项目代码混在一起，保持项目结构的整洁。</li>
+</ul>
+</li>
+<li><p><strong>便于团队协作：</strong></p>
+<ul>
+<li>你可以将子模块添加到 Git 仓库中，团队成员可以同步子模块版本，确保大家使用相同版本的插件。</li>
+<li>团队成员可以通过 <code>git submodule update --init</code> 拉取最新插件，避免了手动导入和更新插件的麻烦。</li>
+</ul>
+</li>
+<li><p><strong>灵活的自定义：</strong></p>
+<ul>
+<li>如果你需要修改框架的代码，直接进入子模块目录，进行修改，不会影响主项目的其他部分。</li>
+<li>你可以将 Game Framework 插件单独进行版本管理，并与主项目的版本控制隔离开。</li>
+</ul>
+</li>
+<li><p><strong>保持一致性：</strong></p>
+<ul>
+<li>使用 Git Submodule 确保每次从版本库拉取时，插件和主项目的版本一致，避免了手动复制和拖动导致的版本错乱。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="❌-可能的缺点："><a href="#❌-可能的缺点：" class="headerlink" title="❌ 可能的缺点："></a><strong>❌ 可能的缺点：</strong></h3><ol>
+<li><p><strong>稍微复杂的操作：</strong></p>
+<ul>
+<li>子模块需要一些额外的 Git 命令支持，比如初始化子模块、更新子模块等。</li>
+<li>如果团队成员不熟悉 Git Submodule，可能需要一些培训。</li>
+</ul>
+</li>
+<li><p><strong>子模块更新需要显式操作：</strong></p>
+<ul>
+<li>在子模块更新时，开发者需要显式执行 <code>git submodule update</code> 命令来拉取插件的最新代码，而不像 UPM 那样自动处理版本更新。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 如何使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 如何使用 Git Submodule 导入 Game Framework 插件？</strong></h2><h3 id="步骤-1：初始化子模块"><a href="#步骤-1：初始化子模块" class="headerlink" title="步骤 1：初始化子模块"></a><strong>步骤 1：初始化子模块</strong></h3><p>首先，假设你已经有一个主项目，接下来将 Game Framework 插件作为子模块添加到你的项目中。</p>
+<ol>
+<li><p><strong>进入主项目目录：</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>添加 Game Framework 插件作为子模块：</strong><br>假设你要使用的 Game Framework 插件在 GitHub 上，你可以使用以下命令将插件仓库添加为子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule add https://github.com/YourUsername/UnityGameFramework.git Packages/GameFramework</span><br></pre></td></tr></table></figure>
+
+<p>这个命令会将 Game Framework 插件添加到 <code>Packages/GameFramework</code> 目录，并将其作为 Git 子模块加入到主项目中。</p>
+</li>
+<li><p><strong>初始化子模块：</strong><br>如果你是第一次使用子模块，需要执行以下命令初始化它：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>提交主项目的变化：</strong><br>完成子模块添加后，你需要将 <code>git submodule</code> 的变动提交到主项目中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Add UnityGameFramework as a submodule&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="步骤-2：更新子模块"><a href="#步骤-2：更新子模块" class="headerlink" title="步骤 2：更新子模块"></a><strong>步骤 2：更新子模块</strong></h3><p>当插件更新时，你可以通过以下步骤更新子模块：</p>
+<ol>
+<li><p><strong>更新子模块到最新版本：</strong><br>如果 Game Framework 插件有更新，可以执行以下命令拉取最新代码：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>提交更新后的子模块：</strong><br>更新完成后，你需要提交主项目对子模块的更新：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>推送更新：</strong><br>更新完成后，推送到远程 Git 仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="步骤-3：团队协作中使用子模块"><a href="#步骤-3：团队协作中使用子模块" class="headerlink" title="步骤 3：团队协作中使用子模块"></a><strong>步骤 3：团队协作中使用子模块</strong></h3><ol>
+<li><p><strong>克隆主项目时包含子模块：</strong><br>当团队成员从 Git 仓库克隆主项目时，需要添加 <code>--recurse-submodules</code> 参数来同步子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/YourUsername/YourUnityProject.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>更新子模块：</strong><br>如果已经克隆过主项目，可以使用以下命令更新子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h2 id="🔹-适用场景"><a href="#🔹-适用场景" class="headerlink" title="🔹 适用场景"></a><strong>🔹 适用场景</strong></h2><ul>
+<li><strong>长期维护的项目</strong>：如果你使用的 <strong>Game Framework 插件是外部维护的</strong>，Git Submodule 是一个好选择，因为你可以方便地控制插件的版本，避免插件代码直接嵌入到主项目中导致的混乱。</li>
+<li><strong>需要修改框架代码</strong>：如果你需要在项目中修改 <strong>Game Framework 插件的代码</strong>，Git Submodule 使得代码独立且可控，避免了直接修改 <code>Assets/</code> 目录中的框架代码。</li>
+<li><strong>多人协作开发</strong>：在团队开发中，子模块保证了每个开发者都在使用相同版本的框架，避免了版本不一致导致的错误。</li>
+</ul>
+<hr>
+<h2 id="🔹-总结"><a href="#🔹-总结" class="headerlink" title="🔹 总结"></a><strong>🔹 总结</strong></h2><p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
+<p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -7627,97 +7627,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity TMP中文显示</title>
-    <url>/2024/12/13/Unity%20TMP%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
-<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
-<ul>
-<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
-<li>Auto Sizeing：自动设置大小</li>
-<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
-</ul>
-<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
-<p>Packing Method：指定如何使字符适合字体纹理。</p>
-<ul>
-<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
-<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
-</ul>
-<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
-<p>Character Set：选择预定义的字符集。</p>
-<ul>
-<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
-<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
-<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
-<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
-<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
-<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
-<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
-<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
-<li>Characters from File：指定的文本资源</li>
-</ul>
-<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
-<ul>
-<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
-<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
-<li>RASTER：将图集渲染为非抗锯齿位图。</li>
-<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
-<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
-<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
-<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
-<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
-<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
-</ul>
-<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
-<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
-<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
-<p>4.点击Save按钮保存</p>
-<p>5.现在就可以正常使用这个字体了</p>
-<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
-<p>问题原因:</p>
-<ul>
-<li>字体贴图空间不足</li>
-</ul>
-<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
-<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
-<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
-<ul>
-<li>字符范围太大</li>
-</ul>
-<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
-<ul>
-<li>字体文件不支持这些字符</li>
-</ul>
-<p>使用的字体文件可能并未包含这些特定的字符。</p>
-<ul>
-<li>渲染模式设置不当</li>
-</ul>
-<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
-<hr>
-<ul>
-<li><strong>选择 3000 汉字：</strong><ul>
-<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
-<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
-</ul>
-</li>
-<li><strong>选择 7000 汉字：</strong><ul>
-<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
-<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
-</ul>
-</li>
-</ul>
-<p>汉字集下载：</p>
-<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-        <tag>TMP</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity Scene 优化</title>
     <url>/2025/06/17/Unity%20Scene%20%E4%BC%98%E5%8C%96/</url>
     <content><![CDATA[<p>我做的编辑器拓展开发，卡顿是出现在通过配置生成上万个带指向的3d球体和linerenderer，根据每个点的配置信息来设置球体的旋转偏量，3d空间位置,两个点之间通过linerenderer连接，创建过程耗时很长，卡顿是出现在编辑器静态界面，而非运行状态。当前面临的 <strong>编辑器卡顿问题</strong>，本质上是因为：</p>
@@ -7996,6 +7905,97 @@ graph TD
       <tags>
         <tag>Unity</tag>
         <tag>WebGL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity TMP中文显示</title>
+    <url>/2024/12/13/Unity%20TMP%E4%B8%AD%E6%96%87%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<h1 id="创建tmp中文字体资源"><a href="#创建tmp中文字体资源" class="headerlink" title="创建tmp中文字体资源"></a>创建tmp中文字体资源</h1><p>1.<strong>选择Window&#x2F;TextMeshPro&#x2F;Font Asset Creator</strong></p>
+<p>2.<strong>Font Asset Creator设置界面如图</strong><br><img src="/.io//image-1.png" alt="alt text"><br>Source Font File：拖入需要使用的字体</p>
+<ul>
+<li>Sampling Point Size：设置用于生成字体纹理的字体大小（以磅为单位）</li>
+<li>Auto Sizeing：自动设置大小</li>
+<li>Custom Size：自定义大小，在文本框中输入所需的大小</li>
+</ul>
+<p>Padding：字间距，填充越大，过渡越平滑，从而允许更高质量的渲染和更大的效果，如粗轮廓。</p>
+<p>Packing Method：指定如何使字符适合字体纹理。</p>
+<ul>
+<li>Optimum：查找仍然适合纹理中所有字符的最大可能自动字体大小。</li>
+<li>Fast：更快地计算字符打包，但可能使用比优化模式更小的字体大小。</li>
+</ul>
+<p>Atlas Resolution：设置字体纹理的大小宽度和高度，以像素为单位</p>
+<p>Character Set：选择预定义的字符集。</p>
+<ul>
+<li>ASCII：包括 ASCII 字符集中的可见字符。</li>
+<li>Extended ASCII：包括扩展 ASCII 字符集中的可见字符。</li>
+<li>ASCII Lowercase：仅包含 ASCII 字符集中可见的小写字符。</li>
+<li>ASCII Uppercase：仅包含 ASCII 字符集中可见的大写字符</li>
+<li>Numbers+Sysbols：仅包括来自 ASCII 字符集的可见数字和符号。</li>
+<li>Custom Range：输入一系列十进制值或值范围，以指定要包括的字符。</li>
+<li>Unicode Range(Hex)：输入一系列 unicode 十六进制值或值范围，以指定要包含的字符。</li>
+<li>Custom Characters：输入字符序列以指定要包含的字符。</li>
+<li>Characters from File：指定的文本资源</li>
+</ul>
+<p>Render Mode：指定输出字体图集时要使用的渲染模式。</p>
+<ul>
+<li>SMOOTH_HINTED：将图集渲染为抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>SMOOTH：将图集渲染为抗锯齿位图。</li>
+<li>RASTER_HINTED：将图集渲染为非抗锯齿位图，并将字符像素与纹理像素对齐以获得更清晰的结果。</li>
+<li>RASTER：将图集渲染为非抗锯齿位图。</li>
+<li>SDF：使用较慢但更准确的 SDF 生成模式渲染图集，并且没有过采样。</li>
+<li>SDF8：使用较慢但更准确的 SDF 生成模式和 8 倍过采样渲染图集。</li>
+<li>SDF16：使用更慢但更准确的 SDF 生成模式和 16 倍过采样渲染图集。</li>
+<li>SDF32：使用较慢但更准确的 SDF 生成模式和 32 倍过采样渲染图集。将此设置用于具有复杂或小字符的字体。</li>
+<li>SDFAA_HINTED：使用更快但不太准确的 SDF 生成模式渲染图集，并将字符像素与纹理像素对齐以获得更清晰的结果，它生成的字体图集足以满足大多数情况。</li>
+<li>SDFAA：使用更快但不太准确的 SDF 生成模式渲染图集，它生成的字体图集足以满足大多数情况。</li>
+</ul>
+<p>Get Kerning Pairs：启用此选项可从字体复制字距调整数据。</p>
+<p>Generate Font Atlas：我们把包含中文字体的文件拖入Characters from File中，然后点击此按钮开始生成</p>
+<p>3.生成后，如上面效果图<br>注意：字体越多，生成的时间越长…Packing Method还是选Fast吧，Optimum太慢了</p>
+<p>4.点击Save按钮保存</p>
+<p>5.现在就可以正常使用这个字体了</p>
+<h1 id="tmp创建字体报错"><a href="#tmp创建字体报错" class="headerlink" title="tmp创建字体报错:"></a>tmp创建字体报错:</h1><p><img src="/.io//image.png" alt="alt text"></p>
+<p>问题原因:</p>
+<ul>
+<li>字体贴图空间不足</li>
+</ul>
+<p>字体贴图的分辨率（Font Atlas Resolution）不够大，无法容纳所有字符。</p>
+<p>生成 3000 字符所需的贴图分辨率和时间较低，一般<code>1024x1024</code> 或<code>2048x2048</code> 即可完成。</p>
+<p>生成 7000 字符可能需要<code>4096x4096</code> 或更高分辨率，耗时更长。</p>
+<ul>
+<li>字符范围太大</li>
+</ul>
+<p>您可能尝试一次性添加过多的字符，例如一个完整的 Unicode 中文字符集。</p>
+<ul>
+<li>字体文件不支持这些字符</li>
+</ul>
+<p>使用的字体文件可能并未包含这些特定的字符。</p>
+<ul>
+<li>渲染模式设置不当</li>
+</ul>
+<p>当前的 Render Mode 设置可能导致字体生成失败。</p>
+<hr>
+<ul>
+<li><strong>选择 3000 汉字：</strong><ul>
+<li>如果项目是游戏、日常应用或现代场景，3000 字足够使用。</li>
+<li>性能优先的项目，如 WebGL、移动端、嵌入式系统。</li>
+</ul>
+</li>
+<li><strong>选择 7000 汉字：</strong><ul>
+<li>如果项目需要显示古文、法律文书或覆盖专业领域的特殊字符。</li>
+<li>针对高性能设备或专业场景，如 PC 端应用、大型屏幕展示。</li>
+</ul>
+</li>
+</ul>
+<p>汉字集下载：</p>
+<p><a href="https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set">https://github.com/wy-luke/Unity-TextMeshPro-Chinese-Characters-Set</a></p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+        <tag>TMP</tag>
       </tags>
   </entry>
   <entry>
@@ -9494,7 +9494,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#109;&#x2e;&#x75;&#x6e;&#x69;&#x74;&#x79;&#x2e;&#99;&#111;&#108;&#x6c;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#50;&#x2e;&#x36;&#46;&#x30;">&#x63;&#111;&#109;&#x2e;&#x75;&#x6e;&#x69;&#x74;&#x79;&#x2e;&#99;&#111;&#108;&#x6c;&#97;&#98;&#45;&#112;&#x72;&#x6f;&#120;&#121;&#64;&#50;&#x2e;&#x36;&#46;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#109;&#x2e;&#x75;&#x6e;&#x69;&#x74;&#121;&#46;&#x63;&#111;&#x6c;&#x6c;&#97;&#98;&#x2d;&#112;&#114;&#111;&#120;&#121;&#x40;&#x32;&#x2e;&#54;&#46;&#48;">&#99;&#111;&#109;&#x2e;&#x75;&#x6e;&#x69;&#x74;&#121;&#46;&#x63;&#111;&#x6c;&#x6c;&#97;&#98;&#x2d;&#112;&#114;&#111;&#120;&#121;&#x40;&#x32;&#x2e;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -11154,6 +11154,44 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>团结引擎</title>
+    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
+    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
+<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
+<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
+<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
+<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
+<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
+<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
+<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
+<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
+<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
+<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
+<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
+<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
+<li><p>专为中国开发者定制</p>
+<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
+</li>
+<li><p>本土科技生态支持</p>
+<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
+</li>
+<li><p>微信小游戏解决方案</p>
+<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
+</li>
+<li><p>车机定制编辑器</p>
+<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>团结引擎</category>
+      </categories>
+      <tags>
+        <tag>团结引擎</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>医保</title>
     <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
     <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
@@ -11229,44 +11267,6 @@ graph TD
       </categories>
       <tags>
         <tag>医保</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>团结引擎</title>
-    <url>/2025/01/15/%E5%9B%A2%E7%BB%93%E5%BC%95%E6%93%8E/</url>
-    <content><![CDATA[<p><a href="https://unity.cn/tuanjie/tuanjieyinqing">原文</a></p>
-<h1 id="一站式微信小游戏解决方案"><a href="#一站式微信小游戏解决方案" class="headerlink" title="一站式微信小游戏解决方案"></a>一站式微信小游戏解决方案</h1><p>基于WebGL，团结引擎针对微信小游戏开发了专属的目标平台。您可以轻松将其他平台的游戏转换成微信小游戏，覆盖更广阔的玩家群体。</p>
-<p>IL2CPP 内存和性能优化，专项渲染&#x2F;异常优化，加强版的 Profiler 工具，更有一站式游戏云服务解决方案原生集成了对微信小游戏的支持，助您的作品在性能和体验上更进一步。不仅如此，微信小游戏解决方案还可以实现项目首包大小自动精简、按需获取项目资产等功能。</p>
-<p>借助团结引擎的众多功能及特性，您可以轻松实现创意想法，并创建出独具个性的微信小游戏。</p>
-<h1 id="一站式智能座舱解决方案"><a href="#一站式智能座舱解决方案" class="headerlink" title="一站式智能座舱解决方案"></a>一站式智能座舱解决方案</h1><p>团结引擎车机版不仅支持HMI Android、QNX、Embedded Linux多种操作系统，同时可以帮助车机实现启动时间、内存占用、线程数量等指标的充分优化。内置了常用车机APP的开发模版，将大幅缩短开发流程；车机模拟器则实现了可视化开发，实时反馈开发进程中的每一步。</p>
-<p>下一代HMI渲染解决方案，不仅能够为原生APP渲染3D内容，还能够让不同项目独立开发并更新，互不干扰，极大提高运行效率。</p>
-<h1 id="适配OpenHarmony操作系统"><a href="#适配OpenHarmony操作系统" class="headerlink" title="适配OpenHarmony操作系统"></a>适配OpenHarmony操作系统</h1><p>新增OpenHarmony目标平台。您可以通过团结引擎轻松构建出能有运行在OpenHarmony操作系统的游戏，同时获得与安卓及iOS同样丝滑的游戏体验。</p>
-<p>全面适配OpenHarmony系统，包括Ability框架、XComponent、ArkUI、音视频、文件系统、触控系统等。确保丝滑工作流，兼容老版本项目，支持一键切换平台和构建出包。提供快速迭代速度，直连设备支持Patch and Run&#x2F;Build and Run，同时能导出Ability Project。完善的Profiler支持包括引擎Profiler适配和平台Profiler，以及专有的C#与ts交互API方便SDK接入。</p>
-<p>团结引擎将为OpenHarmony生态快速带来更多高品质游戏与实时3D内容，未来双方也携手致力于推进游戏技术突破和创新成果转化，拓展更多游戏新场景，为游戏产业注入新活力。</p>
-<h1 id="虚拟几何体系统"><a href="#虚拟几何体系统" class="headerlink" title="虚拟几何体系统"></a>虚拟几何体系统</h1><p>团结引擎基于GPU Driven Pipeline开发了一套虚拟几何体系统。现在您可以轻松导入高精度的模型，不需要再担心超高面数的模型给您项目带来的渲染和显存压力。</p>
-<p>利用GPU Driven Pipeline，我们对虚拟几何体进行了精细的剔除和组织；大大降低了渲染系统对CPU的消耗，同时提升了GPU的吞吐量。</p>
-<p>借助于虚拟几何体系统，团结引擎可以帮助优化您的开发工作流，以及运行时的渲染效果和性能；它可以满足您的场景对海量（数以亿计）多边形的需求。</p>
-<h1 id="团结引擎功能优势"><a href="#团结引擎功能优势" class="headerlink" title="团结引擎功能优势"></a>团结引擎功能优势</h1><ul>
-<li><p>专为中国开发者定制</p>
-<p>  Customized Feature<br>  致力于满足中国开发者的独特需求，结合本土文化元素和市场特色，为创作提供全面支持。</p>
-</li>
-<li><p>本土科技生态支持</p>
-<p>  Domestic Ecosystem Support<br>  通过多项原创性的本土优化与拓展，团结引擎已兼容适配了中国科技生态内的众多软硬件平台。团结引擎目前已支持Windows、Mac、Linux操作系统，以及Android、iOS、WebGL、Weixin Mini Game、HMI Android、QNX、Embedded Linux平台，OpenHarmony开源项目等，并即将支持AliOS操作系统。</p>
-</li>
-<li><p>微信小游戏解决方案</p>
-<p>  Weixin Mini Game Solution<br>  基于WebGL开发的微信小游戏专属目标平台，同时配置丰富的工具与功能，帮助开发者在不断提高创作效率的同时，让小游戏在性能和体验上更进一步。</p>
-</li>
-<li><p>车机定制编辑器</p>
-<p>  HMI Editor<br>  界面友好且高度可定制的编辑器，结合车机创新应用模板，使开发者能够根据项目需求轻松调整和优化开发工具，节省时间，提升效率。</p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Unity</category>
-        <category>团结引擎</category>
-      </categories>
-      <tags>
-        <tag>团结引擎</tag>
       </tags>
   </entry>
   <entry>
@@ -12040,266 +12040,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>部门</title>
-    <url>/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</url>
-    <content><![CDATA[<h1 id="游戏开发中各组件的协作流程"><a href="#游戏开发中各组件的协作流程" class="headerlink" title="游戏开发中各组件的协作流程"></a>游戏开发中各组件的协作流程</h1><p>在游戏开发中，客户端、Web、服务器和数据库这几个核心组件通过协同工作来实现完整的游戏体验。以下是它们的协作方式：</p>
-<h2 id="1-基本协作架构"><a href="#1-基本协作架构" class="headerlink" title="1. 基本协作架构"></a>1. 基本协作架构</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家操作 → 客户端 → (Web层) → 游戏服务器 → 数据库</span><br><span class="line">       ↑        ↓              ↑             ↓</span><br><span class="line">       └────────┴──────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-各组件职责与协作细节"><a href="#2-各组件职责与协作细节" class="headerlink" title="2. 各组件职责与协作细节"></a>2. 各组件职责与协作细节</h2><h3 id="客户端-Client"><a href="#客户端-Client" class="headerlink" title="客户端 (Client)"></a>客户端 (Client)</h3><ul>
-<li><strong>职责</strong>：负责游戏画面渲染、玩家输入处理、本地逻辑计算</li>
-<li><strong>协作方式</strong>：<ul>
-<li>向服务器发送玩家操作（移动、攻击等）</li>
-<li>接收服务器同步的游戏状态</li>
-<li>对于网络游戏，客户端通常不存储关键数据（如玩家等级、装备）</li>
-</ul>
-</li>
-</ul>
-<h3 id="Web层-可选"><a href="#Web层-可选" class="headerlink" title="Web层 (可选)"></a>Web层 (可选)</h3><ul>
-<li><strong>职责</strong>：<ul>
-<li>账号系统、支付系统、公告系统</li>
-<li>游戏官网、社区论坛</li>
-<li>CDN资源分发</li>
-</ul>
-</li>
-<li><strong>协作方式</strong>：<ul>
-<li>处理用户注册&#x2F;登录（通常通过OAuth等协议）</li>
-<li>为客户端提供静态资源（游戏更新包、素材等）</li>
-<li>与游戏服务器交互获取玩家基础数据</li>
-</ul>
-</li>
-</ul>
-<h3 id="游戏服务器-Game-Server"><a href="#游戏服务器-Game-Server" class="headerlink" title="游戏服务器 (Game Server)"></a>游戏服务器 (Game Server)</h3><ul>
-<li><strong>职责</strong>：<ul>
-<li>游戏核心逻辑计算</li>
-<li>反作弊验证</li>
-<li>玩家间同步</li>
-<li>房间&#x2F;匹配管理</li>
-</ul>
-</li>
-<li><strong>协作方式</strong>：<ul>
-<li>接收并验证客户端请求</li>
-<li>处理游戏逻辑（战斗计算、道具使用等）</li>
-<li>向数据库读写持久化数据</li>
-<li>广播游戏状态给相关客户端</li>
-</ul>
-</li>
-</ul>
-<h3 id="数据库-Database"><a href="#数据库-Database" class="headerlink" title="数据库 (Database)"></a>数据库 (Database)</h3><ul>
-<li><strong>职责</strong>：持久化存储游戏数据</li>
-<li><strong>协作方式</strong>：<ul>
-<li>存储玩家档案、物品库存、排行榜等</li>
-<li>提供事务支持确保数据一致性</li>
-<li>通常通过服务器间接访问，客户端不直接操作</li>
-</ul>
-</li>
-</ul>
-<h2 id="3-典型数据流示例"><a href="#3-典型数据流示例" class="headerlink" title="3. 典型数据流示例"></a>3. 典型数据流示例</h2><p><strong>场景</strong>：玩家购买游戏道具</p>
-<ol>
-<li><strong>客户端</strong>：玩家点击购买按钮 → 向Web服务器发送购买请求</li>
-<li><strong>Web层</strong>：验证支付信息 → 向游戏服务器发送道具授予请求</li>
-<li><strong>游戏服务器</strong>：验证请求合法性 → 更新玩家道具数据 → 将变更写入数据库</li>
-<li><strong>数据库</strong>：持久化存储新的道具数据 → 返回成功响应</li>
-<li><strong>游戏服务器</strong>：通知客户端更新道具栏</li>
-<li><strong>客户端</strong>：刷新UI显示新道具</li>
-</ol>
-<h2 id="4-技术实现选择"><a href="#4-技术实现选择" class="headerlink" title="4. 技术实现选择"></a>4. 技术实现选择</h2><ul>
-<li><strong>通信协议</strong>：<ul>
-<li>客户端-服务器：通常使用TCP&#x2F;UDP（如WebSocket、KCP）</li>
-<li>Web-服务器：常用HTTP&#x2F;HTTPS、RESTful API或gRPC</li>
-</ul>
-</li>
-<li><strong>数据库类型</strong>：<ul>
-<li>关系型：MySQL、PostgreSQL（适合结构化数据）</li>
-<li>文档型：MongoDB（适合灵活数据结构）</li>
-<li>内存数据库：Redis（用于缓存和实时数据）</li>
-</ul>
-</li>
-</ul>
-<h2 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5. 注意事项"></a>5. 注意事项</h2><ol>
-<li><strong>安全性</strong>：客户端数据必须经过服务器验证</li>
-<li><strong>性能</strong>：高频更新数据可先缓存在服务器内存，再异步写入数据库</li>
-<li><strong>一致性</strong>：重要操作需要事务支持</li>
-<li><strong>容错</strong>：设计重连机制处理网络中断</li>
-</ol>
-<p>这种协作架构可以根据游戏类型（MMO、竞技、休闲等）进行适当调整，但基本的数据流向和职责划分是相似的。</p>
-<h1 id="Web与游戏服务器的关系"><a href="#Web与游戏服务器的关系" class="headerlink" title="Web与游戏服务器的关系"></a>Web与游戏服务器的关系</h1><p>在游戏开发架构中，Web和游戏服务器确实有明确的关系，但它们通常承担不同的职责，协作方式取决于具体设计。以下是它们的详细关系分析：</p>
-<h2 id="1-基本关系概述"><a href="#1-基本关系概述" class="headerlink" title="1. 基本关系概述"></a>1. 基本关系概述</h2><p>Web和游戏服务器通常是<strong>分离但协作</strong>的两个组件：</p>
-<ul>
-<li><strong>Web服务器</strong>：主要处理HTTP&#x2F;HTTPS请求，负责与游戏官网、账号系统、支付等”外围”功能</li>
-<li><strong>游戏服务器</strong>：处理核心游戏逻辑和实时通信，使用TCP&#x2F;UDP&#x2F;WebSocket等协议</li>
-</ul>
-<h2 id="2-常见协作场景"><a href="#2-常见协作场景" class="headerlink" title="2. 常见协作场景"></a>2. 常见协作场景</h2><h3 id="场景1：账号认证流程"><a href="#场景1：账号认证流程" class="headerlink" title="场景1：账号认证流程"></a>场景1：账号认证流程</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → Web(登录页) → 认证服务 → 游戏服务器</span><br></pre></td></tr></table></figure>
-<ol>
-<li>玩家通过Web页面登录</li>
-<li>Web服务器验证凭证后生成token</li>
-<li>玩家客户端使用该token连接游戏服务器</li>
-<li>游戏服务器向认证服务验证token有效性</li>
-</ol>
-<h3 id="场景2：游戏内支付"><a href="#场景2：游戏内支付" class="headerlink" title="场景2：游戏内支付"></a>场景2：游戏内支付</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → 游戏服务器 → Web(支付网关) → 第三方支付 → 游戏服务器</span><br></pre></td></tr></table></figure>
-<ol>
-<li>玩家在游戏内发起购买</li>
-<li>游戏服务器将请求转发给Web支付网关</li>
-<li>Web处理支付流程后回调通知游戏服务器</li>
-<li>游戏服务器发放道具</li>
-</ol>
-<h3 id="场景3：数据统计展示"><a href="#场景3：数据统计展示" class="headerlink" title="场景3：数据统计展示"></a>场景3：数据统计展示</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">数据库 ← 游戏服务器 → Web(管理后台)</span><br></pre></td></tr></table></figure>
-<p>游戏服务器将数据写入数据库，Web后台从数据库读取数据展示给运营人员</p>
-<h2 id="3-分离设计的原因"><a href="#3-分离设计的原因" class="headerlink" title="3. 分离设计的原因"></a>3. 分离设计的原因</h2><ol>
-<li><p><strong>协议差异</strong>：</p>
-<ul>
-<li>Web基于HTTP&#x2F;HTTPS（无状态、短连接）</li>
-<li>游戏服务器需要长连接、低延迟通信</li>
-</ul>
-</li>
-<li><p><strong>安全隔离</strong>：</p>
-<ul>
-<li>Web暴露在公网，面临更多攻击面</li>
-<li>游戏服务器通常需要更严格的网络隔离</li>
-</ul>
-</li>
-<li><p><strong>扩展性</strong>：</p>
-<ul>
-<li>Web层可以水平扩展应对突发流量</li>
-<li>游戏服务器需要保持玩家会话状态</li>
-</ul>
-</li>
-<li><p><strong>职责分离</strong>：</p>
-<ul>
-<li>Web：用户管理、内容分发、社区功能</li>
-<li>游戏服务器：实时同步、战斗计算等</li>
-</ul>
-</li>
-</ol>
-<h2 id="4-混合架构案例"><a href="#4-混合架构案例" class="headerlink" title="4. 混合架构案例"></a>4. 混合架构案例</h2><p>有些轻量级游戏会采用<strong>WebSocket服务器</strong>同时承担Web和游戏服务器角色：</p>
-<ul>
-<li>使用同一个Node.js&#x2F;Spring等服务同时处理：<ul>
-<li>HTTP请求（官网、API）</li>
-<li>WebSocket连接（游戏实时通信）</li>
-</ul>
-</li>
-<li>优点是架构简单，适合小规模游戏</li>
-</ul>
-<h2 id="5-关键交互点"><a href="#5-关键交互点" class="headerlink" title="5. 关键交互点"></a>5. 关键交互点</h2><p>两者主要通过以下方式交互：</p>
-<ol>
-<li><strong>共享数据库</strong>：都访问同一个用户数据存储</li>
-<li><strong>RPC调用</strong>：通过内部网络API相互调用</li>
-<li><strong>消息队列</strong>：用于异步事件通知（如支付完成事件）</li>
-<li><strong>共享缓存</strong>：如Redis存储会话状态</li>
-</ol>
-<p>是否需要完全分离取决于游戏类型和规模，大型游戏通常保持分离架构，而休闲网页游戏可能合并两者。</p>
-<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><p>在游戏开发架构中，不同类型的数据会存储在不同的位置，根据数据的重要性、访问频率和安全性要求进行分布。以下是客户端、Web服务器、游戏服务器和数据库各自存储的数据类型及位置：</p>
-<hr>
-<h2 id="1-客户端存储的数据"><a href="#1-客户端存储的数据" class="headerlink" title="1. 客户端存储的数据"></a><strong>1. 客户端存储的数据</strong></h2><p><strong>存储位置</strong>：玩家设备（PC&#x2F;手机&#x2F;游戏主机）的本地存储<br><strong>数据类型</strong>（通常是非关键或临时数据）：</p>
-<ul>
-<li><strong>本地设置</strong>：画面质量、音量、键位配置</li>
-<li><strong>缓存资源</strong>：下载的游戏素材（纹理、音效、模型）</li>
-<li><strong>临时状态</strong>：未提交的游戏进度（单机游戏）、会话Token</li>
-<li><strong>预测数据</strong>：客户端预测的玩家位置（网络游戏先显示，后由服务器验证）</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>易丢失（玩家清理缓存或换设备会消失）</li>
-<li>可能被篡改（需服务器验证重要数据）</li>
-</ul>
-<hr>
-<h2 id="2-Web服务器存储的数据"><a href="#2-Web服务器存储的数据" class="headerlink" title="2. Web服务器存储的数据"></a><strong>2. Web服务器存储的数据</strong></h2><p><strong>存储位置</strong>：Web服务器的文件系统或缓存（如CDN）<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>静态资源</strong>：官网HTML&#x2F;JS&#x2F;CSS、游戏补丁下载包</li>
-<li><strong>会话信息</strong>：用户登录状态的Session或JWT Token（短期）</li>
-<li><strong>CDN缓存</strong>：热更新的游戏资源（皮肤、活动素材）</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>通常是无状态的（依赖数据库持久化关键数据）</li>
-<li>高可用性要求（通过负载均衡多节点部署）</li>
-</ul>
-<hr>
-<h2 id="3-游戏服务器存储的数据"><a href="#3-游戏服务器存储的数据" class="headerlink" title="3. 游戏服务器存储的数据"></a><strong>3. 游戏服务器存储的数据</strong></h2><p><strong>存储位置</strong>：服务器内存 + 数据库<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>内存中（临时）</strong>：<ul>
-<li>实时游戏状态（玩家位置、战斗数值）</li>
-<li>房间&#x2F;匹配信息（MOBA&#x2F;吃鸡的战场数据）</li>
-<li>会话连接（Socket连接状态）</li>
-</ul>
-</li>
-<li><strong>持久化到数据库</strong>：<ul>
-<li>玩家档案（等级、装备、成就）</li>
-<li>交易记录（充值、道具购买）</li>
-</ul>
-</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>内存数据追求高性能（Redis&#x2F;Memcached）</li>
-<li>持久化数据需强一致性（MySQL&#x2F;MongoDB事务）</li>
-</ul>
-<hr>
-<h2 id="4-数据库存储的核心数据"><a href="#4-数据库存储的核心数据" class="headerlink" title="4. 数据库存储的核心数据"></a><strong>4. 数据库存储的核心数据</strong></h2><p><strong>存储位置</strong>：独立数据库集群<br><strong>数据类型</strong>：</p>
-<ul>
-<li><strong>结构化数据</strong>（关系型数据库如MySQL&#x2F;PostgreSQL）：<ul>
-<li>玩家账号信息（用户名、密码哈希、绑定邮箱）</li>
-<li>物品库存（装备、货币数量）</li>
-<li>社交关系（好友列表、公会数据）</li>
-</ul>
-</li>
-<li><strong>非结构化数据</strong>（文档型数据库如MongoDB）：<ul>
-<li>玩家行为日志（分析用）</li>
-<li>动态配置（活动规则、赛季参数）</li>
-</ul>
-</li>
-<li><strong>高速缓存</strong>（Redis等）：<ul>
-<li>排行榜实时数据</li>
-<li>限时活动状态</li>
-</ul>
-</li>
-</ul>
-<p><strong>特点</strong>：</p>
-<ul>
-<li>高可靠性（主从复制、定期备份）</li>
-<li>敏感数据加密（如密码、支付信息）</li>
-</ul>
-<hr>
-<h2 id="5-数据流向示例"><a href="#5-数据流向示例" class="headerlink" title="5. 数据流向示例"></a><strong>5. 数据流向示例</strong></h2><p>以玩家获得新装备为例：</p>
-<ol>
-<li><strong>客户端</strong>：发送”开宝箱”请求 → 游戏服务器  </li>
-<li><strong>游戏服务器</strong>：  <ul>
-<li>内存中计算掉落概率  </li>
-<li>向数据库写入新装备记录（事务保证原子性）</li>
-</ul>
-</li>
-<li><strong>数据库</strong>：持久化装备数据 → 返回成功  </li>
-<li><strong>游戏服务器</strong>：  <ul>
-<li>更新内存中的玩家装备列表  </li>
-<li>广播给客户端和其他玩家（如MMO中装备特效）</li>
-</ul>
-</li>
-<li><strong>客户端</strong>：本地显示新装备（非权威，以服务器数据为准）</li>
-</ol>
-<hr>
-<h2 id="关键原则"><a href="#关键原则" class="headerlink" title="关键原则"></a><strong>关键原则</strong></h2><ol>
-<li><strong>权威数据在服务端</strong>：客户端只显示，服务器决定真实性  </li>
-<li><strong>分层存储</strong>：  <ul>
-<li>热数据在内存（Redis&#x2F;服务器内存）  </li>
-<li>冷数据在数据库</li>
-</ul>
-</li>
-<li><strong>安全边界</strong>：  <ul>
-<li>客户端 ↔ Web服务器：HTTPS加密  </li>
-<li>Web服务器 ↔ 游戏服务器：内网通信 + API鉴权</li>
-</ul>
-</li>
-<li><strong>防作弊</strong>：关键逻辑（如伤害计算）必须在服务器执行</li>
-</ol>
-<p>不同游戏类型（单机、手游、MMO）会有存储策略差异，但核心原则一致：<strong>确保数据安全、一致，同时提供流畅的玩家体验</strong>。</p>
-]]></content>
-      <categories>
-        <category>游戏研发</category>
-      </categories>
-      <tags>
-        <tag>游戏研发</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>游戏热更资源存储与分发系统</title>
     <url>/2026/01/30/%E6%B8%B8%E6%88%8F%E7%83%AD%E6%9B%B4%E8%B5%84%E6%BA%90%E5%AD%98%E5%82%A8%E4%B8%8E%E5%88%86%E5%8F%91%E7%B3%BB%E7%BB%9F/</url>
     <content><![CDATA[<h1 id="游戏热更资源存储与分发系统详解"><a href="#游戏热更资源存储与分发系统详解" class="headerlink" title="游戏热更资源存储与分发系统详解"></a>游戏热更资源存储与分发系统详解</h1><h2 id="一、这类系统的专业名称"><a href="#一、这类系统的专业名称" class="headerlink" title="一、这类系统的专业名称"></a>一、这类系统的专业名称</h2><h3 id="1-通用技术名称"><a href="#1-通用技术名称" class="headerlink" title="1. 通用技术名称"></a>1. <strong>通用技术名称</strong></h3><table>
@@ -12580,6 +12320,266 @@ graph TD
       <tags>
         <tag>游戏热更</tag>
         <tag>分发系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>部门</title>
+    <url>/2025/06/09/%E6%B8%B8%E6%88%8F%E7%A0%94%E5%8F%91%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="游戏开发中各组件的协作流程"><a href="#游戏开发中各组件的协作流程" class="headerlink" title="游戏开发中各组件的协作流程"></a>游戏开发中各组件的协作流程</h1><p>在游戏开发中，客户端、Web、服务器和数据库这几个核心组件通过协同工作来实现完整的游戏体验。以下是它们的协作方式：</p>
+<h2 id="1-基本协作架构"><a href="#1-基本协作架构" class="headerlink" title="1. 基本协作架构"></a>1. 基本协作架构</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家操作 → 客户端 → (Web层) → 游戏服务器 → 数据库</span><br><span class="line">       ↑        ↓              ↑             ↓</span><br><span class="line">       └────────┴──────────────┴─────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-各组件职责与协作细节"><a href="#2-各组件职责与协作细节" class="headerlink" title="2. 各组件职责与协作细节"></a>2. 各组件职责与协作细节</h2><h3 id="客户端-Client"><a href="#客户端-Client" class="headerlink" title="客户端 (Client)"></a>客户端 (Client)</h3><ul>
+<li><strong>职责</strong>：负责游戏画面渲染、玩家输入处理、本地逻辑计算</li>
+<li><strong>协作方式</strong>：<ul>
+<li>向服务器发送玩家操作（移动、攻击等）</li>
+<li>接收服务器同步的游戏状态</li>
+<li>对于网络游戏，客户端通常不存储关键数据（如玩家等级、装备）</li>
+</ul>
+</li>
+</ul>
+<h3 id="Web层-可选"><a href="#Web层-可选" class="headerlink" title="Web层 (可选)"></a>Web层 (可选)</h3><ul>
+<li><strong>职责</strong>：<ul>
+<li>账号系统、支付系统、公告系统</li>
+<li>游戏官网、社区论坛</li>
+<li>CDN资源分发</li>
+</ul>
+</li>
+<li><strong>协作方式</strong>：<ul>
+<li>处理用户注册&#x2F;登录（通常通过OAuth等协议）</li>
+<li>为客户端提供静态资源（游戏更新包、素材等）</li>
+<li>与游戏服务器交互获取玩家基础数据</li>
+</ul>
+</li>
+</ul>
+<h3 id="游戏服务器-Game-Server"><a href="#游戏服务器-Game-Server" class="headerlink" title="游戏服务器 (Game Server)"></a>游戏服务器 (Game Server)</h3><ul>
+<li><strong>职责</strong>：<ul>
+<li>游戏核心逻辑计算</li>
+<li>反作弊验证</li>
+<li>玩家间同步</li>
+<li>房间&#x2F;匹配管理</li>
+</ul>
+</li>
+<li><strong>协作方式</strong>：<ul>
+<li>接收并验证客户端请求</li>
+<li>处理游戏逻辑（战斗计算、道具使用等）</li>
+<li>向数据库读写持久化数据</li>
+<li>广播游戏状态给相关客户端</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据库-Database"><a href="#数据库-Database" class="headerlink" title="数据库 (Database)"></a>数据库 (Database)</h3><ul>
+<li><strong>职责</strong>：持久化存储游戏数据</li>
+<li><strong>协作方式</strong>：<ul>
+<li>存储玩家档案、物品库存、排行榜等</li>
+<li>提供事务支持确保数据一致性</li>
+<li>通常通过服务器间接访问，客户端不直接操作</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-典型数据流示例"><a href="#3-典型数据流示例" class="headerlink" title="3. 典型数据流示例"></a>3. 典型数据流示例</h2><p><strong>场景</strong>：玩家购买游戏道具</p>
+<ol>
+<li><strong>客户端</strong>：玩家点击购买按钮 → 向Web服务器发送购买请求</li>
+<li><strong>Web层</strong>：验证支付信息 → 向游戏服务器发送道具授予请求</li>
+<li><strong>游戏服务器</strong>：验证请求合法性 → 更新玩家道具数据 → 将变更写入数据库</li>
+<li><strong>数据库</strong>：持久化存储新的道具数据 → 返回成功响应</li>
+<li><strong>游戏服务器</strong>：通知客户端更新道具栏</li>
+<li><strong>客户端</strong>：刷新UI显示新道具</li>
+</ol>
+<h2 id="4-技术实现选择"><a href="#4-技术实现选择" class="headerlink" title="4. 技术实现选择"></a>4. 技术实现选择</h2><ul>
+<li><strong>通信协议</strong>：<ul>
+<li>客户端-服务器：通常使用TCP&#x2F;UDP（如WebSocket、KCP）</li>
+<li>Web-服务器：常用HTTP&#x2F;HTTPS、RESTful API或gRPC</li>
+</ul>
+</li>
+<li><strong>数据库类型</strong>：<ul>
+<li>关系型：MySQL、PostgreSQL（适合结构化数据）</li>
+<li>文档型：MongoDB（适合灵活数据结构）</li>
+<li>内存数据库：Redis（用于缓存和实时数据）</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-注意事项"><a href="#5-注意事项" class="headerlink" title="5. 注意事项"></a>5. 注意事项</h2><ol>
+<li><strong>安全性</strong>：客户端数据必须经过服务器验证</li>
+<li><strong>性能</strong>：高频更新数据可先缓存在服务器内存，再异步写入数据库</li>
+<li><strong>一致性</strong>：重要操作需要事务支持</li>
+<li><strong>容错</strong>：设计重连机制处理网络中断</li>
+</ol>
+<p>这种协作架构可以根据游戏类型（MMO、竞技、休闲等）进行适当调整，但基本的数据流向和职责划分是相似的。</p>
+<h1 id="Web与游戏服务器的关系"><a href="#Web与游戏服务器的关系" class="headerlink" title="Web与游戏服务器的关系"></a>Web与游戏服务器的关系</h1><p>在游戏开发架构中，Web和游戏服务器确实有明确的关系，但它们通常承担不同的职责，协作方式取决于具体设计。以下是它们的详细关系分析：</p>
+<h2 id="1-基本关系概述"><a href="#1-基本关系概述" class="headerlink" title="1. 基本关系概述"></a>1. 基本关系概述</h2><p>Web和游戏服务器通常是<strong>分离但协作</strong>的两个组件：</p>
+<ul>
+<li><strong>Web服务器</strong>：主要处理HTTP&#x2F;HTTPS请求，负责与游戏官网、账号系统、支付等”外围”功能</li>
+<li><strong>游戏服务器</strong>：处理核心游戏逻辑和实时通信，使用TCP&#x2F;UDP&#x2F;WebSocket等协议</li>
+</ul>
+<h2 id="2-常见协作场景"><a href="#2-常见协作场景" class="headerlink" title="2. 常见协作场景"></a>2. 常见协作场景</h2><h3 id="场景1：账号认证流程"><a href="#场景1：账号认证流程" class="headerlink" title="场景1：账号认证流程"></a>场景1：账号认证流程</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → Web(登录页) → 认证服务 → 游戏服务器</span><br></pre></td></tr></table></figure>
+<ol>
+<li>玩家通过Web页面登录</li>
+<li>Web服务器验证凭证后生成token</li>
+<li>玩家客户端使用该token连接游戏服务器</li>
+<li>游戏服务器向认证服务验证token有效性</li>
+</ol>
+<h3 id="场景2：游戏内支付"><a href="#场景2：游戏内支付" class="headerlink" title="场景2：游戏内支付"></a>场景2：游戏内支付</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">玩家 → 游戏服务器 → Web(支付网关) → 第三方支付 → 游戏服务器</span><br></pre></td></tr></table></figure>
+<ol>
+<li>玩家在游戏内发起购买</li>
+<li>游戏服务器将请求转发给Web支付网关</li>
+<li>Web处理支付流程后回调通知游戏服务器</li>
+<li>游戏服务器发放道具</li>
+</ol>
+<h3 id="场景3：数据统计展示"><a href="#场景3：数据统计展示" class="headerlink" title="场景3：数据统计展示"></a>场景3：数据统计展示</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">数据库 ← 游戏服务器 → Web(管理后台)</span><br></pre></td></tr></table></figure>
+<p>游戏服务器将数据写入数据库，Web后台从数据库读取数据展示给运营人员</p>
+<h2 id="3-分离设计的原因"><a href="#3-分离设计的原因" class="headerlink" title="3. 分离设计的原因"></a>3. 分离设计的原因</h2><ol>
+<li><p><strong>协议差异</strong>：</p>
+<ul>
+<li>Web基于HTTP&#x2F;HTTPS（无状态、短连接）</li>
+<li>游戏服务器需要长连接、低延迟通信</li>
+</ul>
+</li>
+<li><p><strong>安全隔离</strong>：</p>
+<ul>
+<li>Web暴露在公网，面临更多攻击面</li>
+<li>游戏服务器通常需要更严格的网络隔离</li>
+</ul>
+</li>
+<li><p><strong>扩展性</strong>：</p>
+<ul>
+<li>Web层可以水平扩展应对突发流量</li>
+<li>游戏服务器需要保持玩家会话状态</li>
+</ul>
+</li>
+<li><p><strong>职责分离</strong>：</p>
+<ul>
+<li>Web：用户管理、内容分发、社区功能</li>
+<li>游戏服务器：实时同步、战斗计算等</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-混合架构案例"><a href="#4-混合架构案例" class="headerlink" title="4. 混合架构案例"></a>4. 混合架构案例</h2><p>有些轻量级游戏会采用<strong>WebSocket服务器</strong>同时承担Web和游戏服务器角色：</p>
+<ul>
+<li>使用同一个Node.js&#x2F;Spring等服务同时处理：<ul>
+<li>HTTP请求（官网、API）</li>
+<li>WebSocket连接（游戏实时通信）</li>
+</ul>
+</li>
+<li>优点是架构简单，适合小规模游戏</li>
+</ul>
+<h2 id="5-关键交互点"><a href="#5-关键交互点" class="headerlink" title="5. 关键交互点"></a>5. 关键交互点</h2><p>两者主要通过以下方式交互：</p>
+<ol>
+<li><strong>共享数据库</strong>：都访问同一个用户数据存储</li>
+<li><strong>RPC调用</strong>：通过内部网络API相互调用</li>
+<li><strong>消息队列</strong>：用于异步事件通知（如支付完成事件）</li>
+<li><strong>共享缓存</strong>：如Redis存储会话状态</li>
+</ol>
+<p>是否需要完全分离取决于游戏类型和规模，大型游戏通常保持分离架构，而休闲网页游戏可能合并两者。</p>
+<h1 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h1><p>在游戏开发架构中，不同类型的数据会存储在不同的位置，根据数据的重要性、访问频率和安全性要求进行分布。以下是客户端、Web服务器、游戏服务器和数据库各自存储的数据类型及位置：</p>
+<hr>
+<h2 id="1-客户端存储的数据"><a href="#1-客户端存储的数据" class="headerlink" title="1. 客户端存储的数据"></a><strong>1. 客户端存储的数据</strong></h2><p><strong>存储位置</strong>：玩家设备（PC&#x2F;手机&#x2F;游戏主机）的本地存储<br><strong>数据类型</strong>（通常是非关键或临时数据）：</p>
+<ul>
+<li><strong>本地设置</strong>：画面质量、音量、键位配置</li>
+<li><strong>缓存资源</strong>：下载的游戏素材（纹理、音效、模型）</li>
+<li><strong>临时状态</strong>：未提交的游戏进度（单机游戏）、会话Token</li>
+<li><strong>预测数据</strong>：客户端预测的玩家位置（网络游戏先显示，后由服务器验证）</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>易丢失（玩家清理缓存或换设备会消失）</li>
+<li>可能被篡改（需服务器验证重要数据）</li>
+</ul>
+<hr>
+<h2 id="2-Web服务器存储的数据"><a href="#2-Web服务器存储的数据" class="headerlink" title="2. Web服务器存储的数据"></a><strong>2. Web服务器存储的数据</strong></h2><p><strong>存储位置</strong>：Web服务器的文件系统或缓存（如CDN）<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>静态资源</strong>：官网HTML&#x2F;JS&#x2F;CSS、游戏补丁下载包</li>
+<li><strong>会话信息</strong>：用户登录状态的Session或JWT Token（短期）</li>
+<li><strong>CDN缓存</strong>：热更新的游戏资源（皮肤、活动素材）</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>通常是无状态的（依赖数据库持久化关键数据）</li>
+<li>高可用性要求（通过负载均衡多节点部署）</li>
+</ul>
+<hr>
+<h2 id="3-游戏服务器存储的数据"><a href="#3-游戏服务器存储的数据" class="headerlink" title="3. 游戏服务器存储的数据"></a><strong>3. 游戏服务器存储的数据</strong></h2><p><strong>存储位置</strong>：服务器内存 + 数据库<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>内存中（临时）</strong>：<ul>
+<li>实时游戏状态（玩家位置、战斗数值）</li>
+<li>房间&#x2F;匹配信息（MOBA&#x2F;吃鸡的战场数据）</li>
+<li>会话连接（Socket连接状态）</li>
+</ul>
+</li>
+<li><strong>持久化到数据库</strong>：<ul>
+<li>玩家档案（等级、装备、成就）</li>
+<li>交易记录（充值、道具购买）</li>
+</ul>
+</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>内存数据追求高性能（Redis&#x2F;Memcached）</li>
+<li>持久化数据需强一致性（MySQL&#x2F;MongoDB事务）</li>
+</ul>
+<hr>
+<h2 id="4-数据库存储的核心数据"><a href="#4-数据库存储的核心数据" class="headerlink" title="4. 数据库存储的核心数据"></a><strong>4. 数据库存储的核心数据</strong></h2><p><strong>存储位置</strong>：独立数据库集群<br><strong>数据类型</strong>：</p>
+<ul>
+<li><strong>结构化数据</strong>（关系型数据库如MySQL&#x2F;PostgreSQL）：<ul>
+<li>玩家账号信息（用户名、密码哈希、绑定邮箱）</li>
+<li>物品库存（装备、货币数量）</li>
+<li>社交关系（好友列表、公会数据）</li>
+</ul>
+</li>
+<li><strong>非结构化数据</strong>（文档型数据库如MongoDB）：<ul>
+<li>玩家行为日志（分析用）</li>
+<li>动态配置（活动规则、赛季参数）</li>
+</ul>
+</li>
+<li><strong>高速缓存</strong>（Redis等）：<ul>
+<li>排行榜实时数据</li>
+<li>限时活动状态</li>
+</ul>
+</li>
+</ul>
+<p><strong>特点</strong>：</p>
+<ul>
+<li>高可靠性（主从复制、定期备份）</li>
+<li>敏感数据加密（如密码、支付信息）</li>
+</ul>
+<hr>
+<h2 id="5-数据流向示例"><a href="#5-数据流向示例" class="headerlink" title="5. 数据流向示例"></a><strong>5. 数据流向示例</strong></h2><p>以玩家获得新装备为例：</p>
+<ol>
+<li><strong>客户端</strong>：发送”开宝箱”请求 → 游戏服务器  </li>
+<li><strong>游戏服务器</strong>：  <ul>
+<li>内存中计算掉落概率  </li>
+<li>向数据库写入新装备记录（事务保证原子性）</li>
+</ul>
+</li>
+<li><strong>数据库</strong>：持久化装备数据 → 返回成功  </li>
+<li><strong>游戏服务器</strong>：  <ul>
+<li>更新内存中的玩家装备列表  </li>
+<li>广播给客户端和其他玩家（如MMO中装备特效）</li>
+</ul>
+</li>
+<li><strong>客户端</strong>：本地显示新装备（非权威，以服务器数据为准）</li>
+</ol>
+<hr>
+<h2 id="关键原则"><a href="#关键原则" class="headerlink" title="关键原则"></a><strong>关键原则</strong></h2><ol>
+<li><strong>权威数据在服务端</strong>：客户端只显示，服务器决定真实性  </li>
+<li><strong>分层存储</strong>：  <ul>
+<li>热数据在内存（Redis&#x2F;服务器内存）  </li>
+<li>冷数据在数据库</li>
+</ul>
+</li>
+<li><strong>安全边界</strong>：  <ul>
+<li>客户端 ↔ Web服务器：HTTPS加密  </li>
+<li>Web服务器 ↔ 游戏服务器：内网通信 + API鉴权</li>
+</ul>
+</li>
+<li><strong>防作弊</strong>：关键逻辑（如伤害计算）必须在服务器执行</li>
+</ol>
+<p>不同游戏类型（单机、手游、MMO）会有存储策略差异，但核心原则一致：<strong>确保数据安全、一致，同时提供流畅的玩家体验</strong>。</p>
+]]></content>
+      <categories>
+        <category>游戏研发</category>
+      </categories>
+      <tags>
+        <tag>游戏研发</tag>
       </tags>
   </entry>
   <entry>
@@ -13465,6 +13465,133 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>网络游戏分布式架构</title>
+    <url>/2026/01/29/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/</url>
+    <content><![CDATA[<h1 id="简易网络游戏分布式架构图"><a href="#简易网络游戏分布式架构图" class="headerlink" title="简易网络游戏分布式架构图"></a>简易网络游戏分布式架构图</h1><h2 id="一、核心架构图（概览）"><a href="#一、核心架构图（概览）" class="headerlink" title="一、核心架构图（概览）"></a>一、核心架构图（概览）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            客户端层 (Client Layer)                           │</span><br><span class="line">├─────────────────────────────────────────────────────────────────────────────┤</span><br><span class="line">│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐           │</span><br><span class="line">│  │  手游   │  │  端游   │  │  页游   │  │ Web管理 │  │   SDK   │           │</span><br><span class="line">│  │ App     │  │ Client  │  │ Browser │  │ Console │  │         │           │</span><br><span class="line">│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘           │</span><br><span class="line">│       │             │             │            │            │                │</span><br><span class="line">└───────┼─────────────┼─────────────┼────────────┼────────────┼────────────────┘</span><br><span class="line">        │             │             │            │            │</span><br><span class="line">        ▼             ▼             ▼            ▼            ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                         网关接入层 (Gateway Layer)                           │</span><br><span class="line">│  ┌──────────────────────────────────────────────────────────┐              │</span><br><span class="line">│  │                    负载均衡集群 (Load Balancer)            │              │</span><br><span class="line">│  │  ┌─────────────┬──────────────┬────────────┬──────────┐  │              │</span><br><span class="line">│  │  │   Nginx     │    HAProxy   │    LVS     │   F5     │  │              │</span><br><span class="line">│  │  └─────────────┴──────────────┴────────────┴──────────┘  │              │</span><br><span class="line">│  └──────────────────────────┬────────────────────────────────┘              │</span><br><span class="line">│                             │                                                 │</span><br><span class="line">│       ┌─────────────────────┼─────────────────────┐                         │</span><br><span class="line">│       ▼                     ▼                     ▼                         │</span><br><span class="line">│  ┌──────────┐         ┌──────────┐         ┌──────────┐                    │</span><br><span class="line">│  │ TCP网关   │         │ HTTP网关  │         │ WebSocket │                    │</span><br><span class="line">│  │ (Game)    │         │ (RestAPI)│         │ (实时)    │                    │</span><br><span class="line">│  └────┬──────┘         └────┬─────┘         └────┬─────┘                    │</span><br><span class="line">│       │                     │                    │                          │</span><br><span class="line">└───────┼─────────────────────┼────────────────────┼──────────────────────────┘</span><br><span class="line">        │                     │                    │</span><br><span class="line">        ▼                     ▼                    ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        业务服务层 (Business Layer)                           │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐             │</span><br><span class="line">│  │  登录服务   │  │  角色服务   │  │  背包服务   │  │  好友服务   │             │</span><br><span class="line">│  │  Login     │  │  Character │  │  Bag       │  │  Friend    │             │</span><br><span class="line">│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘             │</span><br><span class="line">│        │                │                │               │                   │</span><br><span class="line">│  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐             │</span><br><span class="line">│  │  匹配服务   │  │  战斗服务   │  │  副本服务   │  │  邮件服务   │             │</span><br><span class="line">│  │  Match     │  │  Battle    │  │  Dungeon   │  │  Mail      │             │</span><br><span class="line">│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘             │</span><br><span class="line">│        │                │                │               │                   │</span><br><span class="line">│  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐             │</span><br><span class="line">│  │  公会服务   │  │  拍卖行服务  │  │  聊天服务   │  │  排行服务   │             │</span><br><span class="line">│  │  Guild     │  │  Auction   │  │  Chat      │  │  Rank      │             │</span><br><span class="line">│  └────────────┘  └────────────┘  └────────────┘  └────────────┘             │</span><br><span class="line">│                                                                              │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        数据服务层 (Data Layer)                               │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    缓存层 (Cache Layer)                               │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Redis   │  │ Memcached│  │  Local   │  │  CDN     │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  Cache   │  │  缓存     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    存储层 (Storage Layer)                             │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  MySQL   │  │ MongoDB  │  │ PostgreSQL│ │  TiDB    │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  集群      │ │  集群     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    大数据层 (BigData Layer)                           │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │   HDFS   │  │  HBase   │  │ ClickHouse│ │  ELK     │            │    │</span><br><span class="line">│  │  │          │  │          │  │           │ │   Stack  │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、详细架构图（组件交互）"><a href="#二、详细架构图（组件交互）" class="headerlink" title="二、详细架构图（组件交互）"></a>二、详细架构图（组件交互）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                             客户端                                            │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                          游戏客户端                                    │    │</span><br><span class="line">│  │                                                                      │    │</span><br><span class="line">│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐    │    │</span><br><span class="line">│  │  │   UI    │  │  网络    │  │  渲染    │  │  音频    │  │  逻辑    │    │    │</span><br><span class="line">│  │  │   Layer │  │  Module │  │  Engine │  │  Engine │  │  Engine │    │    │</span><br><span class="line">│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘    │    │</span><br><span class="line">│  │                                                                      │    │</span><br><span class="line">│  │  ┌─────────────────────────────────────────────────────────────┐    │    │</span><br><span class="line">│  │  │                       SDK层                                  │    │    │</span><br><span class="line">│  │  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │    │    │</span><br><span class="line">│  │  │  │ 登录SDK │  │ 支付SDK │  │ 分享SDK │  │ 统计SDK │        │    │    │</span><br><span class="line">│  │  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │    │    │</span><br><span class="line">│  │  └─────────────────────────────────────────────────────────────┘    │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└──────────────────────────────┬───────────────────────────────────────────────┘</span><br><span class="line">                               │</span><br><span class="line">                               ▼ (TCP/HTTP/WebSocket)</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            网关接入层                                          │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                        网关服务器集群                                   │    │</span><br><span class="line">│  │                                                                      │    │</span><br><span class="line">│  │  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐      │    │</span><br><span class="line">│  │  │ 网关节点1 │    │ 网关节点2 │    │ 网关节点3 │    │ 网关节点N │      │    │</span><br><span class="line">│  │  │ (上海)   │    │ (北京)   │    │ (广州)   │    │  ...    │      │    │</span><br><span class="line">│  │  └──────────┘    └──────────┘    └──────────┘    └──────────┘      │    │</span><br><span class="line">│  │       │               │               │               │              │    │</span><br><span class="line">│  │       └───────────────┼───────────────┼───────────────┘              │    │</span><br><span class="line">│  │                       │               │                              │    │</span><br><span class="line">│  │                 ┌─────▼─────┬─────────▼─────┐                      │    │</span><br><span class="line">│  │                 │  会话管理   │   协议转换    │                      │    │</span><br><span class="line">│  │                 │ Session   │  Protocol   │                      │    │</span><br><span class="line">│  │                 │  Manager  │  Converter  │                      │    │</span><br><span class="line">│  │                 └─────┬─────┴─────┬───────┘                      │    │</span><br><span class="line">│  │                       │           │                              │    │</span><br><span class="line">│  └───────────────────────┼───────────┼──────────────────────────────┘    │</span><br><span class="line">│                          │           │                                    │</span><br><span class="line">└──────────────────────────┼───────────┼────────────────────────────────────┘</span><br><span class="line">                           │           │</span><br><span class="line">                           ▼           ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                       微服务治理层 (Service Mesh)                            │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                   服务注册与发现中心                                   │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Consul  │  │  Etcd    │  │  ZooKeeper │ │  Nacos   │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                   配置管理中心 (Config Center)                         │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │ Apollo   │  │  Spring  │  │  Etcd    │  │   ...    │            │    │</span><br><span class="line">│  │  │          │  │  Cloud   │  │          │  │          │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                       API网关集群                                     │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Kong    │  │  Zuul    │  │  Traefik │  │  Nginx   │            │    │</span><br><span class="line">│  │  │ Gateway  │  │ Gateway  │  │  Gateway │  │  Plus    │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└──────────────────────────────────┬───────────────────────────────────────────┘</span><br><span class="line">                                   │</span><br><span class="line">                                   ▼ (RPC/HTTP/gRPC)</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                             业务微服务层                                      │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌────────────────────┬────────────────────┬────────────────────┐          │</span><br><span class="line">│   │  玩家服务域         │   游戏玩法域        │    社交系统域        │          │</span><br><span class="line">│   │  (Player Domain)   │  (Gameplay Domain) │  (Social Domain)  │          │</span><br><span class="line">│   ├────────────────────┼────────────────────┼────────────────────┤          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 1. 登录服务   │  │ │ 1. 匹配服务    │  │ │ 1. 好友服务   │   │          │</span><br><span class="line">│   │ │   Login      │  │ │   Match      │  │ │   Friend     │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 2. 角色服务   │  │ │ 2. 战斗服务    │  │ │ 2. 公会服务   │   │          │</span><br><span class="line">│   │ │   Character  │  │ │   Battle     │  │ │   Guild      │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 3. 背包服务   │  │ │ 3. 副本服务    │  │ │ 3. 聊天服务   │   │          │</span><br><span class="line">│   │ │   Bag        │  │ │   Dungeon    │  │ │   Chat       │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 4. 任务服务   │  │ │ 4. PVE服务    │  │ │ 4. 邮件服务   │   │          │</span><br><span class="line">│   │ │   Quest      │  │ │   PVE        │  │ │   Mail       │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 5. 成就服务   │  │ │ 5. PVP服务    │  │ │ 5. 排行榜服务  │   │          │</span><br><span class="line">│   │ │   Achievement│  │ │   PVP        │  │ │   Rank       │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   └────────────────────┴────────────────────┴────────────────────┘          │</span><br><span class="line">│                                                                              │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                           消息队列层                                         │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    消息中间件集群                                      │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Kafka   │  │ RabbitMQ │  │  RocketMQ│ │  Pulsar   │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  集群      │ │  集群     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                      事件处理服务                                      │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │ 登录事件  │  │ 支付事件  │  │ 战斗事件  │  │ 社交事件  │            │    │</span><br><span class="line">│  │  │  Handler │  │  Handler │  │  Handler │  │  Handler │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                             数据存储层                                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                         缓存层 (Cache)                              │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │  Redis   │  Redis   │ Memcached│  本地     │   CDN    │    │       │</span><br><span class="line">│   │   │  (会话)  │  (热点)   │  (对象)   │  缓存     │  缓存     │    │       │</span><br><span class="line">│   │   │  Cluster │  Cluster │  Cluster │          │          │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                       数据库层 (Database)                          │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │  MySQL   │ PostgreSQL│ MongoDB │  TiDB    │  HBase   │    │       │</span><br><span class="line">│   │   │  (用户)   │  (日志)   │  (配置)  │  (交易)   │  (统计)  │    │       │</span><br><span class="line">│   │   │  Cluster │  Cluster  │  Cluster │  Cluster │  Cluster │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                      文件存储层 (File Storage)                    │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │ 对象存储   │  块存储   │  文件存储  │  CDN     │  备份    │    │       │</span><br><span class="line">│   │   │  AWS S3  │  Ceph    │  NFS     │  节点     │  系统    │    │       │</span><br><span class="line">│   │   │  OSS     │          │          │          │          │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            运维支撑层                                        │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                        容器编排平台                                  │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │ Kubernetes│ Docker   │ 容器仓库  │  网络     │  存储     │    │       │</span><br><span class="line">│   │   │  Cluster │  Swarm   │  Registry│  Plugin  │  Plugin │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                       监控告警平台                                  │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │ 指标监控  │  日志监控  │  链路追踪  │  告警中心  │  仪表盘  │    │       │</span><br><span class="line">│   │   │ Prometheus│  ELK     │  Jaeger  │  Alert   │  Grafana│    │       │</span><br><span class="line">│   │   │          │   Stack   │          │  Manager │         │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                       持续集成/部署                                 │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │  Git     │ Jenkins  │  GitLab  │  镜像     │  部署     │    │       │</span><br><span class="line">│   │   │          │          │   CI/CD  │  构建     │  工具     │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、核心数据流架构图"><a href="#三、核心数据流架构图" class="headerlink" title="三、核心数据流架构图"></a>三、核心数据流架构图</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                           游戏数据流架构                                      │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   客户端请求流                         服务端响应流                          │</span><br><span class="line">│   ┌──────────┐                       ┌──────────┐                        │</span><br><span class="line">│   │ 客户端    │ ────────────────&gt;    │  网关层   │                        │</span><br><span class="line">│   │ Client   │    (登录/操作)        │ Gateway  │                        │</span><br><span class="line">│   └──────────┘                       └────┬─────┘                        │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│   消息路由流                         协议转换流                              │</span><br><span class="line">│                                         ┌──▼──┐                           │</span><br><span class="line">│   ┌──────────┐                       │ 路由  │                           │</span><br><span class="line">│   │  API网关 │ &lt;───────────────────  │ Router │                           │</span><br><span class="line">│   │  Gateway │    (服务发现)         └──┬───┘                           │</span><br><span class="line">│   └────┬─────┘                           │                               │</span><br><span class="line">│         │                                │                               │</span><br><span class="line">│   服务调用流                         业务处理流                              │</span><br><span class="line">│         │                                ▼                               │</span><br><span class="line">│   ┌─────▼─────┐                   ┌──────────┐                        │</span><br><span class="line">│   │ 微服务A    │                   │ 微服务B   │                        │</span><br><span class="line">│   │ Service A │ &lt;───────────────&gt; │ Service B │                        │</span><br><span class="line">│   └───────────┘   (RPC调用)       └────┬─────┘                        │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│   数据读写流                         缓存同步流                              │</span><br><span class="line">│                                         ┌──▼──┐                           │</span><br><span class="line">│   ┌──────────┐                       │ 缓存层 │                           │</span><br><span class="line">│   │ 数据库层  │ &lt;───────────────────  │ Cache │                           │</span><br><span class="line">│   │ Database │    (缓存更新)         └──┬───┘                           │</span><br><span class="line">│   └──────────┘                           │                               │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│   异步处理流                         事件通知流                              │</span><br><span class="line">│                                         ┌──▼──┐                           │</span><br><span class="line">│   ┌──────────┐                       │ MQ    │                           │</span><br><span class="line">│   │ 消息队列  │ &lt;───────────────────  │ Queue │                           │</span><br><span class="line">│   │ Message  │    (事件发布)          └───────┘                           │</span><br><span class="line">│   │  Queue   │                                                        │</span><br><span class="line">│   └──────────┘                                                        │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、区域部署架构图"><a href="#四、区域部署架构图" class="headerlink" title="四、区域部署架构图"></a>四、区域部署架构图</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        全球多区域部署架构                                    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│          美国东部(弗吉尼亚)           欧洲(法兰克福)           亚洲(新加坡)       │</span><br><span class="line">│          ┌─────────────────┐     ┌─────────────────┐     ┌─────────────┐ │</span><br><span class="line">│          │   美服集群        │     │   欧服集群       │     │  亚服集群    │ │</span><br><span class="line">│          │                 │     │                 │     │            │ │</span><br><span class="line">│          │  ┌───────────┐  │     │  ┌───────────┐  │     │ ┌─────────┐│ │</span><br><span class="line">│          │  │  网关层    │  │     │  │  网关层    │  │     │ │ 网关层   ││ │</span><br><span class="line">│          │  │ Gateway   │  │     │  │ Gateway   │  │     │ │ Gateway ││ │</span><br><span class="line">│          │  └─────┬─────┘  │     │  └─────┬─────┘  │     │ └────┬────┘│ │</span><br><span class="line">│          │        │        │     │        │        │     │      │     │ │</span><br><span class="line">│          │  ┌─────▼─────┐  │     │  ┌─────▼─────┐  │     │ ┌────▼────┐│ │</span><br><span class="line">│          │  │  业务服务   │  │     │  │  业务服务   │  │     │ │ 业务服务 ││ │</span><br><span class="line">│          │  │ Services  │  │     │  │ Services  │  │     │ │Services││ │</span><br><span class="line">│          │  └─────┬─────┘  │     │  └─────┬─────┘  │     │ └────┬────┘│ │</span><br><span class="line">│          │        │        │     │        │        │     │      │     │ │</span><br><span class="line">│          │  ┌─────▼─────┐  │     │  ┌─────▼─────┐  │     │ ┌────▼────┐│ │</span><br><span class="line">│          │  │  数据存储   │  │     │  │  数据存储   │  │     │ │ 数据存储 ││ │</span><br><span class="line">│          │  │  Storage  │  │     │  │  Storage  │  │     │ │ Storage││ │</span><br><span class="line">│          │  └───────────┘  │     │  └───────────┘  │     │ └─────────┘│ │</span><br><span class="line">│          └────────┬─────────┘     └────────┬─────────┘     └─────┬──────┘ │</span><br><span class="line">│                   │                        │                     │       │</span><br><span class="line">│                   └────────────────────────┼─────────────────────┘       │</span><br><span class="line">│                                            │                             │</span><br><span class="line">│                           ┌────────────────▼─────────────────┐         │</span><br><span class="line">│                           │        全局数据中心                  │         │</span><br><span class="line">│                           │      (Global Data Center)        │         │</span><br><span class="line">│                           │                                  │         │</span><br><span class="line">│                           │    ┌──────────────────────┐    │         │</span><br><span class="line">│                           │    │    用户账号中心          │    │         │</span><br><span class="line">│                           │    │    Global Account     │    │         │</span><br><span class="line">│                           │    │      (MySQL集群)       │    │         │</span><br><span class="line">│                           │    └──────────────────────┘    │         │</span><br><span class="line">│                           │                                  │         │</span><br><span class="line">│                           │    ┌──────────────────────┐    │         │</span><br><span class="line">│                           │    │    跨服战系统           │    │         │</span><br><span class="line">│                           │    │    Cross-Server      │    │         │</span><br><span class="line">│                           │    │       Battle         │    │         │</span><br><span class="line">│                           │    └──────────────────────┘    │         │</span><br><span class="line">│                           │                                  │         │</span><br><span class="line">│                           │    ┌──────────────────────┐    │         │</span><br><span class="line">│                           │    │     大数据分析          │    │         │</span><br><span class="line">│                           │    │    BigData Analytics │    │         │</span><br><span class="line">│                           │    └──────────────────────┘    │         │</span><br><span class="line">│                           └──────────────────────────────────┘         │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="五、关键组件连接关系图"><a href="#五、关键组件连接关系图" class="headerlink" title="五、关键组件连接关系图"></a>五、关键组件连接关系图</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                    核心组件连接关系                                          │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌──────────┐                       │</span><br><span class="line">│  │  客户端   │──────│  网关     │──────│  登录服务  │                       │</span><br><span class="line">│  │ Client   │      │ Gateway  │      │ Login   │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └────┬─────┘                       │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌────▼─────┐                       │</span><br><span class="line">│  │  配置中心  │◄─────│  注册中心  │◄─────│  业务服务  │                       │</span><br><span class="line">│  │ Config   │      │ Registry │      │ Service │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └────┬─────┘                       │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌────▼─────┐                       │</span><br><span class="line">│  │  消息队列  │◄─────│  缓存层   │◄─────│  数据库   │                       │</span><br><span class="line">│  │   MQ     │      │  Cache   │      │ Database│                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └──────────┘                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌──────────┐                       │</span><br><span class="line">│  │  监控系统  │─────►│  日志系统  │─────►│  告警系统  │                       │</span><br><span class="line">│  │ Monitor  │      │   Log    │      │ Alert   │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └──────────┘                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌──────────┐                       │</span><br><span class="line">│  │  CI/CD   │─────►│ 容器平台  │─────►│  部署系统  │                       │</span><br><span class="line">│  │ Pipeline │      │ Container│      │ Deploy  │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └──────────┘                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="六、简化版架构（适合小型项目）"><a href="#六、简化版架构（适合小型项目）" class="headerlink" title="六、简化版架构（适合小型项目）"></a>六、简化版架构（适合小型项目）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│                 客户端                        │</span><br><span class="line">│           ┌─────────────┐                 │</span><br><span class="line">│           │  游戏客户端   │                 │</span><br><span class="line">│           └──────┬──────┘                 │</span><br><span class="line">└──────────────────┼──────────────────────────┘</span><br><span class="line">                   │ (TCP/HTTP)</span><br><span class="line">                   ▼</span><br><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│               网关层 (Gateway)                │</span><br><span class="line">│           ┌─────────────┐                 │</span><br><span class="line">│           │  Nginx/网关  │                 │</span><br><span class="line">│           │   服务器     │                 │</span><br><span class="line">│           └──────┬──────┘                 │</span><br><span class="line">└──────────────────┼──────────────────────────┘</span><br><span class="line">                   │ (RPC/HTTP)</span><br><span class="line">                   ▼</span><br><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│              业务服务层 (Services)            │</span><br><span class="line">│  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐   │</span><br><span class="line">│  │ 登录  │  │ 角色  │  │ 战斗  │  │ 背包  │   │</span><br><span class="line">│  │服务   │  │服务   │  │服务   │  │服务   │   │</span><br><span class="line">│  └──┬───┘  └──┬───┘  └──┬───┘  └──┬───┘   │</span><br><span class="line">└─────┼─────────┼─────────┼─────────┼─────────┘</span><br><span class="line">      │         │         │         │</span><br><span class="line">      ▼         ▼         ▼         ▼</span><br><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│              数据存储层 (Storage)             │</span><br><span class="line">│  ┌─────────────────────────────────────┐   │</span><br><span class="line">│  │           Redis集群 (缓存)            │   │</span><br><span class="line">│  └─────────────────────────────────────┘   │</span><br><span class="line">│  ┌─────────────────────────────────────┐   │</span><br><span class="line">│  │         MySQL集群 (主数据)            │   │</span><br><span class="line">│  └─────────────────────────────────────┘   │</span><br><span class="line">└─────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<h2 id="七、核心组件说明表"><a href="#七、核心组件说明表" class="headerlink" title="七、核心组件说明表"></a>七、核心组件说明表</h2><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>组件</th>
+<th>作用</th>
+<th>常用技术</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>客户端层</strong></td>
+<td>游戏客户端</td>
+<td>用户交互界面</td>
+<td>Unity, Unreal, Cocos</td>
+</tr>
+<tr>
+<td></td>
+<td>网络模块</td>
+<td>网络通信</td>
+<td>TCP&#x2F;UDP, WebSocket</td>
+</tr>
+<tr>
+<td><strong>网关层</strong></td>
+<td>负载均衡</td>
+<td>流量分发</td>
+<td>Nginx, HAProxy, LVS</td>
+</tr>
+<tr>
+<td></td>
+<td>协议网关</td>
+<td>协议转换</td>
+<td>Netty, Mina</td>
+</tr>
+<tr>
+<td></td>
+<td>会话管理</td>
+<td>连接管理</td>
+<td>自定义网关</td>
+</tr>
+<tr>
+<td><strong>服务层</strong></td>
+<td>微服务</td>
+<td>业务逻辑处理</td>
+<td>Spring Cloud, gRPC</td>
+</tr>
+<tr>
+<td></td>
+<td>服务注册</td>
+<td>服务发现</td>
+<td>Consul, Nacos, Etcd</td>
+</tr>
+<tr>
+<td></td>
+<td>API网关</td>
+<td>API统一入口</td>
+<td>Kong, Zuul, Spring Gateway</td>
+</tr>
+<tr>
+<td><strong>数据层</strong></td>
+<td>缓存</td>
+<td>热点数据存储</td>
+<td>Redis, Memcached</td>
+</tr>
+<tr>
+<td></td>
+<td>数据库</td>
+<td>持久化存储</td>
+<td>MySQL, PostgreSQL, MongoDB</td>
+</tr>
+<tr>
+<td></td>
+<td>消息队列</td>
+<td>异步处理</td>
+<td>Kafka, RabbitMQ, RocketMQ</td>
+</tr>
+<tr>
+<td><strong>运维层</strong></td>
+<td>容器平台</td>
+<td>服务部署</td>
+<td>Kubernetes, Docker</td>
+</tr>
+<tr>
+<td></td>
+<td>监控系统</td>
+<td>系统监控</td>
+<td>Prometheus, Grafana</td>
+</tr>
+<tr>
+<td></td>
+<td>日志系统</td>
+<td>日志收集</td>
+<td>ELK Stack</td>
+</tr>
+<tr>
+<td></td>
+<td>CI&#x2F;CD</td>
+<td>持续集成</td>
+<td>Jenkins, GitLab CI</td>
+</tr>
+</tbody></table>
+<h2 id="八、架构演进路线"><a href="#八、架构演进路线" class="headerlink" title="八、架构演进路线"></a>八、架构演进路线</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">阶段1: 单体架构 (Monolithic)</span><br><span class="line">    ├── 所有功能在一个进程</span><br><span class="line">    └── 单数据库</span><br><span class="line">    </span><br><span class="line">阶段2: 垂直拆分 (Vertical Split)</span><br><span class="line">    ├── 按功能模块拆分服务</span><br><span class="line">    └── 独立数据库</span><br><span class="line">    </span><br><span class="line">阶段3: 服务化 (Service-Oriented)</span><br><span class="line">    ├── 微服务架构</span><br><span class="line">    ├── 服务发现</span><br><span class="line">    └── 统一网关</span><br><span class="line">    </span><br><span class="line">阶段4: 平台化 (Platform)</span><br><span class="line">    ├── 容器化部署</span><br><span class="line">    ├── 自动化运维</span><br><span class="line">    └── 服务网格</span><br><span class="line">    </span><br><span class="line">阶段5: 云原生 (Cloud-Native)</span><br><span class="line">    ├── Serverless</span><br><span class="line">    ├── 多租户</span><br><span class="line">    └── 全球部署</span><br></pre></td></tr></table></figure>
+
+<p>这个架构图涵盖了从客户端到基础设施的完整网络游戏分布式架构，你可以根据项目规模和需求选择相应的组件进行搭建。</p>
+]]></content>
+      <categories>
+        <category>网络编程</category>
+      </categories>
+      <tags>
+        <tag>分布式</tag>
+        <tag>微服务</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>自建Git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAGit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab&#x2F;Gitea）和简单搭建裸仓库。</p>
@@ -13666,132 +13793,6 @@ graph TD
       </categories>
       <tags>
         <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>网络游戏分布式架构</title>
-    <url>/2026/01/29/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/</url>
-    <content><![CDATA[<h1 id="简易网络游戏分布式架构图"><a href="#简易网络游戏分布式架构图" class="headerlink" title="简易网络游戏分布式架构图"></a>简易网络游戏分布式架构图</h1><h2 id="一、核心架构图（概览）"><a href="#一、核心架构图（概览）" class="headerlink" title="一、核心架构图（概览）"></a>一、核心架构图（概览）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            客户端层 (Client Layer)                           │</span><br><span class="line">├─────────────────────────────────────────────────────────────────────────────┤</span><br><span class="line">│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐           │</span><br><span class="line">│  │  手游   │  │  端游   │  │  页游   │  │ Web管理 │  │   SDK   │           │</span><br><span class="line">│  │ App     │  │ Client  │  │ Browser │  │ Console │  │         │           │</span><br><span class="line">│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘           │</span><br><span class="line">│       │             │             │            │            │                │</span><br><span class="line">└───────┼─────────────┼─────────────┼────────────┼────────────┼────────────────┘</span><br><span class="line">        │             │             │            │            │</span><br><span class="line">        ▼             ▼             ▼            ▼            ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                         网关接入层 (Gateway Layer)                           │</span><br><span class="line">│  ┌──────────────────────────────────────────────────────────┐              │</span><br><span class="line">│  │                    负载均衡集群 (Load Balancer)            │              │</span><br><span class="line">│  │  ┌─────────────┬──────────────┬────────────┬──────────┐  │              │</span><br><span class="line">│  │  │   Nginx     │    HAProxy   │    LVS     │   F5     │  │              │</span><br><span class="line">│  │  └─────────────┴──────────────┴────────────┴──────────┘  │              │</span><br><span class="line">│  └──────────────────────────┬────────────────────────────────┘              │</span><br><span class="line">│                             │                                                 │</span><br><span class="line">│       ┌─────────────────────┼─────────────────────┐                         │</span><br><span class="line">│       ▼                     ▼                     ▼                         │</span><br><span class="line">│  ┌──────────┐         ┌──────────┐         ┌──────────┐                    │</span><br><span class="line">│  │ TCP网关   │         │ HTTP网关  │         │ WebSocket │                    │</span><br><span class="line">│  │ (Game)    │         │ (RestAPI)│         │ (实时)    │                    │</span><br><span class="line">│  └────┬──────┘         └────┬─────┘         └────┬─────┘                    │</span><br><span class="line">│       │                     │                    │                          │</span><br><span class="line">└───────┼─────────────────────┼────────────────────┼──────────────────────────┘</span><br><span class="line">        │                     │                    │</span><br><span class="line">        ▼                     ▼                    ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        业务服务层 (Business Layer)                           │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐             │</span><br><span class="line">│  │  登录服务   │  │  角色服务   │  │  背包服务   │  │  好友服务   │             │</span><br><span class="line">│  │  Login     │  │  Character │  │  Bag       │  │  Friend    │             │</span><br><span class="line">│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘             │</span><br><span class="line">│        │                │                │               │                   │</span><br><span class="line">│  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐             │</span><br><span class="line">│  │  匹配服务   │  │  战斗服务   │  │  副本服务   │  │  邮件服务   │             │</span><br><span class="line">│  │  Match     │  │  Battle    │  │  Dungeon   │  │  Mail      │             │</span><br><span class="line">│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘             │</span><br><span class="line">│        │                │                │               │                   │</span><br><span class="line">│  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐             │</span><br><span class="line">│  │  公会服务   │  │  拍卖行服务  │  │  聊天服务   │  │  排行服务   │             │</span><br><span class="line">│  │  Guild     │  │  Auction   │  │  Chat      │  │  Rank      │             │</span><br><span class="line">│  └────────────┘  └────────────┘  └────────────┘  └────────────┘             │</span><br><span class="line">│                                                                              │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        数据服务层 (Data Layer)                               │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    缓存层 (Cache Layer)                               │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Redis   │  │ Memcached│  │  Local   │  │  CDN     │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  Cache   │  │  缓存     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    存储层 (Storage Layer)                             │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  MySQL   │  │ MongoDB  │  │ PostgreSQL│ │  TiDB    │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  集群      │ │  集群     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    大数据层 (BigData Layer)                           │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │   HDFS   │  │  HBase   │  │ ClickHouse│ │  ELK     │            │    │</span><br><span class="line">│  │  │          │  │          │  │           │ │   Stack  │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="二、详细架构图（组件交互）"><a href="#二、详细架构图（组件交互）" class="headerlink" title="二、详细架构图（组件交互）"></a>二、详细架构图（组件交互）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                             客户端                                            │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                          游戏客户端                                    │    │</span><br><span class="line">│  │                                                                      │    │</span><br><span class="line">│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐    │    │</span><br><span class="line">│  │  │   UI    │  │  网络    │  │  渲染    │  │  音频    │  │  逻辑    │    │    │</span><br><span class="line">│  │  │   Layer │  │  Module │  │  Engine │  │  Engine │  │  Engine │    │    │</span><br><span class="line">│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘  └─────────┘    │    │</span><br><span class="line">│  │                                                                      │    │</span><br><span class="line">│  │  ┌─────────────────────────────────────────────────────────────┐    │    │</span><br><span class="line">│  │  │                       SDK层                                  │    │    │</span><br><span class="line">│  │  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐        │    │    │</span><br><span class="line">│  │  │  │ 登录SDK │  │ 支付SDK │  │ 分享SDK │  │ 统计SDK │        │    │    │</span><br><span class="line">│  │  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘        │    │    │</span><br><span class="line">│  │  └─────────────────────────────────────────────────────────────┘    │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└──────────────────────────────┬───────────────────────────────────────────────┘</span><br><span class="line">                               │</span><br><span class="line">                               ▼ (TCP/HTTP/WebSocket)</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            网关接入层                                          │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                        网关服务器集群                                   │    │</span><br><span class="line">│  │                                                                      │    │</span><br><span class="line">│  │  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐      │    │</span><br><span class="line">│  │  │ 网关节点1 │    │ 网关节点2 │    │ 网关节点3 │    │ 网关节点N │      │    │</span><br><span class="line">│  │  │ (上海)   │    │ (北京)   │    │ (广州)   │    │  ...    │      │    │</span><br><span class="line">│  │  └──────────┘    └──────────┘    └──────────┘    └──────────┘      │    │</span><br><span class="line">│  │       │               │               │               │              │    │</span><br><span class="line">│  │       └───────────────┼───────────────┼───────────────┘              │    │</span><br><span class="line">│  │                       │               │                              │    │</span><br><span class="line">│  │                 ┌─────▼─────┬─────────▼─────┐                      │    │</span><br><span class="line">│  │                 │  会话管理   │   协议转换    │                      │    │</span><br><span class="line">│  │                 │ Session   │  Protocol   │                      │    │</span><br><span class="line">│  │                 │  Manager  │  Converter  │                      │    │</span><br><span class="line">│  │                 └─────┬─────┴─────┬───────┘                      │    │</span><br><span class="line">│  │                       │           │                              │    │</span><br><span class="line">│  └───────────────────────┼───────────┼──────────────────────────────┘    │</span><br><span class="line">│                          │           │                                    │</span><br><span class="line">└──────────────────────────┼───────────┼────────────────────────────────────┘</span><br><span class="line">                           │           │</span><br><span class="line">                           ▼           ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                       微服务治理层 (Service Mesh)                            │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                   服务注册与发现中心                                   │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Consul  │  │  Etcd    │  │  ZooKeeper │ │  Nacos   │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                   配置管理中心 (Config Center)                         │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │ Apollo   │  │  Spring  │  │  Etcd    │  │   ...    │            │    │</span><br><span class="line">│  │  │          │  │  Cloud   │  │          │  │          │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                       API网关集群                                     │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Kong    │  │  Zuul    │  │  Traefik │  │  Nginx   │            │    │</span><br><span class="line">│  │  │ Gateway  │  │ Gateway  │  │  Gateway │  │  Plus    │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└──────────────────────────────────┬───────────────────────────────────────────┘</span><br><span class="line">                                   │</span><br><span class="line">                                   ▼ (RPC/HTTP/gRPC)</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                             业务微服务层                                      │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌────────────────────┬────────────────────┬────────────────────┐          │</span><br><span class="line">│   │  玩家服务域         │   游戏玩法域        │    社交系统域        │          │</span><br><span class="line">│   │  (Player Domain)   │  (Gameplay Domain) │  (Social Domain)  │          │</span><br><span class="line">│   ├────────────────────┼────────────────────┼────────────────────┤          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 1. 登录服务   │  │ │ 1. 匹配服务    │  │ │ 1. 好友服务   │   │          │</span><br><span class="line">│   │ │   Login      │  │ │   Match      │  │ │   Friend     │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 2. 角色服务   │  │ │ 2. 战斗服务    │  │ │ 2. 公会服务   │   │          │</span><br><span class="line">│   │ │   Character  │  │ │   Battle     │  │ │   Guild      │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 3. 背包服务   │  │ │ 3. 副本服务    │  │ │ 3. 聊天服务   │   │          │</span><br><span class="line">│   │ │   Bag        │  │ │   Dungeon    │  │ │   Chat       │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 4. 任务服务   │  │ │ 4. PVE服务    │  │ │ 4. 邮件服务   │   │          │</span><br><span class="line">│   │ │   Quest      │  │ │   PVE        │  │ │   Mail       │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   │ ┌──────────────┐  │ ┌──────────────┐  │ ┌──────────────┐   │          │</span><br><span class="line">│   │ │ 5. 成就服务   │  │ │ 5. PVP服务    │  │ │ 5. 排行榜服务  │   │          │</span><br><span class="line">│   │ │   Achievement│  │ │   PVP        │  │ │   Rank       │   │          │</span><br><span class="line">│   │ └──────────────┘  │ └──────────────┘  │ └──────────────┘   │          │</span><br><span class="line">│   └────────────────────┴────────────────────┴────────────────────┘          │</span><br><span class="line">│                                                                              │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                           消息队列层                                         │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    消息中间件集群                                      │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Kafka   │  │ RabbitMQ │  │  RocketMQ│ │  Pulsar   │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  集群      │ │  集群     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                      事件处理服务                                      │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │ 登录事件  │  │ 支付事件  │  │ 战斗事件  │  │ 社交事件  │            │    │</span><br><span class="line">│  │  │  Handler │  │  Handler │  │  Handler │  │  Handler │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                             数据存储层                                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                         缓存层 (Cache)                              │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │  Redis   │  Redis   │ Memcached│  本地     │   CDN    │    │       │</span><br><span class="line">│   │   │  (会话)  │  (热点)   │  (对象)   │  缓存     │  缓存     │    │       │</span><br><span class="line">│   │   │  Cluster │  Cluster │  Cluster │          │          │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                       数据库层 (Database)                          │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │  MySQL   │ PostgreSQL│ MongoDB │  TiDB    │  HBase   │    │       │</span><br><span class="line">│   │   │  (用户)   │  (日志)   │  (配置)  │  (交易)   │  (统计)  │    │       │</span><br><span class="line">│   │   │  Cluster │  Cluster  │  Cluster │  Cluster │  Cluster │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                      文件存储层 (File Storage)                    │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │ 对象存储   │  块存储   │  文件存储  │  CDN     │  备份    │    │       │</span><br><span class="line">│   │   │  AWS S3  │  Ceph    │  NFS     │  节点     │  系统    │    │       │</span><br><span class="line">│   │   │  OSS     │          │          │          │          │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            运维支撑层                                        │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                        容器编排平台                                  │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │ Kubernetes│ Docker   │ 容器仓库  │  网络     │  存储     │    │       │</span><br><span class="line">│   │   │  Cluster │  Swarm   │  Registry│  Plugin  │  Plugin │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                       监控告警平台                                  │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │ 指标监控  │  日志监控  │  链路追踪  │  告警中心  │  仪表盘  │    │       │</span><br><span class="line">│   │   │ Prometheus│  ELK     │  Jaeger  │  Alert   │  Grafana│    │       │</span><br><span class="line">│   │   │          │   Stack   │          │  Manager │         │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   ┌─────────────────────────────────────────────────────────────────┐       │</span><br><span class="line">│   │                       持续集成/部署                                 │       │</span><br><span class="line">│   │   ┌──────────┬──────────┬──────────┬──────────┬──────────┐    │       │</span><br><span class="line">│   │   │  Git     │ Jenkins  │  GitLab  │  镜像     │  部署     │    │       │</span><br><span class="line">│   │   │          │          │   CI/CD  │  构建     │  工具     │    │       │</span><br><span class="line">│   │   └──────────┴──────────┴──────────┴──────────┴──────────┘    │       │</span><br><span class="line">│   └─────────────────────────────────────────────────────────────────┘       │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="三、核心数据流架构图"><a href="#三、核心数据流架构图" class="headerlink" title="三、核心数据流架构图"></a>三、核心数据流架构图</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                           游戏数据流架构                                      │</span><br><span class="line">│                                                                              │</span><br><span class="line">│   客户端请求流                         服务端响应流                          │</span><br><span class="line">│   ┌──────────┐                       ┌──────────┐                        │</span><br><span class="line">│   │ 客户端    │ ────────────────&gt;    │  网关层   │                        │</span><br><span class="line">│   │ Client   │    (登录/操作)        │ Gateway  │                        │</span><br><span class="line">│   └──────────┘                       └────┬─────┘                        │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│   消息路由流                         协议转换流                              │</span><br><span class="line">│                                         ┌──▼──┐                           │</span><br><span class="line">│   ┌──────────┐                       │ 路由  │                           │</span><br><span class="line">│   │  API网关 │ &lt;───────────────────  │ Router │                           │</span><br><span class="line">│   │  Gateway │    (服务发现)         └──┬───┘                           │</span><br><span class="line">│   └────┬─────┘                           │                               │</span><br><span class="line">│         │                                │                               │</span><br><span class="line">│   服务调用流                         业务处理流                              │</span><br><span class="line">│         │                                ▼                               │</span><br><span class="line">│   ┌─────▼─────┐                   ┌──────────┐                        │</span><br><span class="line">│   │ 微服务A    │                   │ 微服务B   │                        │</span><br><span class="line">│   │ Service A │ &lt;───────────────&gt; │ Service B │                        │</span><br><span class="line">│   └───────────┘   (RPC调用)       └────┬─────┘                        │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│   数据读写流                         缓存同步流                              │</span><br><span class="line">│                                         ┌──▼──┐                           │</span><br><span class="line">│   ┌──────────┐                       │ 缓存层 │                           │</span><br><span class="line">│   │ 数据库层  │ &lt;───────────────────  │ Cache │                           │</span><br><span class="line">│   │ Database │    (缓存更新)         └──┬───┘                           │</span><br><span class="line">│   └──────────┘                           │                               │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│   异步处理流                         事件通知流                              │</span><br><span class="line">│                                         ┌──▼──┐                           │</span><br><span class="line">│   ┌──────────┐                       │ MQ    │                           │</span><br><span class="line">│   │ 消息队列  │ &lt;───────────────────  │ Queue │                           │</span><br><span class="line">│   │ Message  │    (事件发布)          └───────┘                           │</span><br><span class="line">│   │  Queue   │                                                        │</span><br><span class="line">│   └──────────┘                                                        │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="四、区域部署架构图"><a href="#四、区域部署架构图" class="headerlink" title="四、区域部署架构图"></a>四、区域部署架构图</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        全球多区域部署架构                                    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│          美国东部(弗吉尼亚)           欧洲(法兰克福)           亚洲(新加坡)       │</span><br><span class="line">│          ┌─────────────────┐     ┌─────────────────┐     ┌─────────────┐ │</span><br><span class="line">│          │   美服集群        │     │   欧服集群       │     │  亚服集群    │ │</span><br><span class="line">│          │                 │     │                 │     │            │ │</span><br><span class="line">│          │  ┌───────────┐  │     │  ┌───────────┐  │     │ ┌─────────┐│ │</span><br><span class="line">│          │  │  网关层    │  │     │  │  网关层    │  │     │ │ 网关层   ││ │</span><br><span class="line">│          │  │ Gateway   │  │     │  │ Gateway   │  │     │ │ Gateway ││ │</span><br><span class="line">│          │  └─────┬─────┘  │     │  └─────┬─────┘  │     │ └────┬────┘│ │</span><br><span class="line">│          │        │        │     │        │        │     │      │     │ │</span><br><span class="line">│          │  ┌─────▼─────┐  │     │  ┌─────▼─────┐  │     │ ┌────▼────┐│ │</span><br><span class="line">│          │  │  业务服务   │  │     │  │  业务服务   │  │     │ │ 业务服务 ││ │</span><br><span class="line">│          │  │ Services  │  │     │  │ Services  │  │     │ │Services││ │</span><br><span class="line">│          │  └─────┬─────┘  │     │  └─────┬─────┘  │     │ └────┬────┘│ │</span><br><span class="line">│          │        │        │     │        │        │     │      │     │ │</span><br><span class="line">│          │  ┌─────▼─────┐  │     │  ┌─────▼─────┐  │     │ ┌────▼────┐│ │</span><br><span class="line">│          │  │  数据存储   │  │     │  │  数据存储   │  │     │ │ 数据存储 ││ │</span><br><span class="line">│          │  │  Storage  │  │     │  │  Storage  │  │     │ │ Storage││ │</span><br><span class="line">│          │  └───────────┘  │     │  └───────────┘  │     │ └─────────┘│ │</span><br><span class="line">│          └────────┬─────────┘     └────────┬─────────┘     └─────┬──────┘ │</span><br><span class="line">│                   │                        │                     │       │</span><br><span class="line">│                   └────────────────────────┼─────────────────────┘       │</span><br><span class="line">│                                            │                             │</span><br><span class="line">│                           ┌────────────────▼─────────────────┐         │</span><br><span class="line">│                           │        全局数据中心                  │         │</span><br><span class="line">│                           │      (Global Data Center)        │         │</span><br><span class="line">│                           │                                  │         │</span><br><span class="line">│                           │    ┌──────────────────────┐    │         │</span><br><span class="line">│                           │    │    用户账号中心          │    │         │</span><br><span class="line">│                           │    │    Global Account     │    │         │</span><br><span class="line">│                           │    │      (MySQL集群)       │    │         │</span><br><span class="line">│                           │    └──────────────────────┘    │         │</span><br><span class="line">│                           │                                  │         │</span><br><span class="line">│                           │    ┌──────────────────────┐    │         │</span><br><span class="line">│                           │    │    跨服战系统           │    │         │</span><br><span class="line">│                           │    │    Cross-Server      │    │         │</span><br><span class="line">│                           │    │       Battle         │    │         │</span><br><span class="line">│                           │    └──────────────────────┘    │         │</span><br><span class="line">│                           │                                  │         │</span><br><span class="line">│                           │    ┌──────────────────────┐    │         │</span><br><span class="line">│                           │    │     大数据分析          │    │         │</span><br><span class="line">│                           │    │    BigData Analytics │    │         │</span><br><span class="line">│                           │    └──────────────────────┘    │         │</span><br><span class="line">│                           └──────────────────────────────────┘         │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="五、关键组件连接关系图"><a href="#五、关键组件连接关系图" class="headerlink" title="五、关键组件连接关系图"></a>五、关键组件连接关系图</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                    核心组件连接关系                                          │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌──────────┐                       │</span><br><span class="line">│  │  客户端   │──────│  网关     │──────│  登录服务  │                       │</span><br><span class="line">│  │ Client   │      │ Gateway  │      │ Login   │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └────┬─────┘                       │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌────▼─────┐                       │</span><br><span class="line">│  │  配置中心  │◄─────│  注册中心  │◄─────│  业务服务  │                       │</span><br><span class="line">│  │ Config   │      │ Registry │      │ Service │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └────┬─────┘                       │</span><br><span class="line">│                                            │                               │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌────▼─────┐                       │</span><br><span class="line">│  │  消息队列  │◄─────│  缓存层   │◄─────│  数据库   │                       │</span><br><span class="line">│  │   MQ     │      │  Cache   │      │ Database│                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └──────────┘                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌──────────┐                       │</span><br><span class="line">│  │  监控系统  │─────►│  日志系统  │─────►│  告警系统  │                       │</span><br><span class="line">│  │ Monitor  │      │   Log    │      │ Alert   │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └──────────┘                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌──────────┐      ┌──────────┐      ┌──────────┐                       │</span><br><span class="line">│  │  CI/CD   │─────►│ 容器平台  │─────►│  部署系统  │                       │</span><br><span class="line">│  │ Pipeline │      │ Container│      │ Deploy  │                       │</span><br><span class="line">│  └──────────┘      └──────────┘      └──────────┘                       │</span><br><span class="line">│                                                                              │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="六、简化版架构（适合小型项目）"><a href="#六、简化版架构（适合小型项目）" class="headerlink" title="六、简化版架构（适合小型项目）"></a>六、简化版架构（适合小型项目）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│                 客户端                        │</span><br><span class="line">│           ┌─────────────┐                 │</span><br><span class="line">│           │  游戏客户端   │                 │</span><br><span class="line">│           └──────┬──────┘                 │</span><br><span class="line">└──────────────────┼──────────────────────────┘</span><br><span class="line">                   │ (TCP/HTTP)</span><br><span class="line">                   ▼</span><br><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│               网关层 (Gateway)                │</span><br><span class="line">│           ┌─────────────┐                 │</span><br><span class="line">│           │  Nginx/网关  │                 │</span><br><span class="line">│           │   服务器     │                 │</span><br><span class="line">│           └──────┬──────┘                 │</span><br><span class="line">└──────────────────┼──────────────────────────┘</span><br><span class="line">                   │ (RPC/HTTP)</span><br><span class="line">                   ▼</span><br><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│              业务服务层 (Services)            │</span><br><span class="line">│  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐   │</span><br><span class="line">│  │ 登录  │  │ 角色  │  │ 战斗  │  │ 背包  │   │</span><br><span class="line">│  │服务   │  │服务   │  │服务   │  │服务   │   │</span><br><span class="line">│  └──┬───┘  └──┬───┘  └──┬───┘  └──┬───┘   │</span><br><span class="line">└─────┼─────────┼─────────┼─────────┼─────────┘</span><br><span class="line">      │         │         │         │</span><br><span class="line">      ▼         ▼         ▼         ▼</span><br><span class="line">┌─────────────────────────────────────────────┐</span><br><span class="line">│              数据存储层 (Storage)             │</span><br><span class="line">│  ┌─────────────────────────────────────┐   │</span><br><span class="line">│  │           Redis集群 (缓存)            │   │</span><br><span class="line">│  └─────────────────────────────────────┘   │</span><br><span class="line">│  ┌─────────────────────────────────────┐   │</span><br><span class="line">│  │         MySQL集群 (主数据)            │   │</span><br><span class="line">│  └─────────────────────────────────────┘   │</span><br><span class="line">└─────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
-
-<h2 id="七、核心组件说明表"><a href="#七、核心组件说明表" class="headerlink" title="七、核心组件说明表"></a>七、核心组件说明表</h2><table>
-<thead>
-<tr>
-<th>层级</th>
-<th>组件</th>
-<th>作用</th>
-<th>常用技术</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>客户端层</strong></td>
-<td>游戏客户端</td>
-<td>用户交互界面</td>
-<td>Unity, Unreal, Cocos</td>
-</tr>
-<tr>
-<td></td>
-<td>网络模块</td>
-<td>网络通信</td>
-<td>TCP&#x2F;UDP, WebSocket</td>
-</tr>
-<tr>
-<td><strong>网关层</strong></td>
-<td>负载均衡</td>
-<td>流量分发</td>
-<td>Nginx, HAProxy, LVS</td>
-</tr>
-<tr>
-<td></td>
-<td>协议网关</td>
-<td>协议转换</td>
-<td>Netty, Mina</td>
-</tr>
-<tr>
-<td></td>
-<td>会话管理</td>
-<td>连接管理</td>
-<td>自定义网关</td>
-</tr>
-<tr>
-<td><strong>服务层</strong></td>
-<td>微服务</td>
-<td>业务逻辑处理</td>
-<td>Spring Cloud, gRPC</td>
-</tr>
-<tr>
-<td></td>
-<td>服务注册</td>
-<td>服务发现</td>
-<td>Consul, Nacos, Etcd</td>
-</tr>
-<tr>
-<td></td>
-<td>API网关</td>
-<td>API统一入口</td>
-<td>Kong, Zuul, Spring Gateway</td>
-</tr>
-<tr>
-<td><strong>数据层</strong></td>
-<td>缓存</td>
-<td>热点数据存储</td>
-<td>Redis, Memcached</td>
-</tr>
-<tr>
-<td></td>
-<td>数据库</td>
-<td>持久化存储</td>
-<td>MySQL, PostgreSQL, MongoDB</td>
-</tr>
-<tr>
-<td></td>
-<td>消息队列</td>
-<td>异步处理</td>
-<td>Kafka, RabbitMQ, RocketMQ</td>
-</tr>
-<tr>
-<td><strong>运维层</strong></td>
-<td>容器平台</td>
-<td>服务部署</td>
-<td>Kubernetes, Docker</td>
-</tr>
-<tr>
-<td></td>
-<td>监控系统</td>
-<td>系统监控</td>
-<td>Prometheus, Grafana</td>
-</tr>
-<tr>
-<td></td>
-<td>日志系统</td>
-<td>日志收集</td>
-<td>ELK Stack</td>
-</tr>
-<tr>
-<td></td>
-<td>CI&#x2F;CD</td>
-<td>持续集成</td>
-<td>Jenkins, GitLab CI</td>
-</tr>
-</tbody></table>
-<h2 id="八、架构演进路线"><a href="#八、架构演进路线" class="headerlink" title="八、架构演进路线"></a>八、架构演进路线</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">阶段1: 单体架构 (Monolithic)</span><br><span class="line">    ├── 所有功能在一个进程</span><br><span class="line">    └── 单数据库</span><br><span class="line">    </span><br><span class="line">阶段2: 垂直拆分 (Vertical Split)</span><br><span class="line">    ├── 按功能模块拆分服务</span><br><span class="line">    └── 独立数据库</span><br><span class="line">    </span><br><span class="line">阶段3: 服务化 (Service-Oriented)</span><br><span class="line">    ├── 微服务架构</span><br><span class="line">    ├── 服务发现</span><br><span class="line">    └── 统一网关</span><br><span class="line">    </span><br><span class="line">阶段4: 平台化 (Platform)</span><br><span class="line">    ├── 容器化部署</span><br><span class="line">    ├── 自动化运维</span><br><span class="line">    └── 服务网格</span><br><span class="line">    </span><br><span class="line">阶段5: 云原生 (Cloud-Native)</span><br><span class="line">    ├── Serverless</span><br><span class="line">    ├── 多租户</span><br><span class="line">    └── 全球部署</span><br></pre></td></tr></table></figure>
-
-<p>这个架构图涵盖了从客户端到基础设施的完整网络游戏分布式架构，你可以根据项目规模和需求选择相应的组件进行搭建。</p>
-]]></content>
-      <categories>
-        <category>网络编程</category>
-      </categories>
-      <tags>
-        <tag>分布式,微服务</tag>
       </tags>
   </entry>
   <entry>
