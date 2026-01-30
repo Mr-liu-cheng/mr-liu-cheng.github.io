@@ -1,13 +1,13 @@
 ---
-title: git修改历史提交
+title: Git修改历史提交
 date: 2024-12-09 20:06:23
 updated: 2024-12-25 14:28:12
-tags: git
-categories: git
+tags: Git
+categories: Git
 description: reset
 keywords:
   - 修改历史提交
-  - git
+  - Git
   - reset
 ---
 
