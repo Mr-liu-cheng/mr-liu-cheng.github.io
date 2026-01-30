@@ -3,7 +3,7 @@ title: GitHub Actions部署流程
 date: 2025-05-08 14:16:02
 updated: 2025-01-08 14:16:02
 tags: [GitHub,Actions]
-categories: [GitHub,Actions]
+categories: [代码托管平台,Github,Actions]
 keywords: [GitHub,Actions]
 description:
 ---
