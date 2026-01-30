@@ -1,9 +1,9 @@
 ---
-title: 自建git服务器
+title: 自建Git服务器
 date: 2025-01-08 16:14:15
 updated: 2025-01-08 16:14:15
-tags: git
-categories: git
+tags: Git
+categories: Git
 keywords:
 description: 自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab/Gitea）和简单搭建裸仓库。
 ---
