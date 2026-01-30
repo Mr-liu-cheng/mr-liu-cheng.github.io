@@ -3,7 +3,7 @@ title: 游戏微服务的部署与Docker化实践
 date: 2026-01-30 10:28:46
 updated: 2026-01-30 10:28:46
 tags: [微服务,Docker]
-categories: [网络编程,微服务,Docker]
+categories: [Docker]
 keywords: 分布式
 description:
 ---
