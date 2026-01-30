@@ -2,9 +2,9 @@
 title: Unity ScriptableObject
 date: 2025-01-16 17:26:16
 updated: 2025-01-16 17:26:16
-tags:
-categories:
-keywords:
+tags: Unity
+categories: Unity
+keywords: Unity ScriptableObject
 description:
 ---
 [官方文档](https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html)
