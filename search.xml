@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Assetbundle</title>
     <url>/2025/01/20/Assetbundle/</url>
     <content><![CDATA[<h2 id="了解什么是Assetbundle"><a href="#了解什么是Assetbundle" class="headerlink" title="了解什么是Assetbundle"></a>了解什么是Assetbundle</h2><p>严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:</p>
@@ -468,6 +453,21 @@
 </ul>
 <p>正确管理 AssetBundle 的加载和卸载，不仅能够提高游戏的性能，减少内存占用，还能避免不必要的资源重复加载，保持游戏的流畅体验。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
+      </tags>
   </entry>
   <entry>
     <title>C# CLR</title>
@@ -1559,77 +1559,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Github-Hexo 部署脚本</title>
-    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
-<li>根目录，不然是不会有action记录，不会执行</li>
-<li>token方式  ，推荐使用GITHUB_TOKEN</li>
-<li>分支</li>
-<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
-<li>只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
-</ul>
-<p>代码1：旧</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
-
-<p>代码2：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-
-<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
-<hr>
-<h2 id="✅-建议优先使用：代码2（推荐）"><a href="#✅-建议优先使用：代码2（推荐）" class="headerlink" title="✅ 建议优先使用：代码2（推荐）"></a>✅ 建议优先使用：<strong>代码2（推荐）</strong></h2><p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
-<hr>
-<h2 id="✨-对比分析："><a href="#✨-对比分析：" class="headerlink" title="✨ 对比分析："></a>✨ 对比分析：</h2><table>
-<thead>
-<tr>
-<th>比较项</th>
-<th>代码1（自己写 push 脚本）</th>
-<th>✅ 代码2（使用 peaceiris&#x2F;actions-gh-pages）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>简洁性</strong></td>
-<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
-<td>✅ 封装好了所有逻辑，只需设置参数</td>
-</tr>
-<tr>
-<td><strong>安全性</strong></td>
-<td>🔐 需要小心 Token 拼接（可能泄露）</td>
-<td>✅ 使用官方方式处理 token，内置防泄露</td>
-</tr>
-<tr>
-<td><strong>维护性</strong></td>
-<td>❌ 需要自己维护 git 逻辑，容易出错</td>
-<td>✅ 官方维护的 Action，可靠稳定</td>
-</tr>
-<tr>
-<td><strong>兼容性</strong></td>
-<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
-<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
-</tr>
-<tr>
-<td><strong>常见性</strong></td>
-<td>❌ 不利于新人阅读维护</td>
-<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-推荐做法："><a href="#✅-推荐做法：" class="headerlink" title="✅ 推荐做法："></a>✅ 推荐做法：</h2><p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
-<hr>
-<h2 id="⛳-如果你未来要部署到其他仓库或服务器："><a href="#⛳-如果你未来要部署到其他仓库或服务器：" class="headerlink" title="⛳ 如果你未来要部署到其他仓库或服务器："></a>⛳ 如果你未来要部署到其他仓库或服务器：</h2><p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
-<hr>
-<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>GitHub,Actions,Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Github 打镜像</title>
     <url>/2026/01/29/Github%20%E6%89%93%E9%95%9C%E5%83%8F/</url>
     <content><![CDATA[<h1 id="GitHub-容器镜像（GitHub-Container-Registry）详解"><a href="#GitHub-容器镜像（GitHub-Container-Registry）详解" class="headerlink" title="GitHub 容器镜像（GitHub Container Registry）详解"></a>GitHub 容器镜像（GitHub Container Registry）详解</h1><h2 id="一、GitHub-容器镜像服务总览"><a href="#一、GitHub-容器镜像服务总览" class="headerlink" title="一、GitHub 容器镜像服务总览"></a>一、GitHub 容器镜像服务总览</h2><h3 id="1-GitHub-提供的容器服务"><a href="#1-GitHub-提供的容器服务" class="headerlink" title="1. GitHub 提供的容器服务"></a>1. <strong>GitHub 提供的容器服务</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GitHub 容器生态系统:</span><br><span class="line">┌─────────────────────────────────────────────────────┐</span><br><span class="line">│                   GitHub Container Registry          │ ← 容器镜像仓库</span><br><span class="line">│                   (ghcr.io)                         │</span><br><span class="line">├─────────────────────────────────────────────────────┤</span><br><span class="line">│                 GitHub Actions                       │ ← CI/CD 流水线</span><br><span class="line">├─────────────────────────────────────────────────────┤</span><br><span class="line">│                GitHub Packages                       │ ← 包管理（包括容器）</span><br><span class="line">└─────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
@@ -1886,6 +1815,77 @@
       <tags>
         <tag>Github</tag>
         <tag>打镜像</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Github-Hexo 部署脚本</title>
+    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
+<li>根目录，不然是不会有action记录，不会执行</li>
+<li>token方式  ，推荐使用GITHUB_TOKEN</li>
+<li>分支</li>
+<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
+<li>只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
+</ul>
+<p>代码1：旧</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
+
+<p>代码2：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
+<hr>
+<h2 id="✅-建议优先使用：代码2（推荐）"><a href="#✅-建议优先使用：代码2（推荐）" class="headerlink" title="✅ 建议优先使用：代码2（推荐）"></a>✅ 建议优先使用：<strong>代码2（推荐）</strong></h2><p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
+<hr>
+<h2 id="✨-对比分析："><a href="#✨-对比分析：" class="headerlink" title="✨ 对比分析："></a>✨ 对比分析：</h2><table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>代码1（自己写 push 脚本）</th>
+<th>✅ 代码2（使用 peaceiris&#x2F;actions-gh-pages）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>简洁性</strong></td>
+<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
+<td>✅ 封装好了所有逻辑，只需设置参数</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>🔐 需要小心 Token 拼接（可能泄露）</td>
+<td>✅ 使用官方方式处理 token，内置防泄露</td>
+</tr>
+<tr>
+<td><strong>维护性</strong></td>
+<td>❌ 需要自己维护 git 逻辑，容易出错</td>
+<td>✅ 官方维护的 Action，可靠稳定</td>
+</tr>
+<tr>
+<td><strong>兼容性</strong></td>
+<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
+<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
+</tr>
+<tr>
+<td><strong>常见性</strong></td>
+<td>❌ 不利于新人阅读维护</td>
+<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-推荐做法："><a href="#✅-推荐做法：" class="headerlink" title="✅ 推荐做法："></a>✅ 推荐做法：</h2><p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
+<hr>
+<h2 id="⛳-如果你未来要部署到其他仓库或服务器："><a href="#⛳-如果你未来要部署到其他仓库或服务器：" class="headerlink" title="⛳ 如果你未来要部署到其他仓库或服务器："></a>⛳ 如果你未来要部署到其他仓库或服务器：</h2><p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
+<hr>
+<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>GitHub,Actions,Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -4713,84 +4713,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Prefab文本组件管理工具文档</title>
-    <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
-    <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
-<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
-<li><strong>批量扫描</strong>：递归查找指定目录下的所有预制体文件</li>
-<li><strong>多类型支持</strong>：同时支持UGUI Text、RichText和TextMeshPro(TMP)组件</li>
-<li><strong>文本查询</strong>：查找并列出所有包含非空文本的组件</li>
-<li><strong>批量清理</strong>：一键清空所有文本组件内容</li>
-<li><strong>详细报告</strong>：提供操作过程和结果的详细输出</li>
-<li><strong>进度显示</strong>：可视化进度条显示处理进度</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
-<li>将脚本放置在Unity项目的Editor文件夹下</li>
-<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/文本组件管理</code> 打开工具窗口</li>
-</ol>
-<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
-<ul>
-<li><strong>路径选择</strong>：显示和修改预制体所在目录（默认为<code>Assets/_GameCenter/_Resources/prefab</code>）</li>
-<li><strong>功能按钮</strong>：<ul>
-<li>“查询非空文本控件”：查找并显示所有非空文本组件</li>
-<li>“清空文本控件”：清空所有文本组件内容</li>
-</ul>
-</li>
-<li><strong>结果展示区域</strong>：显示操作过程和结果的详细信息</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li><p><strong>查询非空文本</strong>：</p>
-<ul>
-<li>确认或修改预制体目录路径</li>
-<li>点击”查询非空文本控件”按钮</li>
-<li>查看结果区域中的非空文本列表</li>
-</ul>
-</li>
-<li><p><strong>清空文本内容</strong>：</p>
-<ul>
-<li>确认或修改预制体目录路径</li>
-<li>点击”清空文本控件”按钮</li>
-<li>查看结果区域中的清理报告</li>
-</ul>
-</li>
-</ol>
-<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
-<li><strong>查询结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体序号 预制体名称</span><br><span class="line">  文本序号 文本路径：父对象/组件名 文本内容：实际文本</span><br></pre></td></tr></table></figure></li>
-<li><strong>清理结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体：路径 文本路径：父对象/组件名 文本:被清理的文本内容</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
-<li><strong>预制体扫描</strong>：使用AssetDatabase查找指定目录下的所有预制体</li>
-<li><strong>组件获取</strong>：递归获取预制体中的所有文本组件</li>
-<li><strong>内容处理</strong>：<ul>
-<li>查询模式：收集并显示非空文本信息</li>
-<li>清理模式：将文本内容设置为空字符串</li>
-</ul>
-</li>
-<li><strong>资源保存</strong>：修改后保存预制体变更</li>
-</ol>
-<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
-<li><code>FindNotEmptyText</code>：查询非空文本组件</li>
-<li><code>ClearText</code>：清空文本组件内容</li>
-<li><code>Clean&lt;T&gt;</code>：通用清理方法，处理具体文本类型</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
-<li>工具会直接修改预制体文件，建议操作前备份项目</li>
-<li>仅处理指定目录下的预制体，不处理场景中的对象</li>
-<li>清理操作不可逆，请谨慎使用</li>
-<li>处理大量预制体时可能需要较长时间</li>
-<li>需要确保路径在Assets目录下</li>
-</ol>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> TMPro;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span></span><br><span class="line"><span class="comment">    1标准 Unity UI Text</span></span><br><span class="line"><span class="comment">    2RichText (富文本)</span></span><br><span class="line"><span class="comment">    3TextMeshPro (TMP_Text)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 查询非空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有包含非空文本的 UI 组件</span></span><br><span class="line"><span class="comment">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span></span><br><span class="line"><span class="comment">        自动打开保存结果的文件所在位置</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 清空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有文本组件并将其内容清空</span></span><br><span class="line"><span class="comment">        记录被清空的文本内容到 Unity 控制台</span></span><br><span class="line"><span class="comment">        自动保存修改后的预制</span></span><br><span class="line"><span class="comment">    注意：</span></span><br><span class="line"><span class="comment">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span></span><br><span class="line"><span class="comment">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ClearPrefabTextContent</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt; textDict;</span><br><span class="line">    <span class="keyword">private</span> Vector2 scrollPosition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/_Resources/prefab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/文本组件管理&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TextComponentManager</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(<span class="string">&quot;Prefab Text Content Manager&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;Prefab Text Content Manager Tool&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;Prefab Folder Path:&quot;</span>, folderPath); <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;Select Prefab Folder&quot;</span>, defaultPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="comment">// 转换为相对于Assets的路径</span></span><br><span class="line">            <span class="keyword">if</span> (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;查询非空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;清空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;查询结果：&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FindNotEmptyText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        textDict = <span class="keyword">new</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt;();</span><br><span class="line">        <span class="keyword">var</span> path = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, path);</span><br><span class="line">        <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; path &#125;);</span><br><span class="line">        <span class="keyword">var</span> prefabCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">var</span> textCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Finding...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">var</span> lastPrefab = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Checking....&quot;</span>, assetsPath, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> obj = AssetDatabase.LoadAssetAtPath(assetsPath, <span class="keyword">typeof</span>(GameObject)) <span class="keyword">as</span> GameObject;</span><br><span class="line">                <span class="keyword">var</span> lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> allTextComponents = <span class="keyword">new</span> List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> text = <span class="string">&quot;&quot;</span>;</span><br><span class="line">                    <span class="keyword">if</span> (item <span class="keyword">is</span> Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    <span class="comment">//  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span></span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    <span class="keyword">if</span> (lastPrefab != guid &amp;&amp; text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;</span>, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;</span>, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(<span class="keyword">new</span> KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n查询完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ClearText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> folder = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, folder);</span><br><span class="line">        <span class="keyword">if</span> (!folder.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; folder &#125;);</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Clean...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Replace....&quot;</span>, path, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                <span class="keyword">var</span> textComponentsDict = <span class="keyword">new</span> Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(Text), prefab.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> kvp <span class="keyword">in</span> textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n清理完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Clean</span>&lt;<span class="title">T</span>&gt;(<span class="params">Component item, <span class="built_in">string</span> path, GameObject prefab</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> textProperty = <span class="keyword">typeof</span>(T).GetProperty(<span class="string">&quot;text&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (textProperty != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> text = (<span class="built_in">string</span>)textProperty.GetValue(item);</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += <span class="string">$&quot;\n预制体：<span class="subst">&#123;path&#125;</span> 文本路径：<span class="subst">&#123;item.transform.parent.name&#125;</span>/<span class="subst">&#123;item.name&#125;</span> 文本:<span class="subst">&#123;text&#125;</span>&quot;</span>;</span><br><span class="line">                textProperty.SetValue(item, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Unity</category>
-        <category>Tools</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis分布式锁</title>
     <url>/2026/01/28/Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</url>
     <content><![CDATA[<h1 id="Redis-详解：从入门到精通"><a href="#Redis-详解：从入门到精通" class="headerlink" title="Redis 详解：从入门到精通"></a>Redis 详解：从入门到精通</h1><h2 id="一、Redis-到底是什么？"><a href="#一、Redis-到底是什么？" class="headerlink" title="一、Redis 到底是什么？"></a>一、Redis 到底是什么？</h2><p><strong>一句话定义</strong>：Redis（Remote Dictionary Server）是一个<strong>超高性能的内存数据库</strong>，同时支持数据持久化。</p>
@@ -4946,6 +4868,84 @@
       </categories>
       <tags>
         <tag>分布式锁.,Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Prefab文本组件管理工具文档</title>
+    <url>/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Prefab文本组件管理工具文档"><a href="#Prefab文本组件管理工具文档" class="headerlink" title="Prefab文本组件管理工具文档"></a>Prefab文本组件管理工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li><strong>批量扫描</strong>：递归查找指定目录下的所有预制体文件</li>
+<li><strong>多类型支持</strong>：同时支持UGUI Text、RichText和TextMeshPro(TMP)组件</li>
+<li><strong>文本查询</strong>：查找并列出所有包含非空文本的组件</li>
+<li><strong>批量清理</strong>：一键清空所有文本组件内容</li>
+<li><strong>详细报告</strong>：提供操作过程和结果的详细输出</li>
+<li><strong>进度显示</strong>：可视化进度条显示处理进度</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/文本组件管理</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改预制体所在目录（默认为<code>Assets/_GameCenter/_Resources/prefab</code>）</li>
+<li><strong>功能按钮</strong>：<ul>
+<li>“查询非空文本控件”：查找并显示所有非空文本组件</li>
+<li>“清空文本控件”：清空所有文本组件内容</li>
+</ul>
+</li>
+<li><strong>结果展示区域</strong>：显示操作过程和结果的详细信息</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li><p><strong>查询非空文本</strong>：</p>
+<ul>
+<li>确认或修改预制体目录路径</li>
+<li>点击”查询非空文本控件”按钮</li>
+<li>查看结果区域中的非空文本列表</li>
+</ul>
+</li>
+<li><p><strong>清空文本内容</strong>：</p>
+<ul>
+<li>确认或修改预制体目录路径</li>
+<li>点击”清空文本控件”按钮</li>
+<li>查看结果区域中的清理报告</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>查询结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体序号 预制体名称</span><br><span class="line">  文本序号 文本路径：父对象/组件名 文本内容：实际文本</span><br></pre></td></tr></table></figure></li>
+<li><strong>清理结果</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">预制体：路径 文本路径：父对象/组件名 文本:被清理的文本内容</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>预制体扫描</strong>：使用AssetDatabase查找指定目录下的所有预制体</li>
+<li><strong>组件获取</strong>：递归获取预制体中的所有文本组件</li>
+<li><strong>内容处理</strong>：<ul>
+<li>查询模式：收集并显示非空文本信息</li>
+<li>清理模式：将文本内容设置为空字符串</li>
+</ul>
+</li>
+<li><strong>资源保存</strong>：修改后保存预制体变更</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>FindNotEmptyText</code>：查询非空文本组件</li>
+<li><code>ClearText</code>：清空文本组件内容</li>
+<li><code>Clean&lt;T&gt;</code>：通用清理方法，处理具体文本类型</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具会直接修改预制体文件，建议操作前备份项目</li>
+<li>仅处理指定目录下的预制体，不处理场景中的对象</li>
+<li>清理操作不可逆，请谨慎使用</li>
+<li>处理大量预制体时可能需要较长时间</li>
+<li>需要确保路径在Assets目录下</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> TMPro;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> ClearPrefabTextContent 是一个 Unity 编辑器工具，主要用于查询和清理预制体(Prefab)中的文本内容。该工具可以处理三种类型的文本组件：</span></span><br><span class="line"><span class="comment">    1标准 Unity UI Text</span></span><br><span class="line"><span class="comment">    2RichText (富文本)</span></span><br><span class="line"><span class="comment">    3TextMeshPro (TMP_Text)</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 查询非空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有包含非空文本的 UI 组件</span></span><br><span class="line"><span class="comment">        将查询结果保存到桌面上的&quot;非空文本查询结果.txt&quot;文件中</span></span><br><span class="line"><span class="comment">        自动打开保存结果的文件所在位置</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&gt;&gt; 清空文本控件:</span></span><br><span class="line"><span class="comment">    功能:</span></span><br><span class="line"><span class="comment">        遍历指定文件夹及其子文件夹中的所有预制体</span></span><br><span class="line"><span class="comment">        查找所有文本组件并将其内容清空</span></span><br><span class="line"><span class="comment">        记录被清空的文本内容到 Unity 控制台</span></span><br><span class="line"><span class="comment">        自动保存修改后的预制</span></span><br><span class="line"><span class="comment">    注意：</span></span><br><span class="line"><span class="comment">        关闭预制体编辑界面：在使用此工具前，请确保关闭所有预制体编辑窗口</span></span><br><span class="line"><span class="comment">        清空操作不可逆，请谨慎使用，操作前建议备份项目或使用版本控制</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ClearPrefabTextContent</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt; textDict;</span><br><span class="line">    <span class="keyword">private</span> Vector2 scrollPosition;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/_Resources/prefab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/文本组件管理&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">TextComponentManager</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ShowWindow();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;ClearPrefabTextContent&gt;(<span class="string">&quot;Prefab Text Content Manager&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;Prefab Text Content Manager Tool&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;Prefab Folder Path:&quot;</span>, folderPath); <span class="comment">//</span></span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;Select Prefab Folder&quot;</span>, defaultPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="comment">// 转换为相对于Assets的路径</span></span><br><span class="line">            <span class="keyword">if</span> (path.StartsWith(Application.dataPath))</span><br><span class="line">                folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;查询非空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                FindNotEmptyText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;清空文本控件&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath))</span><br><span class="line">                cnt += <span class="string">&quot;Please select a valid folder path first!&quot;</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ClearText();</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.Space();</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;查询结果：&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.TextArea(cnt, GUILayout.ExpandHeight(<span class="literal">true</span>));</span><br><span class="line">        EditorGUILayout.EndScrollView();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">FindNotEmptyText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        textDict = <span class="keyword">new</span> List&lt;KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;&gt;();</span><br><span class="line">        <span class="keyword">var</span> path = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, path);</span><br><span class="line">        <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        path = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; path &#125;);</span><br><span class="line">        <span class="keyword">var</span> prefabCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">var</span> textCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Finding...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">var</span> lastPrefab = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> assetsPath = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Checking....&quot;</span>, assetsPath, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> obj = AssetDatabase.LoadAssetAtPath(assetsPath, <span class="keyword">typeof</span>(GameObject)) <span class="keyword">as</span> GameObject;</span><br><span class="line">                <span class="keyword">var</span> lblist1 = obj.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist2 = obj.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> lblist3 = obj.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>);</span><br><span class="line">                <span class="keyword">var</span> allTextComponents = <span class="keyword">new</span> List&lt;Component&gt;()</span><br><span class="line">                    .Concat(lblist1)</span><br><span class="line">                    .Concat(lblist2)</span><br><span class="line">                    .Concat(lblist3)</span><br><span class="line">                    .ToList();</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> allTextComponents)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> text = <span class="string">&quot;&quot;</span>;</span><br><span class="line">                    <span class="keyword">if</span> (item <span class="keyword">is</span> Text uguiText)</span><br><span class="line">                        text = uguiText.text;</span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> RichText richText)</span><br><span class="line">                        text = richText.text;</span><br><span class="line">                    <span class="comment">//  cnt += (string.Format(&quot;\nRichText：&#123;0&#125;预制体：&#123;1&#125; &quot;, prefabCount, obj.name));</span></span><br><span class="line">                    <span class="keyword">else</span> <span class="keyword">if</span> (item <span class="keyword">is</span> TMP_Text tmpText)</span><br><span class="line">                        text = tmpText.text;</span><br><span class="line">                    <span class="keyword">if</span> (lastPrefab != guid &amp;&amp; text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        prefabCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n&#123;0&#125;预制体：&#123;1&#125; &quot;</span>, prefabCount, obj.name);</span><br><span class="line">                        lastPrefab = guid;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (text != <span class="string">&quot;&quot;</span>)</span><br><span class="line">                    &#123;</span><br><span class="line">                        textCount++;</span><br><span class="line">                        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;\n    &#123;2&#125;文本路径：&#123;3&#125;/&#123;0&#125;  文本内容：&#123;1&#125;&quot;</span>, item.name, text, textCount,</span><br><span class="line">                            item.transform.parent.name);</span><br><span class="line">                        textDict.Add(<span class="keyword">new</span> KeyValuePair&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;(assetsPath, text));</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n查询完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ClearText</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> folder = folderPath;</span><br><span class="line">        cnt += <span class="built_in">string</span>.Format(<span class="string">&quot;开始查询 &#123;0&#125; 下所有的预制体\n&quot;</span>, folder);</span><br><span class="line">        <span class="keyword">if</span> (!folder.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            cnt += <span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        folder = folder.Substring(folder.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        <span class="keyword">var</span> guids = AssetDatabase.FindAssets(<span class="string">&quot;t:Prefab&quot;</span>, <span class="keyword">new</span> <span class="built_in">string</span>[] &#123; folder &#125;);</span><br><span class="line">        <span class="keyword">if</span> (guids != <span class="literal">null</span> &amp;&amp; guids.Length &gt; <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            EditorUtility.DisplayProgressBar(<span class="string">&quot;Clean...&quot;</span>, <span class="string">&quot;Start&quot;</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">var</span> progress = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> guid <span class="keyword">in</span> guids)</span><br><span class="line">            &#123;</span><br><span class="line">                progress++;</span><br><span class="line">                <span class="keyword">var</span> path = AssetDatabase.GUIDToAssetPath(guid);</span><br><span class="line">                EditorUtility.DisplayProgressBar(<span class="string">&quot;Replace....&quot;</span>, path, (<span class="built_in">float</span>)progress / guids.Length);</span><br><span class="line">                <span class="keyword">var</span> prefab = PrefabUtility.LoadPrefabContents(path);</span><br><span class="line">                <span class="keyword">var</span> textComponentsDict = <span class="keyword">new</span> Dictionary&lt;Type, IEnumerable&lt;Component&gt;&gt;</span><br><span class="line">                &#123;</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(Text), prefab.GetComponentsInChildren&lt;Text&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(RichText), prefab.GetComponentsInChildren&lt;RichText&gt;(<span class="literal">true</span>) &#125;,</span><br><span class="line">                    &#123; <span class="keyword">typeof</span>(TMP_Text), prefab.GetComponentsInChildren&lt;TMP_Text&gt;(<span class="literal">true</span>) &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="keyword">foreach</span> (<span class="keyword">var</span> kvp <span class="keyword">in</span> textComponentsDict)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> kvp.Value)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(Text))</span><br><span class="line">                            Clean&lt;Text&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(RichText))</span><br><span class="line">                            Clean&lt;RichText&gt;(item, path, prefab);</span><br><span class="line">                        <span class="keyword">else</span> <span class="keyword">if</span> (kvp.Key == <span class="keyword">typeof</span>(TMP_Text))</span><br><span class="line">                            Clean&lt;TMP_Text&gt;(item, path, prefab);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                PrefabUtility.UnloadPrefabContents(prefab);</span><br><span class="line">            &#125;</span><br><span class="line">            AssetDatabase.SaveAssets();</span><br><span class="line">            EditorUtility.ClearProgressBar();</span><br><span class="line">        &#125;</span><br><span class="line">        cnt += <span class="string">&quot;\n\n清理完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Clean</span>&lt;<span class="title">T</span>&gt;(<span class="params">Component item, <span class="built_in">string</span> path, GameObject prefab</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> textProperty = <span class="keyword">typeof</span>(T).GetProperty(<span class="string">&quot;text&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (textProperty != <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> text = (<span class="built_in">string</span>)textProperty.GetValue(item);</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(text))</span><br><span class="line">            &#123;</span><br><span class="line">                cnt += <span class="string">$&quot;\n预制体：<span class="subst">&#123;path&#125;</span> 文本路径：<span class="subst">&#123;item.transform.parent.name&#125;</span>/<span class="subst">&#123;item.name&#125;</span> 文本:<span class="subst">&#123;text&#125;</span>&quot;</span>;</span><br><span class="line">                textProperty.SetValue(item, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                PrefabUtility.SaveAsPrefabAsset(prefab, path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>Tools</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -5772,103 +5772,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity 后置界面截图代替</title>
-    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
-    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
-<hr>
-<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
-<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
-</blockquote>
-<hr>
-<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
-<hr>
-<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
-</blockquote>
-<hr>
-<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
-<ol>
-<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
-<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
-<li>把这个 Texture 设置给 <code>RawImage</code></li>
-<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>推荐做法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>UI 层级很多（嵌套 Canvas）</td>
-<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
-</tr>
-<tr>
-<td>UI 不频繁交互</td>
-<td>完全截图为静态图</td>
-</tr>
-<tr>
-<td>UI 中有动态内容</td>
-<td>考虑部分截图或继续动态更新</td>
-</tr>
-<tr>
-<td>需要点击穿透</td>
-<td><code>RawImage.raycastTarget = false</code></td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
-<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
-<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
-<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
-</ul>
-<hr>
-<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>背包界面被“角色换装界面”全屏遮挡</td>
-<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
-</tr>
-<tr>
-<td>商店全屏 UI 切到签到页面</td>
-<td>商店改为截图，不再实时渲染</td>
-</tr>
-<tr>
-<td>模拟对话剧情</td>
-<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 打图集 - 合批减少DrawCall</title>
     <url>/2025/06/17/Unity%20%E6%89%93%E5%9B%BE%E9%9B%86%20-%20%E5%90%88%E6%89%B9%E5%87%8F%E5%B0%91DrawCall/</url>
     <content><![CDATA[<p>在 Unity 中，通过<strong>打图集（图集打包）+ Canvas 优化策略</strong>可以有效实现 <strong>UI 合批（Batching）</strong>，从而减少 DrawCall 提高性能。下面是详细说明和实战指导：</p>
@@ -6227,6 +6130,103 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity 后置界面截图代替</title>
+    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
+    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
+<hr>
+<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
+<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
+</blockquote>
+<hr>
+<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
+<hr>
+<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
+</blockquote>
+<hr>
+<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
+<ol>
+<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
+<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
+<li>把这个 Texture 设置给 <code>RawImage</code></li>
+<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>推荐做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI 层级很多（嵌套 Canvas）</td>
+<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
+</tr>
+<tr>
+<td>UI 不频繁交互</td>
+<td>完全截图为静态图</td>
+</tr>
+<tr>
+<td>UI 中有动态内容</td>
+<td>考虑部分截图或继续动态更新</td>
+</tr>
+<tr>
+<td>需要点击穿透</td>
+<td><code>RawImage.raycastTarget = false</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
+<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
+<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
+<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
+</ul>
+<hr>
+<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>背包界面被“角色换装界面”全屏遮挡</td>
+<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
+</tr>
+<tr>
+<td>商店全屏 UI 切到签到页面</td>
+<td>商店改为截图，不再实时渲染</td>
+</tr>
+<tr>
+<td>模拟对话剧情</td>
+<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 环境安装</title>
     <url>/2025/01/14/Unity%20%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<h1 id="unity-模块添加"><a href="#unity-模块添加" class="headerlink" title="unity 模块添加"></a>unity 模块添加</h1><p><a href="https://discussions.unity.com/t/unable-to-add-modules-to-installation-in-unity-hub-3-7-0/935934/12">官方解释</a></p>
@@ -6378,109 +6378,6 @@ graph TD
 </ul>
 <hr>
 <p>完成上述设置后，Visual Studio 应能够完整支持 Unity 的开发需求。如果遇到具体问题或提示缺少某个组件，可以根据报错信息查漏补缺，或随时向我提问！</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
-<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody></table>
-<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
 ]]></content>
   </entry>
   <entry>
@@ -6709,6 +6606,109 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
+<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody></table>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -6741,11 +6741,157 @@ graph TD
 ]]></content>
   </entry>
   <entry>
+    <title>Unity 开发非游戏应用</title>
+    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
+<p>以下是可以移除或优化的内容：</p>
+<hr>
+<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
+<ul>
+<li><strong>Physics（物理模块）</strong><ul>
+<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
+</ul>
+</li>
+<li><strong>AI Navigation（导航网格）</strong><ul>
+<li>如果不需要路径寻路功能，可以禁用该模块。</li>
+</ul>
+</li>
+<li><strong>Animation（动画模块）</strong><ul>
+<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
+</ul>
+</li>
+<li><strong>Particle System（粒子系统）</strong><ul>
+<li>如果应用不需要特效，可以移除相关模块。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
+<li>移除示例资源和默认导入的 Assets。</li>
+<li>不加载未使用的脚本、插件或材质。</li>
+</ul>
+<hr>
+<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
+<ul>
+<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
+<li>将场景光照设置为静态或简单的全局光照。</li>
+</ul>
+</li>
+<li><strong>移除后处理（Post-Processing）</strong><ul>
+<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
+</ul>
+</li>
+<li><strong>减少 Shader 使用</strong><ul>
+<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
+<li><strong>音频模块</strong><ul>
+<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
+</ul>
+</li>
+<li><strong>Multiplayer（多人网络模块）</strong><ul>
+<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
+<li><strong>Script Stripping（脚本裁剪）</strong><ul>
+<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
+</ul>
+</li>
+<li><strong>压缩资源</strong><ul>
+<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
+<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
+<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
+</ul>
+<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
+<li>针对目标平台，移除不需要的平台支持文件：<ul>
+<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
+<ul>
+<li><strong>Canvas System</strong>：<ul>
+<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
+</ul>
+</li>
+<li><strong>Event System</strong>：<ul>
+<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
+</ul>
+</li>
+</ul>
+<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
+<li><strong>Single Scene 模式</strong><ul>
+<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
+</ul>
+</li>
+<li><strong>AssetBundle 和 Addressables</strong><ul>
+<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
+<ul>
+<li><strong>日志系统</strong><ul>
+<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
+</ul>
+</li>
+<li><strong>数据存储</strong><ul>
+<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
+</ul>
+</li>
+<li><strong>网络通信</strong><ul>
+<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
+<li><p><strong>移除多余功能模块</strong>：</p>
+<ul>
+<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
+</ul>
+</li>
+<li><p><strong>简化图形渲染</strong>：</p>
+<ul>
+<li>使用简单的材质、禁用光照和阴影。</li>
+</ul>
+</li>
+<li><p><strong>压缩和裁剪项目</strong>：</p>
+<ul>
+<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
+</ul>
+</li>
+<li><p><strong>优化打包平台</strong>：</p>
+<ul>
+<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
+</ul>
+</li>
+<li><p><strong>UI 专注</strong>：</p>
+<ul>
+<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#x2e;&#x75;&#x6e;&#x69;&#x74;&#x79;&#46;&#99;&#111;&#x6c;&#108;&#97;&#x62;&#x2d;&#112;&#x72;&#111;&#x78;&#121;&#x40;&#50;&#46;&#54;&#x2e;&#48;">&#x63;&#111;&#x6d;&#x2e;&#x75;&#x6e;&#x69;&#x74;&#x79;&#46;&#99;&#111;&#x6c;&#108;&#97;&#x62;&#x2d;&#112;&#x72;&#111;&#x78;&#121;&#x40;&#50;&#46;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#x6d;&#x2e;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#99;&#111;&#x6c;&#108;&#x61;&#98;&#45;&#112;&#x72;&#111;&#x78;&#x79;&#64;&#50;&#46;&#54;&#x2e;&#48;">&#99;&#x6f;&#x6d;&#x2e;&#x75;&#110;&#x69;&#116;&#x79;&#x2e;&#99;&#111;&#x6c;&#108;&#x61;&#98;&#45;&#112;&#x72;&#111;&#x78;&#x79;&#64;&#50;&#46;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -7157,152 +7303,6 @@ graph TD
 </ul>
 </li>
 </ol>
-]]></content>
-  </entry>
-  <entry>
-    <title>Unity 开发非游戏应用</title>
-    <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
-<p>以下是可以移除或优化的内容：</p>
-<hr>
-<h3 id="1-移除与游戏开发相关的功能"><a href="#1-移除与游戏开发相关的功能" class="headerlink" title="1. 移除与游戏开发相关的功能"></a><strong>1. 移除与游戏开发相关的功能</strong></h3><h4 id="a-不需要的模块和功能"><a href="#a-不需要的模块和功能" class="headerlink" title="a. 不需要的模块和功能"></a><strong>a. 不需要的模块和功能</strong></h4><p>Unity 包含许多针对游戏开发的模块，普通软件通常用不上，可以在 Unity Hub 中的项目设置中禁用：</p>
-<ul>
-<li><strong>Physics（物理模块）</strong><ul>
-<li>如果不需要物理模拟，可以禁用 2D 和 3D 物理引擎（如 Rigidbody 和 Collider）。</li>
-</ul>
-</li>
-<li><strong>AI Navigation（导航网格）</strong><ul>
-<li>如果不需要路径寻路功能，可以禁用该模块。</li>
-</ul>
-</li>
-<li><strong>Animation（动画模块）</strong><ul>
-<li>如果没有复杂的动画需求，可以禁用 Mecanim 动画系统。</li>
-</ul>
-</li>
-<li><strong>Particle System（粒子系统）</strong><ul>
-<li>如果应用不需要特效，可以移除相关模块。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-项目中未使用的脚本和资源"><a href="#b-项目中未使用的脚本和资源" class="headerlink" title="b. 项目中未使用的脚本和资源"></a><strong>b. 项目中未使用的脚本和资源</strong></h4><ul>
-<li>移除示例资源和默认导入的 Assets。</li>
-<li>不加载未使用的脚本、插件或材质。</li>
-</ul>
-<hr>
-<h3 id="2-优化项目设置"><a href="#2-优化项目设置" class="headerlink" title="2. 优化项目设置"></a><strong>2. 优化项目设置</strong></h3><h4 id="a-减少渲染相关功能"><a href="#a-减少渲染相关功能" class="headerlink" title="a. 减少渲染相关功能"></a><strong>a. 减少渲染相关功能</strong></h4><p>普通软件的界面通常不需要复杂的渲染效果，可以进行以下优化：</p>
-<ul>
-<li><strong>禁用实时光照（Realtime Lighting）</strong><ul>
-<li>将场景光照设置为静态或简单的全局光照。</li>
-</ul>
-</li>
-<li><strong>移除后处理（Post-Processing）</strong><ul>
-<li>如果不需要高质量视觉效果，可以移除后处理堆栈。</li>
-</ul>
-</li>
-<li><strong>减少 Shader 使用</strong><ul>
-<li>如果不需要复杂材质，可以使用简单的 Unlit 或 UI 专用 Shader。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-禁用不必要的引擎特性"><a href="#b-禁用不必要的引擎特性" class="headerlink" title="b. 禁用不必要的引擎特性"></a><strong>b. 禁用不必要的引擎特性</strong></h4><ul>
-<li><strong>音频模块</strong><ul>
-<li>如果软件不涉及音频播放，可以在 Player Settings 中禁用 Audio。</li>
-</ul>
-</li>
-<li><strong>Multiplayer（多人网络模块）</strong><ul>
-<li>普通软件不需要 Unity 的 Netcode，可以移除该模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="3-精简打包体积"><a href="#3-精简打包体积" class="headerlink" title="3. 精简打包体积"></a><strong>3. 精简打包体积</strong></h3><h4 id="a-Player-Settings-调整"><a href="#a-Player-Settings-调整" class="headerlink" title="a. Player Settings 调整"></a><strong>a. Player Settings 调整</strong></h4><ul>
-<li><strong>Script Stripping（脚本裁剪）</strong><ul>
-<li>启用 IL2CPP 并使用 Managed Stripping Level（Medium 或 High），减少不必要的脚本代码。</li>
-</ul>
-</li>
-<li><strong>压缩资源</strong><ul>
-<li>使用压缩格式（如 ASTC 或 ETC2）处理贴图，优化打包大小。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-剔除未使用的代码和资源"><a href="#b-剔除未使用的代码和资源" class="headerlink" title="b. 剔除未使用的代码和资源"></a><strong>b. 剔除未使用的代码和资源</strong></h4><ul>
-<li>启用 <strong>Strip Engine Code</strong>，剔除未使用的引擎功能。</li>
-<li>删除项目中未引用的资源（可以通过 Unity Profiler 或分析工具检查）。</li>
-</ul>
-<h4 id="c-平台相关优化"><a href="#c-平台相关优化" class="headerlink" title="c. 平台相关优化"></a><strong>c. 平台相关优化</strong></h4><ul>
-<li>针对目标平台，移除不需要的平台支持文件：<ul>
-<li>在打包时仅选择目标平台（如 Windows、Android），避免引入多余的平台资源。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="4-简化界面和逻辑"><a href="#4-简化界面和逻辑" class="headerlink" title="4. 简化界面和逻辑"></a><strong>4. 简化界面和逻辑</strong></h3><h4 id="a-使用-UI-专用功能"><a href="#a-使用-UI-专用功能" class="headerlink" title="a. 使用 UI 专用功能"></a><strong>a. 使用 UI 专用功能</strong></h4><p>普通软件的主要交互是通过 UI：</p>
-<ul>
-<li><strong>Canvas System</strong>：<ul>
-<li>使用 Unity 的 UI 系统（如 UGUI 或 TextMeshPro）进行界面设计。</li>
-</ul>
-</li>
-<li><strong>Event System</strong>：<ul>
-<li>使用简单的点击、拖拽等事件，而无需复杂的游戏交互。</li>
-</ul>
-</li>
-</ul>
-<h4 id="b-使用场景管理优化加载"><a href="#b-使用场景管理优化加载" class="headerlink" title="b. 使用场景管理优化加载"></a><strong>b. 使用场景管理优化加载</strong></h4><ul>
-<li><strong>Single Scene 模式</strong><ul>
-<li>普通软件通常只有一个主界面，可以使用单场景管理。</li>
-</ul>
-</li>
-<li><strong>AssetBundle 和 Addressables</strong><ul>
-<li>如果需要动态加载资源，可用 Addressables 优化资源管理。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="5-替代默认功能"><a href="#5-替代默认功能" class="headerlink" title="5. 替代默认功能"></a><strong>5. 替代默认功能</strong></h3><p>Unity 的某些功能对普通软件来说可能是过度设计，可以替换为更轻量的实现：</p>
-<ul>
-<li><strong>日志系统</strong><ul>
-<li>替换 Unity 自带的 Debug.Log 为轻量级日志库。</li>
-</ul>
-</li>
-<li><strong>数据存储</strong><ul>
-<li>使用 JSON、SQLite 或普通文件替代 PlayerPrefs 进行数据存储。</li>
-</ul>
-</li>
-<li><strong>网络通信</strong><ul>
-<li>使用轻量的第三方库（如 RestSharp 或 UnityWebRequest）代替复杂的网络模块。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h3 id="推荐开发和优化步骤"><a href="#推荐开发和优化步骤" class="headerlink" title="推荐开发和优化步骤"></a><strong>推荐开发和优化步骤</strong></h3><ol>
-<li><p><strong>移除多余功能模块</strong>：</p>
-<ul>
-<li>在 Unity Hub 的 “Add Modules” 中，仅保留目标平台所需的核心模块。</li>
-</ul>
-</li>
-<li><p><strong>简化图形渲染</strong>：</p>
-<ul>
-<li>使用简单的材质、禁用光照和阴影。</li>
-</ul>
-</li>
-<li><p><strong>压缩和裁剪项目</strong>：</p>
-<ul>
-<li>使用 Build Report 检查项目大小，逐步优化资源和代码。</li>
-</ul>
-</li>
-<li><p><strong>优化打包平台</strong>：</p>
-<ul>
-<li>优先选择轻量的打包设置，如 Android 的 IL2CPP + Minify。</li>
-</ul>
-</li>
-<li><p><strong>UI 专注</strong>：</p>
-<ul>
-<li>将重点放在用户界面设计上，精简其交互逻辑。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
 ]]></content>
   </entry>
   <entry>
@@ -7916,7 +7916,7 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>git submodule</title>
+    <title>Git Submodule</title>
     <url>/2025/02/06/git-submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
 <h3 id="Git-Submodule-的版本管理和开发分支"><a href="#Git-Submodule-的版本管理和开发分支" class="headerlink" title="Git Submodule 的版本管理和开发分支"></a><strong>Git Submodule 的版本管理和开发分支</strong></h3><ol>
@@ -8056,6 +8056,12 @@ graph TD
 <h2 id="🔹-总结"><a href="#🔹-总结" class="headerlink" title="🔹 总结"></a><strong>🔹 总结</strong></h2><p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
 <p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
 ]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
   </entry>
   <entry>
     <title>github 作为热更新服</title>
@@ -12857,40 +12863,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </tags>
   </entry>
   <entry>
-    <title>跨境电商</title>
-    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
-    <content><![CDATA[<p>店铺类型：</p>
-<ul>
-<li>铺货</li>
-<li>精铺</li>
-<li>品牌（精品）</li>
-</ul>
-<p>物流</p>
-<ul>
-<li>FBA：亚马逊仓发货</li>
-<li>FBM(商家自发货)</li>
-</ul>
-<p>形式：</p>
-<ul>
-<li>海</li>
-<li>铁</li>
-<li>空</li>
-</ul>
-<p>工具：</p>
-<p>谷歌趋势： Google Trends  关键词搜索 </p>
-<ul>
-<li>相关主题  趋势变化判断是不是和开发该品类</li>
-<li>订阅关键词</li>
-</ul>
-<p>ads - 关键词规划师 </p>
-<ul>
-<li>转换率</li>
-<li>获客成本</li>
-<li></li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
     <title>自建git服务器</title>
     <url>/2025/01/08/%E8%87%AA%E5%BB%BAgit%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>自建 Git 服务器是一种很好的方式，可以控制代码托管、提升安全性，并满足定制化需求。以下是详细的自建服务器步骤，包括两种常用方法：使用专业 Git 管理平台（如 GitLab&#x2F;Gitea）和简单搭建裸仓库。</p>
@@ -13093,6 +13065,40 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       <tags>
         <tag>git</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>跨境电商</title>
+    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
+    <content><![CDATA[<p>店铺类型：</p>
+<ul>
+<li>铺货</li>
+<li>精铺</li>
+<li>品牌（精品）</li>
+</ul>
+<p>物流</p>
+<ul>
+<li>FBA：亚马逊仓发货</li>
+<li>FBM(商家自发货)</li>
+</ul>
+<p>形式：</p>
+<ul>
+<li>海</li>
+<li>铁</li>
+<li>空</li>
+</ul>
+<p>工具：</p>
+<p>谷歌趋势： Google Trends  关键词搜索 </p>
+<ul>
+<li>相关主题  趋势变化判断是不是和开发该品类</li>
+<li>订阅关键词</li>
+</ul>
+<p>ads - 关键词规划师 </p>
+<ul>
+<li>转换率</li>
+<li>获客成本</li>
+<li></li>
+</ul>
+]]></content>
   </entry>
   <entry>
     <title>转产品经理</title>
