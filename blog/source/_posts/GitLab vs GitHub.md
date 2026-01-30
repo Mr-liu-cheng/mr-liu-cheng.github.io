@@ -3,7 +3,9 @@ title: GitLab vs GitHub
 date: 2026-01-29 12:06:02
 updated: 2026-01-29 12:06:02
 tags: GitLab,GitHub
-categories: GitLab,GitHub
+categories: 
+  - GitLab
+  - GitHub
 keywords: GitLab,GitHub
 description: 
 ---
