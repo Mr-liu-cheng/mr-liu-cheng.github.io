@@ -2,7 +2,7 @@
 title: Harbor-企业级容器镜像仓库
 date: 2026-01-29 12:06:02
 updated: 2026-01-29 12:06:02
-tags: Harbor,镜像仓库
+tags: [Harbor,镜像仓库]
 categories: Harbor
 keywords: Harbor,镜像仓库
 description: 
