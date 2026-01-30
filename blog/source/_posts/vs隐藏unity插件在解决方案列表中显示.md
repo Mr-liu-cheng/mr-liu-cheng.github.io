@@ -1,9 +1,9 @@
 ---
-title: vs隐藏unity插件在解决方案列表中显示
+title: Visual Studio隐藏unity插件在解决方案列表中显示
 date: 2025-01-07 15:31:15
 updated: 2025-01-07 15:31:15
-tags: unity
-categories: unity
+tags: Unity
+categories: Unity
 keywords:
 description:
 ---
