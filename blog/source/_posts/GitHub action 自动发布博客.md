@@ -2,9 +2,9 @@
 title: GitHub action 自动发布博客
 date: 2025-05-12 14:16:02
 updated: 2025-05-12 14:16:02
-tags: GitHub Actions
-categories: GitHub Actions
-keywords: GitHub Actions
+tags: [GitHub,Actions]
+categories: [GitHub,Actions]
+keywords: [GitHub,Actions]
 description:
 ---
 
