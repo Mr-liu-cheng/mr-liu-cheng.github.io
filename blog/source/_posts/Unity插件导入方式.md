@@ -1,10 +1,10 @@
 ---
-title: unity插件导入方式
+title: Unity插件导入方式
 date: 2025-02-05 17:47:08
 updated: 2025-02-05 17:47:08
-tags:
-categories:
-keywords:
+tags: [Unity,Plugins]
+categories: [Unity,Plugins]
+keywords: Unity
 description:
 ---
 # **Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣**  
