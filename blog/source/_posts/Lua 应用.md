@@ -1,10 +1,10 @@
 ---
-title: lua 应用
+title: Lua 应用
 date: 2025-02-19 11:20:13
 updated: 2025-02-19 11:20:13
-tags:
-categories:
-keywords:
+tags: Lua
+categories: Lua
+keywords: Lua
 description:
 ---
 文档：
