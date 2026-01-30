@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Butterfly 禁用头像旋转 | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="侧边栏个人头像动效设置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Butterfly 禁用头像旋转">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2024/12/16/Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="侧边栏个人头像动效设置">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2024-12-16T21:20:06.000Z">
+<meta property="article:modified_time" content="2024-12-25T14:28:12.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="Hexo">
+<meta property="article:tag" content="Butterfly">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2024/12/16/Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Butterfly 禁用头像旋转',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">35</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">27</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Butterfly 禁用头像旋转</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Butterfly 禁用头像旋转</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-16T21:20:06.000Z" title="发表于 2024-12-16 21:20:06">2024-12-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-25T14:28:12.000Z" title="更新于 2024-12-25 14:28:12">2024-12-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Hexo/">Hexo</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Hexo/Butterfly/">Butterfly</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2024/12/16/Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/">https://mr-liu-cheng.github.io/2024/12/16/Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/">Hexo</a><a class="post-meta__tags" href="/tags/Butterfly/">Butterfly</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/12/15/hexo%E6%B7%BB%E5%8A%A0%E6%A0%87%E7%AD%BE%E6%A0%B7%E5%BC%8F/" title="hexo添加标签样式"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">hexo添加标签样式</div></div><div class="info-2"><div class="info-item-1">在 Hexo Butterfly  主题中，由于 Markdown 文件中的代码会经过 Hexo 的解析后转换为 HTML，而 HTML 的样式需要依赖主题中的 CSS 文件，直接嵌入的 TailwindCSS 或自定义 CSS 可能无法生效。如果你希望在 Hexo 中生效样式，可以尝试以下方法： 解决方法 1：使用行内样式 (style 属性)在 Hexo Markdown 中，直接使用 HTML 的 style 属性为每个标签设置样式。这种方法不依赖外部 CSS 文件，可以确保样式生效。示例：  1234567&lt;div class=&quot;skill-tags&quot;&gt;  &lt;span style=&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;&gt;Next&lt;/span&gt;  &lt;span...</div></div></div></a><a class="pagination-related" href="/2024/12/28/hexo%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" title="hexo 疑难杂症"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">hexo 疑难杂症</div></div><div class="info-2"><div class="info-item-1">butterfly通过样式隐藏页脚如果配置文件没有提供选项，可以通过 CSS 隐藏页脚区域。打开或创建 source&#x2F;css&#x2F;_layout&#x2F;footer.styl 文件。 添加以下内容： 1234复制代码#footer &#123;  display: none !important;&#125;  hexo 页面跳转时，界面未完全加载页面刷新时正常的，但是从其他页面跳转过来时，js代码加载的内容都没加载出来 我的做法是采用延时执行js的函数： 1234setTimeout(function () &#123; Render(); &#125;, 100); // 延迟渲染，确保布局已完成    //这个方法不行    document.addEventListener(&quot;DOMContentLoaded&quot;, function () &#123;Render();&#125;);  hexo butterfly 主题的布局修改隐藏侧边栏：Front-matter中添加1aside:...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/" title="hexo 图片加载方案"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-11</div><div class="info-item-2">hexo 图片加载方案</div></div><div class="info-2"><div class="info-item-1">安装 hexo-asset-image 插件1npm install hexo-asset-image --save  打开node_modules\hexo-asset-image\index.js文件59行附近：修改代码为如下 123456789//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换var baseUrl = data.permalink;// 判断当前页面是否为文章if (data.layout === &#x27;post&#x27;) &#123;    // 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名    baseUrl = data.permalink.replace(/\/[^\/]+\/$/, &#x27;/&#x27;); &#125;$(this).attr(&#x27;src&#x27;, baseUrl +src);console.info&amp;&amp;console.info(&quot;update link...</div></div></div></a><a class="pagination-related" href="/2024/12/15/hexo%E6%B7%BB%E5%8A%A0%E6%A0%87%E7%AD%BE%E6%A0%B7%E5%BC%8F/" title="hexo添加标签样式"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-15</div><div class="info-item-2">hexo添加标签样式</div></div><div class="info-2"><div class="info-item-1">在 Hexo Butterfly  主题中，由于 Markdown 文件中的代码会经过 Hexo 的解析后转换为 HTML，而 HTML 的样式需要依赖主题中的 CSS 文件，直接嵌入的 TailwindCSS 或自定义 CSS 可能无法生效。如果你希望在 Hexo 中生效样式，可以尝试以下方法： 解决方法 1：使用行内样式 (style 属性)在 Hexo Markdown 中，直接使用 HTML 的 style 属性为每个标签设置样式。这种方法不依赖外部 CSS 文件，可以确保样式生效。示例：  1234567&lt;div class=&quot;skill-tags&quot;&gt;  &lt;span style=&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;&gt;Next&lt;/span&gt;  &lt;span...</div></div></div></a><a class="pagination-related" href="/2024/12/28/hexo%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" title="hexo 疑难杂症"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-28</div><div class="info-item-2">hexo 疑难杂症</div></div><div class="info-2"><div class="info-item-1">butterfly通过样式隐藏页脚如果配置文件没有提供选项，可以通过 CSS 隐藏页脚区域。打开或创建 source&#x2F;css&#x2F;_layout&#x2F;footer.styl 文件。 添加以下内容： 1234复制代码#footer &#123;  display: none !important;&#125;  hexo 页面跳转时，界面未完全加载页面刷新时正常的，但是从其他页面跳转过来时，js代码加载的内容都没加载出来 我的做法是采用延时执行js的函数： 1234setTimeout(function () &#123; Render(); &#125;, 100); // 延迟渲染，确保布局已完成    //这个方法不行    document.addEventListener(&quot;DOMContentLoaded&quot;, function () &#123;Render();&#125;);  hexo butterfly 主题的布局修改隐藏侧边栏：Front-matter中添加1aside:...</div></div></div></a><a class="pagination-related" href="/2025/05/08/Hexo%20Categories%20%E8%AF%AD%E6%B3%95/" title="Hexo Categories 语法"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-08</div><div class="info-item-2">Hexo Categories 语法</div></div><div class="info-2"><div class="info-item-1">你提到的困惑很常见，Hexo 的分类嵌套和并列写法在语法上相似，但实际效果完全不同。下面我用具体例子对比说明它们的区别：  1. 分类层级嵌套（父子关系）写法：12categories:  - [GitHub, Actions]  # 方括号表示嵌套 效果：生成 层级分类，结构为：GitHub → Actions（即 “GitHub 是父分类，Actions 是子分类”）文章会归到 GitHub/Actions 下，且自动继承父分类 GitHub。 验证方法： 在生成的网页中，分类会显示为层级路径（如 GitHub &gt; Actions）。 访问 /categories/GitHub/Actions/ 能看到该文章。   2. 多分类并列（独立关系）写法：123categories:  - GitHub   # 无方括号，独立分类  - Actions  # 无方括号，独立分类 效果：生成 两个独立分类：    GitHub（文章属于此分类） Actions（文章也属于此分类）二者无任何层级关联。  验证方法： 网页中会显示两个平级分类标签（如 GitHub 和...</div></div></div></a><a class="pagination-related" href="/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/" title="hexo 路径表示"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-01</div><div class="info-item-2">hexo 路径表示</div></div><div class="info-2"><div class="info-item-1">hexo 路径表示(绝对路径和相对路径)</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">78</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">35</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">27</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/GitLab%20vs%20GitHub/" title="GitLab vs GitHub">GitLab vs GitHub</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/Github%20%E6%89%93%E9%95%9C%E5%83%8F/" title="Github 打镜像">Github 打镜像</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/Harbor-%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93/" title="Harbor-企业级容器镜像仓库">Harbor-企业级容器镜像仓库</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/Jenkins%20%E6%89%93%E5%8C%85%20Unity%20AB%20%E8%B5%84%E6%BA%90%E5%AE%8C%E6%95%B4%E6%96%B9%E6%A1%88/" title="Jenkins 打包 Unity AB 资源完整方案">Jenkins 打包 Unity AB 资源完整方案</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20Docker%20%E9%95%9C%E5%83%8F/" title="深入理解 Docker 镜像">深入理解 Docker 镜像</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'f92b6045bd7102f18879b4c1634eaf6a'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
