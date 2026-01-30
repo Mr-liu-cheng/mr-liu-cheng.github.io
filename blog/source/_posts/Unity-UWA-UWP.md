@@ -2,9 +2,9 @@
 title: Unity UWA & UWP
 date: 2025-01-15 18:58:17
 updated: 2025-01-15 18:58:17
-tags:
-categories:
-keywords:
+tags: Unity
+categories: [Unity,UWA & UWP]
+keywords: Unity
 description:
 ---
 **UWA**（Universal Windows App）和 **UWP**（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。
