@@ -2,9 +2,9 @@
 title: Lua语法检测工具文档
 date: 2025-07-09 14:16:02
 updated: 2025-07-09 14:16:02
-tags: [Lua语法检测]
-categories: [unity工具]
-keywords: [Lua语法检测]
+tags: Lua
+categories: [Unity,Tools]
+keywords: Lua语法检测
 description:
 ---
 
