@@ -1305,77 +1305,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Github-Hexo 部署脚本</title>
-    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
-<li>根目录，不然是不会有action记录，不会执行</li>
-<li>token方式  ，推荐使用GITHUB_TOKEN</li>
-<li>分支</li>
-<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
-<li>只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
-</ul>
-<p>代码1：旧</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
-
-<p>代码2：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-
-<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
-<hr>
-<h2 id="✅-建议优先使用：代码2（推荐）"><a href="#✅-建议优先使用：代码2（推荐）" class="headerlink" title="✅ 建议优先使用：代码2（推荐）"></a>✅ 建议优先使用：<strong>代码2（推荐）</strong></h2><p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
-<hr>
-<h2 id="✨-对比分析："><a href="#✨-对比分析：" class="headerlink" title="✨ 对比分析："></a>✨ 对比分析：</h2><table>
-<thead>
-<tr>
-<th>比较项</th>
-<th>代码1（自己写 push 脚本）</th>
-<th>✅ 代码2（使用 peaceiris&#x2F;actions-gh-pages）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>简洁性</strong></td>
-<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
-<td>✅ 封装好了所有逻辑，只需设置参数</td>
-</tr>
-<tr>
-<td><strong>安全性</strong></td>
-<td>🔐 需要小心 Token 拼接（可能泄露）</td>
-<td>✅ 使用官方方式处理 token，内置防泄露</td>
-</tr>
-<tr>
-<td><strong>维护性</strong></td>
-<td>❌ 需要自己维护 git 逻辑，容易出错</td>
-<td>✅ 官方维护的 Action，可靠稳定</td>
-</tr>
-<tr>
-<td><strong>兼容性</strong></td>
-<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
-<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
-</tr>
-<tr>
-<td><strong>常见性</strong></td>
-<td>❌ 不利于新人阅读维护</td>
-<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-推荐做法："><a href="#✅-推荐做法：" class="headerlink" title="✅ 推荐做法："></a>✅ 推荐做法：</h2><p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
-<hr>
-<h2 id="⛳-如果你未来要部署到其他仓库或服务器："><a href="#⛳-如果你未来要部署到其他仓库或服务器：" class="headerlink" title="⛳ 如果你未来要部署到其他仓库或服务器："></a>⛳ 如果你未来要部署到其他仓库或服务器：</h2><p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
-<hr>
-<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-      </categories>
-      <tags>
-        <tag>GitHub,Actions,Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Github 打镜像</title>
     <url>/2026/01/29/Github%20%E6%89%93%E9%95%9C%E5%83%8F/</url>
     <content><![CDATA[<h1 id="GitHub-容器镜像（GitHub-Container-Registry）详解"><a href="#GitHub-容器镜像（GitHub-Container-Registry）详解" class="headerlink" title="GitHub 容器镜像（GitHub Container Registry）详解"></a>GitHub 容器镜像（GitHub Container Registry）详解</h1><h2 id="一、GitHub-容器镜像服务总览"><a href="#一、GitHub-容器镜像服务总览" class="headerlink" title="一、GitHub 容器镜像服务总览"></a>一、GitHub 容器镜像服务总览</h2><h3 id="1-GitHub-提供的容器服务"><a href="#1-GitHub-提供的容器服务" class="headerlink" title="1. GitHub 提供的容器服务"></a>1. <strong>GitHub 提供的容器服务</strong></h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GitHub 容器生态系统:</span><br><span class="line">┌─────────────────────────────────────────────────────┐</span><br><span class="line">│                   GitHub Container Registry          │ ← 容器镜像仓库</span><br><span class="line">│                   (ghcr.io)                         │</span><br><span class="line">├─────────────────────────────────────────────────────┤</span><br><span class="line">│                 GitHub Actions                       │ ← CI/CD 流水线</span><br><span class="line">├─────────────────────────────────────────────────────┤</span><br><span class="line">│                GitHub Packages                       │ ← 包管理（包括容器）</span><br><span class="line">└─────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
@@ -1632,6 +1561,77 @@
       <tags>
         <tag>Github</tag>
         <tag>打镜像</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Github-Hexo 部署脚本</title>
+    <url>/2025/05/12/Github-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h1 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h1><ul>
+<li>根目录，不然是不会有action记录，不会执行</li>
+<li>token方式  ，推荐使用GITHUB_TOKEN</li>
+<li>分支</li>
+<li>相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它</li>
+<li>只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。</li>
+</ul>
+<p>代码1：旧</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">name: Deploy Hexo to GitHub Pages</span><br><span class="line"></span><br><span class="line">on:</span><br><span class="line">  push:</span><br><span class="line">    branches:</span><br><span class="line">      - master</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">      - name: Checkout repository</span><br><span class="line">        uses: actions/checkout@v2</span><br><span class="line">        with:</span><br><span class="line">          submodules: false  # 禁用子模块检查</span><br><span class="line"></span><br><span class="line">      - name: Setup Node.js</span><br><span class="line">        uses: actions/setup-node@v2</span><br><span class="line">        with:</span><br><span class="line">          node-version: &#x27;20&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Install Dependencies</span><br><span class="line">        run: npm install</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Install Hexo Git Deployer</span><br><span class="line">        run: |</span><br><span class="line">          npm install hexo-deployer-git --save</span><br><span class="line">          npm install hexo-cli -g</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Clean and Generate Static Files</span><br><span class="line">        run: |</span><br><span class="line">          hexo clean</span><br><span class="line">          hexo generate</span><br><span class="line">        working-directory: blog</span><br><span class="line"></span><br><span class="line">      - name: Configure Git</span><br><span class="line">        run: |</span><br><span class="line">          git config --global user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line"></span><br><span class="line">      - name: Deploy to GitHub Pages</span><br><span class="line">        env:</span><br><span class="line">          GITHUB_TOKEN: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;</span><br><span class="line">        run: |</span><br><span class="line">          cd blog/public/</span><br><span class="line">          git init</span><br><span class="line">          git config user.name &#x27;github-actions[bot]&#x27;</span><br><span class="line">          git config user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span><br><span class="line">          git add -A</span><br><span class="line">          git commit -m &quot;Create by workflows&quot;</span><br><span class="line">          git branch -M gh-pages</span><br><span class="line">          git remote add origin https://x-access-token:$&#123;GITHUB_TOKEN&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span><br><span class="line">          git push origin gh-pages --force</span><br></pre></td></tr></table></figure>
+
+<p>代码2：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">Blog</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span>  <span class="comment"># 你是用 master 而不是 main 分支</span></span><br><span class="line"></span><br><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build-deploy:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">steps:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/checkout@v3</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">actions/setup-node@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">node-version:</span> <span class="number">18</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">CLI</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span> <span class="string">-g</span> <span class="string">hexo-cli</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">dependencies</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">old</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">clean</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Generate</span> <span class="string">static</span> <span class="string">files</span></span><br><span class="line">        <span class="attr">run:</span> <span class="string">hexo</span> <span class="string">generate</span></span><br><span class="line">        <span class="attr">working-directory:</span> <span class="string">blog</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">        <span class="attr">uses:</span> <span class="string">peaceiris/actions-gh-pages@v3</span></span><br><span class="line">        <span class="attr">with:</span></span><br><span class="line">          <span class="attr">github_token:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GITHUB_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">          <span class="attr">publish_dir:</span> <span class="string">./blog/public</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>这两种方式都能成功部署 Hexo 到 GitHub Pages，但它们实现机制不同，适用于不同场景。我们可以从<strong>安全性、简洁性、维护性、灵活性</strong>等维度对比，给你明确建议。</p>
+<hr>
+<h2 id="✅-建议优先使用：代码2（推荐）"><a href="#✅-建议优先使用：代码2（推荐）" class="headerlink" title="✅ 建议优先使用：代码2（推荐）"></a>✅ 建议优先使用：<strong>代码2（推荐）</strong></h2><p>使用 <code>peaceiris/actions-gh-pages@v3</code> 这个 Action 更安全、更简洁，是目前社区中最常用的部署方式。</p>
+<hr>
+<h2 id="✨-对比分析："><a href="#✨-对比分析：" class="headerlink" title="✨ 对比分析："></a>✨ 对比分析：</h2><table>
+<thead>
+<tr>
+<th>比较项</th>
+<th>代码1（自己写 push 脚本）</th>
+<th>✅ 代码2（使用 peaceiris&#x2F;actions-gh-pages）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>简洁性</strong></td>
+<td>❌ 手动写 <code>git init</code>, <code>remote</code>, <code>push</code> 等，代码多</td>
+<td>✅ 封装好了所有逻辑，只需设置参数</td>
+</tr>
+<tr>
+<td><strong>安全性</strong></td>
+<td>🔐 需要小心 Token 拼接（可能泄露）</td>
+<td>✅ 使用官方方式处理 token，内置防泄露</td>
+</tr>
+<tr>
+<td><strong>维护性</strong></td>
+<td>❌ 需要自己维护 git 逻辑，容易出错</td>
+<td>✅ 官方维护的 Action，可靠稳定</td>
+</tr>
+<tr>
+<td><strong>兼容性</strong></td>
+<td>✅ 更灵活（可以用于非 GitHub Pages 部署）</td>
+<td>🟡 更专注于 GitHub Pages（但这就是你的目标）</td>
+</tr>
+<tr>
+<td><strong>常见性</strong></td>
+<td>❌ 不利于新人阅读维护</td>
+<td>✅ 目前 Hexo + GitHub Pages 最通用写法</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-推荐做法："><a href="#✅-推荐做法：" class="headerlink" title="✅ 推荐做法："></a>✅ 推荐做法：</h2><p>如果你只是想<strong>把博客部署到 GitHub Pages（gh-pages 分支）</strong>，建议<strong>使用代码2</strong>，维护简单、安全稳定。</p>
+<hr>
+<h2 id="⛳-如果你未来要部署到其他仓库或服务器："><a href="#⛳-如果你未来要部署到其他仓库或服务器：" class="headerlink" title="⛳ 如果你未来要部署到其他仓库或服务器："></a>⛳ 如果你未来要部署到其他仓库或服务器：</h2><p>那可以使用代码1那样的「自定义部署逻辑」，比如部署到其他远程仓库、私服、服务器目录等。</p>
+<hr>
+<p>需要我给你整理一份更完整的推荐 <code>deploy.yml</code> 模板吗？</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>GitHub,Actions,Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -2319,21 +2319,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo Butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/Hexo%20Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hexo Butterfly 添加rightside 按钮</title>
     <url>/2025/01/21/Hexo%20Butterfly%20%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
     <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
@@ -2382,6 +2367,21 @@
 <li><p><strong>优化 JavaScript 和事件绑定</strong>：<br>通过 <code>addEventListener</code> 方式绑定事件，而不是在 HTML 中使用 <code>onclick</code> 属性，这样可以使 JavaScript 更加分离并且可维护。</p>
 </li>
 </ol>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo Butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/Hexo%20Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>Hexo</category>
@@ -9442,7 +9442,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#x2e;&#117;&#x6e;&#x69;&#x74;&#x79;&#x2e;&#99;&#111;&#x6c;&#108;&#97;&#x62;&#x2d;&#112;&#114;&#111;&#x78;&#x79;&#64;&#x32;&#46;&#54;&#x2e;&#48;">&#99;&#111;&#x6d;&#x2e;&#117;&#x6e;&#x69;&#x74;&#x79;&#x2e;&#99;&#111;&#x6c;&#108;&#97;&#x62;&#x2d;&#112;&#114;&#111;&#x78;&#x79;&#64;&#x32;&#46;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#x2e;&#117;&#110;&#x69;&#x74;&#121;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#x61;&#98;&#x2d;&#x70;&#x72;&#x6f;&#120;&#121;&#x40;&#x32;&#46;&#54;&#x2e;&#48;">&#x63;&#x6f;&#x6d;&#x2e;&#117;&#110;&#x69;&#x74;&#121;&#x2e;&#x63;&#x6f;&#108;&#x6c;&#x61;&#98;&#x2d;&#x70;&#x72;&#x6f;&#120;&#121;&#x40;&#x32;&#46;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -10296,6 +10296,35 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Unity 程序集</title>
     <url>/2025/01/16/Unity-%E7%A8%8B%E5%BA%8F%E9%9B%86/</url>
     <content><![CDATA[<h2 id="常见的四种程序集"><a href="#常见的四种程序集" class="headerlink" title="常见的四种程序集"></a>常见的四种程序集</h2><p>下面是 <strong>Unity 中的预定义程序集</strong>（Predefined Assemblies）、<strong>默认创建的程序集</strong>（Default Assemblies）、<strong>自定义程序集</strong>（Custom Assemblies）和 <strong>预编译程序集</strong>（Precompiled Assemblies）四者的关系与区别的对比表格：</p>
@@ -10480,137 +10509,6 @@ graph TD
 <h3 id="Assembly-References"><a href="#Assembly-References" class="headerlink" title="Assembly References"></a>Assembly References</h3><p>仅当您启用 <code>Override References</code> 属性（在“常规”部分中）时，才会显示“程序集引用”部分。使用此区域指定此程序集所依赖的预编译程序集的任何引用。</p>
 <h2 id="Assembly-Definition-References"><a href="#Assembly-Definition-References" class="headerlink" title="Assembly Definition References"></a>Assembly Definition References</h2><p>程序集定义引用	使用程序集定义资源指定对您创建的其他程序集的引用。Unity 使用这些引用来编译程序集并定义程序集之间的依赖关系。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Visual Studio隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/Visual%20Studio%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
-<li><p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li><p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li><p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
-<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li><p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li><p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
   </entry>
   <entry>
     <title>Unity插件导入方式</title>
@@ -10832,6 +10730,108 @@ graph TD
       <tags>
         <tag>Unity</tag>
         <tag>Plugins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Visual Studio隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/Visual%20Studio%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
+<li><p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li><p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li><p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
+<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li><p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li><p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
