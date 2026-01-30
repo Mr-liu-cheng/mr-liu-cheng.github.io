@@ -2,11 +2,12 @@
 title: hexo 图片加载方案
 date: 2024-12-11 17:27:33
 updated: 2024-12-25 14:28:12
-tags: hexo
-categories: hexo
+tags: [Hexo,Butterfly]
+categories: [Hexo,Butterfly]
 description: 
 keywords:
-  - hexo
+  - Hexo
+  - Butterfly
   - 图片
 ---
 
