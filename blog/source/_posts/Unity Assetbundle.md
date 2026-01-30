@@ -1,10 +1,10 @@
 ---
-title: Assetbundle
+title: Unity Assetbundle
 date: 2025-01-20 12:06:02
 updated: 2025-01-20 12:06:02
-tags:
-categories:
-keywords:
+tags: [Unity,AssetBundle]
+categories: [Unity,AssetBundle]
+keywords: [Unity,AssetBundle]
 description:
 ---
 ## 了解什么是Assetbundle
