@@ -1,10 +1,10 @@
 ---
-title: 登录流程
+title: Ra Empire 登录流程
 date: 2025-06-03 11:20:13
 updated: 2025-06-03 11:20:13
-tags: Markdown,mermaid
-categories: 登录流程,mermaid
-keywords: 登录流程,mermaid
+tags: [Markdown,mermaid]
+categories: [游戏项目,Royal Empire]
+keywords: [登录流程,mermaid]
 description:
 ---
 ```
