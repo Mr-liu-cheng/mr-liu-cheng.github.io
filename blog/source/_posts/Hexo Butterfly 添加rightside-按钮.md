@@ -1,10 +1,10 @@
 ---
-title: hexo butterfly 添加rightside 按钮
+title: Hexo Butterfly 添加rightside 按钮
 date: 2025-01-21 20:51:19
 updated: 2025-01-21 20:51:19
-tags:
-categories:
-keywords:
+tags: [Hexo,Butterfly]
+categories: [Hexo,Butterfly]
+keywords: [Hexo,Butterfly]
 description:
 ---
 
