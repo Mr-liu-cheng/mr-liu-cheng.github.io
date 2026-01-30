@@ -3,7 +3,7 @@ title: Github 打镜像
 date: 2026-01-29 12:06:02
 updated: 2026-01-29 12:06:02
 tags: [Github,打镜像]
-categories: [代码托管平台，Github,打镜像]
+categories: [代码托管平台,Github,打镜像]
 keywords: [Github,打镜像]
 description: 
 ---
