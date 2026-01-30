@@ -3,12 +3,12 @@ title: hexo 疑难杂症
 date: 2024-12-28 22:56:28
 updated: 2024-12-28 22:56:28
 tags:
-    - hexo
-    - butterfly
-categories: hexo
+    - Hexo
+    - Butterfly
+categories: [Hexo,Butterfly]
 keywords:
-  - hexo
-  - butterfly
+  - Hexo
+  - Butterfly
   - 隐藏页脚
   - 页面跳转
   - 界面未完全加载
