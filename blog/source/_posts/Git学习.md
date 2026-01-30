@@ -1,12 +1,12 @@
 ---
-title: git学习
+title: Git学习
 date: 2024-12-11 15:51:16
 updated: 2024-12-25 14:28:12
-tags: git
-categories: git
+tags: Git
+categories: Git
 description: 
 keywords:
-  - git
+  - Git
 ---
 流程图
 ---
