@@ -2,9 +2,9 @@
 title: 日历【FullCalendar+Lunar+RRule+Popper】
 date: 2025-01-02 04:22:41
 updated: 2025-01-02 04:22:41
-tags:
-categories:
-keywords:
+tags: [FullCalendar,Lunar,RRule,Popper]
+categories: FullCalendar
+keywords: [FullCalendar,Lunar,RRule,Popper,日历]
 description:
 ---
 **先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题**
