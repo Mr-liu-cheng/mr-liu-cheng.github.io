@@ -2,8 +2,8 @@
 title: C# CLR
 date: 2025-01-20 11:25:52
 updated: 2025-01-20 11:25:52
-tags:
-categories:
+tags: [C#,CLR]
+categories: C#
 keywords:
 description:
 ---
