@@ -2,9 +2,9 @@
 title: Game Framework流程
 date: 2025-02-05 10:09:39
 updated: 2025-02-05 10:09:39
-tags:
-categories:
-keywords:
+tags: [Unity,框架]
+categories: [Unity,框架]
+keywords: [Unity,框架]
 description:
 ---
  [Game Framework](https://gameframework.cn/) 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：
