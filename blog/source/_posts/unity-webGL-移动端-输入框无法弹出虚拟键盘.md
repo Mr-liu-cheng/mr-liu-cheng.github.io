@@ -6,7 +6,7 @@ tags:
     - unity
     - webGL
 categories: 
-  - [unity,webGL]
+  - [Unity,WebGL]
 description: webGL 移动端本身不支持输入框弹出虚拟键盘
 keywords:
   - unity
