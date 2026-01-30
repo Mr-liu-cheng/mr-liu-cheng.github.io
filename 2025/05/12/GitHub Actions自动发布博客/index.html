@@ -1,0 +1,456 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>GitHub Actions 自动发布博客 | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="完整推荐如下： ✅ 推荐版本（添加 clean、修正路径） name: Deploy Hexo Blog to GitHub Pages on:  push:    branches:      - master jobs:  build-deploy:    runs-on: ubuntu-latest steps:   - name: Checkout repository     uses:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub Actions 自动发布博客">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2025/05/12/GitHub%20Actions%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="完整推荐如下： ✅ 推荐版本（添加 clean、修正路径） name: Deploy Hexo Blog to GitHub Pages on:  push:    branches:      - master jobs:  build-deploy:    runs-on: ubuntu-latest steps:   - name: Checkout repository     uses:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2025-05-12T14:16:02.000Z">
+<meta property="article:modified_time" content="2025-05-12T14:16:02.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="GitHub">
+<meta property="article:tag" content="Actions">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2025/05/12/GitHub%20Actions%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'GitHub Actions 自动发布博客',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">79</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">64</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">46</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">GitHub Actions 自动发布博客</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">GitHub Actions 自动发布博客</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-12T14:16:02.000Z" title="发表于 2025-05-12 14:16:02">2025-05-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-12T14:16:02.000Z" title="更新于 2025-05-12 14:16:02">2025-05-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E5%B9%B3%E5%8F%B0/">代码托管平台</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E5%B9%B3%E5%8F%B0/Github/">Github</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%BB%A3%E7%A0%81%E6%89%98%E7%AE%A1%E5%B9%B3%E5%8F%B0/Github/Actions/">Actions</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>完整推荐如下：</p>
+<p>✅ 推荐版本（添加 clean、修正路径）</p>
+<p>name: Deploy Hexo Blog to GitHub Pages</p>
+<p>on:<br>  push:<br>    branches:<br>      - master</p>
+<p>jobs:<br>  build-deploy:<br>    runs-on: ubuntu-latest</p>
+<pre><code>steps:
+  - name: Checkout repository
+    uses: actions/checkout@v3
+
+  - name: Setup Node.js
+    uses: actions/setup-node@v3
+    with:
+      node-version: 18
+
+  - name: Install Hexo CLI
+    run: npm install -g hexo-cli
+
+  - name: Install dependencies
+    run: npm install
+    working-directory: blog
+
+  - name: Clean previous builds
+    run: hexo clean
+    working-directory: blog
+
+  - name: Generate static files
+    run: hexo generate
+    working-directory: blog
+
+  - name: Deploy to GitHub Pages
+    uses: peaceiris/actions-gh-pages@v3
+    with:
+      github_token: $&#123;&#123; secrets.GITHUB_TOKEN &#125;&#125;
+      publish_dir: ./blog/public
+</code></pre>
+<p>🔍 hexo deploy 是否还需要？</p>
+<p>不需要！因为：<br>    •	hexo deploy 是调用 hexo-deployer-git 插件把 public 推到 GitHub。<br>    •	你已经使用了 peaceiris&#x2F;actions-gh-pages，它更灵活稳定，也是 GitHub 官方推荐方式之一。<br>    •	所以你可以直接省略 hexo deploy，让 Actions 帮你部署更好。</p>
+<p>是否需要我帮你配置一个同时部署文章和运行本地预览的 dev 构建方案？或者加上自动评论等插件支持？</p>
+<p>你在 GitHub 仓库里看不到 public&#x2F; 文件夹 是正常的，因为：</p>
+<ol>
+<li><p>public&#x2F; 是 Hexo 生成的构建产物，只存在于 GitHub Actions 的临时 Runner 中</p>
+<p> •	当你 push 到 master 分支时，GitHub Actions 会：<br> •	克隆你的代码（含 blog&#x2F; 目录）<br> •	安装依赖、执行 hexo generate，生成 public&#x2F; 静态页面<br> •	将 public&#x2F; 目录上传到 gh-pages 分支（用于 GitHub Pages 托管）</p>
+<p> 这些操作在 GitHub Actions 的临时环境中进行，不会提交 public&#x2F; 到 master 分支</p>
+</li>
+<li><p>为什么不把 public&#x2F; 提交到源码里？</p>
+</li>
+</ol>
+<p>这是最佳实践。因为：<br>    •	public&#x2F; 是构建产物，自动生成的<br>    •	提交构建产物到源码分支（如 master）会让 repo 变得臃肿，历史记录难管理<br>    •	CI&#x2F;CD 工具（如 GitHub Actions）已经可以自动构建和发布</p>
+<ol start="3">
+<li>你可以在哪里看到生成后的 public 内容？</li>
+</ol>
+<p>在 GitHub 仓库的 gh-pages 分支！</p>
+<p>地址格式一般是：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/%E4%BD%A0%E7%9A%84%E7%94%A8%E6%88%B7%E5%90%8D/%E4%BD%A0%E7%9A%84%E4%BB%93%E5%BA%93%E5%90%8D/tree/gh-pages">https://github.com/你的用户名/你的仓库名/tree/gh-pages</a></p>
+<p>比如：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/mr-liu-cheng/mr-liu-cheng.github.io/tree/gh-pages">https://github.com/mr-liu-cheng/mr-liu-cheng.github.io/tree/gh-pages</a></p>
+<p>那里的文件内容就是 hexo generate 后的 public&#x2F; 文件。</p>
+<ol start="4">
+<li>如果你非要在本地看到 public&#x2F;？</li>
+</ol>
+<p>可以本地跑：</p>
+<p>cd blog<br>hexo clean<br>hexo g</p>
+<p>然后就能在 blog&#x2F;public&#x2F; 中看到生成的 HTML 静态页面。</p>
+<p>总结：</p>
+<p>问题	原因<br>GitHub 仓库里没有 public&#x2F;	它是构建产物，只生成在 GitHub Actions 的临时环境中<br>构建后的页面在哪？	在 gh-pages 分支上，GitHub Pages 用来展示<br>本地要看 public&#x2F;？	自己本地运行 hexo generate 即可</p>
+<p>需要我帮你配置自动预览或访问地址验证一下部署成功了吗？</p>
+<p>覆盖分支提交</p>
+<p>你说的“原来的文件被清空了”，是指 GitHub 仓库中的文件，被 GitHub Actions 的部署流程替换&#x2F;清空了，这确实是有可能的。</p>
+<p>我们来详细分析下原因：</p>
+<ol>
+<li>你使用的是 peaceiris&#x2F;actions-gh-pages</li>
+</ol>
+<p>它的行为是：<br>部署时会把 gh-pages 分支内容全部清空，然后用你指定的 publish_dir 中的内容覆盖并提交。</p>
+<p>也就是说，它不是“追加”，是替换整个 gh-pages 分支，用于 GitHub Pages 展示静态网站。</p>
+<p>配置部署檢查：</p>
+<p>最后确认几点：</p>
+<pre><code>•	你的 Hexo 配置文件 _config.yml、source/ 等确实都在 blog/ 中
+•	deploy.yml 脚本中所有 Hexo 命令的 working-directory 都是 blog
+•	publish_dir 是 ./blog/public
+</code></pre>
+<p>部署完成后，可以访问 GitHub Pages 设置页面确认是否启用了 GitHub Pages，并且指向了 gh-pages 分支。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2025/05/12/GitHub%20Actions%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/">https://mr-liu-cheng.github.io/2025/05/12/GitHub%20Actions%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/GitHub/">GitHub</a><a class="post-meta__tags" href="/tags/Actions/">Actions</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/05/12/GitHub-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/" title="GitHub-Hexo 部署脚本"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">GitHub-Hexo 部署脚本</div></div><div class="info-2"><div class="info-item-1">位置 根目录，不然是不会有action记录，不会执行 token方式  ，推荐使用GITHUB_TOKEN 分支 相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它 只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。  代码1：旧 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556name: Deploy Hexo to GitHub Pageson:  push:    branches:      - masterjobs:  build:    runs-on: ubuntu-latest    steps:      - name:...</div></div></div></a><a class="pagination-related" href="/2025/05/17/%E7%A4%BE%E4%BF%9D%E5%92%8C%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84%E8%A1%A5%E7%BC%B4%E9%97%AE%E9%A2%98/" title="社保和公积金的补缴问题"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">社保和公积金的补缴问题</div></div><div class="info-2"><div class="info-item-1">离职后，社保和公积金的补缴问题与个人权益密切相关，以下是需要关注的要点及原因解析：  社保和公积金的补缴问题一、需要自己补缴的情况 社保（养老保险、医疗保险等）    断缴影响：社保缴费年限直接影响养老金的领取资格（累计15年）和医保报销（断缴后次月停保）。   补缴方式：   以灵活就业身份参保：可单独缴纳养老和医疗（费用全额自付，比例约为当地基数的20%-30%）。   通过新单位续缴：离职后尽快入职新单位，由新公司接续缴纳（避免断缴）。   补缴政策：部分地区允许补缴断缴部分（需咨询12333社保热线），但可能需支付滞纳金。     住房公积金    断缴影响：影响公积金贷款资格（通常需连续缴存6-12个月）。   补缴方式：   以灵活就业身份缴存（仅部分城市开放）。   由新单位续缴，无法个人补缴断缴部分（个别城市允许单位申请补缴）。     企业未足额缴纳    若原单位未按实际工资缴纳社保，可要求补缴差额（通过劳动仲裁或社保稽核）。     二、为什么要补缴？ 养老保险 ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/" title="GitHub Actions 没有触发的核心原因"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-08</div><div class="info-item-2">GitHub Actions 没有触发的核心原因</div></div><div class="info-2"><div class="info-item-1">谢谢提供路径信息。 你的 GitHub Actions 没有触发的核心原因在于：  你把 deploy.yml 放在了 mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml而它 应该放在仓库根目录下的 .github/workflows/ 中，即：✅ 正确路径是： 1mr-liu-cheng.github.io/.github/workflows/deploy.yml   🔧 为什么要这样放？GitHub Actions 的工作流只会被识别和执行 主仓库 .github/workflows/ 目录下的 YAML 文件，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 blog/ 子目录）。  ✅ 修复步骤（只需一次性修改）你可以按下面操作调整： ① 把 deploy.yml 移动到主目录 .github/workflows/：123# 从 blog 子目录移回仓库根目录mkdir -p .github/workflowsmv blog/.github/workflows/deploy.yml...</div></div></div></a><a class="pagination-related" href="/2025/05/08/GitHub%20Actions%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/" title="GitHub Actions部署流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-08</div><div class="info-item-2">GitHub Actions部署流程</div></div><div class="info-2"><div class="info-item-1">我们来逐步解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本，帮助你理解每一步在干什么、为什么需要它：  🧾 YAML 脚本结构快速回顾123456name: Deploy Hexo to GitHub Pageson:  push:    branches:      - master  ✅ 含义： name: 工作流的名称，显示在 GitHub Actions 页中。 on.push.branches: 表示当你向 master 分支推送代码时，会自动触发这个部署工作流。   123jobs:  build:    runs-on: ubuntu-latest  ✅ 含义： 定义了一个名为 build 的任务（job） runs-on: ubuntu-latest 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务   🚀 核心步骤一览 1️⃣ 获取仓库代码12- name: Checkout repository  uses: actions/checkout@v2  ✅ 使用官方的 checkout Action...</div></div></div></a><a class="pagination-related" href="/2025/05/12/GitHub-Hexo%20%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC/" title="GitHub-Hexo 部署脚本"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-12</div><div class="info-item-2">GitHub-Hexo 部署脚本</div></div><div class="info-2"><div class="info-item-1">位置 根目录，不然是不会有action记录，不会执行 token方式  ，推荐使用GITHUB_TOKEN 分支 相对路径： working-directory: blog，一般不用指定，我是因为创建一层父文件夹隔离导致无法正常访问才不得已需要它 只要你把 GitHub Actions 的 .yml 文件放在 .github&#x2F;workflows&#x2F; 目录下，GitHub 就会自动识别并执行这个工作流，无论文件名是 deploy1.yml、deploy.yml 还是其他名字。  代码1：旧 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556name: Deploy Hexo to GitHub Pageson:  push:    branches:      - masterjobs:  build:    runs-on: ubuntu-latest    steps:      - name:...</div></div></div></a><a class="pagination-related" href="/2026/01/29/GitHub%20%E6%89%93%E9%95%9C%E5%83%8F/" title="GitHub 打镜像"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-29</div><div class="info-item-2">GitHub 打镜像</div></div><div class="info-2"><div class="info-item-1">GitHub 容器镜像（GitHub Container Registry）详解一、GitHub 容器镜像服务总览1. GitHub 提供的容器服务123456789GitHub 容器生态系统:┌─────────────────────────────────────────────────────┐│                   GitHub Container Registry          │ ← 容器镜像仓库│                   (ghcr.io)                         │├─────────────────────────────────────────────────────┤│                 GitHub Actions                       │ ← CI/CD 流水线├─────────────────────────────────────────────────────┤│                GitHub Packages              ...</div></div></div></a><a class="pagination-related" href="/2025/01/22/GitHub%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="GitHub 作为热更服务器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-22</div><div class="info-item-2">GitHub 作为热更服务器</div></div><div class="info-2"><div class="info-item-1">要使用 GitHub 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 Releases 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤： 1. 准备资源（例如 AssetBundles）首先，你需要将 Unity 项目的资源打包成 AssetBundles。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。 创建 AssetBundles： 在 Unity 中创建 AssetBundle：  选择你想要打包的资源（例如场景、模型、纹理等）。 在 Inspector 面板中，给它们指定一个 AssetBundle 名称。例如，将所有角色模型的 AssetBundle 命名为 character_assets。   打包 AssetBundles：  通过 BuildPipeline.BuildAssetBundles...</div></div></div></a><a class="pagination-related" href="/2026/01/29/GitLab%20vs%20GitHub/" title="GitLab vs GitHub"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-29</div><div class="info-item-2">GitLab vs GitHub</div></div><div class="info-2"><div class="info-item-1">GitLab vs GitHub：全面对比详解一、一句话概括核心区别GitHub &#x3D; 代码托管平台 + 社交协作网络GitLab &#x3D; 一体化 DevOps 平台 + 自托管能力  二、核心对比速查表   对比维度 GitHub GitLab 谁更适合    核心定位 代码社交平台 完整 DevOps 平台 看需求   部署方式 仅云端 SaaS SaaS + 自托管 GitLab 灵活   商业模式 免费+付费 SaaS 免费自托管+付费 SaaS 各有所长   CI&#x2F;CD GitHub Actions GitLab CI&#x2F;CD GitLab 更强   项目管理 Issues+Projects 完整项目群组 GitLab 完整   安全功能 基础安全扫描 全生命周期安全 GitLab 全面   社区生态 全球最大 快速增长 GitHub 领先   企业特性 GitHub Enterprise GitLab Ultimate GitLab 更专业    三、详细对比分析1....</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">79</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">64</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">46</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%9E%B6%E6%9E%84%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87/" title="分布式游戏服务器架构开发准备">分布式游戏服务器架构开发准备</a><time datetime="2026-01-30T10:28:46.000Z" title="发表于 2026-01-30 10:28:46">2026-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/%E6%B8%B8%E6%88%8F%E7%83%AD%E6%9B%B4%E8%B5%84%E6%BA%90%E5%AD%98%E5%82%A8%E4%B8%8E%E5%88%86%E5%8F%91%E7%B3%BB%E7%BB%9F/" title="游戏热更资源存储与分发系统">游戏热更资源存储与分发系统</a><time datetime="2026-01-30T10:28:46.000Z" title="发表于 2026-01-30 10:28:46">2026-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/GitHub%20%E6%89%93%E9%95%9C%E5%83%8F/" title="GitHub 打镜像">GitHub 打镜像</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/GitLab%20vs%20GitHub/" title="GitLab vs GitHub">GitLab vs GitHub</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/29/Harbor-%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%AE%B9%E5%99%A8%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93/" title="Harbor-企业级容器镜像仓库">Harbor-企业级容器镜像仓库</a><time datetime="2026-01-29T12:06:02.000Z" title="发表于 2026-01-29 12:06:02">2026-01-29</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '0c0c12f2485eb73cabaa32b31dde64a2'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
