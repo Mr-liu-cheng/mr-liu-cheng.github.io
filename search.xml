@@ -746,85 +746,6 @@
       </tags>
   </entry>
   <entry>
-    <title>GitHub Actions部署流程</title>
-    <url>/2025/05/08/GitHub%20Actions%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
-<hr>
-<h3 id="🧾-YAML-脚本结构快速回顾"><a href="#🧾-YAML-脚本结构快速回顾" class="headerlink" title="🧾 YAML 脚本结构快速回顾"></a>🧾 YAML 脚本结构快速回顾</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="✅-含义："><a href="#✅-含义：" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
-<li><code>name</code>: 工作流的名称，显示在 GitHub Actions 页中。</li>
-<li><code>on.push.branches</code>: 表示当你向 <code>master</code> 分支推送代码时，会自动触发这个部署工作流。</li>
-</ul>
-<hr>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="✅-含义：-1"><a href="#✅-含义：-1" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
-<li>定义了一个名为 <code>build</code> 的任务（job）</li>
-<li><code>runs-on: ubuntu-latest</code> 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务</li>
-</ul>
-<hr>
-<h3 id="🚀-核心步骤一览"><a href="#🚀-核心步骤一览" class="headerlink" title="🚀 核心步骤一览"></a>🚀 核心步骤一览</h3><hr>
-<h4 id="1️⃣-获取仓库代码"><a href="#1️⃣-获取仓库代码" class="headerlink" title="1️⃣ 获取仓库代码"></a>1️⃣ 获取仓库代码</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 使用官方的 <code>checkout</code> Action 把当前仓库的源码拉下来。</p>
-<hr>
-<h4 id="2️⃣-设置-Node-js-环境"><a href="#2️⃣-设置-Node-js-环境" class="headerlink" title="2️⃣ 设置 Node.js 环境"></a>2️⃣ 设置 Node.js 环境</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">node-version:</span> <span class="string">&#x27;20&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 安装指定版本的 Node.js 环境，因为 Hexo 是基于 Node.js 的静态站点生成器。</p>
-<hr>
-<h4 id="3️⃣-安装依赖"><a href="#3️⃣-安装依赖" class="headerlink" title="3️⃣ 安装依赖"></a>3️⃣ 安装依赖</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Dependencies</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 安装你 <code>package.json</code> 中定义的所有 Hexo 插件、主题依赖（比如主题支持的 <code>hexo-renderer-*</code>、<code>hexo-generator-*</code> 等）。</p>
-<hr>
-<h4 id="4️⃣-安装部署插件和-Hexo-CLI"><a href="#4️⃣-安装部署插件和-Hexo-CLI" class="headerlink" title="4️⃣ 安装部署插件和 Hexo CLI"></a>4️⃣ 安装部署插件和 Hexo CLI</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">Git</span> <span class="string">Deployer</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">    npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ <code>hexo-deployer-git</code>: 用于将生成的静态文件部署到 GitHub Pages<br>✅ <code>hexo-cli -g</code>: 全局安装 Hexo 命令行工具，后面需要执行 <code>hexo generate</code> 命令</p>
-<hr>
-<h4 id="5️⃣-生成静态页面"><a href="#5️⃣-生成静态页面" class="headerlink" title="5️⃣ 生成静态页面"></a>5️⃣ 生成静态页面</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">and</span> <span class="string">Generate</span> <span class="string">Static</span> <span class="string">Files</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    hexo clean</span></span><br><span class="line"><span class="string">    hexo generate</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ <code>hexo clean</code>: 清理之前生成的 <code>public/</code><br>✅ <code>hexo generate</code>: 将 Markdown 和配置转化为静态网站内容，放入 <code>public/</code> 文件夹</p>
-<hr>
-<h4 id="6️⃣-配置-Git-信息（用于提交）"><a href="#6️⃣-配置-Git-信息（用于提交）" class="headerlink" title="6️⃣ 配置 Git 信息（用于提交）"></a>6️⃣ 配置 Git 信息（用于提交）</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Git</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    git config --global user.name &#x27;github-actions[bot]&#x27;</span></span><br><span class="line"><span class="string">    git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 配置 Git 用户信息，避免提交时报错。</p>
-<hr>
-<h4 id="7️⃣-推送到-GitHub-Pages"><a href="#7️⃣-推送到-GitHub-Pages" class="headerlink" title="7️⃣ 推送到 GitHub Pages"></a>7️⃣ 推送到 GitHub Pages</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">  <span class="attr">env:</span></span><br><span class="line">    <span class="attr">GH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GH_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    cd public/</span></span><br><span class="line"><span class="string">    git init</span></span><br><span class="line"><span class="string">    git add -A</span></span><br><span class="line"><span class="string">    git commit -m &quot;Create by workflows&quot;</span></span><br><span class="line"><span class="string">    git remote add origin https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span></span><br><span class="line"><span class="string">    git push origin HEAD:gh-pages -f</span></span><br></pre></td></tr></table></figure>
-
-<p>✅ 这段代码作用：</p>
-<ul>
-<li>进入 Hexo 生成的 <code>public/</code> 静态目录</li>
-<li>初始化 Git 仓库</li>
-<li>用你设置的 <code>GH_TOKEN</code>（GitHub Token）认证身份</li>
-<li>将 <code>public/</code> 目录的内容强制推送到部署仓库（<code>gh-pages</code> 分支）</li>
-</ul>
-<p>这样 GitHub Pages 就可以用 <code>gh-pages</code> 分支中的内容部署网页。</p>
-<hr>
-<h3 id="🔒-GH-TOKEN-是干什么用的？"><a href="#🔒-GH-TOKEN-是干什么用的？" class="headerlink" title="🔒 GH_TOKEN 是干什么用的？"></a>🔒 <code>GH_TOKEN</code> 是干什么用的？</h3><p>这是一个 <strong>私密令牌（Personal Access Token）</strong>，用于允许 GitHub Actions 自动推送内容到仓库。</p>
-<p>你需要在源仓库的 <strong>Settings &gt; Secrets</strong> 中添加：</p>
-<ul>
-<li>名称：<code>GH_TOKEN</code></li>
-<li>内容：GitHub PAT，要求权限包含：<code>repo</code>（公开仓库也可不选）</li>
-</ul>
-<hr>
-<h3 id="✅-总结：这个-Actions-脚本做了什么？"><a href="#✅-总结：这个-Actions-脚本做了什么？" class="headerlink" title="✅ 总结：这个 Actions 脚本做了什么？"></a>✅ 总结：这个 Actions 脚本做了什么？</h3><p>简要流程如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 git push 文章 --&gt; GitHub 触发 Action --&gt; 自动安装依赖并构建静态网站 --&gt; 自动部署 public/ 到 gh-pages</span><br></pre></td></tr></table></figure>
-
-<p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
-<hr>
-<p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
-]]></content>
-      <categories>
-        <category>代码托管平台</category>
-        <category>Github</category>
-        <category>Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub</tag>
-        <tag>Actions</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitHub action 自动发布博客</title>
     <url>/2025/05/12/GitHub%20action%20%E8%87%AA%E5%8A%A8%E5%8F%91%E5%B8%83%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>完整推荐如下：</p>
@@ -917,6 +838,152 @@
       <tags>
         <tag>GitHub</tag>
         <tag>Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub Actions部署流程</title>
+    <url>/2025/05/08/GitHub%20Actions%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
+<hr>
+<h3 id="🧾-YAML-脚本结构快速回顾"><a href="#🧾-YAML-脚本结构快速回顾" class="headerlink" title="🧾 YAML 脚本结构快速回顾"></a>🧾 YAML 脚本结构快速回顾</h3><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">Hexo</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line"></span><br><span class="line"><span class="attr">on:</span></span><br><span class="line">  <span class="attr">push:</span></span><br><span class="line">    <span class="attr">branches:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="✅-含义："><a href="#✅-含义：" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
+<li><code>name</code>: 工作流的名称，显示在 GitHub Actions 页中。</li>
+<li><code>on.push.branches</code>: 表示当你向 <code>master</code> 分支推送代码时，会自动触发这个部署工作流。</li>
+</ul>
+<hr>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">jobs:</span></span><br><span class="line">  <span class="attr">build:</span></span><br><span class="line">    <span class="attr">runs-on:</span> <span class="string">ubuntu-latest</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="✅-含义：-1"><a href="#✅-含义：-1" class="headerlink" title="✅ 含义："></a>✅ 含义：</h4><ul>
+<li>定义了一个名为 <code>build</code> 的任务（job）</li>
+<li><code>runs-on: ubuntu-latest</code> 表示 GitHub 提供的云服务器上使用最新的 Ubuntu 系统执行任务</li>
+</ul>
+<hr>
+<h3 id="🚀-核心步骤一览"><a href="#🚀-核心步骤一览" class="headerlink" title="🚀 核心步骤一览"></a>🚀 核心步骤一览</h3><hr>
+<h4 id="1️⃣-获取仓库代码"><a href="#1️⃣-获取仓库代码" class="headerlink" title="1️⃣ 获取仓库代码"></a>1️⃣ 获取仓库代码</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Checkout</span> <span class="string">repository</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/checkout@v2</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 使用官方的 <code>checkout</code> Action 把当前仓库的源码拉下来。</p>
+<hr>
+<h4 id="2️⃣-设置-Node-js-环境"><a href="#2️⃣-设置-Node-js-环境" class="headerlink" title="2️⃣ 设置 Node.js 环境"></a>2️⃣ 设置 Node.js 环境</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Setup</span> <span class="string">Node.js</span></span><br><span class="line">  <span class="attr">uses:</span> <span class="string">actions/setup-node@v2</span></span><br><span class="line">  <span class="attr">with:</span></span><br><span class="line">    <span class="attr">node-version:</span> <span class="string">&#x27;20&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 安装指定版本的 Node.js 环境，因为 Hexo 是基于 Node.js 的静态站点生成器。</p>
+<hr>
+<h4 id="3️⃣-安装依赖"><a href="#3️⃣-安装依赖" class="headerlink" title="3️⃣ 安装依赖"></a>3️⃣ 安装依赖</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Dependencies</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">npm</span> <span class="string">install</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 安装你 <code>package.json</code> 中定义的所有 Hexo 插件、主题依赖（比如主题支持的 <code>hexo-renderer-*</code>、<code>hexo-generator-*</code> 等）。</p>
+<hr>
+<h4 id="4️⃣-安装部署插件和-Hexo-CLI"><a href="#4️⃣-安装部署插件和-Hexo-CLI" class="headerlink" title="4️⃣ 安装部署插件和 Hexo CLI"></a>4️⃣ 安装部署插件和 Hexo CLI</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">Hexo</span> <span class="string">Git</span> <span class="string">Deployer</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    npm install hexo-deployer-git --save</span></span><br><span class="line"><span class="string">    npm install hexo-cli -g</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ <code>hexo-deployer-git</code>: 用于将生成的静态文件部署到 GitHub Pages<br>✅ <code>hexo-cli -g</code>: 全局安装 Hexo 命令行工具，后面需要执行 <code>hexo generate</code> 命令</p>
+<hr>
+<h4 id="5️⃣-生成静态页面"><a href="#5️⃣-生成静态页面" class="headerlink" title="5️⃣ 生成静态页面"></a>5️⃣ 生成静态页面</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Clean</span> <span class="string">and</span> <span class="string">Generate</span> <span class="string">Static</span> <span class="string">Files</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    hexo clean</span></span><br><span class="line"><span class="string">    hexo generate</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ <code>hexo clean</code>: 清理之前生成的 <code>public/</code><br>✅ <code>hexo generate</code>: 将 Markdown 和配置转化为静态网站内容，放入 <code>public/</code> 文件夹</p>
+<hr>
+<h4 id="6️⃣-配置-Git-信息（用于提交）"><a href="#6️⃣-配置-Git-信息（用于提交）" class="headerlink" title="6️⃣ 配置 Git 信息（用于提交）"></a>6️⃣ 配置 Git 信息（用于提交）</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Configure</span> <span class="string">Git</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    git config --global user.name &#x27;github-actions[bot]&#x27;</span></span><br><span class="line"><span class="string">    git config --global user.email &#x27;github-actions[bot]@users.noreply.github.com&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 配置 Git 用户信息，避免提交时报错。</p>
+<hr>
+<h4 id="7️⃣-推送到-GitHub-Pages"><a href="#7️⃣-推送到-GitHub-Pages" class="headerlink" title="7️⃣ 推送到 GitHub Pages"></a>7️⃣ 推送到 GitHub Pages</h4><figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Deploy</span> <span class="string">to</span> <span class="string">GitHub</span> <span class="string">Pages</span></span><br><span class="line">  <span class="attr">env:</span></span><br><span class="line">    <span class="attr">GH_TOKEN:</span> <span class="string">$&#123;&#123;</span> <span class="string">secrets.GH_TOKEN</span> <span class="string">&#125;&#125;</span></span><br><span class="line">  <span class="attr">run:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    cd public/</span></span><br><span class="line"><span class="string">    git init</span></span><br><span class="line"><span class="string">    git add -A</span></span><br><span class="line"><span class="string">    git commit -m &quot;Create by workflows&quot;</span></span><br><span class="line"><span class="string">    git remote add origin https://$&#123;&#123; secrets.GH_TOKEN &#125;&#125;@github.com/Mr-liu-cheng/mr-liu-cheng.github.io.git</span></span><br><span class="line"><span class="string">    git push origin HEAD:gh-pages -f</span></span><br></pre></td></tr></table></figure>
+
+<p>✅ 这段代码作用：</p>
+<ul>
+<li>进入 Hexo 生成的 <code>public/</code> 静态目录</li>
+<li>初始化 Git 仓库</li>
+<li>用你设置的 <code>GH_TOKEN</code>（GitHub Token）认证身份</li>
+<li>将 <code>public/</code> 目录的内容强制推送到部署仓库（<code>gh-pages</code> 分支）</li>
+</ul>
+<p>这样 GitHub Pages 就可以用 <code>gh-pages</code> 分支中的内容部署网页。</p>
+<hr>
+<h3 id="🔒-GH-TOKEN-是干什么用的？"><a href="#🔒-GH-TOKEN-是干什么用的？" class="headerlink" title="🔒 GH_TOKEN 是干什么用的？"></a>🔒 <code>GH_TOKEN</code> 是干什么用的？</h3><p>这是一个 <strong>私密令牌（Personal Access Token）</strong>，用于允许 GitHub Actions 自动推送内容到仓库。</p>
+<p>你需要在源仓库的 <strong>Settings &gt; Secrets</strong> 中添加：</p>
+<ul>
+<li>名称：<code>GH_TOKEN</code></li>
+<li>内容：GitHub PAT，要求权限包含：<code>repo</code>（公开仓库也可不选）</li>
+</ul>
+<hr>
+<h3 id="✅-总结：这个-Actions-脚本做了什么？"><a href="#✅-总结：这个-Actions-脚本做了什么？" class="headerlink" title="✅ 总结：这个 Actions 脚本做了什么？"></a>✅ 总结：这个 Actions 脚本做了什么？</h3><p>简要流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">你 git push 文章 --&gt; GitHub 触发 Action --&gt; 自动安装依赖并构建静态网站 --&gt; 自动部署 public/ 到 gh-pages</span><br></pre></td></tr></table></figure>
+
+<p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
+<hr>
+<p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
+]]></content>
+      <categories>
+        <category>代码托管平台</category>
+        <category>Github</category>
+        <category>Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
+        <tag>Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Github 作为热更服务器</title>
+    <url>/2025/01/22/Github%20%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
+<li><p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li><p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
+<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li><p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
+]]></content>
+      <categories>
+        <category>Github</category>
+      </categories>
+      <tags>
+        <tag>Github</tag>
       </tags>
   </entry>
   <entry>
@@ -1235,73 +1302,6 @@
       </categories>
       <tags>
         <tag>GitLab,GitHub</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Github 作为热更服务器</title>
-    <url>/2025/01/22/Github%20%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
-<li><p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li><p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
-<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li><p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
-]]></content>
-      <categories>
-        <category>Github</category>
-      </categories>
-      <tags>
-        <tag>Github</tag>
       </tags>
   </entry>
   <entry>
@@ -3064,6 +3064,199 @@
       </tags>
   </entry>
   <entry>
+    <title>Jenkins 游戏后端自动化部署流程</title>
+    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
+<hr>
+<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
+<thead>
+<tr>
+<th>工具&#x2F;环境</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Jenkins</strong></td>
+<td>CI&#x2F;CD 核心调度平台</td>
+</tr>
+<tr>
+<td><strong>Git</strong></td>
+<td>代码版本管理（GitHub&#x2F;GitLab）</td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>容器化部署（可选）</td>
+</tr>
+<tr>
+<td><strong>Kubernetes (K8s)</strong></td>
+<td>容器编排（适用于分布式后端）</td>
+</tr>
+<tr>
+<td><strong>构建工具</strong></td>
+<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
+</tr>
+<tr>
+<td><strong>部署目标</strong></td>
+<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
+<thead>
+<tr>
+<th>插件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker Plugin</strong></td>
+<td>构建 Docker 镜像</td>
+</tr>
+<tr>
+<td><strong>Kubernetes Plugin</strong></td>
+<td>部署到 K8s</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>定义 CI&#x2F;CD 流程</td>
+</tr>
+<tr>
+<td><strong>Publish Over SSH</strong></td>
+<td>远程服务器部署</td>
+</tr>
+<tr>
+<td><strong>SonarQube Scanner</strong></td>
+<td>代码质量检测（可选）</td>
+</tr>
+</tbody></table>
+<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
+<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
+<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
+<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
+</ul>
+<hr>
+<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
+<thead>
+<tr>
+<th>语言</th>
+<th>构建命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Java (Maven)</strong></td>
+<td><code>mvn clean package -DskipTests</code></td>
+</tr>
+<tr>
+<td><strong>Go</strong></td>
+<td><code>go build -o bin/server ./cmd/server</code></td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td><code>pip install -r requirements.txt</code></td>
+</tr>
+</tbody></table>
+<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
+<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
+<thead>
+<tr>
+<th>部署方式</th>
+<th>适用场景</th>
+<th>Jenkins 配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>SSH 直接部署</strong></td>
+<td>传统服务器</td>
+<td>使用 <code>Publish Over SSH</code> 插件</td>
+</tr>
+<tr>
+<td><strong>Docker Swarm</strong></td>
+<td>小型集群</td>
+<td><code>docker stack deploy</code></td>
+</tr>
+<tr>
+<td><strong>Kubernetes</strong></td>
+<td>生产级集群</td>
+<td><code>kubectl set image</code> 或 Helm</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Prometheus + Grafana</strong></td>
+<td>监控服务性能</td>
+</tr>
+<tr>
+<td><strong>Kibana</strong></td>
+<td>日志分析</td>
+</tr>
+<tr>
+<td><strong>Jenkins 回滚脚本</strong></td>
+<td>快速回退到旧版本</td>
+</tr>
+</tbody></table>
+<p><strong>回滚示例</strong>：  </p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>排查方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Docker 构建失败</strong></td>
+<td>检查 <code>Dockerfile</code> 和构建日志</td>
+</tr>
+<tr>
+<td><strong>K8s 部署超时</strong></td>
+<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
+</tr>
+<tr>
+<td><strong>微服务通信异常</strong></td>
+<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
+<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
+<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
+</ul>
+<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
+]]></content>
+      <categories>
+        <category>Jenkins</category>
+      </categories>
+      <tags>
+        <tag>Jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HybridCLR 笔记</title>
     <url>/2025/01/13/HybridCLR-%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[<h2 id="hybridclr-Package手册"><a href="#hybridclr-Package手册" class="headerlink" title="hybridclr Package手册"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/com.code-philosophy.hybridclr">hybridclr Package手册</a></h2><h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/bestpractice">最佳实践</a></h2><h2 id="不支持特性"><a href="#不支持特性" class="headerlink" title="不支持特性"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/notsupportedfeatures">不支持特性</a></h2><h2 id="AOT泛型"><a href="#AOT泛型" class="headerlink" title="AOT泛型"></a><a href="https://hybridclr.doc.code-philosophy.com/docs/basic/aotgeneric">AOT泛型</a></h2><h2 id="热更新程序集的-auto-reference"><a href="#热更新程序集的-auto-reference" class="headerlink" title="热更新程序集的 auto reference"></a>热更新程序集的 auto reference</h2><blockquote>
@@ -4395,199 +4588,6 @@
       <tags>
         <tag>Unity</tag>
         <tag>HybridCLR</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Jenkins 游戏后端自动化部署流程</title>
-    <url>/2025/05/09/Jenkins%20%E6%B8%B8%E6%88%8F%E5%90%8E%E7%AB%AF%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h3 id="Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）"><a href="#Jenkins-游戏后端自动化部署流程（以微服务-分布式架构为例）" class="headerlink" title="Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）"></a><strong>Jenkins 游戏后端自动化部署流程（以微服务&#x2F;分布式架构为例）</strong></h3><p>游戏后端通常采用 <strong>多模块、微服务架构</strong>（如登录服、战斗服、匹配服），Jenkins 可以实现 <strong>代码构建 → 打包 → 测试 → 部署到服务器&#x2F;K8s</strong> 的全流程自动化。  </p>
-<hr>
-<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a><strong>1. 环境准备</strong></h2><table>
-<thead>
-<tr>
-<th>工具&#x2F;环境</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Jenkins</strong></td>
-<td>CI&#x2F;CD 核心调度平台</td>
-</tr>
-<tr>
-<td><strong>Git</strong></td>
-<td>代码版本管理（GitHub&#x2F;GitLab）</td>
-</tr>
-<tr>
-<td><strong>Docker</strong></td>
-<td>容器化部署（可选）</td>
-</tr>
-<tr>
-<td><strong>Kubernetes (K8s)</strong></td>
-<td>容器编排（适用于分布式后端）</td>
-</tr>
-<tr>
-<td><strong>构建工具</strong></td>
-<td>Maven&#x2F;Gradle（Java）、Go Build、Python 虚拟环境等</td>
-</tr>
-<tr>
-<td><strong>部署目标</strong></td>
-<td>物理服务器&#x2F;云主机&#x2F;K8s 集群</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="2-Jenkins-配置"><a href="#2-Jenkins-配置" class="headerlink" title="2. Jenkins 配置"></a><strong>2. Jenkins 配置</strong></h2><h3 id="1-安装必要插件"><a href="#1-安装必要插件" class="headerlink" title="(1) 安装必要插件"></a><strong>(1) 安装必要插件</strong></h3><table>
-<thead>
-<tr>
-<th>插件</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker Plugin</strong></td>
-<td>构建 Docker 镜像</td>
-</tr>
-<tr>
-<td><strong>Kubernetes Plugin</strong></td>
-<td>部署到 K8s</td>
-</tr>
-<tr>
-<td><strong>Pipeline</strong></td>
-<td>定义 CI&#x2F;CD 流程</td>
-</tr>
-<tr>
-<td><strong>Publish Over SSH</strong></td>
-<td>远程服务器部署</td>
-</tr>
-<tr>
-<td><strong>SonarQube Scanner</strong></td>
-<td>代码质量检测（可选）</td>
-</tr>
-</tbody></table>
-<h3 id="2-配置凭据"><a href="#2-配置凭据" class="headerlink" title="(2) 配置凭据"></a><strong>(2) 配置凭据</strong></h3><ul>
-<li><strong>Git 仓库访问</strong>（SSH Key 或账号密码）</li>
-<li><strong>Docker Hub&#x2F;私有仓库</strong>（推送镜像权限）</li>
-<li><strong>服务器 SSH 密钥</strong>（远程部署）</li>
-</ul>
-<hr>
-<h2 id="3-典型-Pipeline-流程（Java-微服务示例）"><a href="#3-典型-Pipeline-流程（Java-微服务示例）" class="headerlink" title="3. 典型 Pipeline 流程（Java 微服务示例）"></a><strong>3. 典型 Pipeline 流程（Java 微服务示例）</strong></h2><p>在项目根目录创建 **<code>Jenkinsfile</code>**，定义多阶段构建：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line"></span><br><span class="line">    environment &#123;</span><br><span class="line">        <span class="comment">// 微服务模块列表（按需修改）</span></span><br><span class="line">        SERVICES = <span class="string">&quot;auth-service match-service battle-service&quot;</span></span><br><span class="line">        DOCKER_REGISTRY = <span class="string">&quot;registry.yourcompany.com/game-backend&quot;</span></span><br><span class="line">        K8S_NAMESPACE = <span class="string">&quot;game-prod&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        <span class="comment">// 阶段 1：拉取代码</span></span><br><span class="line">        stage(<span class="string">&#x27;Checkout&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                git <span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span>, <span class="attr">url:</span> <span class="string">&#x27;git@github.com:your-game-backend.git&#x27;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 2：代码检查和单元测试</span></span><br><span class="line">        stage(<span class="string">&#x27;Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// Java 项目示例：运行 Maven 测试</span></span><br><span class="line">                    sh <span class="string">&quot;mvn clean test&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Go 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;go test ./...&quot;</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment">// Python 项目示例：</span></span><br><span class="line">                    <span class="comment">// sh &quot;pytest tests/&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 3：构建并推送 Docker 镜像</span></span><br><span class="line">        stage(<span class="string">&#x27;Build &amp; Push Docker Image&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 遍历所有微服务模块</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            docker build -t $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -f $&#123;service&#125;/Dockerfile .</span></span><br><span class="line"><span class="string">                            docker push $&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 4：部署到 Kubernetes</span></span><br><span class="line">        stage(<span class="string">&#x27;Deploy to K8s&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                script &#123;</span><br><span class="line">                    <span class="comment">// 使用 kubectl 更新镜像版本</span></span><br><span class="line">                    SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                        sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                            kubectl set image deployment/$&#123;service&#125; \</span></span><br><span class="line"><span class="string">                                $&#123;service&#125;=$&#123;DOCKER_REGISTRY&#125;/$&#123;service&#125;:$&#123;BUILD_NUMBER&#125; \</span></span><br><span class="line"><span class="string">                                -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                        &quot;&quot;&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 阶段 5：集成测试（可选）</span></span><br><span class="line">        stage(<span class="string">&#x27;Integration Test&#x27;</span>) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                <span class="comment">// 运行 Postman/API 测试</span></span><br><span class="line">                sh <span class="string">&quot;newman run tests/api-tests.json&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    post &#123;</span><br><span class="line">        success &#123;</span><br><span class="line">            slackSend <span class="attr">channel:</span> <span class="string">&#x27;#game-dev&#x27;</span>, <span class="attr">message:</span> <span class="string">&quot;后端部署成功: $&#123;BUILD_URL&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        failure &#123;</span><br><span class="line">            emailext <span class="attr">body:</span> <span class="string">&quot;构建失败，请检查日志: $&#123;BUILD_URL&#125;&quot;</span>, <span class="attr">subject:</span> <span class="string">&#x27;Jenkins 构建失败&#x27;</span>, <span class="attr">to:</span> <span class="string">&#x27;devops@yourcompany.com&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="4-关键步骤详解"><a href="#4-关键步骤详解" class="headerlink" title="4. 关键步骤详解"></a><strong>4. 关键步骤详解</strong></h2><h3 id="1-代码构建（不同语言示例）"><a href="#1-代码构建（不同语言示例）" class="headerlink" title="(1) 代码构建（不同语言示例）"></a><strong>(1) 代码构建（不同语言示例）</strong></h3><table>
-<thead>
-<tr>
-<th>语言</th>
-<th>构建命令</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Java (Maven)</strong></td>
-<td><code>mvn clean package -DskipTests</code></td>
-</tr>
-<tr>
-<td><strong>Go</strong></td>
-<td><code>go build -o bin/server ./cmd/server</code></td>
-</tr>
-<tr>
-<td><strong>Python</strong></td>
-<td><code>pip install -r requirements.txt</code></td>
-</tr>
-</tbody></table>
-<h3 id="2-Docker-镜像构建"><a href="#2-Docker-镜像构建" class="headerlink" title="(2) Docker 镜像构建"></a><strong>(2) Docker 镜像构建</strong></h3><p>每个微服务需有自己的 <code>Dockerfile</code>，例如：  </p>
-<figure class="highlight dockerfile"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Java 微服务示例</span></span><br><span class="line"><span class="keyword">FROM</span> openjdk:<span class="number">17</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> target/auth-service.jar /app.jar</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;java&quot;</span>, <span class="string">&quot;-jar&quot;</span>, <span class="string">&quot;/app.jar&quot;</span>]</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="3-部署方式选择"><a href="#3-部署方式选择" class="headerlink" title="(3) 部署方式选择"></a><strong>(3) 部署方式选择</strong></h3><table>
-<thead>
-<tr>
-<th>部署方式</th>
-<th>适用场景</th>
-<th>Jenkins 配置</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>SSH 直接部署</strong></td>
-<td>传统服务器</td>
-<td>使用 <code>Publish Over SSH</code> 插件</td>
-</tr>
-<tr>
-<td><strong>Docker Swarm</strong></td>
-<td>小型集群</td>
-<td><code>docker stack deploy</code></td>
-</tr>
-<tr>
-<td><strong>Kubernetes</strong></td>
-<td>生产级集群</td>
-<td><code>kubectl set image</code> 或 Helm</td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="5-高级优化方案"><a href="#5-高级优化方案" class="headerlink" title="5. 高级优化方案"></a><strong>5. 高级优化方案</strong></h2><h3 id="1-蓝绿部署（Zero-Downtime）"><a href="#1-蓝绿部署（Zero-Downtime）" class="headerlink" title="(1) 蓝绿部署（Zero Downtime）"></a><strong>(1) 蓝绿部署（Zero Downtime）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Blue-Green Deployment&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 1. 部署新版本（Green）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/green-deployment.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 切换流量</span></span><br><span class="line">            sh <span class="string">&quot;kubectl apply -f k8s/switch-traffic.yaml&quot;</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 3. 清理旧版本（Blue）</span></span><br><span class="line">            sh <span class="string">&quot;kubectl delete -f k8s/blue-deployment.yaml&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-动态伸缩"><a href="#2-动态伸缩" class="headerlink" title="(2) 动态伸缩"></a><strong>(2) 动态伸缩</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Auto Scaling&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 根据 CPU 负载自动扩容</span></span><br><span class="line">            sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                kubectl autoscale deployment battle-service \</span></span><br><span class="line"><span class="string">                    --cpu-percent=70 \</span></span><br><span class="line"><span class="string">                    --min=2 \</span></span><br><span class="line"><span class="string">                    --max=5 \</span></span><br><span class="line"><span class="string">                    -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-数据库迁移（Flyway-Liquibase）"><a href="#3-数据库迁移（Flyway-Liquibase）" class="headerlink" title="(3) 数据库迁移（Flyway&#x2F;Liquibase）"></a><strong>(3) 数据库迁移（Flyway&#x2F;Liquibase）</strong></h3><figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;DB Migration&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        sh <span class="string">&quot;mvn flyway:migrate -pl auth-service&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="6-监控与回滚"><a href="#6-监控与回滚" class="headerlink" title="6. 监控与回滚"></a><strong>6. 监控与回滚</strong></h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Prometheus + Grafana</strong></td>
-<td>监控服务性能</td>
-</tr>
-<tr>
-<td><strong>Kibana</strong></td>
-<td>日志分析</td>
-</tr>
-<tr>
-<td><strong>Jenkins 回滚脚本</strong></td>
-<td>快速回退到旧版本</td>
-</tr>
-</tbody></table>
-<p><strong>回滚示例</strong>：  </p>
-<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">stage(<span class="string">&#x27;Rollback&#x27;</span>) &#123;</span><br><span class="line">    steps &#123;</span><br><span class="line">        script &#123;</span><br><span class="line">            <span class="comment">// 回滚到上一个 Docker 镜像版本</span></span><br><span class="line">            SERVICES.split().each &#123; service -&gt;</span><br><span class="line">                sh <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    kubectl rollout undo deployment/$&#123;service&#125; -n $&#123;K8S_NAMESPACE&#125;</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="7-完整流程图示"><a href="#7-完整流程图示" class="headerlink" title="7. 完整流程图示"></a><strong>7. 完整流程图示</strong></h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">代码提交 → Jenkins 触发 → 单元测试 → 构建镜像 → 推送镜像仓库 → 部署到 K8s → 集成测试 → 监控</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="8-常见问题解决"><a href="#8-常见问题解决" class="headerlink" title="8. 常见问题解决"></a><strong>8. 常见问题解决</strong></h2><table>
-<thead>
-<tr>
-<th>问题</th>
-<th>排查方法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Docker 构建失败</strong></td>
-<td>检查 <code>Dockerfile</code> 和构建日志</td>
-</tr>
-<tr>
-<td><strong>K8s 部署超时</strong></td>
-<td><code>kubectl get pods -n game-prod</code> 查看 Pod 状态</td>
-</tr>
-<tr>
-<td><strong>微服务通信异常</strong></td>
-<td>检查服务发现（Consul&#x2F;Nacos）和网络策略</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>适用场景</strong>：MMO 游戏后端、实时对战服务、分布式微服务架构。  </li>
-<li><strong>核心优势</strong>：全自动化构建部署 + 快速回滚 + 弹性伸缩。  </li>
-<li><strong>扩展方向</strong>：结合 <strong>ArgoCD</strong> 实现 GitOps，或使用 <strong>Terraform</strong> 管理云资源。</li>
-</ul>
-<p>如果有具体技术栈（如 Go 微服务、Python 异步框架），可以进一步优化流程！ 🚀</p>
-]]></content>
-      <categories>
-        <category>Jenkins</category>
-      </categories>
-      <tags>
-        <tag>Jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -9475,7 +9475,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#x75;&#x6e;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#x6c;&#108;&#x61;&#98;&#45;&#112;&#114;&#x6f;&#x78;&#x79;&#x40;&#50;&#x2e;&#54;&#46;&#48;">&#x63;&#111;&#x6d;&#46;&#x75;&#x6e;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#x6c;&#108;&#x61;&#98;&#45;&#112;&#114;&#x6f;&#x78;&#x79;&#x40;&#50;&#x2e;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#109;&#46;&#117;&#110;&#x69;&#x74;&#x79;&#46;&#x63;&#x6f;&#x6c;&#x6c;&#x61;&#98;&#x2d;&#112;&#x72;&#x6f;&#120;&#121;&#x40;&#50;&#46;&#x36;&#46;&#48;">&#x63;&#x6f;&#109;&#46;&#117;&#110;&#x69;&#x74;&#x79;&#46;&#x63;&#x6f;&#x6c;&#x6c;&#x61;&#98;&#x2d;&#112;&#x72;&#x6f;&#120;&#121;&#x40;&#50;&#46;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -11012,6 +11012,84 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>医保</title>
+    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
+    <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
+<h2 id="一档医保报销比例"><a href="#一档医保报销比例" class="headerlink" title="一档医保报销比例"></a>一档医保报销比例</h2><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
+<h3 id="一、门诊报销比例"><a href="#一、门诊报销比例" class="headerlink" title="一、门诊报销比例"></a>一、门诊报销比例</h3><p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
+<ul>
+<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
+<li>二级医院报销比例：65%;</li>
+<li>三级医院报销比例：55%;</li>
+</ul>
+<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
+<h3 id="二、一档医保市内住院报销比例"><a href="#二、一档医保市内住院报销比例" class="headerlink" title="二、一档医保市内住院报销比例"></a>二、一档医保市内住院报销比例</h3><p>在一级以下医院支付比例为94%;</p>
+<p>二级医院支付比例为92%;</p>
+<p>三级医院支付比例为90%;</p>
+<p>退休人员支付比例为95%。</p>
+<p>住院起付线</p>
+<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
+<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
+<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
+<h2 id="灵活就业医保缴费标准"><a href="#灵活就业医保缴费标准" class="headerlink" title="灵活就业医保缴费标准"></a>灵活就业医保缴费标准</h2><p><img src="/.io//image.png"></p>
+<blockquote>
+<p>缴费金额：</p>
+</blockquote>
+<p>6733x0.02 个人余额134</p>
+<p>6733x0.07 个人缴纳医保费用471</p>
+<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
+<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
+<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
+<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
+<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
+</ul>
+<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
+<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
+<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
+</ul>
+<h2 id="门诊和住院医保报销的区别"><a href="#门诊和住院医保报销的区别" class="headerlink" title="门诊和住院医保报销的区别"></a>门诊和住院医保报销的区别</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>门诊</th>
+<th>住院</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>报销比例</td>
+<td>一般较低</td>
+<td>一般较高</td>
+</tr>
+<tr>
+<td>起付线</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>年度限额</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>报销范围</td>
+<td>诊疗费、药费、检查费等</td>
+<td>所有医疗费用</td>
+</tr>
+</tbody></table>
+]]></content>
+      <categories>
+        <category>社保</category>
+        <category>医保</category>
+      </categories>
+      <tags>
+        <tag>医保</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>分布式游戏服务器架构开发准备</title>
     <url>/2026/01/30/%E5%88%86%E5%B8%83%E5%BC%8F%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%9E%B6%E6%9E%84%E5%BC%80%E5%8F%91%E5%87%86%E5%A4%87/</url>
     <content><![CDATA[<h1 id="完整分布式游戏服务器架构开发清单"><a href="#完整分布式游戏服务器架构开发清单" class="headerlink" title="完整分布式游戏服务器架构开发清单"></a>完整分布式游戏服务器架构开发清单</h1><p>基于我们讨论的所有内容，要开发一套完整的分布式游戏服务器架构，你需要准备以下所有组件：</p>
@@ -11131,84 +11209,6 @@ graph TD
       </categories>
       <tags>
         <tag>分布式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>医保</title>
-    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
-    <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
-<h2 id="一档医保报销比例"><a href="#一档医保报销比例" class="headerlink" title="一档医保报销比例"></a>一档医保报销比例</h2><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
-<h3 id="一、门诊报销比例"><a href="#一、门诊报销比例" class="headerlink" title="一、门诊报销比例"></a>一、门诊报销比例</h3><p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
-<ul>
-<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
-<li>二级医院报销比例：65%;</li>
-<li>三级医院报销比例：55%;</li>
-</ul>
-<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
-<h3 id="二、一档医保市内住院报销比例"><a href="#二、一档医保市内住院报销比例" class="headerlink" title="二、一档医保市内住院报销比例"></a>二、一档医保市内住院报销比例</h3><p>在一级以下医院支付比例为94%;</p>
-<p>二级医院支付比例为92%;</p>
-<p>三级医院支付比例为90%;</p>
-<p>退休人员支付比例为95%。</p>
-<p>住院起付线</p>
-<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
-<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
-<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
-<h2 id="灵活就业医保缴费标准"><a href="#灵活就业医保缴费标准" class="headerlink" title="灵活就业医保缴费标准"></a>灵活就业医保缴费标准</h2><p><img src="/.io//image.png"></p>
-<blockquote>
-<p>缴费金额：</p>
-</blockquote>
-<p>6733x0.02 个人余额134</p>
-<p>6733x0.07 个人缴纳医保费用471</p>
-<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
-<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
-<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
-<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
-<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
-</ul>
-<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
-<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
-<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
-</ul>
-<h2 id="门诊和住院医保报销的区别"><a href="#门诊和住院医保报销的区别" class="headerlink" title="门诊和住院医保报销的区别"></a>门诊和住院医保报销的区别</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>门诊</th>
-<th>住院</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>报销比例</td>
-<td>一般较低</td>
-<td>一般较高</td>
-</tr>
-<tr>
-<td>起付线</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>年度限额</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>报销范围</td>
-<td>诊疗费、药费、检查费等</td>
-<td>所有医疗费用</td>
-</tr>
-</tbody></table>
-]]></content>
-      <categories>
-        <category>社保</category>
-        <category>医保</category>
-      </categories>
-      <tags>
-        <tag>医保</tag>
       </tags>
   </entry>
   <entry>
@@ -11360,6 +11360,54 @@ graph TD
       </categories>
       <tags>
         <tag>文件管理</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
+    <url>/2025/01/02/%E6%97%A5%E5%8E%86%E3%80%90FullCalendar-Lunar-RRule-Popper%E3%80%91/</url>
+    <content><![CDATA[<p><strong>先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题</strong></p>
+<h1 id="FullCalendar"><a href="#FullCalendar" class="headerlink" title="FullCalendar"></a>FullCalendar</h1><ul>
+<li>视图</li>
+<li>单元格渲染</li>
+<li>单元格大小适配</li>
+</ul>
+<p>确保计算和数据加载完毕，延迟100ms渲染。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">datesSet</span>:</span><br><span class="line">    <span class="keyword">function</span> (<span class="params">dateInfo</span>) &#123;<span class="comment">//处理默认空事件留白</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Dates set:&#x27;</span>, dateInfo);  <span class="comment">// 打印日期范围</span></span><br><span class="line">        <span class="comment">// 延迟执行，以确保日历完全渲染</span></span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> dayCells = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-daygrid-day&#x27;</span>);  <span class="comment">// 获取所有日期格子</span></span><br><span class="line">            dayCells.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">dayCell</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> eventsContainer = dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-daygrid-day-events&#x27;</span>);</span><br><span class="line">                <span class="keyword">if</span> (eventsContainer) &#123;</span><br><span class="line">                    eventsContainer.<span class="property">style</span>.<span class="property">margin</span> = <span class="number">0</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    <span class="comment">// 如果该日期格子没有事件，隐藏事件容器</span></span><br><span class="line">                    <span class="keyword">if</span> (!dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-event&#x27;</span>)) &#123;</span><br><span class="line">                        eventsContainer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;, <span class="number">100</span>);  <span class="comment">// 延迟100ms执行</span></span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
+
+<h1 id="Lunar"><a href="#Lunar" class="headerlink" title="Lunar"></a>Lunar</h1><ul>
+<li>法定节假日</li>
+<li>节气</li>
+<li>农历日期</li>
+<li>宜忌</li>
+<li>生日</li>
+</ul>
+<h1 id="RRule"><a href="#RRule" class="headerlink" title="RRule"></a>RRule</h1><ul>
+<li><p>命名空间</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); </span><br><span class="line"><span class="comment">//无法识别 RRule，提示未定义，我们引入了rrule库就要引入命名空间 rrule</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>格式与FullCalendar插件语法不同：</p>
+<ul>
+<li><strong>FullCalendar语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> calendar2 = <span class="keyword">new</span> <span class="title class_">FullCalendar</span>.<span class="title class_">Calendar</span>(calendarEl, &#123;</span><br><span class="line">      <span class="attr">events</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">              <span class="attr">title</span>: <span class="string">&#x27;my recurring event&#x27;</span>,</span><br><span class="line">              <span class="attr">rrule</span>: &#123;</span><br><span class="line">                  <span class="attr">freq</span>: <span class="string">&#x27;weekly&#x27;</span>,</span><br><span class="line">                  <span class="attr">interval</span>: <span class="number">1</span>,</span><br><span class="line">                  <span class="attr">byweekday</span>: [<span class="string">&#x27;mo&#x27;</span>, <span class="string">&#x27;fr&#x27;</span>],</span><br><span class="line">                  <span class="attr">dtstart</span>: <span class="string">&#x27;2024-02-01T10:30:00&#x27;</span>, <span class="comment">// will also accept &#x27;20120201T103000&#x27;</span></span><br><span class="line">                  <span class="attr">until</span>: <span class="string">&#x27;2025-06-01&#x27;</span> <span class="comment">// will also accept &#x27;20120201&#x27;</span></span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      ]</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></li>
+<li><strong>RRule 语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br><span class="line"><span class="keyword">var</span> rruleEvent =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">title</span>: <span class="string">&#x27;rrule event&#x27;</span>,</span><br><span class="line">    <span class="attr">rrule</span>: &#123;</span><br><span class="line">        <span class="attr">freq</span>: <span class="title class_">RRule</span>.<span class="property">WEEKLY</span>,</span><br><span class="line">        <span class="attr">interval</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="attr">byweekday</span>: [<span class="title class_">RRule</span>.<span class="property">MO</span>, <span class="title class_">RRule</span>.<span class="property">FR</span>],</span><br><span class="line">        <span class="attr">dtstart</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2024</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">10</span>, <span class="number">30</span>),</span><br><span class="line">        <span class="attr">until</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2025</span>, <span class="number">12</span>, <span class="number">31</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">duration</span>: <span class="string">&#x27;02:00&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 rrule.js 解析 RRule</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">typeof</span> <span class="title class_">RRule</span>); <span class="comment">// 应该输出 &quot;function&quot;</span></span><br><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); <span class="comment">// 获取所有日期实例</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转换为 FullCalendar 可用事件格式</span></span><br><span class="line"><span class="keyword">const</span> rruleEvents = rruleOccurrences.<span class="title function_">map</span>(<span class="function"><span class="params">date</span> =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">title</span>: rruleEvent.<span class="property">title</span>,</span><br><span class="line">    <span class="attr">start</span>: date,</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>单个对象声明<br>在还没有做好重复事件配置处理时，保持按照单个声明，这个和其他event配置不同。因为一个重复事件肯能涉及好多时间段，相当于多个事件的集合。</p>
+</li>
+<li><p>events 属性和 evens 函数不可兼得<br>evens 函数:更灵活，配置变量,但是重复事件要自己转换<br>events 属性:死板，但是支持重复事件，根据FullCalendar语法来</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">events</span>:  [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents],</span><br><span class="line">or</span><br><span class="line"><span class="attr">events</span>: <span class="keyword">function</span> (<span class="params">info, successCallback, failureCallback</span>) &#123;</span><br><span class="line">            <span class="comment">// 获取当前视图的起始日期</span></span><br><span class="line">            <span class="keyword">const</span> viewStart = <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>);</span><br><span class="line">            <span class="keyword">const</span> curMonthIndex = (viewStart.<span class="title function_">getDate</span>() !== <span class="number">1</span>) ? viewStart.<span class="title function_">getMonth</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getMonth</span>();<span class="comment">//月份下标  0-11  12是下一年1月</span></span><br><span class="line">            currentYear = (viewStart.<span class="title function_">getMonth</span>() === <span class="number">11</span> &amp;&amp; curMonthIndex === <span class="number">12</span>) ? viewStart.<span class="title function_">getFullYear</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getFullYear</span>();</span><br><span class="line">            <span class="keyword">var</span> curMonth = curMonthIndex == <span class="number">12</span> ? <span class="number">1</span> : curMonthIndex + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">const</span> solar = <span class="title class_">Solar</span>.<span class="title function_">fromYmd</span>(currentYear, curMonth, <span class="number">1</span>); <span class="comment">// 构造阳历日期</span></span><br><span class="line">            <span class="keyword">const</span> lunar = solar.<span class="title function_">getLunar</span>(); <span class="comment">// 转为农历日期</span></span><br><span class="line">            <span class="keyword">var</span> curYearLunar = lunar.<span class="title function_">getYear</span>();</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;当前显示的主月份年份是:&#x27;</span>, currentYear, <span class="string">&#x27; &#x27;</span>, curMonth, <span class="string">&#x27; &#x27;</span>, lunar.<span class="title function_">toString</span>(), <span class="string">&#x27; &#x27;</span>, solar.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">            <span class="title function_">defineBirthday</span>(curYearLunar);</span><br><span class="line">            <span class="title class_">AddAnniversaryDate</span>();</span><br><span class="line">            <span class="title function_">defineMyEvent</span>();</span><br><span class="line">            <span class="title function_">defineInternationalFestivals</span>();</span><br><span class="line">            <span class="comment">// 合并所有事件数组</span></span><br><span class="line">            <span class="keyword">const</span> allEvents = [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 过滤出在当前视图范围内的事件</span></span><br><span class="line">            <span class="keyword">const</span> filteredEvents = allEvents.<span class="title function_">filter</span>(<span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> eventStart = <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">start</span>).<span class="title function_">getTime</span>();</span><br><span class="line">                <span class="keyword">const</span> eventEnd = event.<span class="property">end</span> ? <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">end</span>).<span class="title function_">getTime</span>() : eventStart;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 判断事件是否与视图范围有重叠</span></span><br><span class="line">                <span class="keyword">return</span> eventEnd &gt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>).<span class="title function_">getTime</span>() &amp;&amp; eventStart &lt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">end</span>).<span class="title function_">getTime</span>();</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 返回过滤后的事件</span></span><br><span class="line">            <span class="title function_">successCallback</span>(filteredEvents);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="Popper"><a href="#Popper" class="headerlink" title="Popper"></a>Popper</h1><p>鼠标进入时事件详情弹窗</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Beautify</category>
+        <category>FullCalendar</category>
+      </categories>
+      <tags>
+        <tag>FullCalendar</tag>
+        <tag>Lunar</tag>
+        <tag>RRule</tag>
+        <tag>Popper</tag>
       </tags>
   </entry>
   <entry>
@@ -11669,54 +11717,6 @@ graph TD
       </categories>
       <tags>
         <tag>Docker镜像</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>日历【FullCalendar+Lunar+RRule+Popper】</title>
-    <url>/2025/01/02/%E6%97%A5%E5%8E%86%E3%80%90FullCalendar-Lunar-RRule-Popper%E3%80%91/</url>
-    <content><![CDATA[<p><strong>先看官方文档，不懂的再chatgpt，最后谷歌百度搜问题</strong></p>
-<h1 id="FullCalendar"><a href="#FullCalendar" class="headerlink" title="FullCalendar"></a>FullCalendar</h1><ul>
-<li>视图</li>
-<li>单元格渲染</li>
-<li>单元格大小适配</li>
-</ul>
-<p>确保计算和数据加载完毕，延迟100ms渲染。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">datesSet</span>:</span><br><span class="line">    <span class="keyword">function</span> (<span class="params">dateInfo</span>) &#123;<span class="comment">//处理默认空事件留白</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Dates set:&#x27;</span>, dateInfo);  <span class="comment">// 打印日期范围</span></span><br><span class="line">        <span class="comment">// 延迟执行，以确保日历完全渲染</span></span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">var</span> dayCells = <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-daygrid-day&#x27;</span>);  <span class="comment">// 获取所有日期格子</span></span><br><span class="line">            dayCells.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">dayCell</span>) &#123;</span><br><span class="line">                <span class="keyword">var</span> eventsContainer = dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-daygrid-day-events&#x27;</span>);</span><br><span class="line">                <span class="keyword">if</span> (eventsContainer) &#123;</span><br><span class="line">                    eventsContainer.<span class="property">style</span>.<span class="property">margin</span> = <span class="number">0</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    <span class="comment">// 如果该日期格子没有事件，隐藏事件容器</span></span><br><span class="line">                    <span class="keyword">if</span> (!dayCell.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-event&#x27;</span>)) &#123;</span><br><span class="line">                        eventsContainer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&#x27;none&#x27;</span>;  <span class="comment">// 隐藏没有事件的容器</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;, <span class="number">100</span>);  <span class="comment">// 延迟100ms执行</span></span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
-
-<h1 id="Lunar"><a href="#Lunar" class="headerlink" title="Lunar"></a>Lunar</h1><ul>
-<li>法定节假日</li>
-<li>节气</li>
-<li>农历日期</li>
-<li>宜忌</li>
-<li>生日</li>
-</ul>
-<h1 id="RRule"><a href="#RRule" class="headerlink" title="RRule"></a>RRule</h1><ul>
-<li><p>命名空间</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); </span><br><span class="line"><span class="comment">//无法识别 RRule，提示未定义，我们引入了rrule库就要引入命名空间 rrule</span></span><br><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br></pre></td></tr></table></figure></li>
-<li><p>格式与FullCalendar插件语法不同：</p>
-<ul>
-<li><strong>FullCalendar语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> calendar2 = <span class="keyword">new</span> <span class="title class_">FullCalendar</span>.<span class="title class_">Calendar</span>(calendarEl, &#123;</span><br><span class="line">      <span class="attr">events</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">              <span class="attr">title</span>: <span class="string">&#x27;my recurring event&#x27;</span>,</span><br><span class="line">              <span class="attr">rrule</span>: &#123;</span><br><span class="line">                  <span class="attr">freq</span>: <span class="string">&#x27;weekly&#x27;</span>,</span><br><span class="line">                  <span class="attr">interval</span>: <span class="number">1</span>,</span><br><span class="line">                  <span class="attr">byweekday</span>: [<span class="string">&#x27;mo&#x27;</span>, <span class="string">&#x27;fr&#x27;</span>],</span><br><span class="line">                  <span class="attr">dtstart</span>: <span class="string">&#x27;2024-02-01T10:30:00&#x27;</span>, <span class="comment">// will also accept &#x27;20120201T103000&#x27;</span></span><br><span class="line">                  <span class="attr">until</span>: <span class="string">&#x27;2025-06-01&#x27;</span> <span class="comment">// will also accept &#x27;20120201&#x27;</span></span><br><span class="line">              &#125;</span><br><span class="line">          &#125;</span><br><span class="line">      ]</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></li>
-<li><strong>RRule 语法</strong><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">RRule</span> = rrule.<span class="property">RRule</span>;</span><br><span class="line"><span class="keyword">var</span> rruleEvent =</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">title</span>: <span class="string">&#x27;rrule event&#x27;</span>,</span><br><span class="line">    <span class="attr">rrule</span>: &#123;</span><br><span class="line">        <span class="attr">freq</span>: <span class="title class_">RRule</span>.<span class="property">WEEKLY</span>,</span><br><span class="line">        <span class="attr">interval</span>: <span class="number">5</span>,</span><br><span class="line">        <span class="attr">byweekday</span>: [<span class="title class_">RRule</span>.<span class="property">MO</span>, <span class="title class_">RRule</span>.<span class="property">FR</span>],</span><br><span class="line">        <span class="attr">dtstart</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2024</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">10</span>, <span class="number">30</span>),</span><br><span class="line">        <span class="attr">until</span>: <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="number">2025</span>, <span class="number">12</span>, <span class="number">31</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">duration</span>: <span class="string">&#x27;02:00&#x27;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 rrule.js 解析 RRule</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="keyword">typeof</span> <span class="title class_">RRule</span>); <span class="comment">// 应该输出 &quot;function&quot;</span></span><br><span class="line"><span class="keyword">const</span> rruleOccurrences = <span class="keyword">new</span> <span class="title class_">RRule</span>(rruleEvent.<span class="property">rrule</span>).<span class="title function_">all</span>(); <span class="comment">// 获取所有日期实例</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 转换为 FullCalendar 可用事件格式</span></span><br><span class="line"><span class="keyword">const</span> rruleEvents = rruleOccurrences.<span class="title function_">map</span>(<span class="function"><span class="params">date</span> =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">title</span>: rruleEvent.<span class="property">title</span>,</span><br><span class="line">    <span class="attr">start</span>: date,</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p>单个对象声明<br>在还没有做好重复事件配置处理时，保持按照单个声明，这个和其他event配置不同。因为一个重复事件肯能涉及好多时间段，相当于多个事件的集合。</p>
-</li>
-<li><p>events 属性和 evens 函数不可兼得<br>evens 函数:更灵活，配置变量,但是重复事件要自己转换<br>events 属性:死板，但是支持重复事件，根据FullCalendar语法来</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">events</span>:  [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents],</span><br><span class="line">or</span><br><span class="line"><span class="attr">events</span>: <span class="keyword">function</span> (<span class="params">info, successCallback, failureCallback</span>) &#123;</span><br><span class="line">            <span class="comment">// 获取当前视图的起始日期</span></span><br><span class="line">            <span class="keyword">const</span> viewStart = <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>);</span><br><span class="line">            <span class="keyword">const</span> curMonthIndex = (viewStart.<span class="title function_">getDate</span>() !== <span class="number">1</span>) ? viewStart.<span class="title function_">getMonth</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getMonth</span>();<span class="comment">//月份下标  0-11  12是下一年1月</span></span><br><span class="line">            currentYear = (viewStart.<span class="title function_">getMonth</span>() === <span class="number">11</span> &amp;&amp; curMonthIndex === <span class="number">12</span>) ? viewStart.<span class="title function_">getFullYear</span>() + <span class="number">1</span> : viewStart.<span class="title function_">getFullYear</span>();</span><br><span class="line">            <span class="keyword">var</span> curMonth = curMonthIndex == <span class="number">12</span> ? <span class="number">1</span> : curMonthIndex + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">const</span> solar = <span class="title class_">Solar</span>.<span class="title function_">fromYmd</span>(currentYear, curMonth, <span class="number">1</span>); <span class="comment">// 构造阳历日期</span></span><br><span class="line">            <span class="keyword">const</span> lunar = solar.<span class="title function_">getLunar</span>(); <span class="comment">// 转为农历日期</span></span><br><span class="line">            <span class="keyword">var</span> curYearLunar = lunar.<span class="title function_">getYear</span>();</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;当前显示的主月份年份是:&#x27;</span>, currentYear, <span class="string">&#x27; &#x27;</span>, curMonth, <span class="string">&#x27; &#x27;</span>, lunar.<span class="title function_">toString</span>(), <span class="string">&#x27; &#x27;</span>, solar.<span class="title function_">toString</span>());</span><br><span class="line"></span><br><span class="line">            <span class="title function_">defineBirthday</span>(curYearLunar);</span><br><span class="line">            <span class="title class_">AddAnniversaryDate</span>();</span><br><span class="line">            <span class="title function_">defineMyEvent</span>();</span><br><span class="line">            <span class="title function_">defineInternationalFestivals</span>();</span><br><span class="line">            <span class="comment">// 合并所有事件数组</span></span><br><span class="line">            <span class="keyword">const</span> allEvents = [...birthdayEvents, ...myEvents, ...<span class="title class_">InternationalFestivals</span>, ...rruleEvents];</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 过滤出在当前视图范围内的事件</span></span><br><span class="line">            <span class="keyword">const</span> filteredEvents = allEvents.<span class="title function_">filter</span>(<span class="function"><span class="params">event</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> eventStart = <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">start</span>).<span class="title function_">getTime</span>();</span><br><span class="line">                <span class="keyword">const</span> eventEnd = event.<span class="property">end</span> ? <span class="keyword">new</span> <span class="title class_">Date</span>(event.<span class="property">end</span>).<span class="title function_">getTime</span>() : eventStart;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 判断事件是否与视图范围有重叠</span></span><br><span class="line">                <span class="keyword">return</span> eventEnd &gt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">start</span>).<span class="title function_">getTime</span>() &amp;&amp; eventStart &lt;= <span class="keyword">new</span> <span class="title class_">Date</span>(info.<span class="property">end</span>).<span class="title function_">getTime</span>();</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 返回过滤后的事件</span></span><br><span class="line">            <span class="title function_">successCallback</span>(filteredEvents);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="Popper"><a href="#Popper" class="headerlink" title="Popper"></a>Popper</h1><p>鼠标进入时事件详情弹窗</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">eventDidMount</span>: <span class="keyword">function</span> (<span class="params">info</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> eventElement = info.<span class="property">el</span>;</span><br><span class="line">            <span class="keyword">const</span> title = info.<span class="property">event</span>.<span class="property">title</span>;  <span class="comment">// 获取事件标题</span></span><br><span class="line">            <span class="keyword">const</span> description = info.<span class="property">event</span>.<span class="property">extendedProps</span>.<span class="property">description</span> || <span class="string">&#x27;&#x27;</span>;  <span class="comment">// 获取事件描述，如果没有描述则为空字符串  自定义属性</span></span><br><span class="line">            <span class="comment">// 创建 Tooltip 元素</span></span><br><span class="line">            <span class="keyword">const</span> tooltip = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">            tooltip.<span class="property">classList</span>.<span class="title function_">add</span>(<span class="string">&#x27;tooltip&#x27;</span>);</span><br><span class="line">            <span class="comment">// 设置 Tooltip 内容：标题在第一行，描述在第二行（如果有描述）</span></span><br><span class="line">            tooltip.<span class="property">innerHTML</span> = <span class="string">`&lt;strong&gt;标题:<span class="subst">$&#123;title&#125;</span>&lt;/strong&gt;&lt;br&gt;描述：<span class="subst">$&#123;description ? description : <span class="string">&#x27;null&#x27;</span>&#125;</span>`</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 设置 Tooltip 样式</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">position</span> = <span class="string">&#x27;absolute&#x27;</span>;</span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;black&#x27;</span>;  <span class="comment">// 黑色背景</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;white&#x27;</span>;  <span class="comment">// 白色字体</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">border</span> = <span class="string">&#x27;1px solid white&#x27;</span>;  <span class="comment">// 白色边框</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;5px 10px&#x27;</span>;  <span class="comment">// 内边距</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;4px&#x27;</span>;  <span class="comment">// 边角圆润</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">fontSize</span> = <span class="string">&#x27;12px&#x27;</span>;  <span class="comment">// 字体大小</span></span><br><span class="line"></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;  <span class="comment">// 设置最大宽度</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&#x27;auto&#x27;</span>;      <span class="comment">// 宽度自适应内容</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">whiteSpace</span> = <span class="string">&#x27;normal&#x27;</span>;  <span class="comment">// 允许文本换行</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">wordBreak</span> = <span class="string">&#x27;break-word&#x27;</span>; <span class="comment">// 防止文本溢出</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 确保 Tooltip 在内容过长时能够滚动显示</span></span><br><span class="line">            <span class="comment">//  tooltip.style.maxWidth = &#x27;1000px&#x27;;</span></span><br><span class="line">            <span class="comment">// tooltip.style.overflow = &#x27;auto&#x27;; </span></span><br><span class="line"></span><br><span class="line">            <span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(tooltip);  <span class="comment">// 将 tooltip 移动到 body 里 calendarEl</span></span><br><span class="line">            <span class="comment">// 使用 Popper.js 来定位 Tooltip</span></span><br><span class="line">            <span class="keyword">const</span> popperInstance = <span class="title class_">Popper</span>.<span class="title function_">createPopper</span>(eventElement, tooltip, &#123;</span><br><span class="line">                <span class="attr">placement</span>: <span class="string">&#x27;top&#x27;</span>,  <span class="comment">// Tooltip 显示在事件上方</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Tooltip 初始为不可见，鼠标悬停时显示</span></span><br><span class="line">            tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseenter&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;visible&#x27;</span>;  <span class="comment">// 鼠标悬停时显示</span></span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">zIndex</span> = <span class="number">9999</span>;  <span class="comment">// 显示时将 z-index 提升 ,至于最顶层，防止被遮挡</span></span><br><span class="line">                popperInstance.<span class="title function_">update</span>();  <span class="comment">// 强制更新位置</span></span><br><span class="line">            &#125;);</span><br><span class="line">            eventElement.<span class="title function_">addEventListener</span>(<span class="string">&#x27;mouseleave&#x27;</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">                tooltip.<span class="property">style</span>.<span class="property">visibility</span> = <span class="string">&#x27;hidden&#x27;</span>;  <span class="comment">// 鼠标离开时隐藏</span></span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 使用 MutationObserver 监听弹窗的显示</span></span><br><span class="line">            <span class="comment">//由于 FullCalendar 的弹窗是通过动态加载的，你可能需要监听弹窗的显示事件，然后再修改其样式。你可以使用 MutationObserver 来监听 DOM 变动，确保弹窗被渲染出来后再进行修改。</span></span><br><span class="line">            <span class="keyword">const</span> observer = <span class="keyword">new</span> <span class="title class_">MutationObserver</span>(<span class="keyword">function</span> (<span class="params">mutationsList, observer</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">const</span> mutation <span class="keyword">of</span> mutationsList) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (mutation.<span class="property">type</span> === <span class="string">&#x27;childList&#x27;</span> &amp;&amp; mutation.<span class="property">addedNodes</span>.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">const</span> popover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popover) &#123;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">backgroundColor</span> = <span class="string">&#x27;#d3d3d3&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">color</span> = <span class="string">&#x27;#333&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">borderRadius</span> = <span class="string">&#x27;8px&#x27;</span>;</span><br><span class="line">                            popover.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&#x27;500px&#x27;</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">const</span> popoverBody = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-body&#x27;</span>);</span><br><span class="line">                        <span class="keyword">if</span> (popoverBody) &#123;</span><br><span class="line">                            popoverBody.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&#x27;0px 10px 10px 10px&#x27;</span>; <span class="comment">// 设置新的 padding 值</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="variable language_">document</span>.<span class="title function_">querySelectorAll</span>(<span class="string">&#x27;.fc-more-popover-misc br&#x27;</span>).<span class="title function_">forEach</span>(<span class="function">(<span class="params">br</span>) =&gt;</span> &#123;</span><br><span class="line">                            br.<span class="title function_">remove</span>(); <span class="comment">// 移除多余的换行符</span></span><br><span class="line">                        &#125;);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 获取 fc-popover-header  元素</span></span><br><span class="line">                        <span class="keyword">var</span> morePopover = <span class="variable language_">document</span>.<span class="title function_">querySelector</span>(<span class="string">&#x27;.fc-popover-header&#x27;</span>);</span><br><span class="line">                        <span class="comment">// 检查元素是否存在</span></span><br><span class="line">                        <span class="keyword">if</span> (morePopover) &#123;</span><br><span class="line">                            <span class="comment">// 设置高度和溢出属性</span></span><br><span class="line">                            morePopover.<span class="property">style</span>.<span class="property">height</span> = <span class="string">&#x27;28px&#x27;</span>; <span class="comment">// 你可以根据需要调整高度</span></span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        observer.<span class="title function_">disconnect</span>();  <span class="comment">// 一旦修改了样式，停止监听</span></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="comment">// 配置观察选项</span></span><br><span class="line">            observer.<span class="title function_">observe</span>(<span class="variable language_">document</span>.<span class="property">body</span>, &#123; <span class="attr">childList</span>: <span class="literal">true</span>, <span class="attr">subtree</span>: <span class="literal">true</span> &#125;);</span><br><span class="line">        &#125;,</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Beautify</category>
-        <category>FullCalendar</category>
-      </categories>
-      <tags>
-        <tag>FullCalendar</tag>
-        <tag>Lunar</tag>
-        <tag>RRule</tag>
-        <tag>Popper</tag>
       </tags>
   </entry>
   <entry>
