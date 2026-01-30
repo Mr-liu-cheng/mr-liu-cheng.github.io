@@ -2,9 +2,9 @@
 title: Unity 开发非游戏应用
 date: 2025-01-15 10:14:42
 updated: 2025-01-15 10:14:42
-tags:
-categories:
-keywords:
+tags: Unity
+categories: Unity
+keywords: Unity
 description:
 ---
 Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。
