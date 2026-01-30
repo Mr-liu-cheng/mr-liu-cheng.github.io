@@ -2,9 +2,9 @@
 title: GitHub Actions 没有触发的核心原因
 date: 2025-05-08 14:16:02
 updated: 2025-01-08 14:16:02
-tags: GitHub Actions
-categories: GitHub Actions
-keywords: GitHub Actions
+tags: [GitHub,Actions]
+categories: [GitHub,Actions]
+keywords: [GitHub,Actions]
 description:
 ---
 谢谢提供路径信息。
