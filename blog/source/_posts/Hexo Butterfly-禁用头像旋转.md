@@ -1,5 +1,5 @@
 ---
-title: Butterfly 禁用头像旋转
+title: Hexo Butterfly 禁用头像旋转
 date: 2024-12-16 21:20:06
 updated: 2024-12-25 14:28:12
 tags: [Hexo,Butterfly]
