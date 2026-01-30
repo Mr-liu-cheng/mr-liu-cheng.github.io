@@ -563,154 +563,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>Git Submodule</title>
-    <url>/2025/02/06/Git%20Submodule/</url>
-    <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
-<h3 id="Git-Submodule-的版本管理和开发分支"><a href="#Git-Submodule-的版本管理和开发分支" class="headerlink" title="Git Submodule 的版本管理和开发分支"></a><strong>Git Submodule 的版本管理和开发分支</strong></h3><ol>
-<li><p><strong>独立版本管理：</strong></p>
-<ul>
-<li>每个子模块（例如 Game Framework 插件）有自己的 Git 仓库，使用自己独立的版本号和提交记录。</li>
-<li>当你将子模块添加到主项目时，Git 会记录子模块的<strong>当前提交版本</strong>，并将该信息存储在主项目的 <code>.gitmodules</code> 文件和 <code>.git/config</code> 配置文件中。</li>
-<li>例如，当你添加一个子模块时，Git 会记录子模块在主项目中的具体版本（即该子模块的某个提交ID）。</li>
-</ul>
-</li>
-<li><p><strong>子模块的分支管理：</strong></p>
-<ul>
-<li>每个子模块都有自己的分支管理方式，你可以在子模块内创建、切换和管理分支，就像处理主项目中的分支一样。</li>
-<li>当你执行 <code>git submodule update --remote</code> 命令时，Git 会将子模块的代码更新为子模块远程仓库的默认分支（通常是 <code>master</code> 或 <code>main</code>，但你也可以设置其他分支）。</li>
-</ul>
-</li>
-<li><p><strong>管理子模块的版本：</strong></p>
-<ul>
-<li>子模块的版本控制非常灵活，可以选择将子模块固定在某个版本（提交哈希）或某个分支的最新提交。</li>
-<li>在主项目中，如果你想更新子模块到最新版本，只需进入子模块目录并执行：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch-name&gt;  <span class="comment"># 切换到需要的分支</span></span><br><span class="line">git pull origin &lt;branch-name&gt;  <span class="comment"># 拉取最新代码</span></span><br></pre></td></tr></table></figure></li>
-<li>然后在主项目目录中，使用以下命令提交子模块的新版本：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;submodule-directory&gt;</span><br><span class="line">git commit -m <span class="string">&quot;Update submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p><strong>子模块的分支切换：</strong></p>
-<ul>
-<li>如果你想切换子模块的分支，可以进入子模块目录，使用 <code>git checkout &lt;branch&gt;</code> 来切换分支：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> Packages/GameFramework  <span class="comment"># 进入子模块目录</span></span><br><span class="line">git checkout develop  <span class="comment"># 切换到开发分支</span></span><br><span class="line">git pull origin develop  <span class="comment"># 更新子模块到开发分支的最新代码</span></span><br></pre></td></tr></table></figure></li>
-<li>切换完成后，记得回到主项目目录并提交子模块的更新：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Switch submodule to develop branch&quot;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ol>
-<h3 id="如何管理子模块的版本"><a href="#如何管理子模块的版本" class="headerlink" title="如何管理子模块的版本"></a><strong>如何管理子模块的版本</strong></h3><ul>
-<li><p><strong>固定子模块版本：</strong><br>如果你希望将子模块固定在特定版本（例如某个提交哈希），可以通过以下命令将子模块指向特定的提交：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-<p>这将确保子模块锁定在特定的提交哈希，而不是拉取该分支的最新版本。</p>
-</li>
-<li><p><strong>更新子模块到最新提交：</strong><br>如果你想将子模块更新为其远程仓库的最新提交（通常是远程 <code>master</code> 或 <code>main</code> 分支），可以使用以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>子模块版本管理文件：</strong><br>子模块的提交信息被保存在主项目的 <code>.gitmodules</code> 和 <code>.git/config</code> 文件中。你可以手动编辑这些文件来指定子模块的 URL 和分支信息，也可以使用 Git 命令行工具来管理。</p>
-</li>
-</ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>独立版本和分支管理</strong>：每个子模块有自己的版本历史和分支，你可以独立管理子模块的版本和分支，不会影响主项目。</li>
-<li><strong>灵活的更新和切换</strong>：你可以选择将子模块固定在某个版本，或者随时更新到远程仓库的最新提交。</li>
-<li><strong>主项目和子模块的分离</strong>：主项目和子模块是相互独立的 Git 仓库，便于独立管理和协作开发。</li>
-</ul>
-<p>如果你需要更具体的操作示例或遇到任何问题，随时告诉我！我会帮助你更好地管理子模块。</p>
-<h2 id="🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 为什么使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 为什么使用 Git Submodule 导入 Game Framework 插件？</strong></h2><p>使用 <strong>Git Submodule</strong> 方式导入 <strong>Game Framework 插件</strong> 也是一个非常不错的选择，尤其是在团队协作或者需要频繁更新插件代码的情况下。它的优势和适用场景如下：</p>
-<h3 id="✅-优势："><a href="#✅-优势：" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ol>
-<li><p><strong>版本控制和更新管理：</strong></p>
-<ul>
-<li>Git Submodule 允许你将 <strong>Game Framework 插件的 Git 仓库</strong> 作为子模块引入主项目，这样你就可以单独管理插件的版本。</li>
-<li>如果插件有更新，只需在主项目中执行 <code>git submodule update --remote</code> 来拉取插件的最新版本。</li>
-</ul>
-</li>
-<li><p><strong>保持项目结构清晰：</strong></p>
-<ul>
-<li>插件代码会作为子模块独立存在于特定文件夹（如 <code>Packages/GameFramework</code>），不会和主项目代码混在一起，保持项目结构的整洁。</li>
-</ul>
-</li>
-<li><p><strong>便于团队协作：</strong></p>
-<ul>
-<li>你可以将子模块添加到 Git 仓库中，团队成员可以同步子模块版本，确保大家使用相同版本的插件。</li>
-<li>团队成员可以通过 <code>git submodule update --init</code> 拉取最新插件，避免了手动导入和更新插件的麻烦。</li>
-</ul>
-</li>
-<li><p><strong>灵活的自定义：</strong></p>
-<ul>
-<li>如果你需要修改框架的代码，直接进入子模块目录，进行修改，不会影响主项目的其他部分。</li>
-<li>你可以将 Game Framework 插件单独进行版本管理，并与主项目的版本控制隔离开。</li>
-</ul>
-</li>
-<li><p><strong>保持一致性：</strong></p>
-<ul>
-<li>使用 Git Submodule 确保每次从版本库拉取时，插件和主项目的版本一致，避免了手动复制和拖动导致的版本错乱。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="❌-可能的缺点："><a href="#❌-可能的缺点：" class="headerlink" title="❌ 可能的缺点："></a><strong>❌ 可能的缺点：</strong></h3><ol>
-<li><p><strong>稍微复杂的操作：</strong></p>
-<ul>
-<li>子模块需要一些额外的 Git 命令支持，比如初始化子模块、更新子模块等。</li>
-<li>如果团队成员不熟悉 Git Submodule，可能需要一些培训。</li>
-</ul>
-</li>
-<li><p><strong>子模块更新需要显式操作：</strong></p>
-<ul>
-<li>在子模块更新时，开发者需要显式执行 <code>git submodule update</code> 命令来拉取插件的最新代码，而不像 UPM 那样自动处理版本更新。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h2 id="🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 如何使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 如何使用 Git Submodule 导入 Game Framework 插件？</strong></h2><h3 id="步骤-1：初始化子模块"><a href="#步骤-1：初始化子模块" class="headerlink" title="步骤 1：初始化子模块"></a><strong>步骤 1：初始化子模块</strong></h3><p>首先，假设你已经有一个主项目，接下来将 Game Framework 插件作为子模块添加到你的项目中。</p>
-<ol>
-<li><p><strong>进入主项目目录：</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>添加 Game Framework 插件作为子模块：</strong><br>假设你要使用的 Game Framework 插件在 GitHub 上，你可以使用以下命令将插件仓库添加为子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule add https://github.com/YourUsername/UnityGameFramework.git Packages/GameFramework</span><br></pre></td></tr></table></figure>
-
-<p>这个命令会将 Game Framework 插件添加到 <code>Packages/GameFramework</code> 目录，并将其作为 Git 子模块加入到主项目中。</p>
-</li>
-<li><p><strong>初始化子模块：</strong><br>如果你是第一次使用子模块，需要执行以下命令初始化它：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>提交主项目的变化：</strong><br>完成子模块添加后，你需要将 <code>git submodule</code> 的变动提交到主项目中：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Add UnityGameFramework as a submodule&quot;</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h3 id="步骤-2：更新子模块"><a href="#步骤-2：更新子模块" class="headerlink" title="步骤 2：更新子模块"></a><strong>步骤 2：更新子模块</strong></h3><p>当插件更新时，你可以通过以下步骤更新子模块：</p>
-<ol>
-<li><p><strong>更新子模块到最新版本：</strong><br>如果 Game Framework 插件有更新，可以执行以下命令拉取最新代码：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>提交更新后的子模块：</strong><br>更新完成后，你需要提交主项目对子模块的更新：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>推送更新：</strong><br>更新完成后，推送到远程 Git 仓库：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h3 id="步骤-3：团队协作中使用子模块"><a href="#步骤-3：团队协作中使用子模块" class="headerlink" title="步骤 3：团队协作中使用子模块"></a><strong>步骤 3：团队协作中使用子模块</strong></h3><ol>
-<li><p><strong>克隆主项目时包含子模块：</strong><br>当团队成员从 Git 仓库克隆主项目时，需要添加 <code>--recurse-submodules</code> 参数来同步子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/YourUsername/YourUnityProject.git</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>更新子模块：</strong><br>如果已经克隆过主项目，可以使用以下命令更新子模块：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
-</ol>
-<hr>
-<h2 id="🔹-适用场景"><a href="#🔹-适用场景" class="headerlink" title="🔹 适用场景"></a><strong>🔹 适用场景</strong></h2><ul>
-<li><strong>长期维护的项目</strong>：如果你使用的 <strong>Game Framework 插件是外部维护的</strong>，Git Submodule 是一个好选择，因为你可以方便地控制插件的版本，避免插件代码直接嵌入到主项目中导致的混乱。</li>
-<li><strong>需要修改框架代码</strong>：如果你需要在项目中修改 <strong>Game Framework 插件的代码</strong>，Git Submodule 使得代码独立且可控，避免了直接修改 <code>Assets/</code> 目录中的框架代码。</li>
-<li><strong>多人协作开发</strong>：在团队开发中，子模块保证了每个开发者都在使用相同版本的框架，避免了版本不一致导致的错误。</li>
-</ul>
-<hr>
-<h2 id="🔹-总结"><a href="#🔹-总结" class="headerlink" title="🔹 总结"></a><strong>🔹 总结</strong></h2><p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
-<p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Game Framework流程</title>
     <url>/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p> <a href="https://gameframework.cn/">Game Framework</a> 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下：</p>
@@ -1177,6 +1029,154 @@
 </ul>
 <p>通过这种方式，你可以实现 <strong>灵活的热更新系统</strong>，无论是 <strong>C# 代码</strong> 还是 <strong>游戏资源</strong>，都能够根据需要动态更新，并确保两者的匹配和协调工作。</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Git Submodule</title>
+    <url>/2025/02/06/Git%20Submodule/</url>
+    <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
+<h3 id="Git-Submodule-的版本管理和开发分支"><a href="#Git-Submodule-的版本管理和开发分支" class="headerlink" title="Git Submodule 的版本管理和开发分支"></a><strong>Git Submodule 的版本管理和开发分支</strong></h3><ol>
+<li><p><strong>独立版本管理：</strong></p>
+<ul>
+<li>每个子模块（例如 Game Framework 插件）有自己的 Git 仓库，使用自己独立的版本号和提交记录。</li>
+<li>当你将子模块添加到主项目时，Git 会记录子模块的<strong>当前提交版本</strong>，并将该信息存储在主项目的 <code>.gitmodules</code> 文件和 <code>.git/config</code> 配置文件中。</li>
+<li>例如，当你添加一个子模块时，Git 会记录子模块在主项目中的具体版本（即该子模块的某个提交ID）。</li>
+</ul>
+</li>
+<li><p><strong>子模块的分支管理：</strong></p>
+<ul>
+<li>每个子模块都有自己的分支管理方式，你可以在子模块内创建、切换和管理分支，就像处理主项目中的分支一样。</li>
+<li>当你执行 <code>git submodule update --remote</code> 命令时，Git 会将子模块的代码更新为子模块远程仓库的默认分支（通常是 <code>master</code> 或 <code>main</code>，但你也可以设置其他分支）。</li>
+</ul>
+</li>
+<li><p><strong>管理子模块的版本：</strong></p>
+<ul>
+<li>子模块的版本控制非常灵活，可以选择将子模块固定在某个版本（提交哈希）或某个分支的最新提交。</li>
+<li>在主项目中，如果你想更新子模块到最新版本，只需进入子模块目录并执行：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;branch-name&gt;  <span class="comment"># 切换到需要的分支</span></span><br><span class="line">git pull origin &lt;branch-name&gt;  <span class="comment"># 拉取最新代码</span></span><br></pre></td></tr></table></figure></li>
+<li>然后在主项目目录中，使用以下命令提交子模块的新版本：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add &lt;submodule-directory&gt;</span><br><span class="line">git commit -m <span class="string">&quot;Update submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>子模块的分支切换：</strong></p>
+<ul>
+<li>如果你想切换子模块的分支，可以进入子模块目录，使用 <code>git checkout &lt;branch&gt;</code> 来切换分支：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> Packages/GameFramework  <span class="comment"># 进入子模块目录</span></span><br><span class="line">git checkout develop  <span class="comment"># 切换到开发分支</span></span><br><span class="line">git pull origin develop  <span class="comment"># 更新子模块到开发分支的最新代码</span></span><br></pre></td></tr></table></figure></li>
+<li>切换完成后，记得回到主项目目录并提交子模块的更新：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line">git add Packages/GameFramework</span><br><span class="line">git commit -m <span class="string">&quot;Switch submodule to develop branch&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h3 id="如何管理子模块的版本"><a href="#如何管理子模块的版本" class="headerlink" title="如何管理子模块的版本"></a><strong>如何管理子模块的版本</strong></h3><ul>
+<li><p><strong>固定子模块版本：</strong><br>如果你希望将子模块固定在特定版本（例如某个提交哈希），可以通过以下命令将子模块指向特定的提交：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+<p>这将确保子模块锁定在特定的提交哈希，而不是拉取该分支的最新版本。</p>
+</li>
+<li><p><strong>更新子模块到最新提交：</strong><br>如果你想将子模块更新为其远程仓库的最新提交（通常是远程 <code>master</code> 或 <code>main</code> 分支），可以使用以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>子模块版本管理文件：</strong><br>子模块的提交信息被保存在主项目的 <code>.gitmodules</code> 和 <code>.git/config</code> 文件中。你可以手动编辑这些文件来指定子模块的 URL 和分支信息，也可以使用 Git 命令行工具来管理。</p>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>独立版本和分支管理</strong>：每个子模块有自己的版本历史和分支，你可以独立管理子模块的版本和分支，不会影响主项目。</li>
+<li><strong>灵活的更新和切换</strong>：你可以选择将子模块固定在某个版本，或者随时更新到远程仓库的最新提交。</li>
+<li><strong>主项目和子模块的分离</strong>：主项目和子模块是相互独立的 Git 仓库，便于独立管理和协作开发。</li>
+</ul>
+<p>如果你需要更具体的操作示例或遇到任何问题，随时告诉我！我会帮助你更好地管理子模块。</p>
+<h2 id="🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-为什么使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 为什么使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 为什么使用 Git Submodule 导入 Game Framework 插件？</strong></h2><p>使用 <strong>Git Submodule</strong> 方式导入 <strong>Game Framework 插件</strong> 也是一个非常不错的选择，尤其是在团队协作或者需要频繁更新插件代码的情况下。它的优势和适用场景如下：</p>
+<h3 id="✅-优势："><a href="#✅-优势：" class="headerlink" title="✅ 优势："></a><strong>✅ 优势：</strong></h3><ol>
+<li><p><strong>版本控制和更新管理：</strong></p>
+<ul>
+<li>Git Submodule 允许你将 <strong>Game Framework 插件的 Git 仓库</strong> 作为子模块引入主项目，这样你就可以单独管理插件的版本。</li>
+<li>如果插件有更新，只需在主项目中执行 <code>git submodule update --remote</code> 来拉取插件的最新版本。</li>
+</ul>
+</li>
+<li><p><strong>保持项目结构清晰：</strong></p>
+<ul>
+<li>插件代码会作为子模块独立存在于特定文件夹（如 <code>Packages/GameFramework</code>），不会和主项目代码混在一起，保持项目结构的整洁。</li>
+</ul>
+</li>
+<li><p><strong>便于团队协作：</strong></p>
+<ul>
+<li>你可以将子模块添加到 Git 仓库中，团队成员可以同步子模块版本，确保大家使用相同版本的插件。</li>
+<li>团队成员可以通过 <code>git submodule update --init</code> 拉取最新插件，避免了手动导入和更新插件的麻烦。</li>
+</ul>
+</li>
+<li><p><strong>灵活的自定义：</strong></p>
+<ul>
+<li>如果你需要修改框架的代码，直接进入子模块目录，进行修改，不会影响主项目的其他部分。</li>
+<li>你可以将 Game Framework 插件单独进行版本管理，并与主项目的版本控制隔离开。</li>
+</ul>
+</li>
+<li><p><strong>保持一致性：</strong></p>
+<ul>
+<li>使用 Git Submodule 确保每次从版本库拉取时，插件和主项目的版本一致，避免了手动复制和拖动导致的版本错乱。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="❌-可能的缺点："><a href="#❌-可能的缺点：" class="headerlink" title="❌ 可能的缺点："></a><strong>❌ 可能的缺点：</strong></h3><ol>
+<li><p><strong>稍微复杂的操作：</strong></p>
+<ul>
+<li>子模块需要一些额外的 Git 命令支持，比如初始化子模块、更新子模块等。</li>
+<li>如果团队成员不熟悉 Git Submodule，可能需要一些培训。</li>
+</ul>
+</li>
+<li><p><strong>子模块更新需要显式操作：</strong></p>
+<ul>
+<li>在子模块更新时，开发者需要显式执行 <code>git submodule update</code> 命令来拉取插件的最新代码，而不像 UPM 那样自动处理版本更新。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？"><a href="#🔹-如何使用-Git-Submodule-导入-Game-Framework-插件？" class="headerlink" title="🔹 如何使用 Git Submodule 导入 Game Framework 插件？"></a><strong>🔹 如何使用 Git Submodule 导入 Game Framework 插件？</strong></h2><h3 id="步骤-1：初始化子模块"><a href="#步骤-1：初始化子模块" class="headerlink" title="步骤 1：初始化子模块"></a><strong>步骤 1：初始化子模块</strong></h3><p>首先，假设你已经有一个主项目，接下来将 Game Framework 插件作为子模块添加到你的项目中。</p>
+<ol>
+<li><p><strong>进入主项目目录：</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /path/to/your/unity/project</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>添加 Game Framework 插件作为子模块：</strong><br>假设你要使用的 Game Framework 插件在 GitHub 上，你可以使用以下命令将插件仓库添加为子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule add https://github.com/YourUsername/UnityGameFramework.git Packages/GameFramework</span><br></pre></td></tr></table></figure>
+
+<p>这个命令会将 Game Framework 插件添加到 <code>Packages/GameFramework</code> 目录，并将其作为 Git 子模块加入到主项目中。</p>
+</li>
+<li><p><strong>初始化子模块：</strong><br>如果你是第一次使用子模块，需要执行以下命令初始化它：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>提交主项目的变化：</strong><br>完成子模块添加后，你需要将 <code>git submodule</code> 的变动提交到主项目中：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Add UnityGameFramework as a submodule&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="步骤-2：更新子模块"><a href="#步骤-2：更新子模块" class="headerlink" title="步骤 2：更新子模块"></a><strong>步骤 2：更新子模块</strong></h3><p>当插件更新时，你可以通过以下步骤更新子模块：</p>
+<ol>
+<li><p><strong>更新子模块到最新版本：</strong><br>如果 Game Framework 插件有更新，可以执行以下命令拉取最新代码：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --remote</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>提交更新后的子模块：</strong><br>更新完成后，你需要提交主项目对子模块的更新：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Update UnityGameFramework submodule to latest version&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>推送更新：</strong><br>更新完成后，推送到远程 Git 仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="步骤-3：团队协作中使用子模块"><a href="#步骤-3：团队协作中使用子模块" class="headerlink" title="步骤 3：团队协作中使用子模块"></a><strong>步骤 3：团队协作中使用子模块</strong></h3><ol>
+<li><p><strong>克隆主项目时包含子模块：</strong><br>当团队成员从 Git 仓库克隆主项目时，需要添加 <code>--recurse-submodules</code> 参数来同步子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recurse-submodules https://github.com/YourUsername/YourUnityProject.git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>更新子模块：</strong><br>如果已经克隆过主项目，可以使用以下命令更新子模块：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git submodule update --init --recursive</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h2 id="🔹-适用场景"><a href="#🔹-适用场景" class="headerlink" title="🔹 适用场景"></a><strong>🔹 适用场景</strong></h2><ul>
+<li><strong>长期维护的项目</strong>：如果你使用的 <strong>Game Framework 插件是外部维护的</strong>，Git Submodule 是一个好选择，因为你可以方便地控制插件的版本，避免插件代码直接嵌入到主项目中导致的混乱。</li>
+<li><strong>需要修改框架代码</strong>：如果你需要在项目中修改 <strong>Game Framework 插件的代码</strong>，Git Submodule 使得代码独立且可控，避免了直接修改 <code>Assets/</code> 目录中的框架代码。</li>
+<li><strong>多人协作开发</strong>：在团队开发中，子模块保证了每个开发者都在使用相同版本的框架，避免了版本不一致导致的错误。</li>
+</ul>
+<hr>
+<h2 id="🔹-总结"><a href="#🔹-总结" class="headerlink" title="🔹 总结"></a><strong>🔹 总结</strong></h2><p>使用 <strong>Git Submodule</strong> 导入 <strong>Game Framework 插件</strong> 是一个非常适合 <strong>团队开发</strong> 和 <strong>长期维护项目</strong> 的解决方案。它能保证代码的清晰结构和良好的版本控制，同时为开发者提供灵活性，可以在不干扰主项目的情况下修改框架代码。如果你打算进行 <strong>框架定制</strong> 或者希望框架代码 <strong>与主项目解耦</strong>，Git Submodule 是一个非常值得推荐的方案。</p>
+<p>如果你遇到 Git Submodule 使用中的问题，随时告诉我，我帮你进一步解决！</p>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
   </entry>
   <entry>
     <title>GitHub Actions 没有触发的核心原因</title>
@@ -6341,6 +6341,285 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity 后置界面截图代替</title>
+    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
+    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
+<hr>
+<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
+<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
+</blockquote>
+<hr>
+<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
+<hr>
+<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
+</blockquote>
+<hr>
+<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
+<ol>
+<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
+<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
+<li>把这个 Texture 设置给 <code>RawImage</code></li>
+<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>推荐做法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI 层级很多（嵌套 Canvas）</td>
+<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
+</tr>
+<tr>
+<td>UI 不频繁交互</td>
+<td>完全截图为静态图</td>
+</tr>
+<tr>
+<td>UI 中有动态内容</td>
+<td>考虑部分截图或继续动态更新</td>
+</tr>
+<tr>
+<td>需要点击穿透</td>
+<td><code>RawImage.raycastTarget = false</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
+<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
+<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
+<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
+</ul>
+<hr>
+<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>背包界面被“角色换装界面”全屏遮挡</td>
+<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
+</tr>
+<tr>
+<td>商店全屏 UI 切到签到页面</td>
+<td>商店改为截图，不再实时渲染</td>
+</tr>
+<tr>
+<td>模拟对话剧情</td>
+<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 打AB包流程</title>
+    <url>/2025/01/23/Unity%20%E6%89%93AB%E5%8C%85%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。</p>
+<hr>
+<h3 id="1-打包流程概述"><a href="#1-打包流程概述" class="headerlink" title="1. 打包流程概述"></a><strong>1. 打包流程概述</strong></h3><ol>
+<li><p><strong>配置资源文件</strong>：</p>
+<ul>
+<li>将需要打包的资源组织到指定目录中。</li>
+<li>设置每个资源的 AssetBundle 名称。</li>
+</ul>
+</li>
+<li><p><strong>打包 AssetBundles</strong>：</p>
+<ul>
+<li>使用 Unity 提供的 <code>BuildPipeline.BuildAssetBundles</code> 方法，将资源打包成 <code>.ab</code> 文件。</li>
+</ul>
+</li>
+<li><p><strong>生成版本文件</strong>：</p>
+<ul>
+<li>记录所有打包生成的 <code>.ab</code> 文件及其校验值（MD5 或 SHA256）。</li>
+<li>生成一个 JSON 格式的版本文件，包含版本号、资源文件名及校验值。</li>
+</ul>
+</li>
+<li><p><strong>上传资源和版本文件</strong>：</p>
+<ul>
+<li>将打包好的 <code>.ab</code> 文件和版本文件上传到服务器。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="2-实现步骤"><a href="#2-实现步骤" class="headerlink" title="2. 实现步骤"></a><strong>2. 实现步骤</strong></h3><h4 id="Step-1-配置资源文件"><a href="#Step-1-配置资源文件" class="headerlink" title="Step 1: 配置资源文件"></a><strong>Step 1: 配置资源文件</strong></h4><p>在 Unity 中为资源设置 AssetBundle 名称：</p>
+<ol>
+<li>选中需要打包的资源（例如：Prefab、Texture）。</li>
+<li>在 <strong>Inspector</strong> 面板中，设置 <code>AssetBundle</code> 字段为指定的名称。例如：<ul>
+<li><code>character_assets</code></li>
+<li><code>environment_assets</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="Step-2-编写打包脚本"><a href="#Step-2-编写打包脚本" class="headerlink" title="Step 2: 编写打包脚本"></a><strong>Step 2: 编写打包脚本</strong></h4><p>使用 Unity 提供的 API 打包资源。</p>
+<p><strong>示例代码：打包 AssetBundles</strong></p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Security.Cryptography;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 打包输出路径</span></span><br><span class="line">        <span class="built_in">string</span> outputPath = Path.Combine(Application.dataPath, <span class="string">&quot;../AssetBundles&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputPath))</span><br><span class="line">            Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打包所有 AssetBundle</span></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成版本文件</span></span><br><span class="line">        GenerateVersionFile(outputPath);</span><br><span class="line">        Debug.Log(<span class="string">&quot;AssetBundles and version file generated successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GenerateVersionFile</span>(<span class="params"><span class="built_in">string</span> assetBundlePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取所有打包文件</span></span><br><span class="line">        <span class="built_in">string</span>[] files = Directory.GetFiles(assetBundlePath, <span class="string">&quot;*&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">        <span class="keyword">var</span> versionData = <span class="keyword">new</span> VersionData();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> files)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (file.EndsWith(<span class="string">&quot;.manifest&quot;</span>) || file.EndsWith(<span class="string">&quot;.meta&quot;</span>)) <span class="keyword">continue</span>; <span class="comment">// 跳过无用文件</span></span><br><span class="line"></span><br><span class="line">            <span class="built_in">string</span> fileName = Path.GetFileName(file);</span><br><span class="line">            <span class="built_in">string</span> hash = CalculateMD5(file); <span class="comment">// 计算 MD5</span></span><br><span class="line"></span><br><span class="line">            versionData.assetBundles[fileName] = hash;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存版本文件</span></span><br><span class="line">        versionData.version = System.DateTime.Now.ToString(<span class="string">&quot;yyyyMMddHHmmss&quot;</span>); <span class="comment">// 使用时间戳作为版本号</span></span><br><span class="line">        <span class="built_in">string</span> versionFilePath = Path.Combine(assetBundlePath, <span class="string">&quot;version.json&quot;</span>);</span><br><span class="line">        File.WriteAllText(versionFilePath, JsonUtility.ToJson(versionData, <span class="literal">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">CalculateMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = MD5.Create())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">                <span class="keyword">return</span> BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> version;</span><br><span class="line">    <span class="keyword">public</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; assetBundles = <span class="keyword">new</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="Step-3-上传资源到服务器"><a href="#Step-3-上传资源到服务器" class="headerlink" title="Step 3: 上传资源到服务器"></a><strong>Step 3: 上传资源到服务器</strong></h4><p>将以下内容上传到服务器：</p>
+<ul>
+<li>所有打包生成的 <code>.ab</code> 文件。</li>
+<li><code>version.json</code> 文件。</li>
+</ul>
+<p><strong>常见的上传方式：</strong></p>
+<ul>
+<li>使用 FTP 工具（如 FileZilla）手动上传。</li>
+<li>配合自动化脚本将文件上传到服务器或存储服务（如 AWS S3、GitHub Releases）。</li>
+</ul>
+<hr>
+<h3 id="3-版本文件的结构和内容"><a href="#3-版本文件的结构和内容" class="headerlink" title="3. 版本文件的结构和内容"></a><strong>3. 版本文件的结构和内容</strong></h3><h4 id="版本文件（version-json）示例："><a href="#版本文件（version-json）示例：" class="headerlink" title="版本文件（version.json）示例："></a><strong>版本文件（<code>version.json</code>）示例：</strong></h4><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20250123090000&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;assetBundles&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;character_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;f2a29d0c08f2c4a3d1d7ec5b6e8b8a34&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;environment_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;e1d4f7600c1f7b4a9e5f9e2b123f9a8d&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：</strong></p>
+<ul>
+<li><code>version</code> 表示版本号，用时间戳生成（如 <code>yyyyMMddHHmmss</code> 格式）。</li>
+<li><code>assetBundles</code> 是一个字典，存储每个资源文件名及其对应的 MD5 校验值。</li>
+</ul>
+<hr>
+<h3 id="4-客户端检查版本和热更新流程"><a href="#4-客户端检查版本和热更新流程" class="headerlink" title="4. 客户端检查版本和热更新流程"></a><strong>4. 客户端检查版本和热更新流程</strong></h3><p>在客户端，以下是资源检查和下载的基本逻辑：</p>
+<ol>
+<li><p><strong>获取版本文件</strong>：</p>
+<ul>
+<li>客户端启动时，下载服务器的 <code>version.json</code>。</li>
+<li>如果客户端不存在本地版本文件，则直接下载所有资源。</li>
+</ul>
+</li>
+<li><p><strong>比较版本号</strong>：</p>
+<ul>
+<li>如果服务器版本号高于本地版本号，开始检查资源文件。</li>
+</ul>
+</li>
+<li><p><strong>校验资源文件</strong>：</p>
+<ul>
+<li>根据服务器的版本文件中的校验值，逐一检查本地资源文件是否完整。</li>
+<li>如果文件丢失或校验值不匹配，则下载该文件。</li>
+</ul>
+</li>
+<li><p><strong>下载更新资源</strong>：</p>
+<ul>
+<li>将需要更新的 <code>.ab</code> 文件从服务器下载到本地。</li>
+<li>更新本地的版本文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="5-示例代码：客户端版本检查与更新"><a href="#5-示例代码：客户端版本检查与更新" class="headerlink" title="5. 示例代码：客户端版本检查与更新"></a><strong>5. 示例代码：客户端版本检查与更新</strong></h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverVersionUrl = <span class="string">&quot;https://example.com/version.json&quot;</span>; <span class="comment">// 服务器版本文件 URL</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localVersionPath = Application.persistentDataPath + <span class="string">&quot;/version.json&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverAssetBaseUrl = <span class="string">&quot;https://example.com/&quot;</span>; <span class="comment">// 资源下载根目录</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        StartCoroutine(CheckForUpdates());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">CheckForUpdates</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取服务器版本文件</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(serverVersionUrl);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result != UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to fetch version.json: &quot;</span> + versionRequest.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">string</span> serverVersionContent = versionRequest.downloadHandler.text;</span><br><span class="line">        <span class="keyword">var</span> serverVersionData = JsonUtility.FromJson&lt;VersionData&gt;(serverVersionContent);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查本地版本文件</span></span><br><span class="line">        VersionData localVersionData = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (File.Exists(localVersionPath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localVersionContent = File.ReadAllText(localVersionPath);</span><br><span class="line">            localVersionData = JsonUtility.FromJson&lt;VersionData&gt;(localVersionContent);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查版本号和资源</span></span><br><span class="line">        <span class="keyword">if</span> (localVersionData == <span class="literal">null</span> || serverVersionData.version != localVersionData.version)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;New version detected, updating assets...&quot;</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> asset <span class="keyword">in</span> serverVersionData.assetBundles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">string</span> localFilePath = Path.Combine(Application.persistentDataPath, asset.Key);</span><br><span class="line">                <span class="keyword">if</span> (!File.Exists(localFilePath) || GetMD5(localFilePath) != asset.Value)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAsset(asset.Key</span>))</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新本地版本文件</span></span><br><span class="line">            File.WriteAllText(localVersionPath, serverVersionContent);</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets updated successfully!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets are up-to-date.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAsset</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> url = serverAssetBaseUrl + assetName;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(url);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localPath = Path.Combine(Application.persistentDataPath, assetName);</span><br><span class="line">            File.WriteAllBytes(localPath, request.downloadHandler.data);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;Downloaded: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;Failed to download <span class="subst">&#123;assetName&#125;</span>: <span class="subst">&#123;request.error&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = System.Security.Cryptography.MD5.Create())</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">            <span class="keyword">return</span> System.BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>通过以上流程，你可以实现完整的热更新功能，包括打包资源、生成版本文件、检查和下载更新资源。</p>
+<h2 id="HybridCLR-程序集打包成ab并加载"><a href="#HybridCLR-程序集打包成ab并加载" class="headerlink" title="HybridCLR 程序集打包成ab并加载"></a>HybridCLR 程序集打包成ab并加载</h2><h3 id="Unity-HybridCLR-热更新程序集打包与加载流程"><a href="#Unity-HybridCLR-热更新程序集打包与加载流程" class="headerlink" title="Unity HybridCLR 热更新程序集打包与加载流程"></a><strong>Unity HybridCLR 热更新程序集打包与加载流程</strong></h3><p>HybridCLR 是 Unity 的一种轻量级跨平台解决方案，支持加载 AOT（Ahead Of Time）和解释执行的程序集，适用于游戏热更新。以下是完整的 <strong>打包流程</strong> 和 <strong>加载流程</strong>。</p>
+<hr>
+<h2 id="1-热更新程序集打包流程"><a href="#1-热更新程序集打包流程" class="headerlink" title="1. 热更新程序集打包流程"></a><strong>1. 热更新程序集打包流程</strong></h2><h3 id="1-1-配置热更新程序集工程"><a href="#1-1-配置热更新程序集工程" class="headerlink" title="1.1 配置热更新程序集工程"></a><strong>1.1 配置热更新程序集工程</strong></h3><h4 id="步骤-1-创建独立的热更新工程"><a href="#步骤-1-创建独立的热更新工程" class="headerlink" title="步骤 1: 创建独立的热更新工程"></a><strong>步骤 1: 创建独立的热更新工程</strong></h4><ul>
+<li>在 Unity 项目中，创建一个独立的 C# 项目用于存放热更新代码。</li>
+<li>确保该工程编译为 <code>.dll</code> 文件（Class Library 项目）。</li>
+<li>使用 <code>.NET Framework 4.x</code> 或 <code>.NET Standard 2.1</code>（与 Unity 项目一致）。</li>
+</ul>
+<h4 id="步骤-2-添加必要引用"><a href="#步骤-2-添加必要引用" class="headerlink" title="步骤 2: 添加必要引用"></a><strong>步骤 2: 添加必要引用</strong></h4><ul>
+<li>引用 Unity 的程序集文件：<ul>
+<li><code>UnityEngine.dll</code></li>
+<li><code>UnityEngine.CoreModule.dll</code></li>
+<li>这些文件可在 Unity 安装目录的 <code>Editor/Data/Managed</code> 或 <code>Library/ScriptAssemblies</code> 下找到。</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤-3-编写热更新代码"><a href="#步骤-3-编写热更新代码" class="headerlink" title="步骤 3: 编写热更新代码"></a><strong>步骤 3: 编写热更新代码</strong></h4><ul>
+<li>将需要动态更新的逻辑代码放入热更新工程。</li>
+<li>避免引用 UnityEditor 命名空间。</li>
+<li><strong>特别注意</strong>：在 HybridCLR 中，一部分代码会运行在 AOT 模式，因此需要合理规划哪些代码进入热更新工程，哪些留在主工程中。</li>
+</ul>
+<hr>
+<h3 id="1-2-编译与输出程序集"><a href="#1-2-编译与输出程序集" class="headerlink" title="1.2 编译与输出程序集"></a><strong>1.2 编译与输出程序集</strong></h3><h4 id="步骤-1-编译热更新程序集"><a href="#步骤-1-编译热更新程序集" class="headerlink" title="步骤 1: 编译热更新程序集"></a><strong>步骤 1: 编译热更新程序集</strong></h4><ul>
+<li>使用 Visual Studio 或 Rider 将热更新工程编译为 <code>.dll</code> 文件。</li>
+<li>输出文件如：<ul>
+<li><code>HotUpdate.dll</code>（主程序集）</li>
+<li><code>HotUpdate.pdb</code>（符号文件，用于调试）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤-2-标记为热更新程序集"><a href="#步骤-2-标记为热更新程序集" class="headerlink" title="步骤 2: 标记为热更新程序集"></a><strong>步骤 2: 标记为热更新程序集</strong></h4><ul>
+<li>在 Unity 的主工程中，创建一个文件夹（如 <code>Assets/HotUpdateAssemblies</code>），将编译好的 <code>.dll</code> 文件放入该目录。</li>
+</ul>
+<h4 id="步骤-3-使用-AssetBundle-打包"><a href="#步骤-3-使用-AssetBundle-打包" class="headerlink" title="步骤 3: 使用 AssetBundle 打包"></a><strong>步骤 3: 使用 AssetBundle 打包</strong></h4><ul>
+<li>在 Unity 中创建一个脚本，用于将这些 <code>.dll</code> 文件打包成 AssetBundle：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildHotUpdateAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputPath = <span class="string">&quot;Assets/StreamingAssets/HotUpdateBundles&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> (!System.IO.Directory.Exists(outputPath))</span><br><span class="line">            System.IO.Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        AssetBundleBuild[] buildMap = <span class="keyword">new</span> AssetBundleBuild[<span class="number">1</span>];</span><br><span class="line">        buildMap[<span class="number">0</span>] = <span class="keyword">new</span> AssetBundleBuild</span><br><span class="line">        &#123;</span><br><span class="line">            assetBundleName = <span class="string">&quot;hotupdateassemblies&quot;</span>,</span><br><span class="line">            assetNames = <span class="keyword">new</span>[] &#123; <span class="string">&quot;Assets/HotUpdateAssemblies/HotUpdate.dll&quot;</span> &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot update AssetBundle built successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>这会将 <code>HotUpdate.dll</code> 打包到一个名为 <code>hotupdateassemblies</code> 的 AssetBundle 中。</li>
+</ul>
+<h4 id="步骤-4-上传到资源服务器"><a href="#步骤-4-上传到资源服务器" class="headerlink" title="步骤 4: 上传到资源服务器"></a><strong>步骤 4: 上传到资源服务器</strong></h4><ul>
+<li>将打包生成的 AssetBundle（如 <code>hotupdateassemblies</code>) 上传到远程服务器（如 GitHub Releases、CDN、阿里云 OSS 等），以便运行时下载。</li>
+</ul>
+<hr>
+<h2 id="2-热更新程序集加载流程"><a href="#2-热更新程序集加载流程" class="headerlink" title="2. 热更新程序集加载流程"></a><strong>2. 热更新程序集加载流程</strong></h2><h3 id="2-1-配置-HybridCLR"><a href="#2-1-配置-HybridCLR" class="headerlink" title="2.1 配置 HybridCLR"></a><strong>2.1 配置 HybridCLR</strong></h3><h4 id="步骤-1-安装-HybridCLR"><a href="#步骤-1-安装-HybridCLR" class="headerlink" title="步骤 1: 安装 HybridCLR"></a><strong>步骤 1: 安装 HybridCLR</strong></h4><ul>
+<li>在 Unity 项目中，按照 HybridCLR 的官方文档安装 HybridCLR 插件。</li>
+<li>安装后会生成以下文件和配置：<ul>
+<li><code>HybridCLR/HotUpdateAssemblies</code> 文件夹（存放热更新程序集）。</li>
+<li><code>HybridCLR</code> 配置文件（设置热更新相关参数）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤-2-配置-AOT-元数据"><a href="#步骤-2-配置-AOT-元数据" class="headerlink" title="步骤 2: 配置 AOT 元数据"></a><strong>步骤 2: 配置 AOT 元数据</strong></h4><ul>
+<li>AOT 模式需要将部分元数据文件（<code>.dll</code>）打包到游戏中。</li>
+<li>在 <code>HybridCLR/HotUpdateAssemblies</code> 文件夹中，放入所有热更新相关的 <code>.dll</code> 文件。</li>
+</ul>
+<hr>
+<h3 id="2-2-加载热更新程序集"><a href="#2-2-加载热更新程序集" class="headerlink" title="2.2 加载热更新程序集"></a><strong>2.2 加载热更新程序集</strong></h3><h4 id="步骤-1-下载-AssetBundle"><a href="#步骤-1-下载-AssetBundle" class="headerlink" title="步骤 1: 下载 AssetBundle"></a><strong>步骤 1: 下载 AssetBundle</strong></h4><ul>
+<li>游戏启动时，从远程服务器下载最新的 AssetBundle 文件。</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AssetBundleURL = <span class="string">&quot;https://your-server.com/hotupdateassemblies&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        <span class="keyword">using</span> <span class="keyword">var</span> www = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(AssetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> www.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (www.result != UnityEngine.Networking.UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + www.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加载 AssetBundle</span></span><br><span class="line">        <span class="keyword">var</span> assetBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(www);</span><br><span class="line">        <span class="keyword">if</span> (assetBundle == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 提取 .dll 文件</span></span><br><span class="line">        TextAsset dllAsset = assetBundle.LoadAsset&lt;TextAsset&gt;(<span class="string">&quot;HotUpdate.dll&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (dllAsset == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load HotUpdate.dll from AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        LoadHotUpdateAssembly(dllAsset.bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LoadHotUpdateAssembly</span>(<span class="params"><span class="built_in">byte</span>[] dllBytes</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> assembly = System.Reflection.Assembly.Load(dllBytes);</span><br><span class="line">        <span class="keyword">var</span> type = assembly.GetType(<span class="string">&quot;HotUpdate.Program&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> method = type.GetMethod(<span class="string">&quot;Main&quot;</span>);</span><br><span class="line">        method?.Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="步骤-2-加载热更新程序集"><a href="#步骤-2-加载热更新程序集" class="headerlink" title="步骤 2: 加载热更新程序集"></a><strong>步骤 2: 加载热更新程序集</strong></h4><ul>
+<li>使用 <code>System.Reflection.Assembly.Load</code> 加载 <code>HotUpdate.dll</code>，并调用其中的入口方法（如 <code>Main()</code>）。</li>
+</ul>
+<h4 id="步骤-3-切换逻辑到热更新代码"><a href="#步骤-3-切换逻辑到热更新代码" class="headerlink" title="步骤 3: 切换逻辑到热更新代码"></a><strong>步骤 3: 切换逻辑到热更新代码</strong></h4><ul>
+<li>在热更新程序集（如 <code>HotUpdate.dll</code>）中，处理游戏的逻辑更新。例如：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">HotUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;HotUpdate assembly loaded successfully!&quot;</span>);</span><br><span class="line">            <span class="comment">// 热更新逻辑处理...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a><strong>3. 总结</strong></h2><h3 id="打包流程"><a href="#打包流程" class="headerlink" title="打包流程"></a><strong>打包流程</strong></h3><ol>
+<li>在独立的 C# 项目中编写热更新代码，编译为 <code>.dll</code> 文件。</li>
+<li>将 <code>.dll</code> 文件放入 Unity 项目中并打包为 AssetBundle。</li>
+<li>将打包的 AssetBundle 上传到远程服务器。</li>
+</ol>
+<h3 id="加载流程"><a href="#加载流程" class="headerlink" title="加载流程"></a><strong>加载流程</strong></h3><ol>
+<li>游戏启动时，下载远程的 AssetBundle 文件。</li>
+<li>解压并加载 <code>.dll</code> 文件到内存。</li>
+<li>使用 <code>Assembly.Load</code> 加载程序集，并调用热更新代码入口（如 <code>Main()</code> 方法）。</li>
+<li>切换游戏逻辑到热更新代码。</li>
+</ol>
+<p>通过 HybridCLR，这种热更新流程实现了代码与资源的分离更新，提升了项目的维护性和灵活性。</p>
+<h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>AssetBundles</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+        <tag>AssetBundles</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 打图集 - 合批减少DrawCall</title>
     <url>/2025/06/17/Unity%20%E6%89%93%E5%9B%BE%E9%9B%86%20-%20%E5%90%88%E6%89%B9%E5%87%8F%E5%B0%91DrawCall/</url>
     <content><![CDATA[<p>在 Unity 中，通过<strong>打图集（图集打包）+ Canvas 优化策略</strong>可以有效实现 <strong>UI 合批（Batching）</strong>，从而减少 DrawCall 提高性能。下面是详细说明和实战指导：</p>
@@ -6853,103 +7132,6 @@ graph TD
 ]]></content>
   </entry>
   <entry>
-    <title>Unity 后置界面截图代替</title>
-    <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
-    <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
-<hr>
-<h2 id="🧠-目标描述"><a href="#🧠-目标描述" class="headerlink" title="🧠 目标描述"></a>🧠 目标描述</h2><blockquote>
-<p><strong>将被遮挡的 UI 页面（非焦点）截图为一张静态图片，然后只显示截图，暂时不渲染真实 UI 元素</strong>，以降低 DrawCall 和 Canvas Rebuild 负担，充分释放 GPU 渲染资源。</p>
-</blockquote>
-<hr>
-<h2 id="✅-技术实现步骤（Unity-UGUI）"><a href="#✅-技术实现步骤（Unity-UGUI）" class="headerlink" title="✅ 技术实现步骤（Unity UGUI）"></a>✅ 技术实现步骤（Unity UGUI）</h2><p>我们以“将后置界面截图 + 替换显示 + 隐藏原始 UI”为例讲解：</p>
-<hr>
-<h3 id="🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）"><a href="#🧱-Step-1：截图后置-UI（RenderTexture-或-ReadPixels）" class="headerlink" title="🧱 Step 1：截图后置 UI（RenderTexture 或 ReadPixels）"></a>🧱 Step 1：截图后置 UI（RenderTexture 或 <code>ReadPixels</code>）</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Texture2D <span class="title">CaptureUIScreen</span>(<span class="params">RectTransform targetRect</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1. 获取 UI 区域在屏幕空间的位置</span></span><br><span class="line">    Vector3[] corners = <span class="keyword">new</span> Vector3[<span class="number">4</span>];</span><br><span class="line">    targetRect.GetWorldCorners(corners);</span><br><span class="line">    Rect rect = <span class="keyword">new</span> Rect(corners[<span class="number">0</span>].x, corners[<span class="number">0</span>].y, </span><br><span class="line">                         corners[<span class="number">2</span>].x - corners[<span class="number">0</span>].x, </span><br><span class="line">                         corners[<span class="number">2</span>].y - corners[<span class="number">0</span>].y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 读取像素</span></span><br><span class="line">    Texture2D tex = <span class="keyword">new</span> Texture2D((<span class="built_in">int</span>)rect.width, (<span class="built_in">int</span>)rect.height, TextureFormat.RGB24, <span class="literal">false</span>);</span><br><span class="line">    tex.ReadPixels(rect, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    tex.Apply();</span><br><span class="line">    <span class="keyword">return</span> tex;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>✅ <strong>推荐更高效方式：用 <code>RenderTexture + Camera.Render()</code> 单独渲染 UI 区域而不是 ReadPixels，避免阻塞主线程</strong>（下面会说）</p>
-</blockquote>
-<hr>
-<h3 id="📦-Step-2：用-RawImage-显示截图内容"><a href="#📦-Step-2：用-RawImage-显示截图内容" class="headerlink" title="📦 Step 2：用 RawImage 显示截图内容"></a>📦 Step 2：用 <code>RawImage</code> 显示截图内容</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">RawImage screenshotDisplay;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ShowScreenshot</span>(<span class="params">Texture2D tex</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (screenshotDisplay == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        GameObject go = <span class="keyword">new</span> GameObject(<span class="string">&quot;ScreenshotUI&quot;</span>, <span class="keyword">typeof</span>(RectTransform), <span class="keyword">typeof</span>(CanvasRenderer), <span class="keyword">typeof</span>(RawImage));</span><br><span class="line">        go.transform.SetParent(你的Canvas.transform);</span><br><span class="line">        screenshotDisplay = go.GetComponent&lt;RawImage&gt;();</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.anchorMax = Vector2.one;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMin = Vector2.zero;</span><br><span class="line">        screenshotDisplay.rectTransform.offsetMax = Vector2.zero;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = tex;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="🔒-Step-3：隐藏真实-UI，锁定点击穿透"><a href="#🔒-Step-3：隐藏真实-UI，锁定点击穿透" class="headerlink" title="🔒 Step 3：隐藏真实 UI，锁定点击穿透"></a>🔒 Step 3：隐藏真实 UI，锁定点击穿透</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// 或者只禁用组件，但保留位置</span></span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().alpha = <span class="number">0</span>;</span><br><span class="line">真实UI.GetComponent&lt;CanvasGroup&gt;().blocksRaycasts = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="✅-Step-4（可选）：切换回来时恢复-UI"><a href="#✅-Step-4（可选）：切换回来时恢复-UI" class="headerlink" title="✅ Step 4（可选）：切换回来时恢复 UI"></a>✅ Step 4（可选）：切换回来时恢复 UI</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">真实UI.SetActive(<span class="literal">true</span>);</span><br><span class="line">screenshotDisplay.enabled = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI"><a href="#🚀-推荐优化方式：用-RenderTexture-UI-摄像机单独渲染-UI" class="headerlink" title="🚀 推荐优化方式：用 RenderTexture + UI 摄像机单独渲染 UI"></a>🚀 推荐优化方式：用 <code>RenderTexture + UI 摄像机单独渲染 UI</code></h2><p>比 <code>ReadPixels</code> 更高效 ✅</p>
-<ol>
-<li>给 UI 界面加一层单独的 Canvas（<code>RenderMode = ScreenSpaceCamera</code>）</li>
-<li>分配一个专属 UI 摄像机，输出到一个 RenderTexture</li>
-<li>把这个 Texture 设置给 <code>RawImage</code></li>
-<li>然后<strong>关闭原 UI Canvas 显示，保留截图</strong></li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">Camera uiCamera;</span><br><span class="line">RenderTexture rt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">CaptureWithCamera</span>(<span class="params">Canvas uiCanvas</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt = <span class="keyword">new</span> RenderTexture(Screen.width, Screen.height, <span class="number">0</span>);</span><br><span class="line">    uiCamera.targetTexture = rt;</span><br><span class="line">    uiCamera.Render();</span><br><span class="line"></span><br><span class="line">    screenshotDisplay.texture = rt;</span><br><span class="line">    screenshotDisplay.enabled = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    uiCanvas.enabled = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="📌-实用建议"><a href="#📌-实用建议" class="headerlink" title="📌 实用建议"></a>📌 实用建议</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>推荐做法</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>UI 层级很多（嵌套 Canvas）</td>
-<td>将“不可见的后层 UI”截图后禁用 Canvas 组件</td>
-</tr>
-<tr>
-<td>UI 不频繁交互</td>
-<td>完全截图为静态图</td>
-</tr>
-<tr>
-<td>UI 中有动态内容</td>
-<td>考虑部分截图或继续动态更新</td>
-</tr>
-<tr>
-<td>需要点击穿透</td>
-<td><code>RawImage.raycastTarget = false</code></td>
-</tr>
-</tbody></table>
-<hr>
-<h2 id="✅-优点总结"><a href="#✅-优点总结" class="headerlink" title="✅ 优点总结"></a>✅ 优点总结</h2><ul>
-<li>🔥 <strong>大幅减少 DrawCall</strong>（隐藏真实 UI，RawImage 只需 1 DrawCall）</li>
-<li>🚫 <strong>避免 Canvas Rebuild</strong>（UI 禁用或 alpha&#x3D;0）</li>
-<li>🧠 <strong>优化 GPU 帧时间</strong>（尤其是堆叠多个大 UI）</li>
-</ul>
-<hr>
-<h2 id="🎯-举例场景"><a href="#🎯-举例场景" class="headerlink" title="🎯 举例场景"></a>🎯 举例场景</h2><table>
-<thead>
-<tr>
-<th>场景</th>
-<th>效果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>背包界面被“角色换装界面”全屏遮挡</td>
-<td>背包 UI 截图并替代显示，关闭其 Canvas</td>
-</tr>
-<tr>
-<td>商店全屏 UI 切到签到页面</td>
-<td>商店改为截图，不再实时渲染</td>
-</tr>
-<tr>
-<td>模拟对话剧情</td>
-<td>截图背景 UI，前景角色&#x2F;文本保持活动</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你需要我提供一个完整的封装脚本（支持 RenderTexture、RawImage 创建、Canvas 替换控制），可以直接发我你的 UI 管理方式或结构，我给你定制化生成。是否需要？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1 id="Unity-Jobs"><a href="#Unity-Jobs" class="headerlink" title="Unity Jobs"></a>Unity Jobs</h1><p>Unity <strong>Jobs System</strong> 是 Unity 提供的一种高效并行计算框架，用来帮助开发者更好地利用多核 CPU 的计算能力，提高性能。它是 Unity <strong>Data-Oriented Technology Stack (DOTS)</strong> 的核心组件之一，与 <strong>Burst Compiler</strong> 和 <strong>Entity Component System (ECS)</strong> 密切相关。</p>
@@ -7314,7 +7496,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#x2e;&#117;&#x6e;&#x69;&#x74;&#x79;&#x2e;&#99;&#x6f;&#108;&#108;&#97;&#x62;&#45;&#x70;&#x72;&#111;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;">&#x63;&#111;&#x6d;&#x2e;&#117;&#x6e;&#x69;&#x74;&#x79;&#x2e;&#99;&#x6f;&#108;&#108;&#97;&#x62;&#45;&#x70;&#x72;&#111;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#x2e;&#x75;&#110;&#x69;&#116;&#121;&#46;&#x63;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#x70;&#x72;&#x6f;&#x78;&#x79;&#64;&#x32;&#46;&#x36;&#x2e;&#48;">&#x63;&#x6f;&#x6d;&#x2e;&#x75;&#110;&#x69;&#116;&#121;&#46;&#x63;&#x6f;&#108;&#x6c;&#97;&#x62;&#45;&#x70;&#x72;&#x6f;&#x78;&#x79;&#64;&#x32;&#46;&#x36;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -8605,108 +8787,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Visual Studio隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/Visual%20Studio%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
-<li><p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li><p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li><p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
-<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li><p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li><p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo 路径表示</title>
     <url>/2024/12/01/hexo%20%E8%B7%AF%E5%BE%84%E8%A1%A8%E7%A4%BA/</url>
     <content><![CDATA[<p>在 Hexo 中，路径表示（即如何表示文件和目录的路径）有几个常见的用法和约定，具体取决于你是在配置站点、创建内容，还是处理资源。以下是常见的路径表示方式和相关解释：</p>
@@ -8851,6 +8931,156 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Visual Studio隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/Visual%20Studio%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
+<li><p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li><p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li><p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
+<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li><p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li><p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo 图片加载方案</title>
+    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h1 id="安装-hexo-asset-image-插件"><a href="#安装-hexo-asset-image-插件" class="headerlink" title="安装 hexo-asset-image 插件"></a>安装 hexo-asset-image 插件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>修改代码为如下</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
+
+<h2 id="页签页md文档中插入图片"><a href="#页签页md文档中插入图片" class="headerlink" title="页签页md文档中插入图片"></a>页签页md文档中插入图片</h2><p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
+<p>打开_config.yml ，修改如下：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-trailing-index"><a href="#1-trailing-index" class="headerlink" title="1. trailing_index"></a>1. trailing_index</h3><p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
+<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
+<h3 id="2-trailing-html"><a href="#2-trailing-html" class="headerlink" title="2. trailing_html"></a>2. trailing_html</h3><p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
+<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>这个方式的好处在于：</p>
+<ul>
+<li>支持vscode中正常预览</li>
+<li>无需修改Ctrl+V粘贴的路径</li>
+<li>本地构建的网站和正式部署的网站都能正常显示</li>
+</ul>
+<h1 id="html-脚本中添加图片"><a href="#html-脚本中添加图片" class="headerlink" title="html 脚本中添加图片"></a>html 脚本中添加图片</h1><p>我们直接复制粘贴的路径：<br>将路径</p>
+<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
+<p>粘贴到scr中</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
+<p>src : index&#x2F;image.png</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
+<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
+<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
+<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo butterfly 添加rightside 按钮</title>
     <url>/2025/01/21/hexo-butterfly-%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
     <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
@@ -8900,54 +9130,6 @@ graph TD
 </li>
 </ol>
 ]]></content>
-  </entry>
-  <entry>
-    <title>hexo 图片加载方案</title>
-    <url>/2024/12/11/hexo-%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h1 id="安装-hexo-asset-image-插件"><a href="#安装-hexo-asset-image-插件" class="headerlink" title="安装 hexo-asset-image 插件"></a>安装 hexo-asset-image 插件</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-
-<p>打开node_modules\hexo-asset-image\index.js文件59行附近：<br>修改代码为如下</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//src = srcArray.join(&#x27;/&#x27;);这个是源码,从这下面开始修改替换</span></span><br><span class="line"><span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line"><span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line"><span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠，目的是去掉文档存放的文件夹名</span></span><br><span class="line">    baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); </span><br><span class="line">&#125;</span><br><span class="line">$(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line"><span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+src);</span><br></pre></td></tr></table></figure>
-
-<h2 id="页签页md文档中插入图片"><a href="#页签页md文档中插入图片" class="headerlink" title="页签页md文档中插入图片"></a>页签页md文档中插入图片</h2><p>上面的方法可以在普通文章使用，但是页签页内容插入图片会多出: .html后缀</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://xxx/musicPage/index.html</span><br></pre></td></tr></table></figure>
-<p>打开_config.yml ，修改如下：</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">pretty_urls:</span></span><br><span class="line">  <span class="attr">trailing_index:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">trailing_html:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="1-trailing-index"><a href="#1-trailing-index" class="headerlink" title="1. trailing_index"></a>1. trailing_index</h3><p>这个选项控制是否在 URL 末尾自动添加 index。例如：</p>
-<p>如果 trailing_index: true，那么像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的 URL 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_index: false，URL 末尾就不会自动添加 index，它会保持 <a href="https://example.com/posts/">https://example.com/posts/</a> 的形式。</p>
-<h3 id="2-trailing-html"><a href="#2-trailing-html" class="headerlink" title="2. trailing_html"></a>2. trailing_html</h3><p>这个选项控制是否在 URL 末尾添加 .html 后缀。例如：</p>
-<p>如果 trailing_html: true，像 <a href="https://example.com/posts/">https://example.com/posts/</a> 会变成 <a href="https://example.com/posts/index.html%E3%80%82">https://example.com/posts/index.html。</a><br>如果 trailing_html: false，URL 会去掉 .html 后缀，直接使用像 <a href="https://example.com/posts/">https://example.com/posts/</a> 这样的格式。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<p>这个方式的好处在于：</p>
-<ul>
-<li>支持vscode中正常预览</li>
-<li>无需修改Ctrl+V粘贴的路径</li>
-<li>本地构建的网站和正式部署的网站都能正常显示</li>
-</ul>
-<h1 id="html-脚本中添加图片"><a href="#html-脚本中添加图片" class="headerlink" title="html 脚本中添加图片"></a>html 脚本中添加图片</h1><p>我们直接复制粘贴的路径：<br>将路径</p>
-<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">![<span class="string">alt text</span>](<span class="link">index/image.png</span>)</span><br></pre></td></tr></table></figure>
-<p>粘贴到scr中</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;index/image.png&quot;</span> <span class="attr">alt</span>=<span class="string">&quot;捡贝&quot;</span> <span class="attr">class</span>=<span class="string">&quot;project-image w-full h-64 object-cover&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>我们会发现 html 最终生成的路径中少了 index 这一层：</p>
-<p>src : index&#x2F;image.png</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">update link as:--&gt;https://xxxx/About/   image.png</span><br></pre></td></tr></table></figure>
-<p>我们需要在hexo-asset-image\index.js文件中处理：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span> &amp;&amp; srcArray[<span class="number">0</span>]!=<span class="string">&quot;index&quot;</span>)<span class="comment">//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">   srcArray.<span class="title function_">shift</span>();</span><br></pre></td></tr></table></figure>
-<p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
-<p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
-      </tags>
   </entry>
   <entry>
     <title>hexo添加标签样式</title>
@@ -10310,180 +10492,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
-    <title>unity 打AB包流程</title>
-    <url>/2025/01/23/unity-%E6%89%93AB%E5%8C%85%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<p>下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。</p>
-<hr>
-<h3 id="1-打包流程概述"><a href="#1-打包流程概述" class="headerlink" title="1. 打包流程概述"></a><strong>1. 打包流程概述</strong></h3><ol>
-<li><p><strong>配置资源文件</strong>：</p>
-<ul>
-<li>将需要打包的资源组织到指定目录中。</li>
-<li>设置每个资源的 AssetBundle 名称。</li>
-</ul>
-</li>
-<li><p><strong>打包 AssetBundles</strong>：</p>
-<ul>
-<li>使用 Unity 提供的 <code>BuildPipeline.BuildAssetBundles</code> 方法，将资源打包成 <code>.ab</code> 文件。</li>
-</ul>
-</li>
-<li><p><strong>生成版本文件</strong>：</p>
-<ul>
-<li>记录所有打包生成的 <code>.ab</code> 文件及其校验值（MD5 或 SHA256）。</li>
-<li>生成一个 JSON 格式的版本文件，包含版本号、资源文件名及校验值。</li>
-</ul>
-</li>
-<li><p><strong>上传资源和版本文件</strong>：</p>
-<ul>
-<li>将打包好的 <code>.ab</code> 文件和版本文件上传到服务器。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="2-实现步骤"><a href="#2-实现步骤" class="headerlink" title="2. 实现步骤"></a><strong>2. 实现步骤</strong></h3><h4 id="Step-1-配置资源文件"><a href="#Step-1-配置资源文件" class="headerlink" title="Step 1: 配置资源文件"></a><strong>Step 1: 配置资源文件</strong></h4><p>在 Unity 中为资源设置 AssetBundle 名称：</p>
-<ol>
-<li>选中需要打包的资源（例如：Prefab、Texture）。</li>
-<li>在 <strong>Inspector</strong> 面板中，设置 <code>AssetBundle</code> 字段为指定的名称。例如：<ul>
-<li><code>character_assets</code></li>
-<li><code>environment_assets</code></li>
-</ul>
-</li>
-</ol>
-<hr>
-<h4 id="Step-2-编写打包脚本"><a href="#Step-2-编写打包脚本" class="headerlink" title="Step 2: 编写打包脚本"></a><strong>Step 2: 编写打包脚本</strong></h4><p>使用 Unity 提供的 API 打包资源。</p>
-<p><strong>示例代码：打包 AssetBundles</strong></p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Security.Cryptography;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 打包输出路径</span></span><br><span class="line">        <span class="built_in">string</span> outputPath = Path.Combine(Application.dataPath, <span class="string">&quot;../AssetBundles&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputPath))</span><br><span class="line">            Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打包所有 AssetBundle</span></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成版本文件</span></span><br><span class="line">        GenerateVersionFile(outputPath);</span><br><span class="line">        Debug.Log(<span class="string">&quot;AssetBundles and version file generated successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GenerateVersionFile</span>(<span class="params"><span class="built_in">string</span> assetBundlePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取所有打包文件</span></span><br><span class="line">        <span class="built_in">string</span>[] files = Directory.GetFiles(assetBundlePath, <span class="string">&quot;*&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">        <span class="keyword">var</span> versionData = <span class="keyword">new</span> VersionData();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> files)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (file.EndsWith(<span class="string">&quot;.manifest&quot;</span>) || file.EndsWith(<span class="string">&quot;.meta&quot;</span>)) <span class="keyword">continue</span>; <span class="comment">// 跳过无用文件</span></span><br><span class="line"></span><br><span class="line">            <span class="built_in">string</span> fileName = Path.GetFileName(file);</span><br><span class="line">            <span class="built_in">string</span> hash = CalculateMD5(file); <span class="comment">// 计算 MD5</span></span><br><span class="line"></span><br><span class="line">            versionData.assetBundles[fileName] = hash;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存版本文件</span></span><br><span class="line">        versionData.version = System.DateTime.Now.ToString(<span class="string">&quot;yyyyMMddHHmmss&quot;</span>); <span class="comment">// 使用时间戳作为版本号</span></span><br><span class="line">        <span class="built_in">string</span> versionFilePath = Path.Combine(assetBundlePath, <span class="string">&quot;version.json&quot;</span>);</span><br><span class="line">        File.WriteAllText(versionFilePath, JsonUtility.ToJson(versionData, <span class="literal">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">CalculateMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = MD5.Create())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">                <span class="keyword">return</span> BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> version;</span><br><span class="line">    <span class="keyword">public</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; assetBundles = <span class="keyword">new</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h4 id="Step-3-上传资源到服务器"><a href="#Step-3-上传资源到服务器" class="headerlink" title="Step 3: 上传资源到服务器"></a><strong>Step 3: 上传资源到服务器</strong></h4><p>将以下内容上传到服务器：</p>
-<ul>
-<li>所有打包生成的 <code>.ab</code> 文件。</li>
-<li><code>version.json</code> 文件。</li>
-</ul>
-<p><strong>常见的上传方式：</strong></p>
-<ul>
-<li>使用 FTP 工具（如 FileZilla）手动上传。</li>
-<li>配合自动化脚本将文件上传到服务器或存储服务（如 AWS S3、GitHub Releases）。</li>
-</ul>
-<hr>
-<h3 id="3-版本文件的结构和内容"><a href="#3-版本文件的结构和内容" class="headerlink" title="3. 版本文件的结构和内容"></a><strong>3. 版本文件的结构和内容</strong></h3><h4 id="版本文件（version-json）示例："><a href="#版本文件（version-json）示例：" class="headerlink" title="版本文件（version.json）示例："></a><strong>版本文件（<code>version.json</code>）示例：</strong></h4><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20250123090000&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;assetBundles&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;character_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;f2a29d0c08f2c4a3d1d7ec5b6e8b8a34&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;environment_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;e1d4f7600c1f7b4a9e5f9e2b123f9a8d&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>说明：</strong></p>
-<ul>
-<li><code>version</code> 表示版本号，用时间戳生成（如 <code>yyyyMMddHHmmss</code> 格式）。</li>
-<li><code>assetBundles</code> 是一个字典，存储每个资源文件名及其对应的 MD5 校验值。</li>
-</ul>
-<hr>
-<h3 id="4-客户端检查版本和热更新流程"><a href="#4-客户端检查版本和热更新流程" class="headerlink" title="4. 客户端检查版本和热更新流程"></a><strong>4. 客户端检查版本和热更新流程</strong></h3><p>在客户端，以下是资源检查和下载的基本逻辑：</p>
-<ol>
-<li><p><strong>获取版本文件</strong>：</p>
-<ul>
-<li>客户端启动时，下载服务器的 <code>version.json</code>。</li>
-<li>如果客户端不存在本地版本文件，则直接下载所有资源。</li>
-</ul>
-</li>
-<li><p><strong>比较版本号</strong>：</p>
-<ul>
-<li>如果服务器版本号高于本地版本号，开始检查资源文件。</li>
-</ul>
-</li>
-<li><p><strong>校验资源文件</strong>：</p>
-<ul>
-<li>根据服务器的版本文件中的校验值，逐一检查本地资源文件是否完整。</li>
-<li>如果文件丢失或校验值不匹配，则下载该文件。</li>
-</ul>
-</li>
-<li><p><strong>下载更新资源</strong>：</p>
-<ul>
-<li>将需要更新的 <code>.ab</code> 文件从服务器下载到本地。</li>
-<li>更新本地的版本文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="5-示例代码：客户端版本检查与更新"><a href="#5-示例代码：客户端版本检查与更新" class="headerlink" title="5. 示例代码：客户端版本检查与更新"></a><strong>5. 示例代码：客户端版本检查与更新</strong></h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverVersionUrl = <span class="string">&quot;https://example.com/version.json&quot;</span>; <span class="comment">// 服务器版本文件 URL</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localVersionPath = Application.persistentDataPath + <span class="string">&quot;/version.json&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverAssetBaseUrl = <span class="string">&quot;https://example.com/&quot;</span>; <span class="comment">// 资源下载根目录</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        StartCoroutine(CheckForUpdates());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">CheckForUpdates</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取服务器版本文件</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(serverVersionUrl);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result != UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to fetch version.json: &quot;</span> + versionRequest.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">string</span> serverVersionContent = versionRequest.downloadHandler.text;</span><br><span class="line">        <span class="keyword">var</span> serverVersionData = JsonUtility.FromJson&lt;VersionData&gt;(serverVersionContent);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查本地版本文件</span></span><br><span class="line">        VersionData localVersionData = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (File.Exists(localVersionPath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localVersionContent = File.ReadAllText(localVersionPath);</span><br><span class="line">            localVersionData = JsonUtility.FromJson&lt;VersionData&gt;(localVersionContent);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查版本号和资源</span></span><br><span class="line">        <span class="keyword">if</span> (localVersionData == <span class="literal">null</span> || serverVersionData.version != localVersionData.version)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;New version detected, updating assets...&quot;</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> asset <span class="keyword">in</span> serverVersionData.assetBundles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">string</span> localFilePath = Path.Combine(Application.persistentDataPath, asset.Key);</span><br><span class="line">                <span class="keyword">if</span> (!File.Exists(localFilePath) || GetMD5(localFilePath) != asset.Value)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAsset(asset.Key</span>))</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新本地版本文件</span></span><br><span class="line">            File.WriteAllText(localVersionPath, serverVersionContent);</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets updated successfully!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets are up-to-date.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAsset</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> url = serverAssetBaseUrl + assetName;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(url);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localPath = Path.Combine(Application.persistentDataPath, assetName);</span><br><span class="line">            File.WriteAllBytes(localPath, request.downloadHandler.data);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;Downloaded: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;Failed to download <span class="subst">&#123;assetName&#125;</span>: <span class="subst">&#123;request.error&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = System.Security.Cryptography.MD5.Create())</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">            <span class="keyword">return</span> System.BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>通过以上流程，你可以实现完整的热更新功能，包括打包资源、生成版本文件、检查和下载更新资源。</p>
-<h2 id="HybridCLR-程序集打包成ab并加载"><a href="#HybridCLR-程序集打包成ab并加载" class="headerlink" title="HybridCLR 程序集打包成ab并加载"></a>HybridCLR 程序集打包成ab并加载</h2><h3 id="Unity-HybridCLR-热更新程序集打包与加载流程"><a href="#Unity-HybridCLR-热更新程序集打包与加载流程" class="headerlink" title="Unity HybridCLR 热更新程序集打包与加载流程"></a><strong>Unity HybridCLR 热更新程序集打包与加载流程</strong></h3><p>HybridCLR 是 Unity 的一种轻量级跨平台解决方案，支持加载 AOT（Ahead Of Time）和解释执行的程序集，适用于游戏热更新。以下是完整的 <strong>打包流程</strong> 和 <strong>加载流程</strong>。</p>
-<hr>
-<h2 id="1-热更新程序集打包流程"><a href="#1-热更新程序集打包流程" class="headerlink" title="1. 热更新程序集打包流程"></a><strong>1. 热更新程序集打包流程</strong></h2><h3 id="1-1-配置热更新程序集工程"><a href="#1-1-配置热更新程序集工程" class="headerlink" title="1.1 配置热更新程序集工程"></a><strong>1.1 配置热更新程序集工程</strong></h3><h4 id="步骤-1-创建独立的热更新工程"><a href="#步骤-1-创建独立的热更新工程" class="headerlink" title="步骤 1: 创建独立的热更新工程"></a><strong>步骤 1: 创建独立的热更新工程</strong></h4><ul>
-<li>在 Unity 项目中，创建一个独立的 C# 项目用于存放热更新代码。</li>
-<li>确保该工程编译为 <code>.dll</code> 文件（Class Library 项目）。</li>
-<li>使用 <code>.NET Framework 4.x</code> 或 <code>.NET Standard 2.1</code>（与 Unity 项目一致）。</li>
-</ul>
-<h4 id="步骤-2-添加必要引用"><a href="#步骤-2-添加必要引用" class="headerlink" title="步骤 2: 添加必要引用"></a><strong>步骤 2: 添加必要引用</strong></h4><ul>
-<li>引用 Unity 的程序集文件：<ul>
-<li><code>UnityEngine.dll</code></li>
-<li><code>UnityEngine.CoreModule.dll</code></li>
-<li>这些文件可在 Unity 安装目录的 <code>Editor/Data/Managed</code> 或 <code>Library/ScriptAssemblies</code> 下找到。</li>
-</ul>
-</li>
-</ul>
-<h4 id="步骤-3-编写热更新代码"><a href="#步骤-3-编写热更新代码" class="headerlink" title="步骤 3: 编写热更新代码"></a><strong>步骤 3: 编写热更新代码</strong></h4><ul>
-<li>将需要动态更新的逻辑代码放入热更新工程。</li>
-<li>避免引用 UnityEditor 命名空间。</li>
-<li><strong>特别注意</strong>：在 HybridCLR 中，一部分代码会运行在 AOT 模式，因此需要合理规划哪些代码进入热更新工程，哪些留在主工程中。</li>
-</ul>
-<hr>
-<h3 id="1-2-编译与输出程序集"><a href="#1-2-编译与输出程序集" class="headerlink" title="1.2 编译与输出程序集"></a><strong>1.2 编译与输出程序集</strong></h3><h4 id="步骤-1-编译热更新程序集"><a href="#步骤-1-编译热更新程序集" class="headerlink" title="步骤 1: 编译热更新程序集"></a><strong>步骤 1: 编译热更新程序集</strong></h4><ul>
-<li>使用 Visual Studio 或 Rider 将热更新工程编译为 <code>.dll</code> 文件。</li>
-<li>输出文件如：<ul>
-<li><code>HotUpdate.dll</code>（主程序集）</li>
-<li><code>HotUpdate.pdb</code>（符号文件，用于调试）。</li>
-</ul>
-</li>
-</ul>
-<h4 id="步骤-2-标记为热更新程序集"><a href="#步骤-2-标记为热更新程序集" class="headerlink" title="步骤 2: 标记为热更新程序集"></a><strong>步骤 2: 标记为热更新程序集</strong></h4><ul>
-<li>在 Unity 的主工程中，创建一个文件夹（如 <code>Assets/HotUpdateAssemblies</code>），将编译好的 <code>.dll</code> 文件放入该目录。</li>
-</ul>
-<h4 id="步骤-3-使用-AssetBundle-打包"><a href="#步骤-3-使用-AssetBundle-打包" class="headerlink" title="步骤 3: 使用 AssetBundle 打包"></a><strong>步骤 3: 使用 AssetBundle 打包</strong></h4><ul>
-<li>在 Unity 中创建一个脚本，用于将这些 <code>.dll</code> 文件打包成 AssetBundle：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildHotUpdateAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputPath = <span class="string">&quot;Assets/StreamingAssets/HotUpdateBundles&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> (!System.IO.Directory.Exists(outputPath))</span><br><span class="line">            System.IO.Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        AssetBundleBuild[] buildMap = <span class="keyword">new</span> AssetBundleBuild[<span class="number">1</span>];</span><br><span class="line">        buildMap[<span class="number">0</span>] = <span class="keyword">new</span> AssetBundleBuild</span><br><span class="line">        &#123;</span><br><span class="line">            assetBundleName = <span class="string">&quot;hotupdateassemblies&quot;</span>,</span><br><span class="line">            assetNames = <span class="keyword">new</span>[] &#123; <span class="string">&quot;Assets/HotUpdateAssemblies/HotUpdate.dll&quot;</span> &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot update AssetBundle built successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>这会将 <code>HotUpdate.dll</code> 打包到一个名为 <code>hotupdateassemblies</code> 的 AssetBundle 中。</li>
-</ul>
-<h4 id="步骤-4-上传到资源服务器"><a href="#步骤-4-上传到资源服务器" class="headerlink" title="步骤 4: 上传到资源服务器"></a><strong>步骤 4: 上传到资源服务器</strong></h4><ul>
-<li>将打包生成的 AssetBundle（如 <code>hotupdateassemblies</code>) 上传到远程服务器（如 GitHub Releases、CDN、阿里云 OSS 等），以便运行时下载。</li>
-</ul>
-<hr>
-<h2 id="2-热更新程序集加载流程"><a href="#2-热更新程序集加载流程" class="headerlink" title="2. 热更新程序集加载流程"></a><strong>2. 热更新程序集加载流程</strong></h2><h3 id="2-1-配置-HybridCLR"><a href="#2-1-配置-HybridCLR" class="headerlink" title="2.1 配置 HybridCLR"></a><strong>2.1 配置 HybridCLR</strong></h3><h4 id="步骤-1-安装-HybridCLR"><a href="#步骤-1-安装-HybridCLR" class="headerlink" title="步骤 1: 安装 HybridCLR"></a><strong>步骤 1: 安装 HybridCLR</strong></h4><ul>
-<li>在 Unity 项目中，按照 HybridCLR 的官方文档安装 HybridCLR 插件。</li>
-<li>安装后会生成以下文件和配置：<ul>
-<li><code>HybridCLR/HotUpdateAssemblies</code> 文件夹（存放热更新程序集）。</li>
-<li><code>HybridCLR</code> 配置文件（设置热更新相关参数）。</li>
-</ul>
-</li>
-</ul>
-<h4 id="步骤-2-配置-AOT-元数据"><a href="#步骤-2-配置-AOT-元数据" class="headerlink" title="步骤 2: 配置 AOT 元数据"></a><strong>步骤 2: 配置 AOT 元数据</strong></h4><ul>
-<li>AOT 模式需要将部分元数据文件（<code>.dll</code>）打包到游戏中。</li>
-<li>在 <code>HybridCLR/HotUpdateAssemblies</code> 文件夹中，放入所有热更新相关的 <code>.dll</code> 文件。</li>
-</ul>
-<hr>
-<h3 id="2-2-加载热更新程序集"><a href="#2-2-加载热更新程序集" class="headerlink" title="2.2 加载热更新程序集"></a><strong>2.2 加载热更新程序集</strong></h3><h4 id="步骤-1-下载-AssetBundle"><a href="#步骤-1-下载-AssetBundle" class="headerlink" title="步骤 1: 下载 AssetBundle"></a><strong>步骤 1: 下载 AssetBundle</strong></h4><ul>
-<li>游戏启动时，从远程服务器下载最新的 AssetBundle 文件。</li>
-</ul>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AssetBundleURL = <span class="string">&quot;https://your-server.com/hotupdateassemblies&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        <span class="keyword">using</span> <span class="keyword">var</span> www = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(AssetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> www.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (www.result != UnityEngine.Networking.UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + www.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加载 AssetBundle</span></span><br><span class="line">        <span class="keyword">var</span> assetBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(www);</span><br><span class="line">        <span class="keyword">if</span> (assetBundle == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 提取 .dll 文件</span></span><br><span class="line">        TextAsset dllAsset = assetBundle.LoadAsset&lt;TextAsset&gt;(<span class="string">&quot;HotUpdate.dll&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (dllAsset == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load HotUpdate.dll from AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        LoadHotUpdateAssembly(dllAsset.bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LoadHotUpdateAssembly</span>(<span class="params"><span class="built_in">byte</span>[] dllBytes</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> assembly = System.Reflection.Assembly.Load(dllBytes);</span><br><span class="line">        <span class="keyword">var</span> type = assembly.GetType(<span class="string">&quot;HotUpdate.Program&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> method = type.GetMethod(<span class="string">&quot;Main&quot;</span>);</span><br><span class="line">        method?.Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="步骤-2-加载热更新程序集"><a href="#步骤-2-加载热更新程序集" class="headerlink" title="步骤 2: 加载热更新程序集"></a><strong>步骤 2: 加载热更新程序集</strong></h4><ul>
-<li>使用 <code>System.Reflection.Assembly.Load</code> 加载 <code>HotUpdate.dll</code>，并调用其中的入口方法（如 <code>Main()</code>）。</li>
-</ul>
-<h4 id="步骤-3-切换逻辑到热更新代码"><a href="#步骤-3-切换逻辑到热更新代码" class="headerlink" title="步骤 3: 切换逻辑到热更新代码"></a><strong>步骤 3: 切换逻辑到热更新代码</strong></h4><ul>
-<li>在热更新程序集（如 <code>HotUpdate.dll</code>）中，处理游戏的逻辑更新。例如：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">HotUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;HotUpdate assembly loaded successfully!&quot;</span>);</span><br><span class="line">            <span class="comment">// 热更新逻辑处理...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<hr>
-<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a><strong>3. 总结</strong></h2><h3 id="打包流程"><a href="#打包流程" class="headerlink" title="打包流程"></a><strong>打包流程</strong></h3><ol>
-<li>在独立的 C# 项目中编写热更新代码，编译为 <code>.dll</code> 文件。</li>
-<li>将 <code>.dll</code> 文件放入 Unity 项目中并打包为 AssetBundle。</li>
-<li>将打包的 AssetBundle 上传到远程服务器。</li>
-</ol>
-<h3 id="加载流程"><a href="#加载流程" class="headerlink" title="加载流程"></a><strong>加载流程</strong></h3><ol>
-<li>游戏启动时，下载远程的 AssetBundle 文件。</li>
-<li>解压并加载 <code>.dll</code> 文件到内存。</li>
-<li>使用 <code>Assembly.Load</code> 加载程序集，并调用热更新代码入口（如 <code>Main()</code> 方法）。</li>
-<li>切换游戏逻辑到热更新代码。</li>
-</ol>
-<p>通过 HybridCLR，这种热更新流程实现了代码与资源的分离更新，提升了项目的维护性和灵活性。</p>
-<h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
-  </entry>
-  <entry>
     <title>unity 面试总结</title>
     <url>/2025/02/20/unity-%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h1 id="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"><a href="#IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？" class="headerlink" title="IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？"></a>IT技术类岗位面试一般要问哪些问题？有哪几轮面试？会从哪些方面提问？招聘者想要得到什么信息或者答复？</h1><p>IT 技术类岗位的面试通常包括多个环节，具体的面试轮次、问题类型和考察重点取决于 <strong>公司规模、职位级别（初级&#x2F;中级&#x2F;高级）、技术方向（前端&#x2F;后端&#x2F;全栈&#x2F;算法&#x2F;架构&#x2F;游戏开发等）</strong>。以下是 <strong>一般 IT 技术岗面试流程、可能的问题类型、考察点以及面试官的期望</strong>。  </p>
@@ -11020,34 +11028,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
-    <title>提升</title>
-    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<ol>
-<li>做demo</li>
-<li>看技术文章</li>
-<li>逛社区，看别人的问题和解决方案</li>
-<li>研究GitHub开源项目</li>
-<li>学习新技术，看教程</li>
-<li>刷boss直聘,关注市场技术需求和趋势</li>
-<li>根据unity 官方认证考核要求，系统学习技能点</li>
-<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
-<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
-<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>提升</category>
-      </categories>
-      <tags>
-        <tag>提升</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>多语言文件批量对比工具文档</title>
     <url>/2025/07/09/%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%89%B9%E9%87%8F%E5%AF%B9%E6%AF%94%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
     <content><![CDATA[<h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>多语言文件批量对比工具是一个Unity编辑器扩展工具，用于批量扫描和对比游戏中的多语言Lua文件，检查不同语言版本之间的键值一致性。该工具能够自动识别同名语言文件组，并对比各组文件中键的差异，帮助开发者快速发现多语言文件中的缺失或多余键值。</p>
@@ -11118,6 +11098,34 @@ K8s：好的，我保证永远有3个nginx在跑</li>
         <tag>Lua</tag>
         <tag>unity工具</tag>
         <tag>多语言</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
       </tags>
   </entry>
   <entry>
@@ -12663,6 +12671,94 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
+    <title>算法脑筋急转弯</title>
+    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
+    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？"><a href="#四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？" class="headerlink" title="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？"></a>四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2><p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
+<h3 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a><strong>步骤</strong>：</h3><ol>
+<li><p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
+</li>
+<li><p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
+<ul>
+<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
+<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
+<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
+<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
+</ul>
+</li>
+<li><p><strong>称重</strong>：</p>
+<ul>
+<li>假设正常药片的重量为 ( w )，</li>
+<li>过期药片的重量为 ( w + 1 )。</li>
+<li>如果所有药片都是正常的，总重量应为：<br>[<br>1w + 2w + 3w + 4w &#x3D; 10w<br>]</li>
+<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
+</ul>
+</li>
+<li><p><strong>分析结果</strong>：</p>
+<ul>
+<li>设称得的总重量为 ( S )，</li>
+<li>计算超出的重量：<br>[<br>S - 10w<br>]</li>
+<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
+</ul>
+</li>
+</ol>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
+<ul>
+<li>取样药片总数：( 1 + 2 + 3 + 4 &#x3D; 10 ) 片，</li>
+<li>理论总重量：( 10w )，</li>
+<li>实际称重：( 10w + 3 )，</li>
+<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
+</ul>
+<p><strong>结论</strong>：<br>通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
+<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？"><a href="#现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？" class="headerlink" title="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？"></a>现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2><p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
+<h3 id="步骤：-1"><a href="#步骤：-1" class="headerlink" title="步骤："></a><strong>步骤</strong>：</h3><ol>
+<li><p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
+</li>
+<li><p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
+</li>
+<li><p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
+<ul>
+<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
+<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="结论："><a href="#结论：" class="headerlink" title="结论："></a><strong>结论</strong>：</h3><p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
+<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？"><a href="#有两个容器分别是5L与6L-如何精准得到3L的水？" class="headerlink" title="有两个容器分别是5L与6L,如何精准得到3L的水？"></a>有两个容器分别是5L与6L,如何精准得到3L的水？</h2><p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。  </p>
+<hr>
+<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><a href="#方法-1：使用-6L-容器倒入-5L-容器" class="headerlink" title="方法 1：使用 6L 容器倒入 5L 容器"></a><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3><ol>
+<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
+<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
+<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
+<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
+<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
+<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。<ul>
+<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><a href="#方法-2：使用-5L-容器倒入-6L-容器" class="headerlink" title="方法 2：使用 5L 容器倒入 6L 容器"></a><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3><ol>
+<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
+<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。<ul>
+<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
+</ul>
+</li>
+<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
+<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
+<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
+<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
+</ol>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
+<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
+</ul>
+<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
+]]></content>
+  </entry>
+  <entry>
     <title>网络游戏分布式架构</title>
     <url>/2026/01/29/%E7%BD%91%E7%BB%9C%E6%B8%B8%E6%88%8F%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/</url>
     <content><![CDATA[<h1 id="简易网络游戏分布式架构图"><a href="#简易网络游戏分布式架构图" class="headerlink" title="简易网络游戏分布式架构图"></a>简易网络游戏分布式架构图</h1><h2 id="一、核心架构图（概览）"><a href="#一、核心架构图（概览）" class="headerlink" title="一、核心架构图（概览）"></a>一、核心架构图（概览）</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                            客户端层 (Client Layer)                           │</span><br><span class="line">├─────────────────────────────────────────────────────────────────────────────┤</span><br><span class="line">│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐           │</span><br><span class="line">│  │  手游   │  │  端游   │  │  页游   │  │ Web管理 │  │   SDK   │           │</span><br><span class="line">│  │ App     │  │ Client  │  │ Browser │  │ Console │  │         │           │</span><br><span class="line">│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘           │</span><br><span class="line">│       │             │             │            │            │                │</span><br><span class="line">└───────┼─────────────┼─────────────┼────────────┼────────────┼────────────────┘</span><br><span class="line">        │             │             │            │            │</span><br><span class="line">        ▼             ▼             ▼            ▼            ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                         网关接入层 (Gateway Layer)                           │</span><br><span class="line">│  ┌──────────────────────────────────────────────────────────┐              │</span><br><span class="line">│  │                    负载均衡集群 (Load Balancer)            │              │</span><br><span class="line">│  │  ┌─────────────┬──────────────┬────────────┬──────────┐  │              │</span><br><span class="line">│  │  │   Nginx     │    HAProxy   │    LVS     │   F5     │  │              │</span><br><span class="line">│  │  └─────────────┴──────────────┴────────────┴──────────┘  │              │</span><br><span class="line">│  └──────────────────────────┬────────────────────────────────┘              │</span><br><span class="line">│                             │                                                 │</span><br><span class="line">│       ┌─────────────────────┼─────────────────────┐                         │</span><br><span class="line">│       ▼                     ▼                     ▼                         │</span><br><span class="line">│  ┌──────────┐         ┌──────────┐         ┌──────────┐                    │</span><br><span class="line">│  │ TCP网关   │         │ HTTP网关  │         │ WebSocket │                    │</span><br><span class="line">│  │ (Game)    │         │ (RestAPI)│         │ (实时)    │                    │</span><br><span class="line">│  └────┬──────┘         └────┬─────┘         └────┬─────┘                    │</span><br><span class="line">│       │                     │                    │                          │</span><br><span class="line">└───────┼─────────────────────┼────────────────────┼──────────────────────────┘</span><br><span class="line">        │                     │                    │</span><br><span class="line">        ▼                     ▼                    ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        业务服务层 (Business Layer)                           │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐             │</span><br><span class="line">│  │  登录服务   │  │  角色服务   │  │  背包服务   │  │  好友服务   │             │</span><br><span class="line">│  │  Login     │  │  Character │  │  Bag       │  │  Friend    │             │</span><br><span class="line">│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘             │</span><br><span class="line">│        │                │                │               │                   │</span><br><span class="line">│  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐             │</span><br><span class="line">│  │  匹配服务   │  │  战斗服务   │  │  副本服务   │  │  邮件服务   │             │</span><br><span class="line">│  │  Match     │  │  Battle    │  │  Dungeon   │  │  Mail      │             │</span><br><span class="line">│  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘             │</span><br><span class="line">│        │                │                │               │                   │</span><br><span class="line">│  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐  ┌─────┴──────┐             │</span><br><span class="line">│  │  公会服务   │  │  拍卖行服务  │  │  聊天服务   │  │  排行服务   │             │</span><br><span class="line">│  │  Guild     │  │  Auction   │  │  Chat      │  │  Rank      │             │</span><br><span class="line">│  └────────────┘  └────────────┘  └────────────┘  └────────────┘             │</span><br><span class="line">│                                                                              │</span><br><span class="line">└──────────────────────┬───────────────────────────────────────────────────────┘</span><br><span class="line">                       │</span><br><span class="line">                       ▼</span><br><span class="line">┌─────────────────────────────────────────────────────────────────────────────┐</span><br><span class="line">│                        数据服务层 (Data Layer)                               │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    缓存层 (Cache Layer)                               │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  Redis   │  │ Memcached│  │  Local   │  │  CDN     │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  Cache   │  │  缓存     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    存储层 (Storage Layer)                             │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │  MySQL   │  │ MongoDB  │  │ PostgreSQL│ │  TiDB    │            │    │</span><br><span class="line">│  │  │  集群     │  │  集群     │  │  集群      │ │  集群     │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">│                                                                              │</span><br><span class="line">│  ┌─────────────────────────────────────────────────────────────────────┐    │</span><br><span class="line">│  │                    大数据层 (BigData Layer)                           │    │</span><br><span class="line">│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐            │    │</span><br><span class="line">│  │  │   HDFS   │  │  HBase   │  │ ClickHouse│ │  ELK     │            │    │</span><br><span class="line">│  │  │          │  │          │  │           │ │   Stack  │            │    │</span><br><span class="line">│  │  └──────────┘  └──────────┘  └──────────┘  └──────────┘            │    │</span><br><span class="line">│  └─────────────────────────────────────────────────────────────────────┘    │</span><br><span class="line">└─────────────────────────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
@@ -12787,94 +12883,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       <tags>
         <tag>分布式,微服务</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>算法脑筋急转弯</title>
-    <url>/2025/02/20/%E7%AE%97%E6%B3%95%E8%84%91%E7%AD%8B%E6%80%A5%E8%BD%AC%E5%BC%AF/</url>
-    <content><![CDATA[<h2 id="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？"><a href="#四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量-1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？" class="headerlink" title="四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？"></a>四瓶药，每瓶含量若干，其中一瓶过期了，过期的药片比正常的药片的重量+1，正常药片的重量是已知的，现在有一个电子秤，请问如何在只秤一次的情况下找出过期的那瓶药？</h2><p>可以利用数字编码的方式，只通过一次称重找出过期的那瓶药。方法如下：</p>
-<h3 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a><strong>步骤</strong>：</h3><ol>
-<li><p><strong>编号</strong>：将四瓶药分别编号为 1、2、3、4。</p>
-</li>
-<li><p><strong>取样</strong>：从第 ( i ) 瓶药中取出 ( i ) 片药：</p>
-<ul>
-<li>从 <strong>第 1 瓶</strong> 取 <strong>1 片</strong>，</li>
-<li>从 <strong>第 2 瓶</strong> 取 <strong>2 片</strong>，</li>
-<li>从 <strong>第 3 瓶</strong> 取 <strong>3 片</strong>，</li>
-<li>从 <strong>第 4 瓶</strong> 取 <strong>4 片</strong>。</li>
-</ul>
-</li>
-<li><p><strong>称重</strong>：</p>
-<ul>
-<li>假设正常药片的重量为 ( w )，</li>
-<li>过期药片的重量为 ( w + 1 )。</li>
-<li>如果所有药片都是正常的，总重量应为：<br>[<br>1w + 2w + 3w + 4w &#x3D; 10w<br>]</li>
-<li>但由于某一瓶药的药片过期，它的药片重量会比正常重量多出 <strong>过期药片数 × 1</strong>。</li>
-</ul>
-</li>
-<li><p><strong>分析结果</strong>：</p>
-<ul>
-<li>设称得的总重量为 ( S )，</li>
-<li>计算超出的重量：<br>[<br>S - 10w<br>]</li>
-<li>这个值等于 <strong>过期药瓶的编号</strong>，因为我们从第 ( i ) 瓶中取了 ( i ) 片药，而过期药片的重量比正常药片多 1，所以增加的总重量正好是 ( i )。</li>
-</ul>
-</li>
-</ol>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><p>假设 <strong>第 3 瓶药过期</strong>，那么：</p>
-<ul>
-<li>取样药片总数：( 1 + 2 + 3 + 4 &#x3D; 10 ) 片，</li>
-<li>理论总重量：( 10w )，</li>
-<li>实际称重：( 10w + 3 )，</li>
-<li>多出的重量为 <strong>3</strong>，因此第 <strong>3 瓶</strong> 过期。</li>
-</ul>
-<p><strong>结论</strong>：<br>通过一次称重，即可根据超出的重量直接确定哪一瓶药过期。</p>
-<h2 id="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？"><a href="#现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？" class="headerlink" title="现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？"></a>现有两支香，他们长短粗细各不相同，但是燃烬的时间都是一小时，请问我要如何得到15分钟？</h2><p>可以利用香燃烧速度不均匀但总时间固定的特性，通过 <strong>两端点燃</strong> 和 <strong>顺序点燃</strong> 来测量 <strong>15分钟</strong>。</p>
-<h3 id="步骤：-1"><a href="#步骤：-1" class="headerlink" title="步骤："></a><strong>步骤</strong>：</h3><ol>
-<li><p><strong>第一支香</strong>：<strong>两端同时点燃</strong>，它会在 <strong>30分钟</strong> 内燃尽（因为燃烧速度加倍）。</p>
-</li>
-<li><p><strong>第二支香</strong>：<strong>只点燃一端</strong>，它仍然需要 <strong>60分钟</strong> 燃尽。</p>
-</li>
-<li><p><strong>当第一支香燃尽时</strong>（即 <strong>30分钟过去了</strong>），<strong>立即点燃第二支香的另一端</strong>。</p>
-<ul>
-<li>由于此时第二支香已经燃烧了 <strong>30分钟</strong>，还剩 <strong>30分钟</strong> 可燃时间。</li>
-<li>现在两端同时点燃，燃烧速度加倍，因此 <strong>剩余部分会在 15 分钟内燃尽</strong>。</li>
-</ul>
-</li>
-</ol>
-<h3 id="结论："><a href="#结论：" class="headerlink" title="结论："></a><strong>结论</strong>：</h3><p><strong>第一支香 + 第二支香的双端燃烧</strong>，即可精准测得 <strong>15分钟</strong>！</p>
-<h2 id="有两个容器分别是5L与6L-如何精准得到3L的水？"><a href="#有两个容器分别是5L与6L-如何精准得到3L的水？" class="headerlink" title="有两个容器分别是5L与6L,如何精准得到3L的水？"></a>有两个容器分别是5L与6L,如何精准得到3L的水？</h2><p>我们可以利用 <strong>倒水、装满、倒空</strong> 的操作，通过 <strong>6L 和 5L 容器的相互转换</strong>，精准得到 <strong>3L</strong> 的水。  </p>
-<hr>
-<h3 id="方法-1：使用-6L-容器倒入-5L-容器"><a href="#方法-1：使用-6L-容器倒入-5L-容器" class="headerlink" title="方法 1：使用 6L 容器倒入 5L 容器"></a><strong>方法 1：使用 6L 容器倒入 5L 容器</strong></h3><ol>
-<li><strong>6L 装满</strong>（6L 容器有 6L 水）。</li>
-<li><strong>把水倒入 5L 容器</strong>，5L 容器装满，6L 还剩 <strong>1L</strong>（6L → 1L，5L → 5L）。</li>
-<li><strong>倒掉 5L 容器的水</strong>（6L → 1L，5L → 0L）。</li>
-<li><strong>把 6L 容器的 1L 倒入 5L 容器</strong>（6L → 0L，5L → 1L）。</li>
-<li><strong>再次装满 6L 容器</strong>（6L → 6L，5L → 1L）。</li>
-<li><strong>将 6L 容器的水倒入 5L 容器</strong>，直到 5L 容器装满（6L 倒 <strong>4L</strong> 进去）。<ul>
-<li>此时 6L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：使用-5L-容器倒入-6L-容器"><a href="#方法-2：使用-5L-容器倒入-6L-容器" class="headerlink" title="方法 2：使用 5L 容器倒入 6L 容器"></a><strong>方法 2：使用 5L 容器倒入 6L 容器</strong></h3><ol>
-<li><strong>5L 容器装满</strong>（5L → 5L，6L → 0L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>（5L → 0L，6L → 5L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 5L）。</li>
-<li><strong>往 6L 容器倒水</strong>，<strong>只倒 1L</strong>（因为 6L 只能装 1L）。<ul>
-<li>此时 6L 容器变成 <strong>6L</strong>（满了），5L 容器剩 <strong>4L</strong>。</li>
-</ul>
-</li>
-<li><strong>倒掉 6L 容器的水</strong>（5L → 4L，6L → 0L）。</li>
-<li><strong>把 5L 容器中的 4L 倒入 6L 容器</strong>（5L → 0L，6L → 4L）。</li>
-<li><strong>再次装满 5L 容器</strong>（5L → 5L，6L → 4L）。</li>
-<li><strong>把 5L 容器的水倒入 6L 容器</strong>，只倒 <strong>2L</strong>，此时 6L 容器装满，5L 还剩 <strong>3L</strong>（✅ <strong>成功得到 3L</strong>！）。</li>
-</ol>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
-<li><strong>方法 1</strong>（6L 容器倒 5L 容器）：更直接，6L 只剩 3L 时停止。</li>
-<li><strong>方法 2</strong>（5L 倒 6L）：依靠不断装满倒水的方式，最终剩 3L。</li>
-</ul>
-<p>这两种方法都可以 <strong>精准获得 3L 水</strong>！💡</p>
-]]></content>
   </entry>
   <entry>
     <title>自建git服务器</title>
@@ -13079,40 +13087,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       <tags>
         <tag>git</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>跨境电商</title>
-    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
-    <content><![CDATA[<p>店铺类型：</p>
-<ul>
-<li>铺货</li>
-<li>精铺</li>
-<li>品牌（精品）</li>
-</ul>
-<p>物流</p>
-<ul>
-<li>FBA：亚马逊仓发货</li>
-<li>FBM(商家自发货)</li>
-</ul>
-<p>形式：</p>
-<ul>
-<li>海</li>
-<li>铁</li>
-<li>空</li>
-</ul>
-<p>工具：</p>
-<p>谷歌趋势： Google Trends  关键词搜索 </p>
-<ul>
-<li>相关主题  趋势变化判断是不是和开发该品类</li>
-<li>订阅关键词</li>
-</ul>
-<p>ads - 关键词规划师 </p>
-<ul>
-<li>转换率</li>
-<li>获客成本</li>
-<li></li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>转产品经理</title>
@@ -13456,6 +13430,40 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 <li>读书学习笔记或产品分析与行业分析</li>
 <li>行业分析可找行业报告通读</li>
 <li>产品可找行业头部，腰部，或新颖的产品做分析</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>跨境电商</title>
+    <url>/2025/02/11/%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86/</url>
+    <content><![CDATA[<p>店铺类型：</p>
+<ul>
+<li>铺货</li>
+<li>精铺</li>
+<li>品牌（精品）</li>
+</ul>
+<p>物流</p>
+<ul>
+<li>FBA：亚马逊仓发货</li>
+<li>FBM(商家自发货)</li>
+</ul>
+<p>形式：</p>
+<ul>
+<li>海</li>
+<li>铁</li>
+<li>空</li>
+</ul>
+<p>工具：</p>
+<p>谷歌趋势： Google Trends  关键词搜索 </p>
+<ul>
+<li>相关主题  趋势变化判断是不是和开发该品类</li>
+<li>订阅关键词</li>
+</ul>
+<p>ads - 关键词规划师 </p>
+<ul>
+<li>转换率</li>
+<li>获客成本</li>
+<li></li>
 </ul>
 ]]></content>
   </entry>
