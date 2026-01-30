@@ -1,12 +1,12 @@
 ---
-title: git无法访问外网
+title: Git无法访问外网
 date: 2024-12-31 02:48:51
 updated: 2024-12-31 02:48:51
 tags:
-    - git
-categories: git
+    - Git
+categories: Git
 keywords: 
-    - git
+    - Git
     - 翻墙
     - clash for Windows
     - 无法访问外网
