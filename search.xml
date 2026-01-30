@@ -2038,22 +2038,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Git学习</title>
-    <url>/2024/12/11/Git%E5%AD%A6%E4%B9%A0/</url>
-    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
-<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
-<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
-<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
-<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
-]]></content>
-      <categories>
-        <category>Git</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Git无法访问外网</title>
     <url>/2024/12/31/Git%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E5%A4%96%E7%BD%91/</url>
     <content><![CDATA[<h2 id="事情经过"><a href="#事情经过" class="headerlink" title="事情经过"></a>事情经过</h2><p>使用vscode git 提交代码和 hexo d时</p>
@@ -2157,62 +2141,19 @@
       </tags>
   </entry>
   <entry>
-    <title>Hexo Butterfly 添加rightside 按钮</title>
-    <url>/2025/01/21/Hexo%20Butterfly%20%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
-    <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
-<p>themes\butterfly\layout\includes\rightside.pug</p>
-<p>themes\butterfly\source\js\main.js</p>
-<p>查找 hide-aside-btn  </p>
-<p><img src="/.io//image.png"></p>
-<p>pug写布局<br>styl写样式<br>main.js控件调用的功能逻辑</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">pug代码，遍历生成自定义按钮：</span><br><span class="line"></span><br><span class="line">mixin <span class="title function_">rightsideItem</span>(array)</span><br><span class="line">  each item <span class="keyword">in</span> array</span><br><span class="line">    <span class="keyword">case</span> item</span><br><span class="line">      when <span class="string">&#x27;customButton&#x27;</span></span><br><span class="line">        button#custom-<span class="title function_">button</span>(type=<span class="string">&quot;button&quot;</span> title=<span class="string">&quot;全屏阅读&quot;</span>)</span><br><span class="line">          i.<span class="property">fas</span>.<span class="property">fa</span>-star</span><br><span class="line"></span><br><span class="line">添加按钮到列表：</span><br><span class="line"></span><br><span class="line">#rightside</span><br><span class="line">  - <span class="keyword">const</span> &#123; enable, hide, show &#125; = theme.<span class="property">rightside_item_order</span></span><br><span class="line">  - <span class="keyword">const</span> hideArray = enable ? hide &amp;&amp; hide.<span class="title function_">split</span>(<span class="string">&#x27;,&#x27;</span>) : [<span class="string">&#x27;readmode&#x27;</span>,<span class="string">&#x27;translate&#x27;</span>,<span class="string">&#x27;darkmode&#x27;</span>,<span class="string">&#x27;hideAside&#x27;</span>, <span class="string">&#x27;customButton&#x27;</span>]</span><br><span class="line">  - <span class="keyword">const</span> showArray = enable ? show &amp;&amp; show.<span class="title function_">split</span>(<span class="string">&#x27;,&#x27;</span>) : [<span class="string">&#x27;toc&#x27;</span>,<span class="string">&#x27;chat&#x27;</span>,<span class="string">&#x27;comment&#x27;</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>按钮click事件：</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;custom-button&#x27;</span>: <span class="function">() =&gt;</span> &#123; </span><br><span class="line">      <span class="comment">// 自定义按钮（阅读模式）</span></span><br><span class="line">      <span class="comment">// document.getElementById(&quot;custom-button&quot;).addEventListener(&quot;click&quot;, function () &#123;</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;click&#x27;</span>);</span><br><span class="line">        <span class="keyword">var</span> page;</span><br><span class="line">        <span class="keyword">const</span> _page = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;page&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (_page)</span><br><span class="line">          page = _page;</span><br><span class="line">        <span class="keyword">const</span> _post = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;post&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (_post)</span><br><span class="line">          page = _post;</span><br><span class="line">        page.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&quot;100%&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">        <span class="comment">// page.style.setProperty(&quot;padding&quot;, &quot;160px&quot;, &quot;important&quot;);</span></span><br><span class="line">        page.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&quot;86px&quot;</span>; <span class="comment">// 撑满屏幕 不加单位视为百分百</span></span><br><span class="line">        <span class="keyword">const</span> content = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;content-inner&quot;</span>);</span><br><span class="line">        content.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&quot;100%&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">        content.<span class="property">style</span>.<span class="property">margin</span> = <span class="string">&quot;0&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">        content.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&quot;0&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">      <span class="comment">// &#125;)</span></span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h2><p>_config.butterfly.yml</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">inject:</span></span><br><span class="line">  <span class="attr">head:</span></span><br><span class="line">  <span class="attr">bottom:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;style&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  .custom-action-buttons &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    position: fixed;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    bottom: -5px;&#x27;</span> <span class="comment"># 调整按钮位置</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    right: 10px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    z-index: 100;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  .custom-action-buttons .action-item &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    width: 35px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    height: 35px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    background-color: #1f1f1f;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    border-radius: 5px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    display: flex;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    justify-content: center;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    align-items: center;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    color: white;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    cursor: pointer;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    margin-bottom: 10px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  .custom-action-buttons .action-item:hover &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    background-color: #555;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/style&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div class=&quot;custom-action-buttons&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;div class=&quot;action-item&quot; id=&quot;custom-music-button&quot; onclick=&quot;toggleMusic()&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &lt;i class=&quot;fas fa-music&quot;&gt;&lt;/i&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  function toggleMusic() &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    const musicPlayer = document.getElementById(&quot;music-player&quot;);&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    if (musicPlayer.style.display === &quot;none&quot;) &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      musicPlayer.style.display = &quot;block&quot;;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &#125; else &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      musicPlayer.style.display = &quot;none&quot;;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div id=&quot;music-player&quot; style=&quot;display: none;&quot;&gt;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script src=&quot;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js&quot;&gt;&lt;/script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  fetch(&quot;/music/playlist.json&quot;)&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    .then(response =&gt; response.json())&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    .then(data =&gt; &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      const ap = new APlayer(&#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        container: document.getElementById(&quot;music-player&quot;),&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        fixed: true,&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        autoplay: false,&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        audio: data,&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        lrcType: 3&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      &#125;);&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &#125;)&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    .catch(error =&gt; console.error(&quot;Error loading playlist:&quot;, error));&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/script&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="分别创建"><a href="#分别创建" class="headerlink" title="分别创建"></a>分别创建</h3><p>将 HTML、CSS 和 JavaScript 提取到独立的文件中，利用 Hexo 的 <code>asset</code> 机制进行引用。：</p>
-<ol>
-<li><strong>HTML</strong> (通过 <code>inject</code> 注入)</li>
-</ol>
-<p>在 <code>inject.bottom</code> 配置中，只保留最简洁的 HTML 结构，避免将 CSS 和 JavaScript 内联。</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">inject:</span></span><br><span class="line">  <span class="attr">head:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;/path/to/custom/styles.css&quot;&gt;&#x27;</span></span><br><span class="line">  <span class="attr">bottom:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div class=&quot;custom-action-buttons&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;div class=&quot;action-item&quot; id=&quot;custom-music-button&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &lt;i class=&quot;fas fa-music&quot;&gt;&lt;/i&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div id=&quot;music-player&quot; style=&quot;display: none;&quot;&gt;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script src=&quot;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js&quot;&gt;&lt;/script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script src=&quot;/path/to/custom/scripts.js&quot;&gt;&lt;/script&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><strong>CSS</strong> (放在 <code>themes/butterfly/source/css/custom/styles.css</code> 文件中)</li>
-</ol>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* custom/styles.css */</span></span><br><span class="line"><span class="selector-class">.custom-action-buttons</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: fixed;</span><br><span class="line">  <span class="attribute">bottom</span>: -<span class="number">5px</span>; <span class="comment">/* 调整按钮位置 */</span></span><br><span class="line">  <span class="attribute">right</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">z-index</span>: <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.custom-action-buttons</span> <span class="selector-class">.action-item</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">35px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">35px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#1f1f1f</span>;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">  <span class="attribute">align-items</span>: center;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">  <span class="attribute">cursor</span>: pointer;</span><br><span class="line">  <span class="attribute">margin-bottom</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.custom-action-buttons</span> <span class="selector-class">.action-item</span><span class="selector-pseudo">:hover</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#555</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li><strong>JavaScript</strong> (放在 <code>themes/butterfly/source/js/custom/scripts.js</code> 文件中)</li>
-</ol>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// custom/scripts.js</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;custom-music-button&quot;</span>).<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, toggleMusic);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">toggleMusic</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> musicPlayer = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;music-player&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (musicPlayer.<span class="property">style</span>.<span class="property">display</span> === <span class="string">&quot;none&quot;</span>) &#123;</span><br><span class="line">    musicPlayer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&quot;block&quot;</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    musicPlayer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&quot;none&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载音乐播放器</span></span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&quot;/music/playlist.json&quot;</span>)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> response.<span class="title function_">json</span>())</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> ap = <span class="keyword">new</span> <span class="title class_">APlayer</span>(&#123;</span><br><span class="line">      <span class="attr">container</span>: <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;music-player&quot;</span>),</span><br><span class="line">      <span class="attr">fixed</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">autoplay</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">audio</span>: data,</span><br><span class="line">      <span class="attr">lrcType</span>: <span class="number">3</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;Error loading playlist:&quot;</span>, error));</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>两种方式都有弊端：</p>
-<ul>
-<li>第一种方式更加规范，但是由于带动了主题代码，升级主题可能会导致原来的脚本丢失。</li>
-<li>第二种方式更灵活，但是这么写不方便调试和阅读，如果将代码分别放到新建立的css和js代码中，使用引用脚本又有点小题大做。</li>
-</ul>
-<h3 id="优化建议"><a href="#优化建议" class="headerlink" title="优化建议"></a>优化建议</h3><ol>
-<li><p><strong>减少 HTML 字符串的拼接</strong>：<br>在 Hexo 的 <code>inject</code> 配置中，你目前是通过多行字符串拼接的方式插入 HTML、CSS 和 JavaScript。这会增加代码的冗长并且可能使其难以维护。可以考虑将 HTML、CSS 和 JavaScript 提取到独立的文件中，利用 Hexo 的 <code>asset</code> 机制进行引用。</p>
-</li>
-<li><p><strong>减少内联 CSS 和 JavaScript</strong>：<br>将 CSS 和 JavaScript 移动到外部文件中，而不是直接嵌入在 <code>inject</code> 配置中。这不仅可以减少页面的大小，还能提高代码的可重用性和可维护性。</p>
-</li>
-<li><p><strong>使用 Pug 或 CSS 来代替 HTML 和内联样式</strong>：<br>如果你希望代码更简洁，可以使用 Pug 模板和 CSS 来实现布局和样式，而不是直接在 <code>inject</code> 中写 HTML 和 CSS。</p>
-</li>
-<li><p><strong>优化 JavaScript 和事件绑定</strong>：<br>通过 <code>addEventListener</code> 方式绑定事件，而不是在 HTML 中使用 <code>onclick</code> 属性，这样可以使 JavaScript 更加分离并且可维护。</p>
-</li>
-</ol>
+    <title>Git学习</title>
+    <url>/2024/12/11/Git%E5%AD%A6%E4%B9%A0/</url>
+    <content><![CDATA[<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p><img src="/.io//image.png" alt="alt text"></p>
+<p><img src="/.io//image-1.png" alt="alt text"><br><img src="/.io//image-2.png" alt="alt text"></p>
+<h2 id="git文件的三种状态"><a href="#git文件的三种状态" class="headerlink" title="git文件的三种状态"></a>git文件的三种状态</h2><p>已修改(modified)<br>已经修改了工作区的某些文件。</p>
+<p>已暂存(staged)<br>已经执行了add操作，但还没有提交，只是暂存在提交清单里。</p>
+<p>已提交(commited)<br>已经提交到本地仓库里，但还没push到远端仓库。<br><img src="/.io//image-3.png" alt="alt text"><br><a href="https://cycle263.github.io/blogs/team/git/advanced.html">参考资料</a></p>
 ]]></content>
       <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
+        <category>Git</category>
       </categories>
       <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -2569,6 +2510,65 @@
       <tags>
         <tag>Harbor</tag>
         <tag>镜像仓库</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo Butterfly 添加rightside 按钮</title>
+    <url>/2025/01/21/Hexo%20Butterfly%20%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
+    <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
+<p>themes\butterfly\layout\includes\rightside.pug</p>
+<p>themes\butterfly\source\js\main.js</p>
+<p>查找 hide-aside-btn  </p>
+<p><img src="/.io//image.png"></p>
+<p>pug写布局<br>styl写样式<br>main.js控件调用的功能逻辑</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">pug代码，遍历生成自定义按钮：</span><br><span class="line"></span><br><span class="line">mixin <span class="title function_">rightsideItem</span>(array)</span><br><span class="line">  each item <span class="keyword">in</span> array</span><br><span class="line">    <span class="keyword">case</span> item</span><br><span class="line">      when <span class="string">&#x27;customButton&#x27;</span></span><br><span class="line">        button#custom-<span class="title function_">button</span>(type=<span class="string">&quot;button&quot;</span> title=<span class="string">&quot;全屏阅读&quot;</span>)</span><br><span class="line">          i.<span class="property">fas</span>.<span class="property">fa</span>-star</span><br><span class="line"></span><br><span class="line">添加按钮到列表：</span><br><span class="line"></span><br><span class="line">#rightside</span><br><span class="line">  - <span class="keyword">const</span> &#123; enable, hide, show &#125; = theme.<span class="property">rightside_item_order</span></span><br><span class="line">  - <span class="keyword">const</span> hideArray = enable ? hide &amp;&amp; hide.<span class="title function_">split</span>(<span class="string">&#x27;,&#x27;</span>) : [<span class="string">&#x27;readmode&#x27;</span>,<span class="string">&#x27;translate&#x27;</span>,<span class="string">&#x27;darkmode&#x27;</span>,<span class="string">&#x27;hideAside&#x27;</span>, <span class="string">&#x27;customButton&#x27;</span>]</span><br><span class="line">  - <span class="keyword">const</span> showArray = enable ? show &amp;&amp; show.<span class="title function_">split</span>(<span class="string">&#x27;,&#x27;</span>) : [<span class="string">&#x27;toc&#x27;</span>,<span class="string">&#x27;chat&#x27;</span>,<span class="string">&#x27;comment&#x27;</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>按钮click事件：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="string">&#x27;custom-button&#x27;</span>: <span class="function">() =&gt;</span> &#123; </span><br><span class="line">      <span class="comment">// 自定义按钮（阅读模式）</span></span><br><span class="line">      <span class="comment">// document.getElementById(&quot;custom-button&quot;).addEventListener(&quot;click&quot;, function () &#123;</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;click&#x27;</span>);</span><br><span class="line">        <span class="keyword">var</span> page;</span><br><span class="line">        <span class="keyword">const</span> _page = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;page&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (_page)</span><br><span class="line">          page = _page;</span><br><span class="line">        <span class="keyword">const</span> _post = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;post&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (_post)</span><br><span class="line">          page = _post;</span><br><span class="line">        page.<span class="property">style</span>.<span class="property">width</span> = <span class="string">&quot;100%&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">        <span class="comment">// page.style.setProperty(&quot;padding&quot;, &quot;160px&quot;, &quot;important&quot;);</span></span><br><span class="line">        page.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&quot;86px&quot;</span>; <span class="comment">// 撑满屏幕 不加单位视为百分百</span></span><br><span class="line">        <span class="keyword">const</span> content = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;content-inner&quot;</span>);</span><br><span class="line">        content.<span class="property">style</span>.<span class="property">maxWidth</span> = <span class="string">&quot;100%&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">        content.<span class="property">style</span>.<span class="property">margin</span> = <span class="string">&quot;0&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">        content.<span class="property">style</span>.<span class="property">padding</span> = <span class="string">&quot;0&quot;</span>; <span class="comment">// 撑满屏幕</span></span><br><span class="line">      <span class="comment">// &#125;)</span></span><br><span class="line">    &#125;,</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h2><p>_config.butterfly.yml</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">inject:</span></span><br><span class="line">  <span class="attr">head:</span></span><br><span class="line">  <span class="attr">bottom:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;style&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  .custom-action-buttons &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    position: fixed;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    bottom: -5px;&#x27;</span> <span class="comment"># 调整按钮位置</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    right: 10px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    z-index: 100;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  .custom-action-buttons .action-item &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    width: 35px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    height: 35px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    background-color: #1f1f1f;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    border-radius: 5px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    display: flex;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    justify-content: center;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    align-items: center;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    color: white;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    cursor: pointer;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    margin-bottom: 10px;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  .custom-action-buttons .action-item:hover &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    background-color: #555;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/style&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div class=&quot;custom-action-buttons&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;div class=&quot;action-item&quot; id=&quot;custom-music-button&quot; onclick=&quot;toggleMusic()&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &lt;i class=&quot;fas fa-music&quot;&gt;&lt;/i&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  function toggleMusic() &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    const musicPlayer = document.getElementById(&quot;music-player&quot;);&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    if (musicPlayer.style.display === &quot;none&quot;) &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      musicPlayer.style.display = &quot;block&quot;;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &#125; else &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      musicPlayer.style.display = &quot;none&quot;;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &#125;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div id=&quot;music-player&quot; style=&quot;display: none;&quot;&gt;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script src=&quot;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js&quot;&gt;&lt;/script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  fetch(&quot;/music/playlist.json&quot;)&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    .then(response =&gt; response.json())&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    .then(data =&gt; &#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      const ap = new APlayer(&#123;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        container: document.getElementById(&quot;music-player&quot;),&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        fixed: true,&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        autoplay: false,&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        audio: data,&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;        lrcType: 3&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;      &#125;);&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &#125;)&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    .catch(error =&gt; console.error(&quot;Error loading playlist:&quot;, error));&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/script&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="分别创建"><a href="#分别创建" class="headerlink" title="分别创建"></a>分别创建</h3><p>将 HTML、CSS 和 JavaScript 提取到独立的文件中，利用 Hexo 的 <code>asset</code> 机制进行引用。：</p>
+<ol>
+<li><strong>HTML</strong> (通过 <code>inject</code> 注入)</li>
+</ol>
+<p>在 <code>inject.bottom</code> 配置中，只保留最简洁的 HTML 结构，避免将 CSS 和 JavaScript 内联。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">inject:</span></span><br><span class="line">  <span class="attr">head:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;link rel=&quot;stylesheet&quot; href=&quot;/path/to/custom/styles.css&quot;&gt;&#x27;</span></span><br><span class="line">  <span class="attr">bottom:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div class=&quot;custom-action-buttons&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;div class=&quot;action-item&quot; id=&quot;custom-music-button&quot;&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;    &lt;i class=&quot;fas fa-music&quot;&gt;&lt;/i&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;  &lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;div id=&quot;music-player&quot; style=&quot;display: none;&quot;&gt;&lt;/div&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script src=&quot;https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js&quot;&gt;&lt;/script&gt;&#x27;</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">&#x27;&lt;script src=&quot;/path/to/custom/scripts.js&quot;&gt;&lt;/script&gt;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>CSS</strong> (放在 <code>themes/butterfly/source/css/custom/styles.css</code> 文件中)</li>
+</ol>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* custom/styles.css */</span></span><br><span class="line"><span class="selector-class">.custom-action-buttons</span> &#123;</span><br><span class="line">  <span class="attribute">position</span>: fixed;</span><br><span class="line">  <span class="attribute">bottom</span>: -<span class="number">5px</span>; <span class="comment">/* 调整按钮位置 */</span></span><br><span class="line">  <span class="attribute">right</span>: <span class="number">10px</span>;</span><br><span class="line">  <span class="attribute">z-index</span>: <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.custom-action-buttons</span> <span class="selector-class">.action-item</span> &#123;</span><br><span class="line">  <span class="attribute">width</span>: <span class="number">35px</span>;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">35px</span>;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#1f1f1f</span>;</span><br><span class="line">  <span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">justify-content</span>: center;</span><br><span class="line">  <span class="attribute">align-items</span>: center;</span><br><span class="line">  <span class="attribute">color</span>: white;</span><br><span class="line">  <span class="attribute">cursor</span>: pointer;</span><br><span class="line">  <span class="attribute">margin-bottom</span>: <span class="number">10px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.custom-action-buttons</span> <span class="selector-class">.action-item</span><span class="selector-pseudo">:hover</span> &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#555</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>JavaScript</strong> (放在 <code>themes/butterfly/source/js/custom/scripts.js</code> 文件中)</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// custom/scripts.js</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;custom-music-button&quot;</span>).<span class="title function_">addEventListener</span>(<span class="string">&quot;click&quot;</span>, toggleMusic);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">toggleMusic</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> musicPlayer = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;music-player&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (musicPlayer.<span class="property">style</span>.<span class="property">display</span> === <span class="string">&quot;none&quot;</span>) &#123;</span><br><span class="line">    musicPlayer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&quot;block&quot;</span>;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    musicPlayer.<span class="property">style</span>.<span class="property">display</span> = <span class="string">&quot;none&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载音乐播放器</span></span><br><span class="line"><span class="title function_">fetch</span>(<span class="string">&quot;/music/playlist.json&quot;</span>)</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> response.<span class="title function_">json</span>())</span><br><span class="line">  .<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> ap = <span class="keyword">new</span> <span class="title class_">APlayer</span>(&#123;</span><br><span class="line">      <span class="attr">container</span>: <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;music-player&quot;</span>),</span><br><span class="line">      <span class="attr">fixed</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">autoplay</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">audio</span>: data,</span><br><span class="line">      <span class="attr">lrcType</span>: <span class="number">3</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;)</span><br><span class="line">  .<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">error</span>(<span class="string">&quot;Error loading playlist:&quot;</span>, error));</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>两种方式都有弊端：</p>
+<ul>
+<li>第一种方式更加规范，但是由于带动了主题代码，升级主题可能会导致原来的脚本丢失。</li>
+<li>第二种方式更灵活，但是这么写不方便调试和阅读，如果将代码分别放到新建立的css和js代码中，使用引用脚本又有点小题大做。</li>
+</ul>
+<h3 id="优化建议"><a href="#优化建议" class="headerlink" title="优化建议"></a>优化建议</h3><ol>
+<li><p><strong>减少 HTML 字符串的拼接</strong>：<br>在 Hexo 的 <code>inject</code> 配置中，你目前是通过多行字符串拼接的方式插入 HTML、CSS 和 JavaScript。这会增加代码的冗长并且可能使其难以维护。可以考虑将 HTML、CSS 和 JavaScript 提取到独立的文件中，利用 Hexo 的 <code>asset</code> 机制进行引用。</p>
+</li>
+<li><p><strong>减少内联 CSS 和 JavaScript</strong>：<br>将 CSS 和 JavaScript 移动到外部文件中，而不是直接嵌入在 <code>inject</code> 配置中。这不仅可以减少页面的大小，还能提高代码的可重用性和可维护性。</p>
+</li>
+<li><p><strong>使用 Pug 或 CSS 来代替 HTML 和内联样式</strong>：<br>如果你希望代码更简洁，可以使用 Pug 模板和 CSS 来实现布局和样式，而不是直接在 <code>inject</code> 中写 HTML 和 CSS。</p>
+</li>
+<li><p><strong>优化 JavaScript 和事件绑定</strong>：<br>通过 <code>addEventListener</code> 方式绑定事件，而不是在 HTML 中使用 <code>onclick</code> 属性，这样可以使 JavaScript 更加分离并且可维护。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
       </tags>
   </entry>
   <entry>
@@ -7557,98 +7557,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity Overdraw 分析</title>
-    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
-<hr>
-<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 编辑器。</li>
-<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
-<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
-<li>选择 <strong>“Overdraw”</strong> 模式。</li>
-</ol>
-<blockquote>
-<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
-</blockquote>
-<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
-<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
-<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
-</ul>
-<hr>
-<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
-<li>点击左上角的 <strong>Enable</strong>。</li>
-<li>运行游戏，进入你要查看的 UI 界面。</li>
-<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
-</ol>
-<blockquote>
-<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
-</blockquote>
-<hr>
-<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
-<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
-</li>
-<li><p>切换到 <strong>Rendering</strong> 模块。</p>
-</li>
-<li><p>查看：</p>
-<ul>
-<li><strong>Draw Calls（绘制调用次数）</strong></li>
-<li><strong>Batches（批处理）</strong></li>
-<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
-</ul>
-</li>
-</ol>
-<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
-<hr>
-<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
-<ol>
-<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
-<li>捕捉一帧 UI 显示画面。</li>
-<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
-</ol>
-<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
-<hr>
-<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-<th>优点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Scene View 的 Overdraw 模式</td>
-<td>快速查看 UI 哪些地方重叠</td>
-<td>快速可视化</td>
-</tr>
-<tr>
-<td>Frame Debugger</td>
-<td>精确分析哪些 UI 元素被重复绘制</td>
-<td>精准</td>
-</tr>
-<tr>
-<td>Profiler</td>
-<td>查看整体 UI 渲染开销</td>
-<td>性能趋势</td>
-</tr>
-<tr>
-<td>RenderDoc</td>
-<td>专业 GPU 分析工具</td>
-<td>最精细</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
-<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity Rebuild 分析</title>
     <url>/2025/06/17/Unity%20Rebuild%20%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<p>在 Unity 的 <strong>UI 系统（UGUI）中</strong>，<strong>Rebuild</strong> 是指 UI 元素在生命周期中的某些阶段发生变化时触发的一种“重建”流程。频繁的 Rebuild 会带来性能问题，尤其在界面复杂或频繁更新时。下面是关于 Rebuild 的全面分析：</p>
@@ -7793,6 +7701,98 @@ graph TD
 </tbody></table>
 <hr>
 <p>如果你能贴出当前频繁触发 Rebuild 的 UI 层级截图或结构，我可以进一步帮你定位是哪类组件或结构导致的性能瓶颈。是否需要我给你一个自动统计每帧 UI Rebuild 的脚本？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity Overdraw 分析</title>
+    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
+<hr>
+<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 编辑器。</li>
+<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
+<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
+<li>选择 <strong>“Overdraw”</strong> 模式。</li>
+</ol>
+<blockquote>
+<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
+</blockquote>
+<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
+<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
+<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
+</ul>
+<hr>
+<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
+<li>点击左上角的 <strong>Enable</strong>。</li>
+<li>运行游戏，进入你要查看的 UI 界面。</li>
+<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
+</ol>
+<blockquote>
+<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
+</blockquote>
+<hr>
+<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
+<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
+</li>
+<li><p>切换到 <strong>Rendering</strong> 模块。</p>
+</li>
+<li><p>查看：</p>
+<ul>
+<li><strong>Draw Calls（绘制调用次数）</strong></li>
+<li><strong>Batches（批处理）</strong></li>
+<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
+</ul>
+</li>
+</ol>
+<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
+<hr>
+<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
+<ol>
+<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
+<li>捕捉一帧 UI 显示画面。</li>
+<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
+</ol>
+<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
+<hr>
+<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>优点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scene View 的 Overdraw 模式</td>
+<td>快速查看 UI 哪些地方重叠</td>
+<td>快速可视化</td>
+</tr>
+<tr>
+<td>Frame Debugger</td>
+<td>精确分析哪些 UI 元素被重复绘制</td>
+<td>精准</td>
+</tr>
+<tr>
+<td>Profiler</td>
+<td>查看整体 UI 渲染开销</td>
+<td>性能趋势</td>
+</tr>
+<tr>
+<td>RenderDoc</td>
+<td>专业 GPU 分析工具</td>
+<td>最精细</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
+<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -8149,31 +8149,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity WebGL 移动端 输入框无法弹出虚拟键盘</title>
-    <url>/2024/12/13/Unity%20WebGL%20%E7%A7%BB%E5%8A%A8%E7%AB%AF%20%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
-    <content><![CDATA[<ol>
-<li><p>去这个网站下载工程：</p>
-<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
-</li>
-<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
-<p><img src="/.io//20241213_141006_image.png"></p>
-</li>
-<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
-</li>
-<li><p>勾选show html element 不然输入后不显示。</p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Unity</category>
-        <category>WebGL</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-        <tag>WebGL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity 后置界面截图代替</title>
     <url>/2025/06/17/Unity%20%E5%90%8E%E7%BD%AE%E7%95%8C%E9%9D%A2%E6%88%AA%E5%9B%BE%E4%BB%A3%E6%9B%BF/</url>
     <content><![CDATA[<p>这是一个非常实用且高级的 UI 性能优化技巧，尤其适用于<strong>多层 UI 堆叠、全屏窗口频繁切换</strong>的游戏中，比如背包、商店、角色等互相遮挡但不会频繁更新的界面。</p>
@@ -8271,185 +8246,28 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity 打AB包流程</title>
-    <url>/2025/01/23/Unity%20%E6%89%93AB%E5%8C%85%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<p>下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。</p>
-<hr>
-<h3 id="1-打包流程概述"><a href="#1-打包流程概述" class="headerlink" title="1. 打包流程概述"></a><strong>1. 打包流程概述</strong></h3><ol>
-<li><p><strong>配置资源文件</strong>：</p>
-<ul>
-<li>将需要打包的资源组织到指定目录中。</li>
-<li>设置每个资源的 AssetBundle 名称。</li>
-</ul>
+    <title>Unity WebGL 移动端 输入框无法弹出虚拟键盘</title>
+    <url>/2024/12/13/Unity%20WebGL%20%E7%A7%BB%E5%8A%A8%E7%AB%AF%20%E8%BE%93%E5%85%A5%E6%A1%86%E6%97%A0%E6%B3%95%E5%BC%B9%E5%87%BA%E8%99%9A%E6%8B%9F%E9%94%AE%E7%9B%98/</url>
+    <content><![CDATA[<ol>
+<li><p>去这个网站下载工程：</p>
+<p><a href="https://github.com/kou-yeung/WebGLInput">https://github.com/kou-yeung/WebGLInput</a></p>
 </li>
-<li><p><strong>打包 AssetBundles</strong>：</p>
-<ul>
-<li>使用 Unity 提供的 <code>BuildPipeline.BuildAssetBundles</code> 方法，将资源打包成 <code>.ab</code> 文件。</li>
-</ul>
+<li><p>将下载工程中的WebGLSupport文件夹拷贝到自己的工程中</p>
+<p><img src="/.io//20241213_141006_image.png"></p>
 </li>
-<li><p><strong>生成版本文件</strong>：</p>
-<ul>
-<li>记录所有打包生成的 <code>.ab</code> 文件及其校验值（MD5 或 SHA256）。</li>
-<li>生成一个 JSON 格式的版本文件，包含版本号、资源文件名及校验值。</li>
-</ul>
+<li><p>将WebGLInput.cs组件添加到InputField组件挂载的对象上</p>
 </li>
-<li><p><strong>上传资源和版本文件</strong>：</p>
-<ul>
-<li>将打包好的 <code>.ab</code> 文件和版本文件上传到服务器。</li>
-</ul>
+<li><p>勾选show html element 不然输入后不显示。</p>
 </li>
 </ol>
-<hr>
-<h3 id="2-实现步骤"><a href="#2-实现步骤" class="headerlink" title="2. 实现步骤"></a><strong>2. 实现步骤</strong></h3><h4 id="Step-1-配置资源文件"><a href="#Step-1-配置资源文件" class="headerlink" title="Step 1: 配置资源文件"></a><strong>Step 1: 配置资源文件</strong></h4><p>在 Unity 中为资源设置 AssetBundle 名称：</p>
-<ol>
-<li>选中需要打包的资源（例如：Prefab、Texture）。</li>
-<li>在 <strong>Inspector</strong> 面板中，设置 <code>AssetBundle</code> 字段为指定的名称。例如：<ul>
-<li><code>character_assets</code></li>
-<li><code>environment_assets</code></li>
-</ul>
-</li>
-</ol>
-<hr>
-<h4 id="Step-2-编写打包脚本"><a href="#Step-2-编写打包脚本" class="headerlink" title="Step 2: 编写打包脚本"></a><strong>Step 2: 编写打包脚本</strong></h4><p>使用 Unity 提供的 API 打包资源。</p>
-<p><strong>示例代码：打包 AssetBundles</strong></p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Security.Cryptography;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 打包输出路径</span></span><br><span class="line">        <span class="built_in">string</span> outputPath = Path.Combine(Application.dataPath, <span class="string">&quot;../AssetBundles&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputPath))</span><br><span class="line">            Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打包所有 AssetBundle</span></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成版本文件</span></span><br><span class="line">        GenerateVersionFile(outputPath);</span><br><span class="line">        Debug.Log(<span class="string">&quot;AssetBundles and version file generated successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GenerateVersionFile</span>(<span class="params"><span class="built_in">string</span> assetBundlePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取所有打包文件</span></span><br><span class="line">        <span class="built_in">string</span>[] files = Directory.GetFiles(assetBundlePath, <span class="string">&quot;*&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">        <span class="keyword">var</span> versionData = <span class="keyword">new</span> VersionData();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> files)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (file.EndsWith(<span class="string">&quot;.manifest&quot;</span>) || file.EndsWith(<span class="string">&quot;.meta&quot;</span>)) <span class="keyword">continue</span>; <span class="comment">// 跳过无用文件</span></span><br><span class="line"></span><br><span class="line">            <span class="built_in">string</span> fileName = Path.GetFileName(file);</span><br><span class="line">            <span class="built_in">string</span> hash = CalculateMD5(file); <span class="comment">// 计算 MD5</span></span><br><span class="line"></span><br><span class="line">            versionData.assetBundles[fileName] = hash;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存版本文件</span></span><br><span class="line">        versionData.version = System.DateTime.Now.ToString(<span class="string">&quot;yyyyMMddHHmmss&quot;</span>); <span class="comment">// 使用时间戳作为版本号</span></span><br><span class="line">        <span class="built_in">string</span> versionFilePath = Path.Combine(assetBundlePath, <span class="string">&quot;version.json&quot;</span>);</span><br><span class="line">        File.WriteAllText(versionFilePath, JsonUtility.ToJson(versionData, <span class="literal">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">CalculateMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = MD5.Create())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">                <span class="keyword">return</span> BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> version;</span><br><span class="line">    <span class="keyword">public</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; assetBundles = <span class="keyword">new</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h4 id="Step-3-上传资源到服务器"><a href="#Step-3-上传资源到服务器" class="headerlink" title="Step 3: 上传资源到服务器"></a><strong>Step 3: 上传资源到服务器</strong></h4><p>将以下内容上传到服务器：</p>
-<ul>
-<li>所有打包生成的 <code>.ab</code> 文件。</li>
-<li><code>version.json</code> 文件。</li>
-</ul>
-<p><strong>常见的上传方式：</strong></p>
-<ul>
-<li>使用 FTP 工具（如 FileZilla）手动上传。</li>
-<li>配合自动化脚本将文件上传到服务器或存储服务（如 AWS S3、GitHub Releases）。</li>
-</ul>
-<hr>
-<h3 id="3-版本文件的结构和内容"><a href="#3-版本文件的结构和内容" class="headerlink" title="3. 版本文件的结构和内容"></a><strong>3. 版本文件的结构和内容</strong></h3><h4 id="版本文件（version-json）示例："><a href="#版本文件（version-json）示例：" class="headerlink" title="版本文件（version.json）示例："></a><strong>版本文件（<code>version.json</code>）示例：</strong></h4><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20250123090000&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;assetBundles&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;character_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;f2a29d0c08f2c4a3d1d7ec5b6e8b8a34&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;environment_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;e1d4f7600c1f7b4a9e5f9e2b123f9a8d&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>说明：</strong></p>
-<ul>
-<li><code>version</code> 表示版本号，用时间戳生成（如 <code>yyyyMMddHHmmss</code> 格式）。</li>
-<li><code>assetBundles</code> 是一个字典，存储每个资源文件名及其对应的 MD5 校验值。</li>
-</ul>
-<hr>
-<h3 id="4-客户端检查版本和热更新流程"><a href="#4-客户端检查版本和热更新流程" class="headerlink" title="4. 客户端检查版本和热更新流程"></a><strong>4. 客户端检查版本和热更新流程</strong></h3><p>在客户端，以下是资源检查和下载的基本逻辑：</p>
-<ol>
-<li><p><strong>获取版本文件</strong>：</p>
-<ul>
-<li>客户端启动时，下载服务器的 <code>version.json</code>。</li>
-<li>如果客户端不存在本地版本文件，则直接下载所有资源。</li>
-</ul>
-</li>
-<li><p><strong>比较版本号</strong>：</p>
-<ul>
-<li>如果服务器版本号高于本地版本号，开始检查资源文件。</li>
-</ul>
-</li>
-<li><p><strong>校验资源文件</strong>：</p>
-<ul>
-<li>根据服务器的版本文件中的校验值，逐一检查本地资源文件是否完整。</li>
-<li>如果文件丢失或校验值不匹配，则下载该文件。</li>
-</ul>
-</li>
-<li><p><strong>下载更新资源</strong>：</p>
-<ul>
-<li>将需要更新的 <code>.ab</code> 文件从服务器下载到本地。</li>
-<li>更新本地的版本文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="5-示例代码：客户端版本检查与更新"><a href="#5-示例代码：客户端版本检查与更新" class="headerlink" title="5. 示例代码：客户端版本检查与更新"></a><strong>5. 示例代码：客户端版本检查与更新</strong></h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverVersionUrl = <span class="string">&quot;https://example.com/version.json&quot;</span>; <span class="comment">// 服务器版本文件 URL</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localVersionPath = Application.persistentDataPath + <span class="string">&quot;/version.json&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverAssetBaseUrl = <span class="string">&quot;https://example.com/&quot;</span>; <span class="comment">// 资源下载根目录</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        StartCoroutine(CheckForUpdates());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">CheckForUpdates</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取服务器版本文件</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(serverVersionUrl);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result != UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to fetch version.json: &quot;</span> + versionRequest.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">string</span> serverVersionContent = versionRequest.downloadHandler.text;</span><br><span class="line">        <span class="keyword">var</span> serverVersionData = JsonUtility.FromJson&lt;VersionData&gt;(serverVersionContent);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查本地版本文件</span></span><br><span class="line">        VersionData localVersionData = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (File.Exists(localVersionPath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localVersionContent = File.ReadAllText(localVersionPath);</span><br><span class="line">            localVersionData = JsonUtility.FromJson&lt;VersionData&gt;(localVersionContent);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查版本号和资源</span></span><br><span class="line">        <span class="keyword">if</span> (localVersionData == <span class="literal">null</span> || serverVersionData.version != localVersionData.version)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;New version detected, updating assets...&quot;</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> asset <span class="keyword">in</span> serverVersionData.assetBundles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">string</span> localFilePath = Path.Combine(Application.persistentDataPath, asset.Key);</span><br><span class="line">                <span class="keyword">if</span> (!File.Exists(localFilePath) || GetMD5(localFilePath) != asset.Value)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAsset(asset.Key</span>))</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新本地版本文件</span></span><br><span class="line">            File.WriteAllText(localVersionPath, serverVersionContent);</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets updated successfully!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets are up-to-date.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAsset</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> url = serverAssetBaseUrl + assetName;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(url);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localPath = Path.Combine(Application.persistentDataPath, assetName);</span><br><span class="line">            File.WriteAllBytes(localPath, request.downloadHandler.data);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;Downloaded: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;Failed to download <span class="subst">&#123;assetName&#125;</span>: <span class="subst">&#123;request.error&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = System.Security.Cryptography.MD5.Create())</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">            <span class="keyword">return</span> System.BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p>通过以上流程，你可以实现完整的热更新功能，包括打包资源、生成版本文件、检查和下载更新资源。</p>
-<h2 id="HybridCLR-程序集打包成ab并加载"><a href="#HybridCLR-程序集打包成ab并加载" class="headerlink" title="HybridCLR 程序集打包成ab并加载"></a>HybridCLR 程序集打包成ab并加载</h2><h3 id="Unity-HybridCLR-热更新程序集打包与加载流程"><a href="#Unity-HybridCLR-热更新程序集打包与加载流程" class="headerlink" title="Unity HybridCLR 热更新程序集打包与加载流程"></a><strong>Unity HybridCLR 热更新程序集打包与加载流程</strong></h3><p>HybridCLR 是 Unity 的一种轻量级跨平台解决方案，支持加载 AOT（Ahead Of Time）和解释执行的程序集，适用于游戏热更新。以下是完整的 <strong>打包流程</strong> 和 <strong>加载流程</strong>。</p>
-<hr>
-<h2 id="1-热更新程序集打包流程"><a href="#1-热更新程序集打包流程" class="headerlink" title="1. 热更新程序集打包流程"></a><strong>1. 热更新程序集打包流程</strong></h2><h3 id="1-1-配置热更新程序集工程"><a href="#1-1-配置热更新程序集工程" class="headerlink" title="1.1 配置热更新程序集工程"></a><strong>1.1 配置热更新程序集工程</strong></h3><h4 id="步骤-1-创建独立的热更新工程"><a href="#步骤-1-创建独立的热更新工程" class="headerlink" title="步骤 1: 创建独立的热更新工程"></a><strong>步骤 1: 创建独立的热更新工程</strong></h4><ul>
-<li>在 Unity 项目中，创建一个独立的 C# 项目用于存放热更新代码。</li>
-<li>确保该工程编译为 <code>.dll</code> 文件（Class Library 项目）。</li>
-<li>使用 <code>.NET Framework 4.x</code> 或 <code>.NET Standard 2.1</code>（与 Unity 项目一致）。</li>
-</ul>
-<h4 id="步骤-2-添加必要引用"><a href="#步骤-2-添加必要引用" class="headerlink" title="步骤 2: 添加必要引用"></a><strong>步骤 2: 添加必要引用</strong></h4><ul>
-<li>引用 Unity 的程序集文件：<ul>
-<li><code>UnityEngine.dll</code></li>
-<li><code>UnityEngine.CoreModule.dll</code></li>
-<li>这些文件可在 Unity 安装目录的 <code>Editor/Data/Managed</code> 或 <code>Library/ScriptAssemblies</code> 下找到。</li>
-</ul>
-</li>
-</ul>
-<h4 id="步骤-3-编写热更新代码"><a href="#步骤-3-编写热更新代码" class="headerlink" title="步骤 3: 编写热更新代码"></a><strong>步骤 3: 编写热更新代码</strong></h4><ul>
-<li>将需要动态更新的逻辑代码放入热更新工程。</li>
-<li>避免引用 UnityEditor 命名空间。</li>
-<li><strong>特别注意</strong>：在 HybridCLR 中，一部分代码会运行在 AOT 模式，因此需要合理规划哪些代码进入热更新工程，哪些留在主工程中。</li>
-</ul>
-<hr>
-<h3 id="1-2-编译与输出程序集"><a href="#1-2-编译与输出程序集" class="headerlink" title="1.2 编译与输出程序集"></a><strong>1.2 编译与输出程序集</strong></h3><h4 id="步骤-1-编译热更新程序集"><a href="#步骤-1-编译热更新程序集" class="headerlink" title="步骤 1: 编译热更新程序集"></a><strong>步骤 1: 编译热更新程序集</strong></h4><ul>
-<li>使用 Visual Studio 或 Rider 将热更新工程编译为 <code>.dll</code> 文件。</li>
-<li>输出文件如：<ul>
-<li><code>HotUpdate.dll</code>（主程序集）</li>
-<li><code>HotUpdate.pdb</code>（符号文件，用于调试）。</li>
-</ul>
-</li>
-</ul>
-<h4 id="步骤-2-标记为热更新程序集"><a href="#步骤-2-标记为热更新程序集" class="headerlink" title="步骤 2: 标记为热更新程序集"></a><strong>步骤 2: 标记为热更新程序集</strong></h4><ul>
-<li>在 Unity 的主工程中，创建一个文件夹（如 <code>Assets/HotUpdateAssemblies</code>），将编译好的 <code>.dll</code> 文件放入该目录。</li>
-</ul>
-<h4 id="步骤-3-使用-AssetBundle-打包"><a href="#步骤-3-使用-AssetBundle-打包" class="headerlink" title="步骤 3: 使用 AssetBundle 打包"></a><strong>步骤 3: 使用 AssetBundle 打包</strong></h4><ul>
-<li>在 Unity 中创建一个脚本，用于将这些 <code>.dll</code> 文件打包成 AssetBundle：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildHotUpdateAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputPath = <span class="string">&quot;Assets/StreamingAssets/HotUpdateBundles&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> (!System.IO.Directory.Exists(outputPath))</span><br><span class="line">            System.IO.Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        AssetBundleBuild[] buildMap = <span class="keyword">new</span> AssetBundleBuild[<span class="number">1</span>];</span><br><span class="line">        buildMap[<span class="number">0</span>] = <span class="keyword">new</span> AssetBundleBuild</span><br><span class="line">        &#123;</span><br><span class="line">            assetBundleName = <span class="string">&quot;hotupdateassemblies&quot;</span>,</span><br><span class="line">            assetNames = <span class="keyword">new</span>[] &#123; <span class="string">&quot;Assets/HotUpdateAssemblies/HotUpdate.dll&quot;</span> &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot update AssetBundle built successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>这会将 <code>HotUpdate.dll</code> 打包到一个名为 <code>hotupdateassemblies</code> 的 AssetBundle 中。</li>
-</ul>
-<h4 id="步骤-4-上传到资源服务器"><a href="#步骤-4-上传到资源服务器" class="headerlink" title="步骤 4: 上传到资源服务器"></a><strong>步骤 4: 上传到资源服务器</strong></h4><ul>
-<li>将打包生成的 AssetBundle（如 <code>hotupdateassemblies</code>) 上传到远程服务器（如 GitHub Releases、CDN、阿里云 OSS 等），以便运行时下载。</li>
-</ul>
-<hr>
-<h2 id="2-热更新程序集加载流程"><a href="#2-热更新程序集加载流程" class="headerlink" title="2. 热更新程序集加载流程"></a><strong>2. 热更新程序集加载流程</strong></h2><h3 id="2-1-配置-HybridCLR"><a href="#2-1-配置-HybridCLR" class="headerlink" title="2.1 配置 HybridCLR"></a><strong>2.1 配置 HybridCLR</strong></h3><h4 id="步骤-1-安装-HybridCLR"><a href="#步骤-1-安装-HybridCLR" class="headerlink" title="步骤 1: 安装 HybridCLR"></a><strong>步骤 1: 安装 HybridCLR</strong></h4><ul>
-<li>在 Unity 项目中，按照 HybridCLR 的官方文档安装 HybridCLR 插件。</li>
-<li>安装后会生成以下文件和配置：<ul>
-<li><code>HybridCLR/HotUpdateAssemblies</code> 文件夹（存放热更新程序集）。</li>
-<li><code>HybridCLR</code> 配置文件（设置热更新相关参数）。</li>
-</ul>
-</li>
-</ul>
-<h4 id="步骤-2-配置-AOT-元数据"><a href="#步骤-2-配置-AOT-元数据" class="headerlink" title="步骤 2: 配置 AOT 元数据"></a><strong>步骤 2: 配置 AOT 元数据</strong></h4><ul>
-<li>AOT 模式需要将部分元数据文件（<code>.dll</code>）打包到游戏中。</li>
-<li>在 <code>HybridCLR/HotUpdateAssemblies</code> 文件夹中，放入所有热更新相关的 <code>.dll</code> 文件。</li>
-</ul>
-<hr>
-<h3 id="2-2-加载热更新程序集"><a href="#2-2-加载热更新程序集" class="headerlink" title="2.2 加载热更新程序集"></a><strong>2.2 加载热更新程序集</strong></h3><h4 id="步骤-1-下载-AssetBundle"><a href="#步骤-1-下载-AssetBundle" class="headerlink" title="步骤 1: 下载 AssetBundle"></a><strong>步骤 1: 下载 AssetBundle</strong></h4><ul>
-<li>游戏启动时，从远程服务器下载最新的 AssetBundle 文件。</li>
-</ul>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AssetBundleURL = <span class="string">&quot;https://your-server.com/hotupdateassemblies&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        <span class="keyword">using</span> <span class="keyword">var</span> www = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(AssetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> www.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (www.result != UnityEngine.Networking.UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + www.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加载 AssetBundle</span></span><br><span class="line">        <span class="keyword">var</span> assetBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(www);</span><br><span class="line">        <span class="keyword">if</span> (assetBundle == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 提取 .dll 文件</span></span><br><span class="line">        TextAsset dllAsset = assetBundle.LoadAsset&lt;TextAsset&gt;(<span class="string">&quot;HotUpdate.dll&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (dllAsset == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load HotUpdate.dll from AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        LoadHotUpdateAssembly(dllAsset.bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LoadHotUpdateAssembly</span>(<span class="params"><span class="built_in">byte</span>[] dllBytes</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> assembly = System.Reflection.Assembly.Load(dllBytes);</span><br><span class="line">        <span class="keyword">var</span> type = assembly.GetType(<span class="string">&quot;HotUpdate.Program&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> method = type.GetMethod(<span class="string">&quot;Main&quot;</span>);</span><br><span class="line">        method?.Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="步骤-2-加载热更新程序集"><a href="#步骤-2-加载热更新程序集" class="headerlink" title="步骤 2: 加载热更新程序集"></a><strong>步骤 2: 加载热更新程序集</strong></h4><ul>
-<li>使用 <code>System.Reflection.Assembly.Load</code> 加载 <code>HotUpdate.dll</code>，并调用其中的入口方法（如 <code>Main()</code>）。</li>
-</ul>
-<h4 id="步骤-3-切换逻辑到热更新代码"><a href="#步骤-3-切换逻辑到热更新代码" class="headerlink" title="步骤 3: 切换逻辑到热更新代码"></a><strong>步骤 3: 切换逻辑到热更新代码</strong></h4><ul>
-<li>在热更新程序集（如 <code>HotUpdate.dll</code>）中，处理游戏的逻辑更新。例如：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">HotUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;HotUpdate assembly loaded successfully!&quot;</span>);</span><br><span class="line">            <span class="comment">// 热更新逻辑处理...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<hr>
-<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a><strong>3. 总结</strong></h2><h3 id="打包流程"><a href="#打包流程" class="headerlink" title="打包流程"></a><strong>打包流程</strong></h3><ol>
-<li>在独立的 C# 项目中编写热更新代码，编译为 <code>.dll</code> 文件。</li>
-<li>将 <code>.dll</code> 文件放入 Unity 项目中并打包为 AssetBundle。</li>
-<li>将打包的 AssetBundle 上传到远程服务器。</li>
-</ol>
-<h3 id="加载流程"><a href="#加载流程" class="headerlink" title="加载流程"></a><strong>加载流程</strong></h3><ol>
-<li>游戏启动时，下载远程的 AssetBundle 文件。</li>
-<li>解压并加载 <code>.dll</code> 文件到内存。</li>
-<li>使用 <code>Assembly.Load</code> 加载程序集，并调用热更新代码入口（如 <code>Main()</code> 方法）。</li>
-<li>切换游戏逻辑到热更新代码。</li>
-</ol>
-<p>通过 HybridCLR，这种热更新流程实现了代码与资源的分离更新，提升了项目的维护性和灵活性。</p>
-<h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
+]]></content>
       <categories>
         <category>Unity</category>
-        <category>AssetBundles</category>
+        <category>WebGL</category>
       </categories>
       <tags>
         <tag>Unity</tag>
-        <tag>AssetBundles</tag>
+        <tag>WebGL</tag>
       </tags>
   </entry>
   <entry>
@@ -8808,6 +8626,188 @@ graph TD
       </categories>
       <tags>
         <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity 打AB包流程</title>
+    <url>/2025/01/23/Unity%20%E6%89%93AB%E5%8C%85%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<p>下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。</p>
+<hr>
+<h3 id="1-打包流程概述"><a href="#1-打包流程概述" class="headerlink" title="1. 打包流程概述"></a><strong>1. 打包流程概述</strong></h3><ol>
+<li><p><strong>配置资源文件</strong>：</p>
+<ul>
+<li>将需要打包的资源组织到指定目录中。</li>
+<li>设置每个资源的 AssetBundle 名称。</li>
+</ul>
+</li>
+<li><p><strong>打包 AssetBundles</strong>：</p>
+<ul>
+<li>使用 Unity 提供的 <code>BuildPipeline.BuildAssetBundles</code> 方法，将资源打包成 <code>.ab</code> 文件。</li>
+</ul>
+</li>
+<li><p><strong>生成版本文件</strong>：</p>
+<ul>
+<li>记录所有打包生成的 <code>.ab</code> 文件及其校验值（MD5 或 SHA256）。</li>
+<li>生成一个 JSON 格式的版本文件，包含版本号、资源文件名及校验值。</li>
+</ul>
+</li>
+<li><p><strong>上传资源和版本文件</strong>：</p>
+<ul>
+<li>将打包好的 <code>.ab</code> 文件和版本文件上传到服务器。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="2-实现步骤"><a href="#2-实现步骤" class="headerlink" title="2. 实现步骤"></a><strong>2. 实现步骤</strong></h3><h4 id="Step-1-配置资源文件"><a href="#Step-1-配置资源文件" class="headerlink" title="Step 1: 配置资源文件"></a><strong>Step 1: 配置资源文件</strong></h4><p>在 Unity 中为资源设置 AssetBundle 名称：</p>
+<ol>
+<li>选中需要打包的资源（例如：Prefab、Texture）。</li>
+<li>在 <strong>Inspector</strong> 面板中，设置 <code>AssetBundle</code> 字段为指定的名称。例如：<ul>
+<li><code>character_assets</code></li>
+<li><code>environment_assets</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="Step-2-编写打包脚本"><a href="#Step-2-编写打包脚本" class="headerlink" title="Step 2: 编写打包脚本"></a><strong>Step 2: 编写打包脚本</strong></h4><p>使用 Unity 提供的 API 打包资源。</p>
+<p><strong>示例代码：打包 AssetBundles</strong></p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> System.Security.Cryptography;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 打包输出路径</span></span><br><span class="line">        <span class="built_in">string</span> outputPath = Path.Combine(Application.dataPath, <span class="string">&quot;../AssetBundles&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(outputPath))</span><br><span class="line">            Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 打包所有 AssetBundle</span></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成版本文件</span></span><br><span class="line">        GenerateVersionFile(outputPath);</span><br><span class="line">        Debug.Log(<span class="string">&quot;AssetBundles and version file generated successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">GenerateVersionFile</span>(<span class="params"><span class="built_in">string</span> assetBundlePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取所有打包文件</span></span><br><span class="line">        <span class="built_in">string</span>[] files = Directory.GetFiles(assetBundlePath, <span class="string">&quot;*&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">        <span class="keyword">var</span> versionData = <span class="keyword">new</span> VersionData();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> files)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (file.EndsWith(<span class="string">&quot;.manifest&quot;</span>) || file.EndsWith(<span class="string">&quot;.meta&quot;</span>)) <span class="keyword">continue</span>; <span class="comment">// 跳过无用文件</span></span><br><span class="line"></span><br><span class="line">            <span class="built_in">string</span> fileName = Path.GetFileName(file);</span><br><span class="line">            <span class="built_in">string</span> hash = CalculateMD5(file); <span class="comment">// 计算 MD5</span></span><br><span class="line"></span><br><span class="line">            versionData.assetBundles[fileName] = hash;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存版本文件</span></span><br><span class="line">        versionData.version = System.DateTime.Now.ToString(<span class="string">&quot;yyyyMMddHHmmss&quot;</span>); <span class="comment">// 使用时间戳作为版本号</span></span><br><span class="line">        <span class="built_in">string</span> versionFilePath = Path.Combine(assetBundlePath, <span class="string">&quot;version.json&quot;</span>);</span><br><span class="line">        File.WriteAllText(versionFilePath, JsonUtility.ToJson(versionData, <span class="literal">true</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> <span class="title">CalculateMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = MD5.Create())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">                <span class="keyword">return</span> BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> version;</span><br><span class="line">    <span class="keyword">public</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt; assetBundles = <span class="keyword">new</span> System.Collections.Generic.Dictionary&lt;<span class="built_in">string</span>, <span class="built_in">string</span>&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="Step-3-上传资源到服务器"><a href="#Step-3-上传资源到服务器" class="headerlink" title="Step 3: 上传资源到服务器"></a><strong>Step 3: 上传资源到服务器</strong></h4><p>将以下内容上传到服务器：</p>
+<ul>
+<li>所有打包生成的 <code>.ab</code> 文件。</li>
+<li><code>version.json</code> 文件。</li>
+</ul>
+<p><strong>常见的上传方式：</strong></p>
+<ul>
+<li>使用 FTP 工具（如 FileZilla）手动上传。</li>
+<li>配合自动化脚本将文件上传到服务器或存储服务（如 AWS S3、GitHub Releases）。</li>
+</ul>
+<hr>
+<h3 id="3-版本文件的结构和内容"><a href="#3-版本文件的结构和内容" class="headerlink" title="3. 版本文件的结构和内容"></a><strong>3. 版本文件的结构和内容</strong></h3><h4 id="版本文件（version-json）示例："><a href="#版本文件（version-json）示例：" class="headerlink" title="版本文件（version.json）示例："></a><strong>版本文件（<code>version.json</code>）示例：</strong></h4><figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;20250123090000&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;assetBundles&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;character_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;f2a29d0c08f2c4a3d1d7ec5b6e8b8a34&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;environment_assets&quot;</span><span class="punctuation">:</span> <span class="string">&quot;e1d4f7600c1f7b4a9e5f9e2b123f9a8d&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：</strong></p>
+<ul>
+<li><code>version</code> 表示版本号，用时间戳生成（如 <code>yyyyMMddHHmmss</code> 格式）。</li>
+<li><code>assetBundles</code> 是一个字典，存储每个资源文件名及其对应的 MD5 校验值。</li>
+</ul>
+<hr>
+<h3 id="4-客户端检查版本和热更新流程"><a href="#4-客户端检查版本和热更新流程" class="headerlink" title="4. 客户端检查版本和热更新流程"></a><strong>4. 客户端检查版本和热更新流程</strong></h3><p>在客户端，以下是资源检查和下载的基本逻辑：</p>
+<ol>
+<li><p><strong>获取版本文件</strong>：</p>
+<ul>
+<li>客户端启动时，下载服务器的 <code>version.json</code>。</li>
+<li>如果客户端不存在本地版本文件，则直接下载所有资源。</li>
+</ul>
+</li>
+<li><p><strong>比较版本号</strong>：</p>
+<ul>
+<li>如果服务器版本号高于本地版本号，开始检查资源文件。</li>
+</ul>
+</li>
+<li><p><strong>校验资源文件</strong>：</p>
+<ul>
+<li>根据服务器的版本文件中的校验值，逐一检查本地资源文件是否完整。</li>
+<li>如果文件丢失或校验值不匹配，则下载该文件。</li>
+</ul>
+</li>
+<li><p><strong>下载更新资源</strong>：</p>
+<ul>
+<li>将需要更新的 <code>.ab</code> 文件从服务器下载到本地。</li>
+<li>更新本地的版本文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="5-示例代码：客户端版本检查与更新"><a href="#5-示例代码：客户端版本检查与更新" class="headerlink" title="5. 示例代码：客户端版本检查与更新"></a><strong>5. 示例代码：客户端版本检查与更新</strong></h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverVersionUrl = <span class="string">&quot;https://example.com/version.json&quot;</span>; <span class="comment">// 服务器版本文件 URL</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> localVersionPath = Application.persistentDataPath + <span class="string">&quot;/version.json&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> serverAssetBaseUrl = <span class="string">&quot;https://example.com/&quot;</span>; <span class="comment">// 资源下载根目录</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        StartCoroutine(CheckForUpdates());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">CheckForUpdates</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 获取服务器版本文件</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(serverVersionUrl);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result != UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to fetch version.json: &quot;</span> + versionRequest.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">string</span> serverVersionContent = versionRequest.downloadHandler.text;</span><br><span class="line">        <span class="keyword">var</span> serverVersionData = JsonUtility.FromJson&lt;VersionData&gt;(serverVersionContent);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查本地版本文件</span></span><br><span class="line">        VersionData localVersionData = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (File.Exists(localVersionPath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localVersionContent = File.ReadAllText(localVersionPath);</span><br><span class="line">            localVersionData = JsonUtility.FromJson&lt;VersionData&gt;(localVersionContent);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查版本号和资源</span></span><br><span class="line">        <span class="keyword">if</span> (localVersionData == <span class="literal">null</span> || serverVersionData.version != localVersionData.version)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;New version detected, updating assets...&quot;</span>);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> asset <span class="keyword">in</span> serverVersionData.assetBundles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">string</span> localFilePath = Path.Combine(Application.persistentDataPath, asset.Key);</span><br><span class="line">                <span class="keyword">if</span> (!File.Exists(localFilePath) || GetMD5(localFilePath) != asset.Value)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="function"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="title">StartCoroutine</span>(<span class="params">DownloadAsset(asset.Key</span>))</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 更新本地版本文件</span></span><br><span class="line">            File.WriteAllText(localVersionPath, serverVersionContent);</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets updated successfully!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;Assets are up-to-date.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAsset</span>(<span class="params"><span class="built_in">string</span> assetName</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> url = serverAssetBaseUrl + assetName;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(url);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> localPath = Path.Combine(Application.persistentDataPath, assetName);</span><br><span class="line">            File.WriteAllBytes(localPath, request.downloadHandler.data);</span><br><span class="line">            Debug.Log(<span class="string">$&quot;Downloaded: <span class="subst">&#123;assetName&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;Failed to download <span class="subst">&#123;assetName&#125;</span>: <span class="subst">&#123;request.error&#125;</span>&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">GetMD5</span>(<span class="params"><span class="built_in">string</span> filePath</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> md5 = System.Security.Cryptography.MD5.Create())</span><br><span class="line">        <span class="keyword">using</span> (<span class="keyword">var</span> stream = File.OpenRead(filePath))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> hash = md5.ComputeHash(stream);</span><br><span class="line">            <span class="keyword">return</span> System.BitConverter.ToString(hash).Replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>).ToLowerInvariant();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>通过以上流程，你可以实现完整的热更新功能，包括打包资源、生成版本文件、检查和下载更新资源。</p>
+<h2 id="HybridCLR-程序集打包成ab并加载"><a href="#HybridCLR-程序集打包成ab并加载" class="headerlink" title="HybridCLR 程序集打包成ab并加载"></a>HybridCLR 程序集打包成ab并加载</h2><h3 id="Unity-HybridCLR-热更新程序集打包与加载流程"><a href="#Unity-HybridCLR-热更新程序集打包与加载流程" class="headerlink" title="Unity HybridCLR 热更新程序集打包与加载流程"></a><strong>Unity HybridCLR 热更新程序集打包与加载流程</strong></h3><p>HybridCLR 是 Unity 的一种轻量级跨平台解决方案，支持加载 AOT（Ahead Of Time）和解释执行的程序集，适用于游戏热更新。以下是完整的 <strong>打包流程</strong> 和 <strong>加载流程</strong>。</p>
+<hr>
+<h2 id="1-热更新程序集打包流程"><a href="#1-热更新程序集打包流程" class="headerlink" title="1. 热更新程序集打包流程"></a><strong>1. 热更新程序集打包流程</strong></h2><h3 id="1-1-配置热更新程序集工程"><a href="#1-1-配置热更新程序集工程" class="headerlink" title="1.1 配置热更新程序集工程"></a><strong>1.1 配置热更新程序集工程</strong></h3><h4 id="步骤-1-创建独立的热更新工程"><a href="#步骤-1-创建独立的热更新工程" class="headerlink" title="步骤 1: 创建独立的热更新工程"></a><strong>步骤 1: 创建独立的热更新工程</strong></h4><ul>
+<li>在 Unity 项目中，创建一个独立的 C# 项目用于存放热更新代码。</li>
+<li>确保该工程编译为 <code>.dll</code> 文件（Class Library 项目）。</li>
+<li>使用 <code>.NET Framework 4.x</code> 或 <code>.NET Standard 2.1</code>（与 Unity 项目一致）。</li>
+</ul>
+<h4 id="步骤-2-添加必要引用"><a href="#步骤-2-添加必要引用" class="headerlink" title="步骤 2: 添加必要引用"></a><strong>步骤 2: 添加必要引用</strong></h4><ul>
+<li>引用 Unity 的程序集文件：<ul>
+<li><code>UnityEngine.dll</code></li>
+<li><code>UnityEngine.CoreModule.dll</code></li>
+<li>这些文件可在 Unity 安装目录的 <code>Editor/Data/Managed</code> 或 <code>Library/ScriptAssemblies</code> 下找到。</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤-3-编写热更新代码"><a href="#步骤-3-编写热更新代码" class="headerlink" title="步骤 3: 编写热更新代码"></a><strong>步骤 3: 编写热更新代码</strong></h4><ul>
+<li>将需要动态更新的逻辑代码放入热更新工程。</li>
+<li>避免引用 UnityEditor 命名空间。</li>
+<li><strong>特别注意</strong>：在 HybridCLR 中，一部分代码会运行在 AOT 模式，因此需要合理规划哪些代码进入热更新工程，哪些留在主工程中。</li>
+</ul>
+<hr>
+<h3 id="1-2-编译与输出程序集"><a href="#1-2-编译与输出程序集" class="headerlink" title="1.2 编译与输出程序集"></a><strong>1.2 编译与输出程序集</strong></h3><h4 id="步骤-1-编译热更新程序集"><a href="#步骤-1-编译热更新程序集" class="headerlink" title="步骤 1: 编译热更新程序集"></a><strong>步骤 1: 编译热更新程序集</strong></h4><ul>
+<li>使用 Visual Studio 或 Rider 将热更新工程编译为 <code>.dll</code> 文件。</li>
+<li>输出文件如：<ul>
+<li><code>HotUpdate.dll</code>（主程序集）</li>
+<li><code>HotUpdate.pdb</code>（符号文件，用于调试）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤-2-标记为热更新程序集"><a href="#步骤-2-标记为热更新程序集" class="headerlink" title="步骤 2: 标记为热更新程序集"></a><strong>步骤 2: 标记为热更新程序集</strong></h4><ul>
+<li>在 Unity 的主工程中，创建一个文件夹（如 <code>Assets/HotUpdateAssemblies</code>），将编译好的 <code>.dll</code> 文件放入该目录。</li>
+</ul>
+<h4 id="步骤-3-使用-AssetBundle-打包"><a href="#步骤-3-使用-AssetBundle-打包" class="headerlink" title="步骤 3: 使用 AssetBundle 打包"></a><strong>步骤 3: 使用 AssetBundle 打包</strong></h4><ul>
+<li>在 Unity 中创建一个脚本，用于将这些 <code>.dll</code> 文件打包成 AssetBundle：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildHotUpdateAssemblies</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">string</span> outputPath = <span class="string">&quot;Assets/StreamingAssets/HotUpdateBundles&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> (!System.IO.Directory.Exists(outputPath))</span><br><span class="line">            System.IO.Directory.CreateDirectory(outputPath);</span><br><span class="line"></span><br><span class="line">        AssetBundleBuild[] buildMap = <span class="keyword">new</span> AssetBundleBuild[<span class="number">1</span>];</span><br><span class="line">        buildMap[<span class="number">0</span>] = <span class="keyword">new</span> AssetBundleBuild</span><br><span class="line">        &#123;</span><br><span class="line">            assetBundleName = <span class="string">&quot;hotupdateassemblies&quot;</span>,</span><br><span class="line">            assetNames = <span class="keyword">new</span>[] &#123; <span class="string">&quot;Assets/HotUpdateAssemblies/HotUpdate.dll&quot;</span> &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        BuildPipeline.BuildAssetBundles(outputPath, buildMap, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hot update AssetBundle built successfully!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>这会将 <code>HotUpdate.dll</code> 打包到一个名为 <code>hotupdateassemblies</code> 的 AssetBundle 中。</li>
+</ul>
+<h4 id="步骤-4-上传到资源服务器"><a href="#步骤-4-上传到资源服务器" class="headerlink" title="步骤 4: 上传到资源服务器"></a><strong>步骤 4: 上传到资源服务器</strong></h4><ul>
+<li>将打包生成的 AssetBundle（如 <code>hotupdateassemblies</code>) 上传到远程服务器（如 GitHub Releases、CDN、阿里云 OSS 等），以便运行时下载。</li>
+</ul>
+<hr>
+<h2 id="2-热更新程序集加载流程"><a href="#2-热更新程序集加载流程" class="headerlink" title="2. 热更新程序集加载流程"></a><strong>2. 热更新程序集加载流程</strong></h2><h3 id="2-1-配置-HybridCLR"><a href="#2-1-配置-HybridCLR" class="headerlink" title="2.1 配置 HybridCLR"></a><strong>2.1 配置 HybridCLR</strong></h3><h4 id="步骤-1-安装-HybridCLR"><a href="#步骤-1-安装-HybridCLR" class="headerlink" title="步骤 1: 安装 HybridCLR"></a><strong>步骤 1: 安装 HybridCLR</strong></h4><ul>
+<li>在 Unity 项目中，按照 HybridCLR 的官方文档安装 HybridCLR 插件。</li>
+<li>安装后会生成以下文件和配置：<ul>
+<li><code>HybridCLR/HotUpdateAssemblies</code> 文件夹（存放热更新程序集）。</li>
+<li><code>HybridCLR</code> 配置文件（设置热更新相关参数）。</li>
+</ul>
+</li>
+</ul>
+<h4 id="步骤-2-配置-AOT-元数据"><a href="#步骤-2-配置-AOT-元数据" class="headerlink" title="步骤 2: 配置 AOT 元数据"></a><strong>步骤 2: 配置 AOT 元数据</strong></h4><ul>
+<li>AOT 模式需要将部分元数据文件（<code>.dll</code>）打包到游戏中。</li>
+<li>在 <code>HybridCLR/HotUpdateAssemblies</code> 文件夹中，放入所有热更新相关的 <code>.dll</code> 文件。</li>
+</ul>
+<hr>
+<h3 id="2-2-加载热更新程序集"><a href="#2-2-加载热更新程序集" class="headerlink" title="2.2 加载热更新程序集"></a><strong>2.2 加载热更新程序集</strong></h3><h4 id="步骤-1-下载-AssetBundle"><a href="#步骤-1-下载-AssetBundle" class="headerlink" title="步骤 1: 下载 AssetBundle"></a><strong>步骤 1: 下载 AssetBundle</strong></h4><ul>
+<li>游戏启动时，从远程服务器下载最新的 AssetBundle 文件。</li>
+</ul>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HotUpdateManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="built_in">string</span> AssetBundleURL = <span class="string">&quot;https://your-server.com/hotupdateassemblies&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        <span class="keyword">using</span> <span class="keyword">var</span> www = UnityEngine.Networking.UnityWebRequestAssetBundle.GetAssetBundle(AssetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> www.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (www.result != UnityEngine.Networking.UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + www.error);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 加载 AssetBundle</span></span><br><span class="line">        <span class="keyword">var</span> assetBundle = UnityEngine.Networking.DownloadHandlerAssetBundle.GetContent(www);</span><br><span class="line">        <span class="keyword">if</span> (assetBundle == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 提取 .dll 文件</span></span><br><span class="line">        TextAsset dllAsset = assetBundle.LoadAsset&lt;TextAsset&gt;(<span class="string">&quot;HotUpdate.dll&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (dllAsset == <span class="literal">null</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to load HotUpdate.dll from AssetBundle.&quot;</span>);</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        LoadHotUpdateAssembly(dllAsset.bytes);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">LoadHotUpdateAssembly</span>(<span class="params"><span class="built_in">byte</span>[] dllBytes</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> assembly = System.Reflection.Assembly.Load(dllBytes);</span><br><span class="line">        <span class="keyword">var</span> type = assembly.GetType(<span class="string">&quot;HotUpdate.Program&quot;</span>);</span><br><span class="line">        <span class="keyword">var</span> method = type.GetMethod(<span class="string">&quot;Main&quot;</span>);</span><br><span class="line">        method?.Invoke(<span class="literal">null</span>, <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="步骤-2-加载热更新程序集"><a href="#步骤-2-加载热更新程序集" class="headerlink" title="步骤 2: 加载热更新程序集"></a><strong>步骤 2: 加载热更新程序集</strong></h4><ul>
+<li>使用 <code>System.Reflection.Assembly.Load</code> 加载 <code>HotUpdate.dll</code>，并调用其中的入口方法（如 <code>Main()</code>）。</li>
+</ul>
+<h4 id="步骤-3-切换逻辑到热更新代码"><a href="#步骤-3-切换逻辑到热更新代码" class="headerlink" title="步骤 3: 切换逻辑到热更新代码"></a><strong>步骤 3: 切换逻辑到热更新代码</strong></h4><ul>
+<li>在热更新程序集（如 <code>HotUpdate.dll</code>）中，处理游戏的逻辑更新。例如：<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">HotUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.Log(<span class="string">&quot;HotUpdate assembly loaded successfully!&quot;</span>);</span><br><span class="line">            <span class="comment">// 热更新逻辑处理...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a><strong>3. 总结</strong></h2><h3 id="打包流程"><a href="#打包流程" class="headerlink" title="打包流程"></a><strong>打包流程</strong></h3><ol>
+<li>在独立的 C# 项目中编写热更新代码，编译为 <code>.dll</code> 文件。</li>
+<li>将 <code>.dll</code> 文件放入 Unity 项目中并打包为 AssetBundle。</li>
+<li>将打包的 AssetBundle 上传到远程服务器。</li>
+</ol>
+<h3 id="加载流程"><a href="#加载流程" class="headerlink" title="加载流程"></a><strong>加载流程</strong></h3><ol>
+<li>游戏启动时，下载远程的 AssetBundle 文件。</li>
+<li>解压并加载 <code>.dll</code> 文件到内存。</li>
+<li>使用 <code>Assembly.Load</code> 加载程序集，并调用热更新代码入口（如 <code>Main()</code> 方法）。</li>
+<li>切换游戏逻辑到热更新代码。</li>
+</ol>
+<p>通过 HybridCLR，这种热更新流程实现了代码与资源的分离更新，提升了项目的维护性和灵活性。</p>
+<h2 id="热更程序集打包成"><a href="#热更程序集打包成" class="headerlink" title="热更程序集打包成"></a>热更程序集打包成</h2>]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>AssetBundles</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+        <tag>AssetBundles</tag>
       </tags>
   </entry>
   <entry>
@@ -9292,115 +9292,6 @@ graph TD
       </tags>
   </entry>
   <entry>
-    <title>Unity ScriptableObject</title>
-    <url>/2025/01/16/Unity-ScriptableObject/</url>
-    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
-<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
-<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
-<ul>
-<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
-<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
-</ul>
-<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
-<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
-</li>
-<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
-</li>
-<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
-</li>
-<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
-</li>
-</ul>
-<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
-<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
-<ul>
-<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
-<li>注意：脚本文件必须与类同名。</li>
-</ul>
-<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
-<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
-<ul>
-<li><code>characterName</code> 设置为 “Hero”。</li>
-<li><code>health</code> 设置为 100。</li>
-<li><code>attack</code> 设置为 30。</li>
-</ul>
-<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
-<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
-<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
-<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
-<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
-<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
-<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
-<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th><code>ScriptableObject</code></th>
-<th><code>MonoBehaviour</code></th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>附加到物体</strong></td>
-<td>不附加到 GameObject，独立作为资源存在</td>
-<td>附加到 GameObject 上作为组件</td>
-</tr>
-<tr>
-<td><strong>序列化</strong></td>
-<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
-<td>作为场景中的一部分，编辑时通过组件修改</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>只要引用它的地方需要它，内存才会存在</td>
-<td>在场景中存在，通常与对象生命周期绑定</td>
-</tr>
-<tr>
-<td><strong>共享数据</strong></td>
-<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
-<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
-</tr>
-<tr>
-<td><strong>生命周期</strong></td>
-<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
-<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
-</tr>
-<tr>
-<td><strong>内存管理</strong></td>
-<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
-<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
-</tr>
-<tr>
-<td><strong>用途</strong></td>
-<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
-<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
-</tr>
-<tr>
-<td><strong>交互方式</strong></td>
-<td>通过资源管理系统（如 Inspector）直接引用</td>
-<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
-</tr>
-<tr>
-<td><strong>应用场景</strong></td>
-<td>配置数据、全局状态、事件系统、数据驱动设计</td>
-<td>角色控制、AI、UI 更新、物理计算等</td>
-</tr>
-</tbody></table>
-<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity Jobs System</title>
     <url>/2025/01/10/Unity-Jobs-System/</url>
     <content><![CDATA[<h1 id="Unity-Jobs"><a href="#Unity-Jobs" class="headerlink" title="Unity Jobs"></a>Unity Jobs</h1><p>Unity <strong>Jobs System</strong> 是 Unity 提供的一种高效并行计算框架，用来帮助开发者更好地利用多核 CPU 的计算能力，提高性能。它是 Unity <strong>Data-Oriented Technology Stack (DOTS)</strong> 的核心组件之一，与 <strong>Burst Compiler</strong> 和 <strong>Entity Component System (ECS)</strong> 密切相关。</p>
@@ -9626,6 +9517,115 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity ScriptableObject</title>
+    <url>/2025/01/16/Unity-ScriptableObject/</url>
+    <content><![CDATA[<p><a href="https://docs.unity3d.com/2022.3/Documentation/Manual/class-ScriptableObject.html">官方文档</a></p>
+<p>在 Unity 中，<code>ScriptableObject</code> 是一种特殊的对象，它允许你在 Unity 编辑器中创建 <strong>可序列化</strong> 的 <strong>自定义数据容器</strong>，并且能够在多个场景、多个游戏对象之间共享数据。<code>ScriptableObject</code> 是继承自 <code>UnityEngine.ScriptableObject</code> 类的一种对象，通常用于存储数据，而不是存储行为（功能）。它是为了减少对 <code>MonoBehaviour</code> 的依赖，提升项目的灵活性和性能。</p>
+<h3 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. <strong>基本概念</strong></h3><p><code>ScriptableObject</code> 并不像普通的 <strong>MonoBehaviour</strong> 那样附加到 GameObject 上，而是独立的、非场景物体的对象。它可以在项目中作为资产（Asset）保存，并且多个实例之间可以共享同一份数据，避免了重复存储。</p>
+<ul>
+<li><strong>普通对象</strong>（如 <code>MonoBehaviour</code>）通常与场景中的对象（GameObject）绑定，每个 GameObject 上可以有多个组件（Component）。</li>
+<li><strong>ScriptableObject</strong> 是独立的、与场景无关的对象，它可以作为一个单独的资源在项目中保存和使用。</li>
+</ul>
+<h3 id="2-用途与优势"><a href="#2-用途与优势" class="headerlink" title="2. 用途与优势"></a>2. <strong>用途与优势</strong></h3><ul>
+<li><p><strong>数据管理</strong>：<code>ScriptableObject</code> 非常适合存储各种类型的 <strong>配置数据</strong>、<strong>游戏状态数据</strong>、<strong>角色属性</strong>、<strong>道具配置</strong> 等。这些数据可以在多个场景和多个对象间共享，不需要在每个对象中都存储一份数据。</p>
+</li>
+<li><p><strong>性能优化</strong>：通过减少在 <code>MonoBehaviour</code> 中重复存储相同数据，<code>ScriptableObject</code> 有助于节省内存和存储空间。此外，<code>ScriptableObject</code> 数据通常会被序列化成资源（Asset），并且在运行时只会读取一次，而不是每次运行时都重新创建。</p>
+</li>
+<li><p><strong>可重用性</strong>：由于 <code>ScriptableObject</code> 是一个资产资源，可以在多个场景或多个对象之间共享，提升了代码和数据的 <strong>可重用性</strong>。例如，你可以为多个角色创建同一个 <code>ScriptableObject</code> 配置，而不需要每个角色都拥有一份独立的数据。</p>
+</li>
+<li><p><strong>易于调试与编辑</strong>：<code>ScriptableObject</code> 可以在 Unity 编辑器中查看和编辑，因此对数据的修改更加直观，并且能通过 Inspector 窗口直接进行。</p>
+</li>
+</ul>
+<h3 id="3-创建和使用-ScriptableObject"><a href="#3-创建和使用-ScriptableObject" class="headerlink" title="3. 创建和使用 ScriptableObject"></a>3. <strong>创建和使用 ScriptableObject</strong></h3><p>创建 <code>ScriptableObject</code> 并使用它非常简单。以下是一个创建和使用 <code>ScriptableObject</code> 的基本流程。</p>
+<h4 id="步骤-1-创建-ScriptableObject-类"><a href="#步骤-1-创建-ScriptableObject-类" class="headerlink" title="步骤 1: 创建 ScriptableObject 类"></a>步骤 1: 创建 ScriptableObject 类</h4><p>你需要创建一个继承自 <code>ScriptableObject</code> 的类来定义数据结构。您可以使用<code>CreateAssetMenu</code>属性使用您的类创建自定义资产。例如，定义一个表示角色属性的 <code>CharacterData</code> 类：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line">[<span class="meta">CreateAssetMenu(fileName = <span class="string">&quot;New Character&quot;</span>, menuName = <span class="string">&quot;Game/Character Data&quot;</span>)</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CharacterData</span> : <span class="title">ScriptableObject</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">string</span> characterName;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> health;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> attack;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>CharacterData</code> 类继承自 <code>ScriptableObject</code>，并包含了角色的基本属性（如名字、生命值、攻击力）。</p>
+<ul>
+<li><code>CreateAssetMenu</code> 特性会让你在 Unity 编辑器的右键菜单中创建该类型的 <code>ScriptableObject</code> 实例。</li>
+<li>注意：脚本文件必须与类同名。</li>
+</ul>
+<h4 id="步骤-2-创建-ScriptableObject-实例"><a href="#步骤-2-创建-ScriptableObject-实例" class="headerlink" title="步骤 2: 创建 ScriptableObject 实例"></a>步骤 2: 创建 ScriptableObject 实例</h4><p>根据CreateAssetMenu代码中的路径来创建资源：<br><code>Assets &gt; Create &gt; xxx &gt; 并选择xxxx</code>。</p>
+<p>在 Unity 编辑器中，右键单击 <strong>项目视图</strong>，然后选择 <code>Create &gt; Game &gt; Character Data</code>（这取决于你在 <code>CreateAssetMenu</code> 特性中设置的路径）。这会生成一个新的 <code>CharacterData</code> 资源，你可以为其指定值，例如：</p>
+<ul>
+<li><code>characterName</code> 设置为 “Hero”。</li>
+<li><code>health</code> 设置为 100。</li>
+<li><code>attack</code> 设置为 30。</li>
+</ul>
+<p>你可以创建多个不同的 <code>CharacterData</code> 资源，例如一个 <code>Warrior</code> 和一个 <code>Mage</code>，并将其用于不同的角色。</p>
+<h4 id="步骤-3-使用-ScriptableObject-实例"><a href="#步骤-3-使用-ScriptableObject-实例" class="headerlink" title="步骤 3: 使用 ScriptableObject 实例"></a>步骤 3: 使用 ScriptableObject 实例</h4><p>然后，在其他脚本中，你可以引用并使用这个 <code>ScriptableObject</code> 数据。例如，创建一个 <code>Character</code> 类来使用 <code>CharacterData</code>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Character</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> CharacterData characterData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Character Name: &quot;</span> + characterData.characterName);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Health: &quot;</span> + characterData.health);</span><br><span class="line">        Debug.Log(<span class="string">&quot;Attack: &quot;</span> + characterData.attack);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>Character</code> 脚本中，你通过 <code>public</code> 变量将 <code>CharacterData</code> 资源分配给角色对象。然后，你可以在运行时访问和使用这个数据。</p>
+<h3 id="4-ScriptableObject-的应用场景"><a href="#4-ScriptableObject-的应用场景" class="headerlink" title="4. ScriptableObject 的应用场景"></a>4. <strong>ScriptableObject 的应用场景</strong></h3><p><code>ScriptableObject</code> 可以用于多种场景，以下是一些典型的应用案例：</p>
+<h4 id="1-游戏数据配置"><a href="#1-游戏数据配置" class="headerlink" title="(1) 游戏数据配置"></a>(1) <strong>游戏数据配置</strong></h4><p>许多游戏使用 <code>ScriptableObject</code> 来存储 <strong>配置数据</strong>，如角色属性、物品描述、武器信息等。这些数据通常在多个场景或多个对象中被共享，因此使用 <code>ScriptableObject</code> 可以减少冗余数据存储。</p>
+<h4 id="2-状态机或事件系统"><a href="#2-状态机或事件系统" class="headerlink" title="(2) 状态机或事件系统"></a>(2) <strong>状态机或事件系统</strong></h4><p>在状态机或事件系统中，<code>ScriptableObject</code> 可以作为 <strong>事件数据</strong> 或 <strong>状态数据</strong> 的容器，方便管理和修改。例如，在设计一个 <strong>对话系统</strong> 时，每个对话框可以是一个 <code>ScriptableObject</code>，并包含其显示的文本、触发的事件等。</p>
+<h4 id="3-可视化脚本"><a href="#3-可视化脚本" class="headerlink" title="(3) 可视化脚本"></a>(3) <strong>可视化脚本</strong></h4><p>如果你正在做可视化脚本（如 <strong>行为树</strong>、<strong>任务系统</strong> 等），<code>ScriptableObject</code> 可以用来存储不同任务或行为的定义，使得设计者可以在编辑器中直接创建和修改这些数据，而不需要编写复杂的代码。</p>
+<h4 id="4-音频和动画管理"><a href="#4-音频和动画管理" class="headerlink" title="(4) 音频和动画管理"></a>(4) <strong>音频和动画管理</strong></h4><p>音频管理、动画控制等系统中，<code>ScriptableObject</code> 常用来存储不同的 <strong>音效配置</strong> 或 <strong>动画控制器配置</strong>，这样可以方便地在多个地方共享这些配置。</p>
+<h3 id="5-ScriptableObject-与-MonoBehaviour-的区别"><a href="#5-ScriptableObject-与-MonoBehaviour-的区别" class="headerlink" title="5. ScriptableObject 与 MonoBehaviour 的区别"></a>5. <strong>ScriptableObject 与 MonoBehaviour 的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th><code>ScriptableObject</code></th>
+<th><code>MonoBehaviour</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>附加到物体</strong></td>
+<td>不附加到 GameObject，独立作为资源存在</td>
+<td>附加到 GameObject 上作为组件</td>
+</tr>
+<tr>
+<td><strong>序列化</strong></td>
+<td>作为资产（Asset）保存，可直接在编辑器中编辑</td>
+<td>作为场景中的一部分，编辑时通过组件修改</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>只要引用它的地方需要它，内存才会存在</td>
+<td>在场景中存在，通常与对象生命周期绑定</td>
+</tr>
+<tr>
+<td><strong>共享数据</strong></td>
+<td>可以跨多个对象和场景共享同一个 ScriptableObject 实例</td>
+<td>每个 <code>MonoBehaviour</code> 实例数据独立</td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>不绑定到 <code>GameObject</code>，没有生命周期函数，通常用于存储数据</td>
+<td>绑定到 <code>GameObject</code>，有生命周期函数（如 <code>Start()</code>、<code>Update()</code>）</td>
+</tr>
+<tr>
+<td><strong>内存管理</strong></td>
+<td>作为资源存储，手动创建和销毁，不会随场景卸载而销毁</td>
+<td>和 <code>GameObject</code> 一起管理，销毁时自动销毁</td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>用于数据存储、配置、常量，多个场景或对象共享数据</td>
+<td>适用于场景中的行为控制、物理计算、UI 控制等</td>
+</tr>
+<tr>
+<td><strong>交互方式</strong></td>
+<td>通过资源管理系统（如 Inspector）直接引用</td>
+<td>附加到 <code>GameObject</code>，每个 <code>GameObject</code> 可以有多个 <code>MonoBehaviour</code></td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>配置数据、全局状态、事件系统、数据驱动设计</td>
+<td>角色控制、AI、UI 更新、物理计算等</td>
+</tr>
+</tbody></table>
+<h3 id="6-总结"><a href="#6-总结" class="headerlink" title="6. 总结"></a>6. <strong>总结</strong></h3><p><code>ScriptableObject</code> 是 Unity 中非常强大的工具，它允许你创建独立于场景的自定义数据容器，并在多个游戏对象、场景间共享这些数据。相比于传统的 <code>MonoBehaviour</code>，<code>ScriptableObject</code> 更适合用于存储游戏的配置、状态数据等，因为它能够减少冗余，提升内存利用率，并且方便在编辑器中进行管理。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity UWA &amp; UWP</title>
     <url>/2025/01/15/Unity-UWA-UWP/</url>
     <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
@@ -9669,7 +9669,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#109;&#46;&#117;&#110;&#105;&#x74;&#x79;&#x2e;&#x63;&#111;&#108;&#x6c;&#97;&#98;&#x2d;&#112;&#114;&#x6f;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;">&#99;&#x6f;&#109;&#46;&#117;&#110;&#105;&#x74;&#x79;&#x2e;&#x63;&#111;&#108;&#x6c;&#97;&#98;&#x2d;&#112;&#114;&#x6f;&#120;&#x79;&#x40;&#x32;&#x2e;&#x36;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#x6f;&#109;&#46;&#x75;&#x6e;&#105;&#x74;&#121;&#x2e;&#99;&#111;&#108;&#x6c;&#97;&#98;&#x2d;&#x70;&#x72;&#111;&#x78;&#121;&#64;&#x32;&#x2e;&#54;&#46;&#48;">&#99;&#x6f;&#109;&#46;&#x75;&#x6e;&#105;&#x74;&#121;&#x2e;&#99;&#111;&#108;&#x6c;&#97;&#98;&#x2d;&#x70;&#x72;&#111;&#x78;&#121;&#64;&#x32;&#x2e;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -10338,6 +10338,41 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity 渲染管线选择</title>
+    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
+    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
+<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
+<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
+<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
+</ul>
+</li>
+<li><p><strong>通用渲染管线 (URP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
+<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
+<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
+</ul>
+</li>
+<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
+<ul>
+<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
+<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
+<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
+</ul>
+</li>
+</ol>
+<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>unity 插件工具</title>
     <url>/2025/01/06/Unity-%E6%8F%92%E4%BB%B6%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<p><a href="https://blog.csdn.net/weixin_43705303/article/details/126761956">Unity常见插件汇总 csdn</a><br><a href="https://zhuanlan.zhihu.com/p/62471100">知乎</a><br><a href="https://blog.csdn.net/u014361280/article/details/122806834">详细</a><br><a href="https://www.gcores.com/articles/191584#nopop_e204c">cato 使用的20个插件</a></p>
@@ -10538,41 +10573,6 @@ graph TD
       </categories>
       <tags>
         <tag>Unity Plugins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity 渲染管线选择</title>
-    <url>/2025/01/13/Unity-%E6%B8%B2%E6%9F%93%E7%AE%A1%E7%BA%BF%E9%80%89%E6%8B%A9/</url>
-    <content><![CDATA[<h3 id="选择渲染模式的建议"><a href="#选择渲染模式的建议" class="headerlink" title="选择渲染模式的建议"></a><strong>选择渲染模式的建议</strong></h3><ol>
-<li><p><strong>内置渲染管线 (Built-In Render Pipeline)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：稳定、易用，适合新手和简单项目。  </li>
-<li><strong>缺点</strong>：缺乏现代渲染特性，性能调优复杂。  </li>
-<li><strong>适用场景</strong>：小型项目、快速原型开发或简单的 2D&#x2F;3D 游戏。</li>
-</ul>
-</li>
-<li><p><strong>通用渲染管线 (URP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：支持跨平台优化，性能优良，现代化工具支持（如 Shader Graph）。  </li>
-<li><strong>缺点</strong>：功能不如 HDRP 完善，可能需要手动迁移内置资源。  </li>
-<li><strong>适用场景</strong>：中小型 2D&#x2F;3D 游戏或移动平台开发。</li>
-</ul>
-</li>
-<li><p><strong>高清渲染管线 (HDRP)</strong>  </p>
-<ul>
-<li><strong>优点</strong>：画质卓越，支持高级渲染效果（如实时光线追踪）。  </li>
-<li><strong>缺点</strong>：硬件需求高，不适合低端设备。  </li>
-<li><strong>适用场景</strong>：高质量 3D 游戏、电影制作或建筑可视化等。</li>
-</ul>
-</li>
-</ol>
-<p>根据项目的规模、目标平台和渲染需求选择合适的模板，有助于优化开发体验和性能。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -11908,7 +11908,7 @@ graph TD
 <p><strong>最终答案：</strong><br><strong>镜像是包含完整运行环境的只读模板，不是单个可执行文件，而是能”变出”可运行容器的魔法盒子。</strong></p>
 ]]></content>
       <categories>
-        <category>Docker镜像</category>
+        <category>Docker</category>
       </categories>
       <tags>
         <tag>Docker镜像</tag>
@@ -13480,6 +13480,100 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>笔记本拓展屏+平板</title>
+    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
+    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br><a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
+<h2 id="Spacedesk-版本介绍"><a href="#Spacedesk-版本介绍" class="headerlink" title="Spacedesk 版本介绍"></a>Spacedesk 版本介绍</h2><p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
+<hr>
+<h3 id="免费功能："><a href="#免费功能：" class="headerlink" title="免费功能："></a><strong>免费功能</strong>：</h3><ol>
+<li><p><strong>基本屏幕扩展</strong>：</p>
+<ul>
+<li>支持将平板或手机作为电脑的扩展显示器。</li>
+<li>支持 Wi-Fi 和 USB 连接。</li>
+</ul>
+</li>
+<li><p><strong>多设备连接</strong>：</p>
+<ul>
+<li>可以同时连接多个设备作为扩展屏幕。</li>
+</ul>
+</li>
+<li><p><strong>跨平台支持</strong>：</p>
+<ul>
+<li>支持 Windows 电脑与 Android&#x2F;iOS 设备连接。</li>
+</ul>
+</li>
+<li><p><strong>基本分辨率支持</strong>：</p>
+<ul>
+<li>提供足够的分辨率用于日常办公和娱乐。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="可能收费或需要捐赠的功能："><a href="#可能收费或需要捐赠的功能：" class="headerlink" title="可能收费或需要捐赠的功能："></a><strong>可能收费或需要捐赠的功能</strong>：</h3><ol>
+<li><p><strong>更高分辨率和刷新率</strong>：</p>
+<ul>
+<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
+</ul>
+</li>
+<li><p><strong>高级功能</strong>：</p>
+<ul>
+<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
+</ul>
+</li>
+<li><p><strong>商业用途</strong>：</p>
+<ul>
+<li>如果用于商业环境，可能需要购买许可证。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="捐赠支持："><a href="#捐赠支持：" class="headerlink" title="捐赠支持："></a><strong>捐赠支持</strong>：</h3><ul>
+<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
+</ul>
+<hr>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
+<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
+</ul>
+<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
+<h2 id="将电脑屏幕投射到平板电脑"><a href="#将电脑屏幕投射到平板电脑" class="headerlink" title="将电脑屏幕投射到平板电脑"></a>将电脑屏幕投射到平板电脑</h2><p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
+<h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><ol>
+<li><p><strong>下载软件</strong>：</p>
+<ul>
+<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
+<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
+</ul>
+</li>
+<li><p><strong>确保设备在同一网络</strong>：</p>
+<ul>
+<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
+</ul>
+</li>
+</ol>
+<h4 id="在平板电脑上："><a href="#在平板电脑上：" class="headerlink" title="在平板电脑上："></a>在平板电脑上：</h4><ol>
+<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
+<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
+<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
+</ol>
+<p><img src="/.io//image.png"><br>注意：</p>
+<ul>
+<li>WiFi连接需要同在一个局域网下</li>
+<li>WiFi有延迟</li>
+<li>USB需要打开显示器设备的开发者选项的调试模式</li>
+<li>Local Area Network： WiFi连接开关</li>
+<li>USB Cable Android：USB连接开关</li>
+<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
+<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
+</ul>
+]]></content>
+      <categories>
+        <category>电子设备</category>
+      </categories>
+      <tags>
+        <tag>拓展屏</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>社保和公积金的补缴问题</title>
     <url>/2025/05/17/%E7%A4%BE%E4%BF%9D%E5%92%8C%E5%85%AC%E7%A7%AF%E9%87%91%E7%9A%84%E8%A1%A5%E7%BC%B4%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>离职后，社保和公积金的补缴问题与个人权益密切相关，以下是需要关注的要点及原因解析：</p>
@@ -13750,100 +13844,6 @@ graph TD
       <tags>
         <tag>社保</tag>
         <tag>公积金</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>笔记本拓展屏+平板</title>
-    <url>/2025/02/07/%E7%AC%94%E8%AE%B0%E6%9C%AC%E6%8B%93%E5%B1%95%E5%B1%8F-%E5%B9%B3%E6%9D%BF/</url>
-    <content><![CDATA[<p><a href="https://spacedesk.en.uptodown.com/android/download">安卓平板apk下载地址</a><br><a href="https://www.spacedesk.net/download/">电脑端下载</a></p>
-<h2 id="Spacedesk-版本介绍"><a href="#Spacedesk-版本介绍" class="headerlink" title="Spacedesk 版本介绍"></a>Spacedesk 版本介绍</h2><p><strong>Spacedesk</strong> 主要提供免费版本，适合大多数用户的基本需求。不过，它也有一些高级功能可能需要付费或通过捐赠支持开发。以下是 Spacedesk 的收费情况概述：</p>
-<hr>
-<h3 id="免费功能："><a href="#免费功能：" class="headerlink" title="免费功能："></a><strong>免费功能</strong>：</h3><ol>
-<li><p><strong>基本屏幕扩展</strong>：</p>
-<ul>
-<li>支持将平板或手机作为电脑的扩展显示器。</li>
-<li>支持 Wi-Fi 和 USB 连接。</li>
-</ul>
-</li>
-<li><p><strong>多设备连接</strong>：</p>
-<ul>
-<li>可以同时连接多个设备作为扩展屏幕。</li>
-</ul>
-</li>
-<li><p><strong>跨平台支持</strong>：</p>
-<ul>
-<li>支持 Windows 电脑与 Android&#x2F;iOS 设备连接。</li>
-</ul>
-</li>
-<li><p><strong>基本分辨率支持</strong>：</p>
-<ul>
-<li>提供足够的分辨率用于日常办公和娱乐。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="可能收费或需要捐赠的功能："><a href="#可能收费或需要捐赠的功能：" class="headerlink" title="可能收费或需要捐赠的功能："></a><strong>可能收费或需要捐赠的功能</strong>：</h3><ol>
-<li><p><strong>更高分辨率和刷新率</strong>：</p>
-<ul>
-<li>免费版可能限制分辨率或刷新率，付费或捐赠后可解锁更高性能。</li>
-</ul>
-</li>
-<li><p><strong>高级功能</strong>：</p>
-<ul>
-<li>某些高级功能（如低延迟模式或高级设置）可能需要捐赠或购买。</li>
-</ul>
-</li>
-<li><p><strong>商业用途</strong>：</p>
-<ul>
-<li>如果用于商业环境，可能需要购买许可证。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="捐赠支持："><a href="#捐赠支持：" class="headerlink" title="捐赠支持："></a><strong>捐赠支持</strong>：</h3><ul>
-<li>Spacedesk 的开发团队接受捐赠以支持软件的持续开发和维护。用户可以通过官网捐赠以表达支持。</li>
-</ul>
-<hr>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>免费版</strong>：适合个人用户的基本需求，功能足够日常使用。</li>
-<li><strong>付费或捐赠</strong>：如果需要更高分辨率、更低延迟或商业用途，可能需要付费或捐赠。</li>
-</ul>
-<p>如果您只是偶尔使用或用于个人用途，免费版已经足够。如果需要更高级的功能，可以访问 <a href="https://www.spacedesk.net/">Spacedesk 官网</a> 了解更多详情。</p>
-<h2 id="将电脑屏幕投射到平板电脑"><a href="#将电脑屏幕投射到平板电脑" class="headerlink" title="将电脑屏幕投射到平板电脑"></a>将电脑屏幕投射到平板电脑</h2><p>使用 <strong>Spacedesk</strong> 将电脑屏幕投射到平板电脑的步骤如下：</p>
-<h3 id="准备工作："><a href="#准备工作：" class="headerlink" title="准备工作："></a>准备工作：</h3><ol>
-<li><p><strong>下载软件</strong>：</p>
-<ul>
-<li>在电脑（Windows）上下载并安装 <strong>Spacedesk</strong> 驱动程序：<a href="https://www.spacedesk.net/">Spacedesk 官网</a>。</li>
-<li>在平板电脑（Android 或 iOS）上下载并安装 <strong>Spacedesk</strong> 客户端应用（通过 Google Play 或 App Store）。</li>
-</ul>
-</li>
-<li><p><strong>确保设备在同一网络</strong>：</p>
-<ul>
-<li>电脑和平板电脑需连接到同一 Wi-Fi 网络。</li>
-</ul>
-</li>
-</ol>
-<h4 id="在平板电脑上："><a href="#在平板电脑上：" class="headerlink" title="在平板电脑上："></a>在平板电脑上：</h4><ol>
-<li>打开 <strong>Spacedesk</strong> 客户端应用。</li>
-<li>应用会自动搜索同一网络中的电脑。找到您的电脑后，点击连接。</li>
-<li>连接成功后，平板电脑将显示电脑屏幕内容。</li>
-</ol>
-<p><img src="/.io//image.png"><br>注意：</p>
-<ul>
-<li>WiFi连接需要同在一个局域网下</li>
-<li>WiFi有延迟</li>
-<li>USB需要打开显示器设备的开发者选项的调试模式</li>
-<li>Local Area Network： WiFi连接开关</li>
-<li>USB Cable Android：USB连接开关</li>
-<li>若是数据线松动而连接失败，可以在电脑端控制台<strong>CONTROL</strong>重启连接: <strong>off</strong> ——&gt; <strong>on</strong></li>
-<li>数据线连接了但是没有显示电脑画面，电脑端<strong>USB cable Android</strong>  先关了在开，然后屏幕端就重启Spacedesk软件就可以了</li>
-</ul>
-]]></content>
-      <categories>
-        <category>电子设备</category>
-      </categories>
-      <tags>
-        <tag>拓展屏</tag>
       </tags>
   </entry>
   <entry>
@@ -14273,6 +14273,357 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>转产品经理</title>
+    <url>/2025/02/11/%E8%BD%AC%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="产品专员岗位的晋升空间和难度"><a href="#产品专员岗位的晋升空间和难度" class="headerlink" title="产品专员岗位的晋升空间和难度"></a>产品专员岗位的晋升空间和难度</h1><p><strong>晋升路径</strong>：</p>
+<ol>
+<li><strong>产品专员</strong> → <strong>产品经理</strong> → <strong>高级产品经理</strong> → <strong>产品总监</strong> → <strong>VP&#x2F;CPO</strong></li>
+<li><strong>产品专员</strong> → <strong>产品运营经理</strong> → <strong>产品运营总监</strong></li>
+</ol>
+<p><strong>难度</strong>：</p>
+<ul>
+<li><strong>综合能力要求高</strong>：需具备市场分析、用户研究、项目管理等多方面能力。</li>
+<li><strong>沟通协调重要</strong>：需与多个部门协作，沟通和协调能力是关键。</li>
+<li><strong>结果导向</strong>：晋升依赖于产品成功和业绩表现。</li>
+</ul>
+<p><strong>优势</strong>：</p>
+<ul>
+<li><strong>综合发展</strong>：适合具备商业思维和领导力的人，晋升路径清晰。</li>
+<li><strong>跨行业机会多</strong>：产品管理技能适用于多个行业，职业选择广泛。</li>
+</ul>
+<h1 id="转行产品经理–职业规划路线"><a href="#转行产品经理–职业规划路线" class="headerlink" title="转行产品经理–职业规划路线"></a>转行产品经理–职业规划路线</h1><h3 id="转行做产品经理"><a href="#转行做产品经理" class="headerlink" title="转行做产品经理"></a><strong>转行做产品经理</strong></h3><p><strong>优势</strong>：</p>
+<ul>
+<li><strong>综合能力</strong>：产品经理更注重综合能力，如市场分析、用户研究、项目管理等，技术门槛相对较低。</li>
+<li><strong>跨行业机会</strong>：产品经理技能适用于多个行业，职业选择更广。</li>
+<li><strong>年龄优势</strong>：30岁转行做产品经理并不算晚，且产品经理职业生命周期较长。</li>
+</ul>
+<p><strong>劣势</strong>：</p>
+<ul>
+<li><strong>学习曲线</strong>：需学习新的知识和技能，如市场分析、用户研究、项目管理等。</li>
+<li><strong>经验积累</strong>：初期可能缺乏相关经验，需从初级岗位做起。</li>
+</ul>
+<h3 id="职业规划路线设计"><a href="#职业规划路线设计" class="headerlink" title="职业规划路线设计"></a>职业规划路线设计</h3><p><strong>短期目标（1-2年）</strong>：</p>
+<ul>
+<li><strong>学习产品经理知识</strong>：通过在线课程、书籍等学习产品经理相关知识，如市场分析、用户研究、项目管理等。</li>
+<li><strong>积累项目经验</strong>：尝试参与公司内部的产品项目，积累产品管理经验。</li>
+<li><strong>考取相关证书</strong>：如PMP（项目管理专业人士）认证，提升竞争力。</li>
+</ul>
+<p><strong>中期目标（3-5年）</strong>：</p>
+<ul>
+<li><strong>初级产品经理</strong>：从初级产品经理做起，积累实际工作经验。</li>
+<li><strong>提升综合能力</strong>：提升市场分析、用户研究、项目管理等综合能力。</li>
+</ul>
+<p><strong>长期目标（5年以上）</strong>：</p>
+<ul>
+<li><strong>高级产品经理&#x2F;产品总监</strong>：成为产品团队的核心领导者，负责产品战略和团队管理。</li>
+</ul>
+<h1 id="什么样的人适合做产品经理"><a href="#什么样的人适合做产品经理" class="headerlink" title="什么样的人适合做产品经理"></a>什么样的人适合做产品经理</h1><h3 id="1-沟通能力强"><a href="#1-沟通能力强" class="headerlink" title="1. 沟通能力强"></a>1. <strong>沟通能力强</strong></h3><ul>
+<li><strong>跨部门协作</strong>：产品经理需要与开发、设计、市场、销售等多个部门协作，沟通能力至关重要。</li>
+<li><strong>用户沟通</strong>：与用户沟通，理解用户需求，反馈用户意见。</li>
+</ul>
+<h3 id="2-商业敏感度高"><a href="#2-商业敏感度高" class="headerlink" title="2. 商业敏感度高"></a>2. <strong>商业敏感度高</strong></h3><ul>
+<li><strong>市场分析</strong>：能够分析市场趋势，识别商业机会。</li>
+<li><strong>竞争分析</strong>：了解竞争对手，制定竞争策略。</li>
+</ul>
+<h3 id="3-用户导向"><a href="#3-用户导向" class="headerlink" title="3. 用户导向"></a>3. <strong>用户导向</strong></h3><ul>
+<li><strong>用户研究</strong>：能够进行用户研究，理解用户需求和行为。</li>
+<li><strong>用户体验</strong>：关注用户体验，设计用户友好的产品。</li>
+</ul>
+<h3 id="4-项目管理能力"><a href="#4-项目管理能力" class="headerlink" title="4. 项目管理能力"></a>4. <strong>项目管理能力</strong></h3><ul>
+<li><strong>项目规划</strong>：能够制定项目计划，分配资源，管理进度。</li>
+<li><strong>风险管理</strong>：识别项目风险，制定应对措施。</li>
+</ul>
+<h3 id="5-数据分析能力"><a href="#5-数据分析能力" class="headerlink" title="5. 数据分析能力"></a>5. <strong>数据分析能力</strong></h3><ul>
+<li><strong>数据驱动决策</strong>：能够通过数据分析，做出数据驱动的决策。</li>
+<li><strong>数据解读</strong>：能够解读数据，发现数据背后的洞察。</li>
+</ul>
+<h3 id="6-创新思维"><a href="#6-创新思维" class="headerlink" title="6. 创新思维"></a>6. <strong>创新思维</strong></h3><ul>
+<li><strong>创新意识</strong>：能够提出创新想法，推动产品创新。</li>
+<li><strong>解决问题</strong>：能够解决复杂问题，找到创新的解决方案。</li>
+</ul>
+<h3 id="7-抗压能力强"><a href="#7-抗压能力强" class="headerlink" title="7. 抗压能力强"></a>7. <strong>抗压能力强</strong></h3><ul>
+<li><strong>应对挑战</strong>：能够在高压环境下工作，应对各种挑战。</li>
+<li><strong>情绪管理</strong>：能够管理情绪，保持冷静和专注。</li>
+</ul>
+<h3 id="8-学习能力强"><a href="#8-学习能力强" class="headerlink" title="8. 学习能力强"></a>8. <strong>学习能力强</strong></h3><ul>
+<li><strong>快速学习</strong>：能够快速学习新知识，适应新环境。</li>
+<li><strong>持续学习</strong>：保持持续学习的态度，不断提升自己。</li>
+</ul>
+<h3 id="9-领导力"><a href="#9-领导力" class="headerlink" title="9. 领导力"></a>9. <strong>领导力</strong></h3><ul>
+<li><strong>团队管理</strong>：能够领导团队，激励团队成员。</li>
+<li><strong>决策能力</strong>：能够做出决策，并承担决策后果。</li>
+</ul>
+<h3 id="10-技术理解力"><a href="#10-技术理解力" class="headerlink" title="10. 技术理解力"></a>10. <strong>技术理解力</strong></h3><ul>
+<li><strong>技术背景</strong>：虽然不是必须，但具备一定的技术背景有助于与技术团队沟通。</li>
+<li><strong>技术趋势</strong>：了解技术趋势，能够将技术与产品结合。</li>
+</ul>
+<h1 id="喜欢“捣鼓”的人通常具有以下特点："><a href="#喜欢“捣鼓”的人通常具有以下特点：" class="headerlink" title="喜欢“捣鼓”的人通常具有以下特点："></a>喜欢“捣鼓”的人通常具有以下特点：</h1><ul>
+<li><strong>好奇心强</strong>：喜欢探索新事物，尝试不同的方法和工具。</li>
+<li><strong>动手能力强</strong>：喜欢亲自动手实践，解决问题。</li>
+<li><strong>创新意识</strong>：喜欢尝试新思路，创造新东西。</li>
+<li><strong>耐心和专注</strong>：能够长时间专注于某个问题，直到找到解决方案。</li>
+</ul>
+<h3 id="适合产品经理岗"><a href="#适合产品经理岗" class="headerlink" title="适合产品经理岗"></a><strong>适合产品经理岗</strong></h3><p>喜欢捣鼓的人也可以适合产品经理岗，但需要满足以下条件：</p>
+<ul>
+<li><strong>对用户行为和市场趋势感兴趣</strong>：喜欢捣鼓的人如果对用户需求、市场趋势有好奇心，可以尝试从用户行为中挖掘创新点。</li>
+<li><strong>喜欢尝试新工具和方法</strong>：产品经理需要不断尝试新的工具（如数据分析工具、原型设计工具）和方法（如用户调研、A&#x2F;B测试），这与喜欢捣鼓的特点相符。</li>
+<li><strong>创新思维</strong>：产品经理需要提出创新的产品想法，并推动其实现，适合喜欢尝试新思路的人。</li>
+</ul>
+<p><strong>适合的点</strong>：</p>
+<ul>
+<li>如果你喜欢研究用户行为、市场趋势，并愿意尝试新的工具和方法，产品经理岗可能适合你。</li>
+<li>如果你更喜欢从宏观角度思考问题，而不是深入技术细节，产品经理岗会更适合。</li>
+</ul>
+<h1 id="那么，如何转行做产品经理呢？以下是一些建议"><a href="#那么，如何转行做产品经理呢？以下是一些建议" class="headerlink" title="那么，如何转行做产品经理呢？以下是一些建议"></a>那么，如何转行做产品经理呢？以下是一些建议</h1><ol>
+<li><strong>学习产品经理相关知识：</strong><ul>
+<li>阅读产品经理相关书籍，了解产品经理的工作职责、技能要求和工作流程。</li>
+<li>参加产品经理培训课程，系统学习产品经理知识体系。</li>
+<li>关注产品经理相关的公众号、博客和社区，了解行业动态和发展趋势。</li>
+</ul>
+</li>
+<li><strong>积累产品经理实践经验：</strong><ul>
+<li>参与公司内部的产品项目，主动承担一些产品经理助理或实习生的工作。</li>
+<li>参与一些开源项目或个人项目，尝试从0到1打造一款产品。</li>
+<li>在工作中，有意识地培养自己的沟通、协调、逻辑思维和表达能力。</li>
+</ul>
+</li>
+<li><strong>准备产品经理面试：</strong><ul>
+<li>准备自我介绍，突出自己的优势和特点，表达对产品经理工作的兴趣和热情。</li>
+<li>准备产品经理面试常问的问题，如：<ul>
+<li>你对产品经理的理解是什么？</li>
+<li>你认为一个好的产品经理应该具备哪些素质？</li>
+<li>你如何分析用户需求？</li>
+<li>你如何设计一款产品？</li>
+<li>你在工作中遇到的最大挑战是什么？你是如何解决的？</li>
+</ul>
+</li>
+<li>准备一些自己参与过的产品案例，展示自己的产品能力。</li>
+</ul>
+</li>
+</ol>
+<h1 id="产品经理转型规划"><a href="#产品经理转型规划" class="headerlink" title="产品经理转型规划"></a><strong>产品经理转型规划</strong></h1><h4 id="📌-短期（0-6个月）：探索方向"><a href="#📌-短期（0-6个月）：探索方向" class="headerlink" title="📌 短期（0-6个月）：探索方向"></a><strong>📌 短期（0-6个月）：探索方向</strong></h4><ul>
+<li>学习<strong>产品管理核心技能</strong>（用户研究、需求分析、PRD文档撰写）  </li>
+<li>研究市场需求，确定自己是否适合产品经理岗位  </li>
+<li>了解<strong>游戏行业的产品管理</strong>，如游戏策划、数据分析、商业化运营  </li>
+<li>学习<strong>Axure、SQL、数据分析</strong>等基础工具</li>
+</ul>
+<h4 id="📌-中期（6个月-2年）：积累经验"><a href="#📌-中期（6个月-2年）：积累经验" class="headerlink" title="📌 中期（6个月-2年）：积累经验"></a><strong>📌 中期（6个月-2年）：积累经验</strong></h4><ul>
+<li>先从<strong>游戏策划、数据分析、运营</strong>等相关岗位切入，过渡到产品岗  </li>
+<li>参与公司内部<strong>产品优化、用户数据分析、商业化设计</strong>等工作  </li>
+<li>尝试<strong>内部转岗</strong>，或者通过副业积累产品经验</li>
+</ul>
+<h4 id="📌-长期（2-5年）：稳固职业发展"><a href="#📌-长期（2-5年）：稳固职业发展" class="headerlink" title="📌 长期（2-5年）：稳固职业发展"></a><strong>📌 长期（2-5年）：稳固职业发展</strong></h4><ul>
+<li>争取进入<strong>产品负责人</strong>岗位，具备完整的产品规划与管理能力  </li>
+<li>扩展到更广泛的产品领域，如<strong>互联网、移动应用、SaaS工具</strong>等  </li>
+<li>学习更多管理与商业策略，向<strong>产品总监</strong>或<strong>创业方向</strong>发展</li>
+</ul>
+<p><strong>🚀 关键行动点：</strong><br>✅ 学习产品经理核心知识（需求分析、PRD、数据分析）<br>✅ 结合游戏经验，从策划、数据分析、商业化方向切入<br>✅ 尝试内部转岗或寻找相关实习&#x2F;副业，积累实际产品经验<br>✅ 长期目标是成为游戏或互联网行业的<strong>产品负责人</strong></p>
+<p>从其他岗位（如开发、设计、运营等）转型为产品经理是一个常见的职业发展路径。以下是一个详细的产品经理转型规划，帮助你顺利过渡并在这个岗位上取得成功。</p>
+<hr>
+<h3 id="1-明确转型动机"><a href="#1-明确转型动机" class="headerlink" title="1. 明确转型动机"></a><strong>1. 明确转型动机</strong></h3><p>在开始转型之前，先明确自己为什么要转型为产品经理：</p>
+<ul>
+<li><strong>兴趣驱动</strong>：是否对用户需求、市场趋势、产品设计有浓厚兴趣？</li>
+<li><strong>职业发展</strong>：是否认为产品经理的职业发展空间更大？</li>
+<li><strong>技能匹配</strong>：是否认为自己具备或愿意培养产品经理所需的核心能力？</li>
+</ul>
+<p>明确动机后，才能更有针对性地制定转型计划。</p>
+<hr>
+<h3 id="2-了解产品经理的核心能力"><a href="#2-了解产品经理的核心能力" class="headerlink" title="2. 了解产品经理的核心能力"></a><strong>2. 了解产品经理的核心能力</strong></h3><p>产品经理需要具备以下核心能力：</p>
+<ul>
+<li><strong>用户研究</strong>：理解用户需求，分析用户行为。</li>
+<li><strong>市场分析</strong>：研究市场趋势，分析竞争对手。</li>
+<li><strong>产品设计</strong>：设计产品功能，绘制原型。</li>
+<li><strong>项目管理</strong>：制定项目计划，协调资源，推动项目落地。</li>
+<li><strong>数据分析</strong>：通过数据驱动决策，优化产品。</li>
+<li><strong>沟通协调</strong>：与开发、设计、运营、市场等多部门协作。</li>
+</ul>
+<hr>
+<h3 id="3-转型规划步骤"><a href="#3-转型规划步骤" class="headerlink" title="3. 转型规划步骤"></a><strong>3. 转型规划步骤</strong></h3><h4 id="阶段一：学习与准备（3-6个月）"><a href="#阶段一：学习与准备（3-6个月）" class="headerlink" title="阶段一：学习与准备（3-6个月）"></a><strong>阶段一：学习与准备（3-6个月）</strong></h4><ol>
+<li><p><strong>学习产品经理基础知识</strong>：</p>
+<ul>
+<li>通过书籍（如《启示录》、《用户体验要素》）、在线课程（如Coursera、Udemy）学习产品经理的基础知识。</li>
+<li>了解产品生命周期、需求分析、原型设计、项目管理等核心概念。</li>
+</ul>
+</li>
+<li><p><strong>掌握工具</strong>：</p>
+<ul>
+<li><strong>原型设计工具</strong>：Axure、Sketch、Figma。</li>
+<li><strong>项目管理工具</strong>：Jira、Trello、Asana。</li>
+<li><strong>数据分析工具</strong>：Excel、SQL、Google Analytics。</li>
+</ul>
+</li>
+<li><p><strong>积累行业知识</strong>：</p>
+<ul>
+<li>关注行业动态，阅读行业报告（如艾瑞咨询、易观分析）。</li>
+<li>研究竞品，分析其产品逻辑和用户体验。</li>
+</ul>
+</li>
+<li><p><strong>参与实际项目</strong>：</p>
+<ul>
+<li>在公司内部寻找机会，参与产品相关的项目（如需求分析、用户调研）。</li>
+<li>如果没有机会，可以通过实习、兼职或 freelance 项目积累经验。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="阶段二：实践与积累（6-12个月）"><a href="#阶段二：实践与积累（6-12个月）" class="headerlink" title="阶段二：实践与积累（6-12个月）"></a><strong>阶段二：实践与积累（6-12个月）</strong></h4><ol>
+<li><p><strong>从辅助岗位开始</strong>：</p>
+<ul>
+<li>申请公司内部的产品助理、产品运营等岗位，逐步接触产品管理工作。</li>
+<li>如果没有内部机会，可以考虑跳槽到初级产品经理岗位。</li>
+</ul>
+</li>
+<li><p><strong>参与完整产品生命周期</strong>：</p>
+<ul>
+<li>从需求分析到产品上线，全程参与一个或多个项目，积累实战经验。</li>
+<li>学习如何撰写需求文档（PRD）、设计产品原型、协调开发团队。</li>
+</ul>
+</li>
+<li><p><strong>培养用户思维</strong>：</p>
+<ul>
+<li>多与用户沟通，了解他们的痛点和需求。</li>
+<li>通过用户反馈和数据优化产品。</li>
+</ul>
+</li>
+<li><p><strong>提升数据分析能力</strong>：</p>
+<ul>
+<li>学习如何通过数据分析发现问题，提出优化方案。</li>
+<li>掌握基本的 SQL 查询和数据分析工具。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="阶段三：提升与突破（1-2年）"><a href="#阶段三：提升与突破（1-2年）" class="headerlink" title="阶段三：提升与突破（1-2年）"></a><strong>阶段三：提升与突破（1-2年）</strong></h4><ol>
+<li><p><strong>独立负责产品模块</strong>：</p>
+<ul>
+<li>从辅助岗位逐步过渡到独立负责某个产品模块或功能。</li>
+<li>学习如何制定产品策略，推动项目落地。</li>
+</ul>
+</li>
+<li><p><strong>提升沟通与协调能力</strong>：</p>
+<ul>
+<li>与开发、设计、运营等部门紧密合作，提升跨部门沟通能力。</li>
+<li>学习如何平衡各方需求，推动项目顺利进行。</li>
+</ul>
+</li>
+<li><p><strong>学习高级技能</strong>：</p>
+<ul>
+<li><strong>商业分析</strong>：学习如何通过产品实现商业目标。</li>
+<li><strong>用户体验设计</strong>：深入理解用户体验设计原则，提升产品设计能力。</li>
+<li><strong>技术理解</strong>：了解基本的技术原理，与技术团队更好地沟通。</li>
+</ul>
+</li>
+<li><p><strong>建立个人品牌</strong>：</p>
+<ul>
+<li>在行业社区（如知乎、人人都是产品经理）分享经验，建立个人影响力。</li>
+<li>参加行业会议、沙龙，拓展人脉。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h4 id="阶段四：进阶与发展（2年以上）"><a href="#阶段四：进阶与发展（2年以上）" class="headerlink" title="阶段四：进阶与发展（2年以上）"></a><strong>阶段四：进阶与发展（2年以上）</strong></h4><ol>
+<li><p><strong>成为高级产品经理</strong>：</p>
+<ul>
+<li>独立负责整个产品或产品线，制定产品战略。</li>
+<li>带领团队完成产品目标，提升团队效率。</li>
+</ul>
+</li>
+<li><p><strong>向产品总监&#x2F;VP发展</strong>：</p>
+<ul>
+<li>负责多个产品线，制定公司级产品战略。</li>
+<li>参与公司高层决策，推动业务增长。</li>
+</ul>
+</li>
+<li><p><strong>持续学习与创新</strong>：</p>
+<ul>
+<li>关注行业前沿技术（如AI、区块链）和趋势（如元宇宙、Web3）。</li>
+<li>不断学习新知识，保持竞争力。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="4-转型中的关键建议"><a href="#4-转型中的关键建议" class="headerlink" title="4. 转型中的关键建议"></a><strong>4. 转型中的关键建议</strong></h3><ul>
+<li><strong>利用现有优势</strong>：如果你有技术背景，可以转型为技术型产品经理；如果有设计背景，可以专注于用户体验设计。</li>
+<li><strong>从小公司或初创公司开始</strong>：小公司对产品经理的要求相对较低，适合积累经验。</li>
+<li><strong>多与产品经理交流</strong>：向有经验的产品经理请教，了解他们的工作内容和挑战。</li>
+<li><strong>保持耐心</strong>：转型是一个长期过程，需要不断学习和积累经验。</li>
+</ul>
+<hr>
+<h3 id="5-推荐学习资源"><a href="#5-推荐学习资源" class="headerlink" title="5. 推荐学习资源"></a><strong>5. 推荐学习资源</strong></h3><ul>
+<li><strong>书籍</strong>：<ul>
+<li>《启示录》：产品经理必读书籍。</li>
+<li>《用户体验要素》：深入理解用户体验设计。</li>
+<li>《精益创业》：学习如何快速验证产品想法。</li>
+</ul>
+</li>
+<li><strong>在线课程</strong>：<ul>
+<li>Coursera：Google 产品经理课程。</li>
+<li>Udemy：产品经理实战课程。</li>
+</ul>
+</li>
+<li><strong>社区</strong>：<ul>
+<li>人人都是产品经理：行业资讯、经验分享。</li>
+<li>PMCAFF：产品经理交流社区。</li>
+</ul>
+</li>
+</ul>
+<h4 id="知识星球"><a href="#知识星球" class="headerlink" title="知识星球"></a>知识星球</h4><ul>
+<li>基本理论<ul>
+<li>（竞品分析 需求分析 需求管理 产品设计 技术相关知识）</li>
+<li>《幕后产品》产品的基础理论知识</li>
+<li>《设计心理学》设计原则及审美</li>
+<li>b站课程，up某江鱼-觉【产品经理的技术必修课】</li>
+</ul>
+</li>
+<li>数据分析能力<ul>
+<li>b站课程，up主阿宁的产品数据小屋【数据分析只需3小时，从入门到进阶】</li>
+<li>《精益数据分析》微信读书，入门书籍</li>
+</ul>
+</li>
+<li>逻辑思维能力<ul>
+<li>《麦肯锡的结构化战略思维》</li>
+<li>《金字塔原理》</li>
+</ul>
+</li>
+<li>商业洞察力<ul>
+<li>《创新者的窘境》</li>
+<li>《零售的哲学》</li>
+<li>《商业模式新生代》</li>
+<li>《从0到1开启商业与未来的秘密》</li>
+</ul>
+</li>
+<li>写作能力<ul>
+<li>《写作是门手艺》</li>
+</ul>
+</li>
+<li>沟通能力<ul>
+<li>《非暴力沟通》</li>
+<li>《沟通的方法》</li>
+<li>《学会提问》</li>
+</ul>
+</li>
+<li>工具（拿现有产品倒推）<ul>
+<li>原型工具：墨刀：码前</li>
+<li>功能结构图工具：x-mind</li>
+<li>业务流程图工具：processon</li>
+</ul>
+</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>学会输入与输出</li>
+<li>读书学习笔记或产品分析与行业分析</li>
+<li>行业分析可找行业报告通读</li>
+<li>产品可找行业头部，腰部，或新颖的产品做分析</li>
+</ul>
+]]></content>
+      <categories>
+        <category>职业规划</category>
+      </categories>
+      <tags>
+        <tag>产品经理</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>通讯协议</title>
     <url>/2026/01/22/%E9%80%9A%E8%AE%AF%E5%8D%8F%E8%AE%AE/</url>
     <content><![CDATA[<p>这是一个非常专业的问题！在游戏网络通信中，除了最基础的TCP和UDP，还有一系列建立在它们之上的<strong>应用层协议</strong>和<strong>技术方案</strong>。游戏开发者会根据不同需求混合使用这些协议。</p>
@@ -14630,357 +14981,6 @@ graph TD
         <tag>HTTP</tag>
         <tag>TCP</tag>
         <tag>UDP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>转产品经理</title>
-    <url>/2025/02/11/%E8%BD%AC%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86/</url>
-    <content><![CDATA[<h1 id="产品专员岗位的晋升空间和难度"><a href="#产品专员岗位的晋升空间和难度" class="headerlink" title="产品专员岗位的晋升空间和难度"></a>产品专员岗位的晋升空间和难度</h1><p><strong>晋升路径</strong>：</p>
-<ol>
-<li><strong>产品专员</strong> → <strong>产品经理</strong> → <strong>高级产品经理</strong> → <strong>产品总监</strong> → <strong>VP&#x2F;CPO</strong></li>
-<li><strong>产品专员</strong> → <strong>产品运营经理</strong> → <strong>产品运营总监</strong></li>
-</ol>
-<p><strong>难度</strong>：</p>
-<ul>
-<li><strong>综合能力要求高</strong>：需具备市场分析、用户研究、项目管理等多方面能力。</li>
-<li><strong>沟通协调重要</strong>：需与多个部门协作，沟通和协调能力是关键。</li>
-<li><strong>结果导向</strong>：晋升依赖于产品成功和业绩表现。</li>
-</ul>
-<p><strong>优势</strong>：</p>
-<ul>
-<li><strong>综合发展</strong>：适合具备商业思维和领导力的人，晋升路径清晰。</li>
-<li><strong>跨行业机会多</strong>：产品管理技能适用于多个行业，职业选择广泛。</li>
-</ul>
-<h1 id="转行产品经理–职业规划路线"><a href="#转行产品经理–职业规划路线" class="headerlink" title="转行产品经理–职业规划路线"></a>转行产品经理–职业规划路线</h1><h3 id="转行做产品经理"><a href="#转行做产品经理" class="headerlink" title="转行做产品经理"></a><strong>转行做产品经理</strong></h3><p><strong>优势</strong>：</p>
-<ul>
-<li><strong>综合能力</strong>：产品经理更注重综合能力，如市场分析、用户研究、项目管理等，技术门槛相对较低。</li>
-<li><strong>跨行业机会</strong>：产品经理技能适用于多个行业，职业选择更广。</li>
-<li><strong>年龄优势</strong>：30岁转行做产品经理并不算晚，且产品经理职业生命周期较长。</li>
-</ul>
-<p><strong>劣势</strong>：</p>
-<ul>
-<li><strong>学习曲线</strong>：需学习新的知识和技能，如市场分析、用户研究、项目管理等。</li>
-<li><strong>经验积累</strong>：初期可能缺乏相关经验，需从初级岗位做起。</li>
-</ul>
-<h3 id="职业规划路线设计"><a href="#职业规划路线设计" class="headerlink" title="职业规划路线设计"></a>职业规划路线设计</h3><p><strong>短期目标（1-2年）</strong>：</p>
-<ul>
-<li><strong>学习产品经理知识</strong>：通过在线课程、书籍等学习产品经理相关知识，如市场分析、用户研究、项目管理等。</li>
-<li><strong>积累项目经验</strong>：尝试参与公司内部的产品项目，积累产品管理经验。</li>
-<li><strong>考取相关证书</strong>：如PMP（项目管理专业人士）认证，提升竞争力。</li>
-</ul>
-<p><strong>中期目标（3-5年）</strong>：</p>
-<ul>
-<li><strong>初级产品经理</strong>：从初级产品经理做起，积累实际工作经验。</li>
-<li><strong>提升综合能力</strong>：提升市场分析、用户研究、项目管理等综合能力。</li>
-</ul>
-<p><strong>长期目标（5年以上）</strong>：</p>
-<ul>
-<li><strong>高级产品经理&#x2F;产品总监</strong>：成为产品团队的核心领导者，负责产品战略和团队管理。</li>
-</ul>
-<h1 id="什么样的人适合做产品经理"><a href="#什么样的人适合做产品经理" class="headerlink" title="什么样的人适合做产品经理"></a>什么样的人适合做产品经理</h1><h3 id="1-沟通能力强"><a href="#1-沟通能力强" class="headerlink" title="1. 沟通能力强"></a>1. <strong>沟通能力强</strong></h3><ul>
-<li><strong>跨部门协作</strong>：产品经理需要与开发、设计、市场、销售等多个部门协作，沟通能力至关重要。</li>
-<li><strong>用户沟通</strong>：与用户沟通，理解用户需求，反馈用户意见。</li>
-</ul>
-<h3 id="2-商业敏感度高"><a href="#2-商业敏感度高" class="headerlink" title="2. 商业敏感度高"></a>2. <strong>商业敏感度高</strong></h3><ul>
-<li><strong>市场分析</strong>：能够分析市场趋势，识别商业机会。</li>
-<li><strong>竞争分析</strong>：了解竞争对手，制定竞争策略。</li>
-</ul>
-<h3 id="3-用户导向"><a href="#3-用户导向" class="headerlink" title="3. 用户导向"></a>3. <strong>用户导向</strong></h3><ul>
-<li><strong>用户研究</strong>：能够进行用户研究，理解用户需求和行为。</li>
-<li><strong>用户体验</strong>：关注用户体验，设计用户友好的产品。</li>
-</ul>
-<h3 id="4-项目管理能力"><a href="#4-项目管理能力" class="headerlink" title="4. 项目管理能力"></a>4. <strong>项目管理能力</strong></h3><ul>
-<li><strong>项目规划</strong>：能够制定项目计划，分配资源，管理进度。</li>
-<li><strong>风险管理</strong>：识别项目风险，制定应对措施。</li>
-</ul>
-<h3 id="5-数据分析能力"><a href="#5-数据分析能力" class="headerlink" title="5. 数据分析能力"></a>5. <strong>数据分析能力</strong></h3><ul>
-<li><strong>数据驱动决策</strong>：能够通过数据分析，做出数据驱动的决策。</li>
-<li><strong>数据解读</strong>：能够解读数据，发现数据背后的洞察。</li>
-</ul>
-<h3 id="6-创新思维"><a href="#6-创新思维" class="headerlink" title="6. 创新思维"></a>6. <strong>创新思维</strong></h3><ul>
-<li><strong>创新意识</strong>：能够提出创新想法，推动产品创新。</li>
-<li><strong>解决问题</strong>：能够解决复杂问题，找到创新的解决方案。</li>
-</ul>
-<h3 id="7-抗压能力强"><a href="#7-抗压能力强" class="headerlink" title="7. 抗压能力强"></a>7. <strong>抗压能力强</strong></h3><ul>
-<li><strong>应对挑战</strong>：能够在高压环境下工作，应对各种挑战。</li>
-<li><strong>情绪管理</strong>：能够管理情绪，保持冷静和专注。</li>
-</ul>
-<h3 id="8-学习能力强"><a href="#8-学习能力强" class="headerlink" title="8. 学习能力强"></a>8. <strong>学习能力强</strong></h3><ul>
-<li><strong>快速学习</strong>：能够快速学习新知识，适应新环境。</li>
-<li><strong>持续学习</strong>：保持持续学习的态度，不断提升自己。</li>
-</ul>
-<h3 id="9-领导力"><a href="#9-领导力" class="headerlink" title="9. 领导力"></a>9. <strong>领导力</strong></h3><ul>
-<li><strong>团队管理</strong>：能够领导团队，激励团队成员。</li>
-<li><strong>决策能力</strong>：能够做出决策，并承担决策后果。</li>
-</ul>
-<h3 id="10-技术理解力"><a href="#10-技术理解力" class="headerlink" title="10. 技术理解力"></a>10. <strong>技术理解力</strong></h3><ul>
-<li><strong>技术背景</strong>：虽然不是必须，但具备一定的技术背景有助于与技术团队沟通。</li>
-<li><strong>技术趋势</strong>：了解技术趋势，能够将技术与产品结合。</li>
-</ul>
-<h1 id="喜欢“捣鼓”的人通常具有以下特点："><a href="#喜欢“捣鼓”的人通常具有以下特点：" class="headerlink" title="喜欢“捣鼓”的人通常具有以下特点："></a>喜欢“捣鼓”的人通常具有以下特点：</h1><ul>
-<li><strong>好奇心强</strong>：喜欢探索新事物，尝试不同的方法和工具。</li>
-<li><strong>动手能力强</strong>：喜欢亲自动手实践，解决问题。</li>
-<li><strong>创新意识</strong>：喜欢尝试新思路，创造新东西。</li>
-<li><strong>耐心和专注</strong>：能够长时间专注于某个问题，直到找到解决方案。</li>
-</ul>
-<h3 id="适合产品经理岗"><a href="#适合产品经理岗" class="headerlink" title="适合产品经理岗"></a><strong>适合产品经理岗</strong></h3><p>喜欢捣鼓的人也可以适合产品经理岗，但需要满足以下条件：</p>
-<ul>
-<li><strong>对用户行为和市场趋势感兴趣</strong>：喜欢捣鼓的人如果对用户需求、市场趋势有好奇心，可以尝试从用户行为中挖掘创新点。</li>
-<li><strong>喜欢尝试新工具和方法</strong>：产品经理需要不断尝试新的工具（如数据分析工具、原型设计工具）和方法（如用户调研、A&#x2F;B测试），这与喜欢捣鼓的特点相符。</li>
-<li><strong>创新思维</strong>：产品经理需要提出创新的产品想法，并推动其实现，适合喜欢尝试新思路的人。</li>
-</ul>
-<p><strong>适合的点</strong>：</p>
-<ul>
-<li>如果你喜欢研究用户行为、市场趋势，并愿意尝试新的工具和方法，产品经理岗可能适合你。</li>
-<li>如果你更喜欢从宏观角度思考问题，而不是深入技术细节，产品经理岗会更适合。</li>
-</ul>
-<h1 id="那么，如何转行做产品经理呢？以下是一些建议"><a href="#那么，如何转行做产品经理呢？以下是一些建议" class="headerlink" title="那么，如何转行做产品经理呢？以下是一些建议"></a>那么，如何转行做产品经理呢？以下是一些建议</h1><ol>
-<li><strong>学习产品经理相关知识：</strong><ul>
-<li>阅读产品经理相关书籍，了解产品经理的工作职责、技能要求和工作流程。</li>
-<li>参加产品经理培训课程，系统学习产品经理知识体系。</li>
-<li>关注产品经理相关的公众号、博客和社区，了解行业动态和发展趋势。</li>
-</ul>
-</li>
-<li><strong>积累产品经理实践经验：</strong><ul>
-<li>参与公司内部的产品项目，主动承担一些产品经理助理或实习生的工作。</li>
-<li>参与一些开源项目或个人项目，尝试从0到1打造一款产品。</li>
-<li>在工作中，有意识地培养自己的沟通、协调、逻辑思维和表达能力。</li>
-</ul>
-</li>
-<li><strong>准备产品经理面试：</strong><ul>
-<li>准备自我介绍，突出自己的优势和特点，表达对产品经理工作的兴趣和热情。</li>
-<li>准备产品经理面试常问的问题，如：<ul>
-<li>你对产品经理的理解是什么？</li>
-<li>你认为一个好的产品经理应该具备哪些素质？</li>
-<li>你如何分析用户需求？</li>
-<li>你如何设计一款产品？</li>
-<li>你在工作中遇到的最大挑战是什么？你是如何解决的？</li>
-</ul>
-</li>
-<li>准备一些自己参与过的产品案例，展示自己的产品能力。</li>
-</ul>
-</li>
-</ol>
-<h1 id="产品经理转型规划"><a href="#产品经理转型规划" class="headerlink" title="产品经理转型规划"></a><strong>产品经理转型规划</strong></h1><h4 id="📌-短期（0-6个月）：探索方向"><a href="#📌-短期（0-6个月）：探索方向" class="headerlink" title="📌 短期（0-6个月）：探索方向"></a><strong>📌 短期（0-6个月）：探索方向</strong></h4><ul>
-<li>学习<strong>产品管理核心技能</strong>（用户研究、需求分析、PRD文档撰写）  </li>
-<li>研究市场需求，确定自己是否适合产品经理岗位  </li>
-<li>了解<strong>游戏行业的产品管理</strong>，如游戏策划、数据分析、商业化运营  </li>
-<li>学习<strong>Axure、SQL、数据分析</strong>等基础工具</li>
-</ul>
-<h4 id="📌-中期（6个月-2年）：积累经验"><a href="#📌-中期（6个月-2年）：积累经验" class="headerlink" title="📌 中期（6个月-2年）：积累经验"></a><strong>📌 中期（6个月-2年）：积累经验</strong></h4><ul>
-<li>先从<strong>游戏策划、数据分析、运营</strong>等相关岗位切入，过渡到产品岗  </li>
-<li>参与公司内部<strong>产品优化、用户数据分析、商业化设计</strong>等工作  </li>
-<li>尝试<strong>内部转岗</strong>，或者通过副业积累产品经验</li>
-</ul>
-<h4 id="📌-长期（2-5年）：稳固职业发展"><a href="#📌-长期（2-5年）：稳固职业发展" class="headerlink" title="📌 长期（2-5年）：稳固职业发展"></a><strong>📌 长期（2-5年）：稳固职业发展</strong></h4><ul>
-<li>争取进入<strong>产品负责人</strong>岗位，具备完整的产品规划与管理能力  </li>
-<li>扩展到更广泛的产品领域，如<strong>互联网、移动应用、SaaS工具</strong>等  </li>
-<li>学习更多管理与商业策略，向<strong>产品总监</strong>或<strong>创业方向</strong>发展</li>
-</ul>
-<p><strong>🚀 关键行动点：</strong><br>✅ 学习产品经理核心知识（需求分析、PRD、数据分析）<br>✅ 结合游戏经验，从策划、数据分析、商业化方向切入<br>✅ 尝试内部转岗或寻找相关实习&#x2F;副业，积累实际产品经验<br>✅ 长期目标是成为游戏或互联网行业的<strong>产品负责人</strong></p>
-<p>从其他岗位（如开发、设计、运营等）转型为产品经理是一个常见的职业发展路径。以下是一个详细的产品经理转型规划，帮助你顺利过渡并在这个岗位上取得成功。</p>
-<hr>
-<h3 id="1-明确转型动机"><a href="#1-明确转型动机" class="headerlink" title="1. 明确转型动机"></a><strong>1. 明确转型动机</strong></h3><p>在开始转型之前，先明确自己为什么要转型为产品经理：</p>
-<ul>
-<li><strong>兴趣驱动</strong>：是否对用户需求、市场趋势、产品设计有浓厚兴趣？</li>
-<li><strong>职业发展</strong>：是否认为产品经理的职业发展空间更大？</li>
-<li><strong>技能匹配</strong>：是否认为自己具备或愿意培养产品经理所需的核心能力？</li>
-</ul>
-<p>明确动机后，才能更有针对性地制定转型计划。</p>
-<hr>
-<h3 id="2-了解产品经理的核心能力"><a href="#2-了解产品经理的核心能力" class="headerlink" title="2. 了解产品经理的核心能力"></a><strong>2. 了解产品经理的核心能力</strong></h3><p>产品经理需要具备以下核心能力：</p>
-<ul>
-<li><strong>用户研究</strong>：理解用户需求，分析用户行为。</li>
-<li><strong>市场分析</strong>：研究市场趋势，分析竞争对手。</li>
-<li><strong>产品设计</strong>：设计产品功能，绘制原型。</li>
-<li><strong>项目管理</strong>：制定项目计划，协调资源，推动项目落地。</li>
-<li><strong>数据分析</strong>：通过数据驱动决策，优化产品。</li>
-<li><strong>沟通协调</strong>：与开发、设计、运营、市场等多部门协作。</li>
-</ul>
-<hr>
-<h3 id="3-转型规划步骤"><a href="#3-转型规划步骤" class="headerlink" title="3. 转型规划步骤"></a><strong>3. 转型规划步骤</strong></h3><h4 id="阶段一：学习与准备（3-6个月）"><a href="#阶段一：学习与准备（3-6个月）" class="headerlink" title="阶段一：学习与准备（3-6个月）"></a><strong>阶段一：学习与准备（3-6个月）</strong></h4><ol>
-<li><p><strong>学习产品经理基础知识</strong>：</p>
-<ul>
-<li>通过书籍（如《启示录》、《用户体验要素》）、在线课程（如Coursera、Udemy）学习产品经理的基础知识。</li>
-<li>了解产品生命周期、需求分析、原型设计、项目管理等核心概念。</li>
-</ul>
-</li>
-<li><p><strong>掌握工具</strong>：</p>
-<ul>
-<li><strong>原型设计工具</strong>：Axure、Sketch、Figma。</li>
-<li><strong>项目管理工具</strong>：Jira、Trello、Asana。</li>
-<li><strong>数据分析工具</strong>：Excel、SQL、Google Analytics。</li>
-</ul>
-</li>
-<li><p><strong>积累行业知识</strong>：</p>
-<ul>
-<li>关注行业动态，阅读行业报告（如艾瑞咨询、易观分析）。</li>
-<li>研究竞品，分析其产品逻辑和用户体验。</li>
-</ul>
-</li>
-<li><p><strong>参与实际项目</strong>：</p>
-<ul>
-<li>在公司内部寻找机会，参与产品相关的项目（如需求分析、用户调研）。</li>
-<li>如果没有机会，可以通过实习、兼职或 freelance 项目积累经验。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h4 id="阶段二：实践与积累（6-12个月）"><a href="#阶段二：实践与积累（6-12个月）" class="headerlink" title="阶段二：实践与积累（6-12个月）"></a><strong>阶段二：实践与积累（6-12个月）</strong></h4><ol>
-<li><p><strong>从辅助岗位开始</strong>：</p>
-<ul>
-<li>申请公司内部的产品助理、产品运营等岗位，逐步接触产品管理工作。</li>
-<li>如果没有内部机会，可以考虑跳槽到初级产品经理岗位。</li>
-</ul>
-</li>
-<li><p><strong>参与完整产品生命周期</strong>：</p>
-<ul>
-<li>从需求分析到产品上线，全程参与一个或多个项目，积累实战经验。</li>
-<li>学习如何撰写需求文档（PRD）、设计产品原型、协调开发团队。</li>
-</ul>
-</li>
-<li><p><strong>培养用户思维</strong>：</p>
-<ul>
-<li>多与用户沟通，了解他们的痛点和需求。</li>
-<li>通过用户反馈和数据优化产品。</li>
-</ul>
-</li>
-<li><p><strong>提升数据分析能力</strong>：</p>
-<ul>
-<li>学习如何通过数据分析发现问题，提出优化方案。</li>
-<li>掌握基本的 SQL 查询和数据分析工具。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h4 id="阶段三：提升与突破（1-2年）"><a href="#阶段三：提升与突破（1-2年）" class="headerlink" title="阶段三：提升与突破（1-2年）"></a><strong>阶段三：提升与突破（1-2年）</strong></h4><ol>
-<li><p><strong>独立负责产品模块</strong>：</p>
-<ul>
-<li>从辅助岗位逐步过渡到独立负责某个产品模块或功能。</li>
-<li>学习如何制定产品策略，推动项目落地。</li>
-</ul>
-</li>
-<li><p><strong>提升沟通与协调能力</strong>：</p>
-<ul>
-<li>与开发、设计、运营等部门紧密合作，提升跨部门沟通能力。</li>
-<li>学习如何平衡各方需求，推动项目顺利进行。</li>
-</ul>
-</li>
-<li><p><strong>学习高级技能</strong>：</p>
-<ul>
-<li><strong>商业分析</strong>：学习如何通过产品实现商业目标。</li>
-<li><strong>用户体验设计</strong>：深入理解用户体验设计原则，提升产品设计能力。</li>
-<li><strong>技术理解</strong>：了解基本的技术原理，与技术团队更好地沟通。</li>
-</ul>
-</li>
-<li><p><strong>建立个人品牌</strong>：</p>
-<ul>
-<li>在行业社区（如知乎、人人都是产品经理）分享经验，建立个人影响力。</li>
-<li>参加行业会议、沙龙，拓展人脉。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h4 id="阶段四：进阶与发展（2年以上）"><a href="#阶段四：进阶与发展（2年以上）" class="headerlink" title="阶段四：进阶与发展（2年以上）"></a><strong>阶段四：进阶与发展（2年以上）</strong></h4><ol>
-<li><p><strong>成为高级产品经理</strong>：</p>
-<ul>
-<li>独立负责整个产品或产品线，制定产品战略。</li>
-<li>带领团队完成产品目标，提升团队效率。</li>
-</ul>
-</li>
-<li><p><strong>向产品总监&#x2F;VP发展</strong>：</p>
-<ul>
-<li>负责多个产品线，制定公司级产品战略。</li>
-<li>参与公司高层决策，推动业务增长。</li>
-</ul>
-</li>
-<li><p><strong>持续学习与创新</strong>：</p>
-<ul>
-<li>关注行业前沿技术（如AI、区块链）和趋势（如元宇宙、Web3）。</li>
-<li>不断学习新知识，保持竞争力。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="4-转型中的关键建议"><a href="#4-转型中的关键建议" class="headerlink" title="4. 转型中的关键建议"></a><strong>4. 转型中的关键建议</strong></h3><ul>
-<li><strong>利用现有优势</strong>：如果你有技术背景，可以转型为技术型产品经理；如果有设计背景，可以专注于用户体验设计。</li>
-<li><strong>从小公司或初创公司开始</strong>：小公司对产品经理的要求相对较低，适合积累经验。</li>
-<li><strong>多与产品经理交流</strong>：向有经验的产品经理请教，了解他们的工作内容和挑战。</li>
-<li><strong>保持耐心</strong>：转型是一个长期过程，需要不断学习和积累经验。</li>
-</ul>
-<hr>
-<h3 id="5-推荐学习资源"><a href="#5-推荐学习资源" class="headerlink" title="5. 推荐学习资源"></a><strong>5. 推荐学习资源</strong></h3><ul>
-<li><strong>书籍</strong>：<ul>
-<li>《启示录》：产品经理必读书籍。</li>
-<li>《用户体验要素》：深入理解用户体验设计。</li>
-<li>《精益创业》：学习如何快速验证产品想法。</li>
-</ul>
-</li>
-<li><strong>在线课程</strong>：<ul>
-<li>Coursera：Google 产品经理课程。</li>
-<li>Udemy：产品经理实战课程。</li>
-</ul>
-</li>
-<li><strong>社区</strong>：<ul>
-<li>人人都是产品经理：行业资讯、经验分享。</li>
-<li>PMCAFF：产品经理交流社区。</li>
-</ul>
-</li>
-</ul>
-<h4 id="知识星球"><a href="#知识星球" class="headerlink" title="知识星球"></a>知识星球</h4><ul>
-<li>基本理论<ul>
-<li>（竞品分析 需求分析 需求管理 产品设计 技术相关知识）</li>
-<li>《幕后产品》产品的基础理论知识</li>
-<li>《设计心理学》设计原则及审美</li>
-<li>b站课程，up某江鱼-觉【产品经理的技术必修课】</li>
-</ul>
-</li>
-<li>数据分析能力<ul>
-<li>b站课程，up主阿宁的产品数据小屋【数据分析只需3小时，从入门到进阶】</li>
-<li>《精益数据分析》微信读书，入门书籍</li>
-</ul>
-</li>
-<li>逻辑思维能力<ul>
-<li>《麦肯锡的结构化战略思维》</li>
-<li>《金字塔原理》</li>
-</ul>
-</li>
-<li>商业洞察力<ul>
-<li>《创新者的窘境》</li>
-<li>《零售的哲学》</li>
-<li>《商业模式新生代》</li>
-<li>《从0到1开启商业与未来的秘密》</li>
-</ul>
-</li>
-<li>写作能力<ul>
-<li>《写作是门手艺》</li>
-</ul>
-</li>
-<li>沟通能力<ul>
-<li>《非暴力沟通》</li>
-<li>《沟通的方法》</li>
-<li>《学会提问》</li>
-</ul>
-</li>
-<li>工具（拿现有产品倒推）<ul>
-<li>原型工具：墨刀：码前</li>
-<li>功能结构图工具：x-mind</li>
-<li>业务流程图工具：processon</li>
-</ul>
-</li>
-</ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
-<li>学会输入与输出</li>
-<li>读书学习笔记或产品分析与行业分析</li>
-<li>行业分析可找行业报告通读</li>
-<li>产品可找行业头部，腰部，或新颖的产品做分析</li>
-</ul>
-]]></content>
-      <categories>
-        <category>职业规划</category>
-      </categories>
-      <tags>
-        <tag>产品经理</tag>
       </tags>
   </entry>
 </search>
