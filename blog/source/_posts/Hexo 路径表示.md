@@ -1,13 +1,13 @@
 ---
-title: hexo 路径表示
+title: Hexo 路径表示
 date: 2024-12-01 22:57:02
 updated: 2024-12-25 14:28:12
 categories: Hexo
 tags:
   - Hexo
-description: hexo 路径表示(绝对路径和相对路径)
+description: Hexo 路径表示(绝对路径和相对路径)
 keywords:
-  - hexo
+  - Hexo
   - 路径表示
   - 相对路径
   - 绝对路径
