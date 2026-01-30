@@ -562,42 +562,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>GitHub Actions 没有触发的核心原因</title>
-    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
-    <content><![CDATA[<p>谢谢提供路径信息。</p>
-<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
-<blockquote>
-<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
-<hr>
-<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
-<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-
-<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
-<hr>
-<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
-<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
-<hr>
-<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
-]]></content>
-      <categories>
-        <category>代码托管平台</category>
-        <category>Github</category>
-        <category>Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub</tag>
-        <tag>Actions</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Git Submodule</title>
     <url>/2025/02/06/Git%20Submodule/</url>
     <content><![CDATA[<p>是的，<strong>Git Submodule</strong> 是一个 <strong>独立的 Git 仓库</strong>，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。</p>
@@ -743,6 +707,42 @@
       </categories>
       <tags>
         <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub Actions 没有触发的核心原因</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
+    <content><![CDATA[<p>谢谢提供路径信息。</p>
+<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
+<blockquote>
+<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
+<hr>
+<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
+<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
+<hr>
+<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
+<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
+<hr>
+<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
+]]></content>
+      <categories>
+        <category>代码托管平台</category>
+        <category>Github</category>
+        <category>Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
+        <tag>Actions</tag>
       </tags>
   </entry>
   <entry>
@@ -2319,6 +2319,21 @@
       </tags>
   </entry>
   <entry>
+    <title>Hexo Butterfly 禁用头像旋转</title>
+    <url>/2024/12/16/Hexo%20Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
+    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hexo Butterfly 添加rightside 按钮</title>
     <url>/2025/01/21/Hexo%20Butterfly%20%E6%B7%BB%E5%8A%A0rightside-%E6%8C%89%E9%92%AE/</url>
     <content><![CDATA[<p>F12调试，查找对应元素的id:页面点击关联至页面元素html标签</p>
@@ -2367,21 +2382,6 @@
 <li><p><strong>优化 JavaScript 和事件绑定</strong>：<br>通过 <code>addEventListener</code> 方式绑定事件，而不是在 HTML 中使用 <code>onclick</code> 属性，这样可以使 JavaScript 更加分离并且可维护。</p>
 </li>
 </ol>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hexo Butterfly 禁用头像旋转</title>
-    <url>/2024/12/16/Hexo%20Butterfly-%E7%A6%81%E7%94%A8%E5%A4%B4%E5%83%8F%E6%97%8B%E8%BD%AC/</url>
-    <content><![CDATA[<p>当鼠标移到侧边栏头像上时，头像会播放旋转动效，要想禁用可以找到<br>themes\butterfly\source\css_layout\aside.styl文件并按照如下对transform: unset修改即可完成动效屏蔽。</p>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.avatar-img</span></span><br><span class="line">  <span class="attribute">overflow</span>: hidden</span><br><span class="line">  margin: <span class="number">0</span> auto</span><br><span class="line">  width: <span class="number">110px</span></span><br><span class="line">  height: <span class="number">110px</span></span><br><span class="line">  border-radius: <span class="number">70px</span></span><br><span class="line"></span><br><span class="line">  img</span><br><span class="line">    width: <span class="number">100%</span></span><br><span class="line">    height: <span class="number">100%</span></span><br><span class="line">    transition: filter <span class="number">375ms</span> ease-in .<span class="number">2s</span>, transform .<span class="number">3s</span></span><br><span class="line">    object-fit: cover</span><br><span class="line"></span><br><span class="line">    &amp;:hover</span><br><span class="line">      transform: unset</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>Hexo</category>
@@ -2516,6 +2516,74 @@
 <p>这段代码原本是要移出src中第一层目录，应为md格式会自动补充根目录，会出现重复目录，但是html 格式不涉及自动补充根目录，所以不需要这一步，因此要添加判断。</p>
 <p>node_modules\hexo-asset-image\index.js需要修改部分的完整的代码</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line">$(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">     <span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">       <span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">       <span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">       <span class="comment">//console.info&amp;&amp;console.info(&quot;.... &quot;+src);</span></span><br><span class="line">       <span class="keyword">if</span>(!(<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s+\//</span>.<span class="title function_">test</span>(src)</span><br><span class="line">         || <span class="regexp">/^\s*\/uploads|images\//</span>.<span class="title function_">test</span>(src))) &#123;</span><br><span class="line">         <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">         <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">         <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">           <span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">         &#125;);</span><br><span class="line">         <span class="comment">// if(srcArray.length &gt; 1 &amp;&amp; srcArray[0]!=&quot;index&quot;)//添加判断防止使用html 加载图片时会抹去index层级</span></span><br><span class="line">         <span class="comment">// srcArray.shift();</span></span><br><span class="line">         src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">         <span class="comment">// console.info&amp;&amp;console.info(&quot;____&quot; +src);</span></span><br><span class="line">         </span><br><span class="line">         <span class="keyword">var</span> baseUrl = data.<span class="property">permalink</span>;</span><br><span class="line">         <span class="comment">// 判断当前页面是否为文章</span></span><br><span class="line">         <span class="keyword">if</span> (data.<span class="property">layout</span> === <span class="string">&#x27;post&#x27;</span>) &#123;</span><br><span class="line">           baseUrl = data.<span class="property">permalink</span>.<span class="title function_">replace</span>(<span class="regexp">/\/[^\/]+\/$/</span>, <span class="string">&#x27;/&#x27;</span>); <span class="comment">// 匹配最后两个斜杠间的内容和最后的斜杠，并替换为单个斜杠</span></span><br><span class="line">         &#125;</span><br><span class="line">         $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, baseUrl +src);</span><br><span class="line">         <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+baseUrl+ <span class="string">&quot;   &quot;</span>  +src);</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">       <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;);</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Butterfly</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Butterfly</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo 添加标签样式</title>
+    <url>/2024/12/15/Hexo%20%E6%B7%BB%E5%8A%A0%E6%A0%87%E7%AD%BE%E6%A0%B7%E5%BC%8F/</url>
+    <content><![CDATA[<p>在 <strong>Hexo Butterfly</strong>  主题中，由于 Markdown 文件中的代码会经过 Hexo 的解析后转换为 HTML，而 HTML 的样式需要依赖主题中的 CSS 文件，直接嵌入的 TailwindCSS 或自定义 CSS 可能无法生效。如果你希望在 Hexo 中生效样式，可以尝试以下方法：</p>
+<h2 id="解决方法-1：使用行内样式-style-属性"><a href="#解决方法-1：使用行内样式-style-属性" class="headerlink" title="解决方法 1：使用行内样式 (style 属性)"></a>解决方法 1：使用行内样式 (style 属性)</h2><p>在 Hexo Markdown 中，直接使用 HTML 的 <code>style</code> 属性为每个标签设置样式。这种方法不依赖外部 CSS 文件，可以确保样式生效。<br>示例： </p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法-2：在主题配置中添加自定义-CSS"><a href="#解决方法-2：在主题配置中添加自定义-CSS" class="headerlink" title="解决方法 2：在主题配置中添加自定义 CSS"></a>解决方法 2：在主题配置中添加自定义 CSS</h2><p>步骤：</p>
+<ol>
+<li><p><strong>找到 Butterfly 主题的 CSS 文件：</strong><br>通常在 <code>source/css/_custom.css</code> 或 <code>source/_data/styles.styl</code> 中可以添加自定义样式。</p>
+</li>
+<li><p><strong>添加样式：</strong></p>
+</li>
+</ol>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span><br><span class="line">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span><br><span class="line">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">text-align</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><strong>在 Markdown 文件中使用：</strong></li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法-3：使用-Hexo-的-标签"><a href="#解决方法-3：使用-Hexo-的-标签" class="headerlink" title="解决方法 3：使用 Hexo 的 &lt;style&gt; 标签"></a>解决方法 3：使用 Hexo 的 <code>&lt;style&gt;</code> 标签</h2><p>如果不想全局修改，只想在某一篇文章中生效样式，可以直接在 Markdown 文件中添加 <code>&lt;style&gt;</code> 标签。<br>示例： </p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: inline-block;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：<br><code>&lt;style&gt;</code> 标签必须写在文章的 HTML 部分中，不能直接用在纯 Markdown 语法中。</p>
+<h2 id="解决方法-4：通过-Butterfly-的自定义组件功能"><a href="#解决方法-4：通过-Butterfly-的自定义组件功能" class="headerlink" title="解决方法 4：通过 Butterfly 的自定义组件功能"></a>解决方法 4：通过 Butterfly 的自定义组件功能</h2><p> Butterfly 主题支持自定义 <code>shortcode</code> 或 <strong>Nunjucks 模板</strong> ，可以在配置中添加一个通用组件。<br>步骤：</p>
+<ol>
+<li><p><strong>在 Butterfly 的 <code>source/_data</code> 中创建 <code>custom.swig</code> 文件（如果不存在）。</strong></p>
+</li>
+<li><p><strong>定义一个标签模板：</strong></p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;% for skill in skills %&#125;</span><br><span class="line">    &lt;span class=&quot;tag&quot; style=&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;&gt;&#123;&#123; skill &#125;&#125;&lt;/span&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><strong>在 Markdown 文件中使用：</strong></li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&#123;% custom skills=[&quot;Next&quot;, &quot;Plasmo&quot;, &quot;Typescript&quot;, &quot;Supabase&quot;, &quot;TailwindCSS&quot;] %&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong> </p>
+<hr>
+<p>如果样式完全无法生效，建议先检查以下内容：</p>
+<ol>
+<li><p>Markdown 文件是否启用了 HTML 渲染（Hexo 默认支持）。</p>
+</li>
+<li><p>自定义样式是否被主题的全局样式覆盖，可以用浏览器调试工具检查。</p>
+</li>
+<li><p>如果是 TailwindCSS，确保它已集成到 Butterfly 主题中。优先推荐 <strong>方法 2</strong>（主题配置中添加 CSS）或 <strong>方法 3</strong>（文章中嵌入 <code>&lt;style&gt;</code> 标签），这些方法既灵活又能避免重复代码。</p>
+</li>
+</ol>
+<blockquote>
+<p>样式效果</p>
+</blockquote>
+<div class="skill-tags">
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">效果一</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Plasmo</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Typescript</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Supabase</span>
+    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">TailwindCSS</span>
+</div>
 ]]></content>
       <categories>
         <category>Hexo</category>
@@ -5430,329 +5498,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Ra Empire 登录流程</title>
-    <url>/2025/06/03/Royal%20Empire%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
-<hr>
-<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
-  participant 玩家
-  participant 客户端
-  participant 服务器
-  玩家--&gt;&gt;客户端: 选择游客登陆
-  客户端-&gt;&gt;玩家: 成功回调
-
-  loop 递归
-      玩家-&gt;&gt;玩家: 接收消息
-  end
-  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
-
-
-<hr>
-<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
-<p>login</p>
-</blockquote>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
-        C--&gt;Request.Login--&gt;LoginWithProcess
-
-        subgraph 共同请求模块
-            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
-        end
-        
-    end
-
-   subgraph 新登录流程
-        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
-        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
-        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
-        
-        subgraph 合并请求回复的数据
-            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
-            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
-        end
-
-        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
-
-
-
-        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
-
-        ReadyToEnter--&gt;|Guest|NewAccountLogin
-        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
-        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
-        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
-    
-        subgraph 各登录方式请求所需的数据
-            FacebookLogin:InitData
-            GuestLogin:InitData
-            RoyalLogin:InitData
-        end
-
-        subgraph 各登录方式请求的成功回调
-            ProcessingAccountLoginTokenInfoData
-            ProcessingGuestLoginTokenInfoData
-            ProcessingFacebookLoginTokenInfoData
-        end
-
-      
-    
-    end
-    
-
-
-
-</code></pre>
-<pre><code class="highlight mermaid">graph TD
-    subgraph 登录模块
-        子游戏接口--&gt;z
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-        LoginViewCtr:OnSocketConnect
-        --&gt; LoginViewCtr:ReadyToEnter
-        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
-    end
-
-    subgraph 登录模块2
-        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
-        B1 --&gt;|❌| B2[玩家选择登录方式]
-        B2 --&gt; B[ID登录]
-        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
-        B2 --&gt; D[FB登录]
-        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
-        D --&gt; |FB sdk 
-        成功回调、
-        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
-        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
-        a3--&gt;|请求|a4[LoginWithToken]--&gt;
-        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
-        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
-        |✅|a8[保存玩家个人信息]--&gt;
-        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
-        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
-        获取 CV 锁定状态:用于控制某些功能的解锁条件
-        获取金币排行榜数据
-        获取每日赢取排行榜数据
-        获取大奖回放周榜数据
-        获取新玩家标志:判断是否是新手玩家
-        加载玩家的游戏相关数据:如上次登录信息等
-        获取邀请代理相关信息
-        分析玩家 IP 地址信息:可能用于风控或地区统计
-        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
-        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
-    end</code></pre>
-<blockquote>
-<p>loading</p>
-</blockquote>
-<pre><code class="highlight mermaid">
-graph TD
-    subgraph 登录模块
-        z[登出]--&gt;V
-        引导--&gt;z
-        设置退出账号--&gt;z
-        子游戏接口--&gt;被踢
-        大厅推送--&gt;被踢--&gt;V
-        大厅--&gt;W[重连]
-        游戏--&gt;W
-        重连失败--&gt;W
-        当服务器连接断开--&gt;W
-        W--&gt;V
-        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
-        注销--&gt;z
-        服务器返回错误码--&gt;z
-        子游戏接口--&gt;z
-    end
-
-    subgraph 加载模块
-    
-        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
-        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
-        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
-        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
-        SafeQuit--&gt;|编辑器|zz
-        SafeQuit--&gt;|非编辑器|Application.Quit
-        bv--&gt;|等于|az[指定版本检查]
-        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
-        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
-        bv--&gt;|小于|zz
-        hotResVersion判断--&gt;|不热更|zz
-    end
-
-    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
-    LoginViewCtr:OnSocketConnect
-    --&gt; LoginViewCtr:ReadyToEnter
-    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
-<blockquote>
-<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，并且Mermaid可以点击【分享Kroki】来全屏预览。不过为了确保数据不会丢失最好在文档中记录一份。Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法，并且自带全屏预览效果，不用分享Kroki。</p>
-</blockquote>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI"><img src="https://mermaid.ink/img/pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI?type=png"></a></p>
-<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ"><img src="https://mermaid.ink/img/pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ?type=png"></a></p>
-]]></content>
-      <categories>
-        <category>游戏项目</category>
-        <category>Royal Empire</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-        <tag>mermaid</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity Overdraw 分析</title>
-    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
-<hr>
-<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 编辑器。</li>
-<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
-<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
-<li>选择 <strong>“Overdraw”</strong> 模式。</li>
-</ol>
-<blockquote>
-<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
-</blockquote>
-<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
-<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
-<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
-</ul>
-<hr>
-<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
-<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
-<li>点击左上角的 <strong>Enable</strong>。</li>
-<li>运行游戏，进入你要查看的 UI 界面。</li>
-<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
-</ol>
-<blockquote>
-<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
-</blockquote>
-<hr>
-<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
-<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
-</li>
-<li><p>切换到 <strong>Rendering</strong> 模块。</p>
-</li>
-<li><p>查看：</p>
-<ul>
-<li><strong>Draw Calls（绘制调用次数）</strong></li>
-<li><strong>Batches（批处理）</strong></li>
-<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
-</ul>
-</li>
-</ol>
-<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
-<hr>
-<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
-<ol>
-<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
-<li>捕捉一帧 UI 显示画面。</li>
-<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
-</ol>
-<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
-<hr>
-<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>用途</th>
-<th>优点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Scene View 的 Overdraw 模式</td>
-<td>快速查看 UI 哪些地方重叠</td>
-<td>快速可视化</td>
-</tr>
-<tr>
-<td>Frame Debugger</td>
-<td>精确分析哪些 UI 元素被重复绘制</td>
-<td>精准</td>
-</tr>
-<tr>
-<td>Profiler</td>
-<td>查看整体 UI 渲染开销</td>
-<td>性能趋势</td>
-</tr>
-<tr>
-<td>RenderDoc</td>
-<td>专业 GPU 分析工具</td>
-<td>最精细</td>
-</tr>
-</tbody></table>
-<hr>
-<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
-<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity Assetbundle</title>
     <url>/2025/01/20/Unity%20Assetbundle/</url>
     <content><![CDATA[<h2 id="了解什么是Assetbundle"><a href="#了解什么是Assetbundle" class="headerlink" title="了解什么是Assetbundle"></a>了解什么是Assetbundle</h2><p>严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:</p>
@@ -6212,6 +5957,329 @@ graph TD
       <tags>
         <tag>Unity</tag>
         <tag>AssetBundle</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ra Empire 登录流程</title>
+    <url>/2025/06/03/Royal%20Empire%E7%99%BB%E5%BD%95%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoginWithProcess()</span><br><span class="line">└── LoginWithToken()</span><br><span class="line">    └── LoadPlayerWithPropType()</span><br><span class="line">        └── RegToPublisher()</span><br><span class="line">            └── ParallelRequest()   ← 当前方法</span><br><span class="line">                ├── 新手签到</span><br><span class="line">                ├── CV锁状态</span><br><span class="line">                ├── 排行榜数据</span><br><span class="line">                ├── 邀请代理信息</span><br><span class="line">                ├── IP分析</span><br><span class="line">                ├── 新手任务</span><br><span class="line">                └── 其他游戏数据</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line">LoginDefine.LoginType = &#123;</span><br><span class="line">	Common = <span class="number">1</span>,<span class="comment">--正常登陆</span></span><br><span class="line">	Logout = <span class="number">2</span>,<span class="comment">--登出登陆</span></span><br><span class="line">	Reconnect = <span class="number">3</span>,<span class="comment">--重连</span></span><br><span class="line">	AutoFacebook = <span class="number">4</span>,<span class="comment">--fb自动登录，在游戏内返回登陆页面</span></span><br><span class="line">	AutoLine = <span class="number">5</span>,<span class="comment">--废弃</span></span><br><span class="line">	Kickedout = <span class="number">6</span><span class="comment">--被挤下线</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LoginDefine.LoginWay = &#123;</span><br><span class="line">	Guest = <span class="number">1</span>,</span><br><span class="line">	Facebook = <span class="number">2</span>,</span><br><span class="line">	Line = <span class="number">3</span>,<span class="comment">--废弃</span></span><br><span class="line">	OPPO = <span class="number">4</span><span class="comment">--废弃</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMoukP2pBGAwQtAybEJsY0bQRNbnJNPJw4sp2Vru1339lpYeQv-3Lv3rv3khVLVYYsZnOpFmnBtYX7aVIBPWcPN4pnosrh290NzLmQmAXwHSHlFVi9BKtgLvJGI6jGwqJYBo_Q6Zysp-hmwqevn2_XcL7_RSI3hCowfQJb0ElVRkl0eIPoS64XeJUBaq00ZGiJzgTvWyXnbixMVtfmtTlVWmNqTzdty8Qz_0CzhumOcSIFMRaoPdUdF1Qj6cKYBkFUkAtbNLPgw0x3T66rVDZ-Wccw0-oJK5CienKNrtSifC8shJRgasQMmtq_nYvnndhWya1aw8VqKjIwqkRVbaEGacelaggkjJ-_W-DidYGPD2fGO1W2FhHEg1uc86-sJVr0-Mf_4Y710rO63lTVy63iNzCKc8d66Z3d-vamlLBbBfF-wtZwtX9PaTdm5869KJGoyVU-c_ZcCWOV3lLNtSrB8NKbuDCovZTGkFe0TKqR2zbyTPBc83JnW-rDmkKhcQ4JK6ytTdztbjMi7d0SdclF1vltXo5S_MEOZoLouz4g061wccqNEXmFaI73JJ-hNMezJt-zSPsTu7v80lgrbYMy27PCSjw-94m_G_ScpwkjBe334qcmjB2wXIuMxVY3eMC2_PTbrJz6hLmwqC2mY8Y1DUiqDWFqXv1UqtzBtGrygsVzLg3dmjojNdPWhpcWShv1RDWVZfFhGPkZLF6xZ7pGo2A86EXDYTgeHEWHowO2ZPFgEPSGR_1oMOyFh6MhlTcH7K9n7Qf9qD8Ko-goHIfjYRiFm39YsUmx">mermaid在线编辑器</a></p>
+<hr>
+<h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><pre><code class="highlight mermaid">sequenceDiagram
+  participant 玩家
+  participant 客户端
+  participant 服务器
+  玩家--&gt;&gt;客户端: 选择游客登陆
+  客户端-&gt;&gt;玩家: 成功回调
+
+  loop 递归
+      玩家-&gt;&gt;玩家: 接收消息
+  end
+  Note right of 玩家: 输入密码 &lt;br/&gt;长连接...</code></pre>
+
+
+<hr>
+<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><blockquote>
+<p>login</p>
+</blockquote>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect--&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+        D--&gt;Request.FacebookLogin--&gt;LoginWithProcess
+        C--&gt;Request.Login--&gt;LoginWithProcess
+
+        subgraph 共同请求模块
+            LoginWithProcess--&gt;Request.LoginWithToken--&gt;Request.ReqLoadPlayerWithPropType--&gt;Request.RegToPublisher--&gt;ParallelRequest--&gt;b3
+        end
+        
+    end
+
+   subgraph 新登录流程
+        OnFacebookLogin--&gt;NewFacebookLogin--&gt;GetLoginProcess--&gt; FacebookLogin:InitData--&gt;LoginProcess:CommonReq
+        --&gt;CC.Request:NewLogin--&gt;LoginProcess:OnLoginResponse--&gt;ProcessingFacebookLoginTokenInfoData
+        --&gt;OnNewLoginSuc--&gt;ProcessingLoginWithToken
+        
+        subgraph 合并请求回复的数据
+            ProcessingLoginWithToken--&gt;ProcessingLoadPlayerWithPropType--&gt;ProcessingReqNewPlayerSignStatus
+            --&gt;ProcessingGetNewPlayerFlag--&gt;ProcessingReqLoadPlayerGameInfo
+        end
+
+        ProcessingReqLoadPlayerGameInfo--&gt;RegToPublisher--&gt;并行请求数据
+
+
+
+        OnGuestLogin--&gt;NewGuestLogin--&gt;GetLoginProcess--&gt;GuestLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingGuestLoginTokenInfoData--&gt;OnNewLoginSuc
+
+        ReadyToEnter--&gt;|Guest|NewAccountLogin
+        ReadyToEnter--&gt;|RoyalLogin|NewAccountLogin
+        oa[OnAccountLogin]--&gt;NewAccountLogin--&gt;GetLoginProcess--&gt;RoyalLogin:InitData--&gt;LoginProcess:CommonReq
+        LoginProcess:OnLoginResponse--&gt;ProcessingAccountLoginTokenInfoData--&gt;OnNewLoginSuc
+    
+        subgraph 各登录方式请求所需的数据
+            FacebookLogin:InitData
+            GuestLogin:InitData
+            RoyalLogin:InitData
+        end
+
+        subgraph 各登录方式请求的成功回调
+            ProcessingAccountLoginTokenInfoData
+            ProcessingGuestLoginTokenInfoData
+            ProcessingFacebookLoginTokenInfoData
+        end
+
+      
+    
+    end
+    
+
+
+
+</code></pre>
+<pre><code class="highlight mermaid">graph TD
+    subgraph 登录模块
+        子游戏接口--&gt;z
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+        LoginViewCtr:OnSocketConnect
+        --&gt; LoginViewCtr:ReadyToEnter
+        V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate
+    end
+
+    subgraph 登录模块2
+        A(玩家登录) --&gt; B1&#123;存在登录方式&#125;
+        B1 --&gt;|❌| B2[玩家选择登录方式]
+        B2 --&gt; B[ID登录]
+        B2 --&gt; C[游客登录]--&gt;a3[LoginWithProcess]
+        B2 --&gt; D[FB登录]
+        B --&gt; F[RoyalLoginView] --&gt; G[Login] --&gt; OnAccountLogin--&gt;C
+        D --&gt; |FB sdk 
+        成功回调、
+        失败回调注册|H[CC.FacebookPlugin.LogIn] --&gt; K&#123;成功登录FB&#125; --&gt; |✅|J[请求 FacebookLogin] --&gt;
+        a1&#123;成功登录游戏&#125; --&gt; a2[保存玩家登录数据，向第三方分析平台发送注册事件，埋点统计、次日留存、本地缓存注册和新玩状态]--&gt;
+        a3--&gt;|请求|a4[LoginWithToken]--&gt;
+        a5&#123;请求回调&#125;--&gt;|✅|a6[保存玩家设备id,登录方式]--&gt;
+        a7&#123;请求加载玩家的特定属性数据（如财富、称号、统计信息等），用于初始化玩家在游戏中的基础状态&#125;--&gt;
+        |✅|a8[保存玩家个人信息]--&gt;
+        a9&#123;将玩家的登录信息注册到游戏发布平台（如 Google Play、App Store 等），用于后续平台相关的功能验证或服务调用。&#125;--&gt;
+        |✅|b1[存储成功发布状态]--&gt;|并行请求业务数据|b2[ParallelRequest]--&gt;b3[获取新手签到状态:如是否开启新手签到
+        获取 CV 锁定状态:用于控制某些功能的解锁条件
+        获取金币排行榜数据
+        获取每日赢取排行榜数据
+        获取大奖回放周榜数据
+        获取新玩家标志:判断是否是新手玩家
+        加载玩家的游戏相关数据:如上次登录信息等
+        获取邀请代理相关信息
+        分析玩家 IP 地址信息:可能用于风控或地区统计
+        获取新手任务信息]--&gt;LoginViewCtr:Update --&gt;|percent &gt;= 100|LoginViewCtr:EnterGame
+        LoginViewCtr:Update--&gt;LoginView:RefreshUI--&gt;loadingNode,进度及按钮的展示
+    end</code></pre>
+<blockquote>
+<p>loading</p>
+</blockquote>
+<pre><code class="highlight mermaid">
+graph TD
+    subgraph 登录模块
+        z[登出]--&gt;V
+        引导--&gt;z
+        设置退出账号--&gt;z
+        子游戏接口--&gt;被踢
+        大厅推送--&gt;被踢--&gt;V
+        大厅--&gt;W[重连]
+        游戏--&gt;W
+        重连失败--&gt;W
+        当服务器连接断开--&gt;W
+        W--&gt;V
+        FB绑定奖励领取回调--&gt;游戏内跳转FB登陆--&gt;V
+        注销--&gt;z
+        服务器返回错误码--&gt;z
+        子游戏接口--&gt;z
+    end
+
+    subgraph 加载模块
+    
+        CC.Notifications.ReqGameListAndGameVersionFinish--&gt;aaa[LoadingView:CheckUpdate]--&gt;LoadingView:StartUpdate--&gt;ch[ResDownloadManager.CheckHall检查大厅资源热更]--&gt;
+        |debug|zz[ResDownloadManager.EnterLogin]--&gt;
+        LoadingView:Update--&gt;|加载完成|LoadingView:EnterGame--&gt;ViewManager.CommonEnterMainScene
+        ch--&gt;|非debug|bv[bigVersion &gt; localBigVersion判断]--&gt;|大于|aa[ResDownloadManager.BigVersionHandle]--&gt;
+        SafeQuit--&gt;|编辑器|zz
+        SafeQuit--&gt;|非编辑器|Application.Quit
+        bv--&gt;|等于|az[指定版本检查]
+        az--&gt;|等于|ResDownloadManager.BigVersionHandle--&gt;hhf[ResDownloadManager.HallHotFix]
+        az--&gt;|不等于|hhf--&gt;hotResVersion判断--&gt;|要热更|ViewManager.CommonEnterMainScene
+        bv--&gt;|小于|zz
+        hotResVersion判断--&gt;|不热更|zz
+    end
+
+    ViewManager.CommonEnterMainScene--&gt;LoginViewCtr:OnCreate --&gt; LoginViewCtr:OnOpenSocket--&gt;CC.Network.Start--&gt;
+    LoginViewCtr:OnSocketConnect
+    --&gt; LoginViewCtr:ReadyToEnter
+    V[ViewManager.BackToLogin,从当前界面（如大厅或游戏）返回到登录界面，清理相关状态和资源]--&gt;LoginViewCtr:OnCreate</code></pre>
+<blockquote>
+<p>推荐下面的方式:在<a href="https://mermaid-live.nodejs.cn/edit#pako:eNpVU39P2zAQ_SonS0NMatOkaQuNBghaxg8xNjGmaSNocpNr4uHYke2sdG2_-2ynhZG_nMu9e-_ei1ckkzmShMy5XGQlVQbup6kA-5w-3EiaM1HAt7sbmFPGMQ_gO0JGBRi1BCNhzopGIcjGwKJcBo_Q7R6vp-hmwvXXz7drONv_wpFqiyoxewJT2pMUWnJ0eI3oS64XqMgBlZIKcjSWTgfvWyVnbixMVlf6tTmTSmFmTjZty8Qz_0C9humOccKZZSxReao7ymzNSmdaNwhMQMFM2cyCDzPVO74SGW_8so5hpuQTCuBMPLlGV2pRvhcWjHPQNWIOTe2_ztnzTmyr5Fau4Xw1ZTloWaEUW6hGu-NSNhbEtJ-_W-D8dYGPD6faO1W1FlmIB7c4519VczTo8Y__wx3rhWd1vZmsl1vFb2A2zh3rhXd269ubUkpuJST7KVnD5f69TbvRO3fuWYWW2rpKZ86eS6aNVFuquZIVaFp5ExcalZfSaOuVXSZTSE0bec5ooWi1sy3zYU2hVDiHlJTG1Drp9bYZWe29ClVFWd79rV-OnP3BLubM0vd8QLoncHFCtWaFQNRHe5zOkOujWVPsGbT7W3b38kthLZUJqnzPMMPx6Mwn_q4fOk9TYhW0_4ufmhLSIYViOUnmlGvskK0Ae29WTn5KXFq2L7HHnCo7IRUbC6qp-CllRRKjGgtTsinKlyFNnVs509aHlxYbN6qJbIQhydhPIMmKPJOkG4WDID4YRFF_MBwdxKNhhyxJEg2HwSg-HI8H42g0iML-waZD_nrSMBhH4zgKwziO-1F8GI46pHXrU3vp_d3f_ANXSlAf">Mermaid 在线编辑器</a>绘制图标，完成后点击下方的【复制 Markdown】，将链接粘贴到md文档就可以预览，点击图表也能跳转到Mermaid继续编辑，并且Mermaid可以点击【分享Kroki】来全屏预览。不过为了确保数据不会丢失最好在文档中记录一份。Mermaid还可以团队协助一起编辑，这个要使用<a href="https://mermaid.live/edit#pako:eNpdjstOwzAQRX_FuiuQkiiP5uUFUtPsWcAKzMJKnIdo7Mh1RCHKv-NaqoLwyjPnnplZ0ahWgML3fSYbJbuxp0wS98wgJkGJFu1yZdIlurP6agauDXmt7zFCjg_vDC_Gthk-Hv_0ie8_kWplqEUzXkYlGbYdVw6frPs8GwvJ0er_cb3jymF46PXYghq9CA-T0BO_lVhvKoO7moHab8v1JwOTm3VmLt-Umu6aVks_gHb8fLHVMrfciHrkveZ7RMhW6JNapAGNEjcCdMUVNImz4BBlcRQWaVSGRebhGzRNg0OSp3FRlnGYx2W-efhxO8OgyNPtF0tIahg">国际版</a>国际版还支持Playground-more featureS, no account required，点击【Playground】可以直接鼠标创建完成绘制图标像xmind一样，不用手敲语法，并且自带全屏预览效果，不用分享Kroki。</p>
+</blockquote>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI"><img src="https://mermaid.ink/img/pako:eNp9lN9P01AUx_-V5j4Psq7bYE00ICSGBxOjPGl9KPTCFrd2absobEvmCFBgvwiOGUWUhClRXCD-KuvY_hh6b7un_Qve9srEgPap59xzzvdzvs1tFswrEgQ8WFTFdJyZnRZkQWbI4xwf22bBNj-hahHXT0ZGbqOzHtrexO0aec-hw1P3WzPXXy075y38dqW_Xr6atl65rUP2z6R26a9JtZJzaqH9Ldt8SXvxXgEdfvQm4MZ7eoxNExvVHC5t4MqRW67RQveg6f74ek0qdAV646qU26u5tSbFvFmNVlCNm9VC1-S4S5cmJ7KMFhfTkGfmVHEeagEmKc7BJM8IAFUsMkIATN6rpvV3_lM_I2u6mEwyD-ACVFWoMpP3Z9zKT1TdpdqCTNdwD46cTpvksLGLOkVkmoJMofsFy-1uu90zp17CK6to7fugY6APxUUxBRMS2RXXjYvCi6H91GJiVH-9aptlsuqgs3EJ7OEuP8aNJuo10Lstp3g26Lzu7xXc1gk6r98ES02nyFQeVTcpGTIaHra1g_f3Bp2S3e3Z7QqqVRzrC2nB5RYy1vB-7aJQfPLbrKmJ7L-Momx3yVKzS2lIqvWHSUXXmFsMG_CiqTjUvCjkR7PKM6hOE0xZgyTJCcBfjwja7c_9nS6uNP3v68PnkPEGWe1hmi5DQxAglyQhAX5BTGowAFJQTYleDLIekQD0OExBAXiIkqg-9UDzpCktyo8UJQV4Xc2QNlXJLMaHQzJpSdThdEIk9y81zKpQlqA6pWRkHfAhNjruTwF8FjwH_AgbDI9yY2GWDYUj0TEuGgmAJcCzkcholBuPxcIxNhpmg6GxfAAs-8LB0Rgb49hgkOO4EMuNB0kHlBK6ot6jl9__B-R_AQXhABI?type=png"></a></p>
+<p><a href="https://mermaid-live.nodejs.cn/edit#pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ"><img src="https://mermaid.ink/img/pako:eNrVWP9P20YU_1csV9pAw01sJwSsDI0vpWOiXQSsk7ZMyHEujoVjZ7YDpAgJOkFbKNCKL11XOko7OjbxbeoXKJQidX_KYif5qf_C7nx2YtJAYWqrLlHA9-7ee5_37t279zxECmockBxJUVRUEVQlIYlcVCEImc-qGYMj4ryogahiTydkdUBI8ppB9LSgNQShMN9HyfydPXN_Pj9_o3jvQZT8gaCoJkIJwYnC9LY5s2Dt7FjXZsxrtwvLq8Wxqfz-xnk-BWRJN4gBEIMMjqhAJcfYmnlrAnOUxAbhIuv6rPlipDh_UJx9aU2vlCWE8JqAM2QRtrW13O6N3M6fhYO75u4j694yJ6uipBCXJDBQkkrTXwxBi2NA5ggo__GqOX4jHNOawmkNELqRlcHn0WiUTKiKQSX4lCRnuU-_AkaLxkuKjmaawnGp37Myxgt9oqZmlDglqLKqcWdoFn4DzgDE0BcznljF15HeLvDjeWB0ARE6D2g9ah9Qwj4ooCnsg_qb8HOUJIaJT6BR5b1BtljXJ63F3dcvfkGDdl4AMVXtc4YdbT4xA3SDs42Gv7JPG72eCasyDAiDp3RDkxRRSmQpI5vGyFUtDjQQp9DGojFeiEaUoQG8xtAywJ4TZF7XbVKa0iQh2WuAQaP3MKukxIFi2IvoMjVm67Gpfpta9h1FGQOULvAyoAY57FxZqsRbXWp5_lTyC5vb1l9XsI9hJJozD2sSMR8MX3PjgQ873Gdu_GwtPC88eWTObNeGfbIEt0mV8S7Zwdfw__FwTB2kdOkyBPY-_PuGdD3NK555fHg8Z6ETneRvJSNpn4SaYGMtYaAnc3bK3J37jA77kIQm7PT3CtXFw8cjMHECDYGKaGq6B-5dTaCWsCavw7yWn_7D3HhWHJ01x7ZzB8vW6CbC-IHAXQQDGFu3JCrdBm9k9Bo6wNYS-fWX5rUtjOcYl394d8JUVwLdLvNiDe2n4RZbC1vwaGFfWvevFjbHPyrU5SBA11yHklBrAgi1fadhL9fk51Zzu9PWwnp-96B4dcq8-yuehvRaiBgmYOr0n1NeWFV99nrtyqutEBBYUP_q2d9L9koo2XHhSVgOqWxVM5oENFsMPgKnEWWzCf3vRHtxbjQ_8cwaGS2F1jkkQMy29neqQp_tu9NCe6eOKV69Ze6MWo8Wrfkta2qjBLM7kwZaF698BBCtzRnr9krh6QP0_AbQNh6yfRxAzd9-N1cW0Kmae2neWoVYIcTerr5eBK8TXoEng5hINNYnEh6Iub2H-Zvj-cd7-b0lbHeH0i8ZoFmEKQSd9P8otyNSudo2EOYWgDOLubhl3hvByQMrblZ4OatLekfaq_P0qnEyze3tmRPLFfdED6_32UZhqVHUBDil8fFo05kYrDOSsHp0WLFgWLYyETwFNFRb4kznFrDewsipPWmngN8ZqSjg-ThMuhUlfD1qH-x6zLr7BJplLi2ZN6fKhSzN4IWN7ph2GNlDtb9dtHk6gGqmOpHnSfpuSd6S7QGy6zC3Dg8cUmAXh_-MjOKK8BiHHq3Fo8A1hnWMYVxCoJJQ7xBCXjQdEevhiPV0EvUBb8OAoi5jJDsi8OGISHuDB0t37urFNRjHTrEM7-2NrSp2OC0c7T9UFJ_8VisFFGwtceuISF_ystyqplKqgkadOH6a29xU4ASM3aGiS7vVboPRzEXVkATP-ALQdV4ELqO9GDbEorPEnB83l6YLG8uFJ8_zV57bEroHJENIuigiavqbNApcl_0S0HRJVZiQ389eYiD12IYDcSDlHpcx6JSgjDc9lv9pHZtSOhUsaqpzO5OF_X1z_SYuMspHgrGb9O3HhX24M7vWnU1YB-L9KS4_LclgGkonq1lKJISkY2ypM3elNTjrD7eMb2mM7bT0agu3xygxna5F9ib_6nnvDL42SuG4tIL9gZ1RypzlLtrjW9aPfDs2Zo68MJcm4Y6WHYu83txepsKDzqKGu72lRHOFOEeRCblB7ncItLsCvakozt0pbG7m74_mdiasiZVKKfYrCj3JpwFHaEAwhj39eRVyQ3WyVwjaBBAvZ5AjOAJH0ENH0P3V6cwRQFn_kZBYttoUWUeKmhQnuQQv66COTAEtxaMxOYT4YAucBCkQJVHwxXmtL0pGlWHIBLf5O1VNkRxqketIKFBMloRk0rDsB20SL2p8qkTVANSpwRBTDJKjWVsGyQ2RgyTHBkNnG4L-gJ8OMfBvoD5YR2ZJLkBDakMwCGmBUKCRZobryMu2Vv_ZRsYfpP0M-scyDBOqI0FcMlTtAn4BZ7-HG_4Xa7ylEQ?type=png"></a></p>
+]]></content>
+      <categories>
+        <category>游戏项目</category>
+        <category>Royal Empire</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+        <tag>mermaid</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity Overdraw 分析</title>
+    <url>/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<p>在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 <strong>Unity 的 Scene 视图 + Frame Debugger</strong> 以及 <strong>Profiler 和 RenderDoc 工具</strong>。下面是详细方法：</p>
+<hr>
+<h2 id="✅-方法一：Scene-视图中的-Overdraw-模式（推荐）"><a href="#✅-方法一：Scene-视图中的-Overdraw-模式（推荐）" class="headerlink" title="✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）"></a>✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）</h2><h3 id="操作步骤："><a href="#操作步骤：" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 编辑器。</li>
+<li>切换到 <strong>Scene</strong> 视图（不是 Game 视图）。</li>
+<li>在 Scene 视图左上角点击 <strong>“Shaded” 下拉菜单</strong>。</li>
+<li>选择 <strong>“Overdraw”</strong> 模式。</li>
+</ol>
+<blockquote>
+<p>✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。</p>
+</blockquote>
+<h3 id="注意事项："><a href="#注意事项：" class="headerlink" title="注意事项："></a>注意事项：</h3><ul>
+<li>这个模式主要对 <strong>UI 的渲染顺序</strong> 和 <strong>透明图片叠加</strong> 非常直观。</li>
+<li>你需要选中 <code>Canvas</code> 或 UI 元素所在的层级来定位问题。</li>
+</ul>
+<hr>
+<h2 id="✅-方法二：Frame-Debugger（推荐用于查找具体调用）"><a href="#✅-方法二：Frame-Debugger（推荐用于查找具体调用）" class="headerlink" title="✅ 方法二：Frame Debugger（推荐用于查找具体调用）"></a>✅ 方法二：Frame Debugger（推荐用于查找具体调用）</h2><h3 id="操作步骤：-1"><a href="#操作步骤：-1" class="headerlink" title="操作步骤："></a>操作步骤：</h3><ol>
+<li>打开 Unity 的 <strong>Window &gt; Analysis &gt; Frame Debugger</strong>。</li>
+<li>点击左上角的 <strong>Enable</strong>。</li>
+<li>运行游戏，进入你要查看的 UI 界面。</li>
+<li>在 Frame Debugger 中浏览每一帧的绘制调用，可以看到哪些 UI 元素被重复绘制。</li>
+</ol>
+<blockquote>
+<p>可以具体看到哪些组件被渲染、是否有冗余的 UI 被 DrawCall 多次渲染。</p>
+</blockquote>
+<hr>
+<h2 id="✅-方法三：Unity-Profiler（整体观察开销）"><a href="#✅-方法三：Unity-Profiler（整体观察开销）" class="headerlink" title="✅ 方法三：Unity Profiler（整体观察开销）"></a>✅ 方法三：Unity Profiler（整体观察开销）</h2><ol>
+<li><p>打开 <strong>Window &gt; Analysis &gt; Profiler</strong>。</p>
+</li>
+<li><p>切换到 <strong>Rendering</strong> 模块。</p>
+</li>
+<li><p>查看：</p>
+<ul>
+<li><strong>Draw Calls（绘制调用次数）</strong></li>
+<li><strong>Batches（批处理）</strong></li>
+<li><strong>Overdraw&#x2F;SetPass Calls</strong></li>
+</ul>
+</li>
+</ol>
+<p>虽然 Profiler 不能直接可视化 Overdraw，但可以通过高 Draw Call 和 SetPass 判断是否 UI 渲染过重。</p>
+<hr>
+<h2 id="✅-方法四：使用-RenderDoc（需要更专业分析）"><a href="#✅-方法四：使用-RenderDoc（需要更专业分析）" class="headerlink" title="✅ 方法四：使用 RenderDoc（需要更专业分析）"></a>✅ 方法四：使用 RenderDoc（需要更专业分析）</h2><p>RenderDoc 是一个图形调试器，可以看到逐像素的绘制信息。</p>
+<ol>
+<li>安装 RenderDoc 并启用 Unity 支持（Player Settings）。</li>
+<li>捕捉一帧 UI 显示画面。</li>
+<li>查看 Overdraw 情况以及各层级 UI 的实际渲染。</li>
+</ol>
+<p>适用于你想深入了解 GPU 层面上的渲染瓶颈时。</p>
+<hr>
+<h2 id="🎯-小结"><a href="#🎯-小结" class="headerlink" title="🎯 小结"></a>🎯 小结</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+<th>优点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scene View 的 Overdraw 模式</td>
+<td>快速查看 UI 哪些地方重叠</td>
+<td>快速可视化</td>
+</tr>
+<tr>
+<td>Frame Debugger</td>
+<td>精确分析哪些 UI 元素被重复绘制</td>
+<td>精准</td>
+</tr>
+<tr>
+<td>Profiler</td>
+<td>查看整体 UI 渲染开销</td>
+<td>性能趋势</td>
+</tr>
+<tr>
+<td>RenderDoc</td>
+<td>专业 GPU 分析工具</td>
+<td>最精细</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你是做 UI 优化（如美术导图 or prefab 重构），建议从 <strong>Scene Overdraw + Frame Debugger 结合使用</strong>，可以快速定位 UI 过度绘制区域。</p>
+<p>如果你想，我也可以教你怎么看具体哪个 Image 或 Text 的 Overdraw 最高。需要我帮你看图或分析具体 prefab 的结构吗？</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -8180,43 +8248,11 @@ graph TD
 ]]></content>
   </entry>
   <entry>
-    <title>Unity UWA &amp; UWP</title>
-    <url>/2025/01/15/Unity-UWA-UWP/</url>
-    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
-<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
-<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
-<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
-</ul>
-<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
-<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
-<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
-</ul>
-<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
-<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
-<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
-</ul>
-<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
-<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
-<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
-<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
-</ul>
-<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
-<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
-<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
-<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
-</ul>
-<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Unity 安装包</title>
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#105;&#116;&#121;&#x2e;&#x63;&#111;&#108;&#x6c;&#x61;&#x62;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#54;&#x2e;&#x30;">&#99;&#111;&#x6d;&#x2e;&#x75;&#110;&#105;&#116;&#121;&#x2e;&#x63;&#111;&#108;&#x6c;&#x61;&#x62;&#45;&#112;&#x72;&#x6f;&#x78;&#x79;&#x40;&#x32;&#x2e;&#54;&#x2e;&#x30;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#x75;&#x6e;&#105;&#116;&#121;&#x2e;&#x63;&#x6f;&#108;&#108;&#97;&#x62;&#x2d;&#x70;&#x72;&#111;&#120;&#121;&#x40;&#50;&#46;&#54;&#46;&#48;">&#x63;&#111;&#x6d;&#46;&#x75;&#x6e;&#105;&#116;&#121;&#x2e;&#x63;&#x6f;&#108;&#108;&#97;&#x62;&#x2d;&#x70;&#x72;&#111;&#120;&#121;&#x40;&#50;&#46;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -8628,6 +8664,38 @@ graph TD
 </ul>
 </li>
 </ol>
+]]></content>
+  </entry>
+  <entry>
+    <title>Unity UWA &amp; UWP</title>
+    <url>/2025/01/15/Unity-UWA-UWP/</url>
+    <content><![CDATA[<p><strong>UWA</strong>（Universal Windows App）和 <strong>UWP</strong>（Universal Windows Platform）之间有密切的关系，但两者不是完全相同的概念。理解它们的关系和区别有助于澄清它们在 Windows 应用开发中的角色。</p>
+<h3 id="1-UWA（Universal-Windows-App）"><a href="#1-UWA（Universal-Windows-App）" class="headerlink" title="1. UWA（Universal Windows App）"></a>1. <strong>UWA（Universal Windows App）</strong></h3><ul>
+<li><strong>定义</strong>：UWA 是一个 <strong>应用类型</strong>，即特定于 Windows 10 及以上版本的应用，设计目标是能够在不同 Windows 10 设备（如 PC、平板、手机、Xbox、HoloLens 等）之间无缝运行。UWA 强调的是应用本身的跨设备能力。</li>
+<li><strong>用途</strong>：它代表了通过 Windows Store 分发的应用，支持在多种设备上安装并运行，旨在让开发者一次编写代码，适配不同类型的 Windows 设备。</li>
+</ul>
+<h3 id="2-UWP（Universal-Windows-Platform）"><a href="#2-UWP（Universal-Windows-Platform）" class="headerlink" title="2. UWP（Universal Windows Platform）"></a>2. <strong>UWP（Universal Windows Platform）</strong></h3><ul>
+<li><strong>定义</strong>：UWP 是 <strong>开发平台</strong> 或 <strong>应用平台</strong>，它是 Windows 10 的一种应用开发框架，提供了一个统一的 API、SDK 和工具集，支持开发能够在所有 Windows 10 设备上运行的应用。UWP 是一个更大的概念，定义了开发者如何为不同设备编写和部署应用。</li>
+<li><strong>用途</strong>：UWP 提供了开发跨设备应用的基础设施，开发者通过 UWP 的 API 和工具开发应用，并可以在多种 Windows 设备上运行。开发的应用通常是 UWA（Universal Windows Apps）。</li>
+</ul>
+<h3 id="关系："><a href="#关系：" class="headerlink" title="关系："></a><strong>关系</strong>：</h3><ul>
+<li><strong>UWA 是 UWP 的一种实现</strong>。换句话说，UWA 是指通过 UWP 开发的应用，它们符合 UWP 的标准，并能够跨多个 Windows 10 设备运行。因此，每个 UWA 应用都是基于 UWP 平台开发的。</li>
+<li>UWP 是开发 UWA 的框架或平台，提供了开发所需的 API 和工具，而 UWA 则是通过这个框架开发出来的应用类型。</li>
+</ul>
+<h3 id="区别："><a href="#区别：" class="headerlink" title="区别："></a><strong>区别</strong>：</h3><ul>
+<li><strong>UWA 是应用，UWP 是平台</strong>：UWA 是一个具体的应用类型（如应用商店中可下载的应用），而 UWP 是用于创建这些应用的开发平台和技术。</li>
+<li><strong>UWA 强调应用本身的跨设备能力</strong>，即它可以在多种设备上运行；而 UWP 强调的是开发过程和基础设施，即如何使用统一的 API 开发可以运行在各种设备上的应用。</li>
+<li><strong>UWA 是 UWP 的产品</strong>：通过 UWP 开发出来的应用就是 UWA。换句话说，UWA 是 UWP 架构的一个具体实例。</li>
+</ul>
+<h3 id="示例："><a href="#示例：" class="headerlink" title="示例："></a><strong>示例</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个跨设备应用开发平台，开发者使用 UWP 的 API 和工具来编写应用。例如，Windows SDK、XAML、C# 等。</li>
+<li><strong>UWA</strong> 是通过 UWP 开发的实际应用类型。比如，你通过 Visual Studio 和 UWP 开发框架开发了一个应用，并将它发布到 Microsoft Store。这个应用就是 UWA，它可以在 PC、平板、手机、Xbox 等设备上运行。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结</strong>：</h3><ul>
+<li><strong>UWP</strong> 是一个应用开发平台，提供了开发和部署 UWA 应用的基础设施和工具。</li>
+<li><strong>UWA</strong> 是通过 UWP 平台开发的跨设备应用，它强调应用的跨设备能力，并通常通过 Microsoft Store 发布。</li>
+</ul>
+<p>换句话说，UWA 是在 UWP 平台上创建的应用，而 UWP 则是为开发这些应用而提供的一整套框架、工具和 API。</p>
 ]]></content>
   </entry>
   <entry>
@@ -9285,6 +9353,108 @@ graph TD
 ]]></content>
   </entry>
   <entry>
+    <title>Visual Studio隐藏unity插件在解决方案列表中显示</title>
+    <url>/2025/01/07/Visual%20Studio%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
+    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
+<hr>
+<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
+<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
+<li><p><strong>找到插件目录</strong></p>
+<ul>
+<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
+</ul>
+</li>
+<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
+<ul>
+<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
+<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
+<li>Unity 会将插件的代码隔离到这个程序集。</li>
+</ul>
+</li>
+<li><p><strong>避免在解决方案中显示</strong></p>
+<ul>
+<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
+<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
+<ol>
+<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
+<ul>
+<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
+<li>找到 <strong>External Tools</strong> 面板。</li>
+<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
+</ul>
+</li>
+<li><p><strong>手动移除插件的项目文件</strong></p>
+<ul>
+<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
+<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
+<ol>
+<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
+<ul>
+<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
+<li>保存文件后，重新加载解决方案。</li>
+<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
+</ul>
+</li>
+<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
+<ul>
+<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
+<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
+<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
+<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
+</ul>
+<hr>
+<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
+<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
+<ul>
+<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
+<li>确保引用的依赖项齐全。</li>
+</ul>
+</li>
+<li><p><strong>替换源码</strong></p>
+<ul>
+<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
+<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
+</ul>
+</li>
+<li><p><strong>移除插件源码</strong></p>
+<ul>
+<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
+<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
+<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
+<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
+</ul>
+<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity插件导入方式</title>
     <url>/2025/02/05/Unity%E6%8F%92%E4%BB%B6%E5%AF%BC%E5%85%A5%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1 id="Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣"><a href="#Unity-UPM-形式导入-vs-传统-Package-形式导入：区别与优劣" class="headerlink" title="Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣"></a><strong>Unity UPM 形式导入 vs. 传统 Package 形式导入：区别与优劣</strong></h1><p>在 Unity 中导入插件主要有两种方式：  </p>
@@ -9504,176 +9674,6 @@ graph TD
       <tags>
         <tag>Unity</tag>
         <tag>Plugins</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Visual Studio隐藏unity插件在解决方案列表中显示</title>
-    <url>/2025/01/07/Visual%20Studio%E9%9A%90%E8%97%8Funity%E6%8F%92%E4%BB%B6%E5%9C%A8%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E5%88%97%E8%A1%A8%E4%B8%AD%E6%98%BE%E7%A4%BA/</url>
-    <content><![CDATA[<p>在 Unity 项目中，如果你使用的插件工具（如 Asset Store 插件）在解决方案中生成了许多项目（如 <code>.csproj</code> 文件），但你并不需要修改它们，可以通过以下几种方法将它们从 Visual Studio 的解决方案中隐藏或不加载。以下是几种可行的方式：</p>
-<hr>
-<h3 id="方法-1：修改-Unity-的生成规则（推荐）"><a href="#方法-1：修改-Unity-的生成规则（推荐）" class="headerlink" title="方法 1：修改 Unity 的生成规则（推荐）"></a><strong>方法 1：修改 Unity 的生成规则（推荐）</strong></h3><p>Unity 的解决方案和项目文件是自动生成的，你可以通过自定义 <code>*.asmdef</code> 文件或修改生成规则来避免加载不必要的插件项目。</p>
-<h4 id="步骤：自定义插件的-Assembly-Definition"><a href="#步骤：自定义插件的-Assembly-Definition" class="headerlink" title="步骤：自定义插件的 Assembly Definition"></a><strong>步骤：自定义插件的 Assembly Definition</strong></h4><ol>
-<li><p><strong>找到插件目录</strong></p>
-<ul>
-<li>在 Unity 项目中找到插件工具所在的文件夹（如 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code>）。</li>
-</ul>
-</li>
-<li><p><strong>创建 <code>.asmdef</code> 文件</strong></p>
-<ul>
-<li>在插件的主文件夹下创建一个 <strong>Assembly Definition 文件</strong>（右键 &gt; Create &gt; Assembly Definition）。</li>
-<li>设置一个合适的名称，如 <code>MyPluginAssembly</code>.</li>
-<li>Unity 会将插件的代码隔离到这个程序集。</li>
-</ul>
-</li>
-<li><p><strong>避免在解决方案中显示</strong></p>
-<ul>
-<li>打开创建的 <code>.asmdef</code> 文件，将 <code>Auto Referenced</code> 属性取消勾选。</li>
-<li>这样插件代码会被编译，但不会作为单独的项目出现在解决方案中。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-2：修改-Unity-编辑器设置"><a href="#方法-2：修改-Unity-编辑器设置" class="headerlink" title="方法 2：修改 Unity 编辑器设置"></a><strong>方法 2：修改 Unity 编辑器设置</strong></h3><p>Unity 提供了选项让你在生成解决方案时忽略某些插件的代码。</p>
-<ol>
-<li><p><strong>编辑 Unity 编辑器的配置文件</strong></p>
-<ul>
-<li>打开 Unity Preferences（<strong>Edit &gt; Preferences</strong> 或 <strong>Unity &gt; Preferences</strong>）。</li>
-<li>找到 <strong>External Tools</strong> 面板。</li>
-<li>确保取消勾选 <code>Generate All .csproj files</code>，然后勾选 <code>Generate .csproj files for: Embedded packages</code> 和 <code>Local packages</code>，这样 Unity 不会生成额外的项目文件。</li>
-</ul>
-</li>
-<li><p><strong>手动移除插件的项目文件</strong></p>
-<ul>
-<li>如果插件仍然出现在解决方案中，可以手动删除它们的 <code>.csproj</code> 文件（通常在 <code>Library/ScriptAssemblies</code> 中）。</li>
-<li>注意：删除后 Unity 会自动重新生成，但只要配置正确，不会再次生成这些文件。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-3：使用-Visual-Studio-的项目过滤功能"><a href="#方法-3：使用-Visual-Studio-的项目过滤功能" class="headerlink" title="方法 3：使用 Visual Studio 的项目过滤功能"></a><strong>方法 3：使用 Visual Studio 的项目过滤功能</strong></h3><p>如果你不能改变 Unity 的项目生成规则，也可以在 Visual Studio 中隐藏多余的插件项目。</p>
-<ol>
-<li><p><strong>编辑解决方案文件（<code>.sln</code>）</strong></p>
-<ul>
-<li>打开解决方案文件（<code>YourProject.sln</code>），删除不需要的项目引用。</li>
-<li>保存文件后，重新加载解决方案。</li>
-<li>注意：每次 Unity 重新生成解决方案时，这些修改会被覆盖。</li>
-</ul>
-</li>
-<li><p><strong>使用 Visual Studio 的解决方案文件夹</strong></p>
-<ul>
-<li>在 Visual Studio 中，将插件项目移动到一个单独的解决方案文件夹中。</li>
-<li>这样可以通过折叠文件夹隐藏它们，减少干扰。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="方法-4：利用插件设置隐藏它们的代码"><a href="#方法-4：利用插件设置隐藏它们的代码" class="headerlink" title="方法 4：利用插件设置隐藏它们的代码"></a><strong>方法 4：利用插件设置隐藏它们的代码</strong></h3><p>某些插件（如 Odin Inspector、DoTween 等）会附带设置选项，你可以在插件的设置中禁用编辑器脚本或编译规则，从而减少它们生成的项目。</p>
-<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a><strong>具体步骤</strong></h4><ul>
-<li>打开插件的设置面板（通常在 <strong>Tools</strong> 菜单或 <code>Edit &gt; Preferences</code> 下）。</li>
-<li>检查是否有选项允许禁用开发模式或额外的脚本生成。</li>
-</ul>
-<hr>
-<h3 id="方法-5：手动分离插件到-dll-文件"><a href="#方法-5：手动分离插件到-dll-文件" class="headerlink" title="方法 5：手动分离插件到 .dll 文件"></a><strong>方法 5：手动分离插件到 <code>.dll</code> 文件</strong></h3><p>如果你不需要修改插件代码，可以将插件的源码编译为 <code>.dll</code> 文件并移除原始脚本。</p>
-<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a><strong>步骤</strong></h4><ol>
-<li><p><strong>将插件源码编译为 <code>.dll</code></strong></p>
-<ul>
-<li>使用 Visual Studio 或其他工具（如 Rider）将插件的源码编译成一个 <code>.dll</code> 文件。</li>
-<li>确保引用的依赖项齐全。</li>
-</ul>
-</li>
-<li><p><strong>替换源码</strong></p>
-<ul>
-<li>将插件目录下的源码替换为编译后的 <code>.dll</code> 文件。</li>
-<li>确保将 <code>.dll</code> 文件放入 <code>Assets/Plugins</code> 或 <code>Assets/ThirdParty</code> 文件夹中。</li>
-</ul>
-</li>
-<li><p><strong>移除插件源码</strong></p>
-<ul>
-<li>删除原始脚本，Unity 只会加载 <code>.dll</code> 文件，不会显示插件项目。</li>
-</ul>
-</li>
-</ol>
-<hr>
-<h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a><strong>注意事项</strong></h3><ul>
-<li>如果你计划以后修改或调试插件代码，保留源码是更好的选择。</li>
-<li>有些插件的功能可能依赖于运行时动态生成的代码或脚本文件，完全移除源码可能导致功能异常。</li>
-<li>优化解决方案文件后，确保在 Unity 中正常运行游戏或项目。</li>
-</ul>
-<p>通过以上方法，可以让你的 Visual Studio 项目更清爽，同时不会影响 Unity 项目的正常运行。</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo添加标签样式</title>
-    <url>/2024/12/15/hexo%E6%B7%BB%E5%8A%A0%E6%A0%87%E7%AD%BE%E6%A0%B7%E5%BC%8F/</url>
-    <content><![CDATA[<p>在 <strong>Hexo Butterfly</strong>  主题中，由于 Markdown 文件中的代码会经过 Hexo 的解析后转换为 HTML，而 HTML 的样式需要依赖主题中的 CSS 文件，直接嵌入的 TailwindCSS 或自定义 CSS 可能无法生效。如果你希望在 Hexo 中生效样式，可以尝试以下方法：</p>
-<h2 id="解决方法-1：使用行内样式-style-属性"><a href="#解决方法-1：使用行内样式-style-属性" class="headerlink" title="解决方法 1：使用行内样式 (style 属性)"></a>解决方法 1：使用行内样式 (style 属性)</h2><p>在 Hexo Markdown 中，直接使用 HTML 的 <code>style</code> 属性为每个标签设置样式。这种方法不依赖外部 CSS 文件，可以确保样式生效。<br>示例： </p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">span</span> <span class="attr">style</span>=<span class="string">&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方法-2：在主题配置中添加自定义-CSS"><a href="#解决方法-2：在主题配置中添加自定义-CSS" class="headerlink" title="解决方法 2：在主题配置中添加自定义 CSS"></a>解决方法 2：在主题配置中添加自定义 CSS</h2><p>步骤：</p>
-<ol>
-<li><p><strong>找到 Butterfly 主题的 CSS 文件：</strong><br>通常在 <code>source/css/_custom.css</code> 或 <code>source/_data/styles.styl</code> 中可以添加自定义样式。</p>
-</li>
-<li><p><strong>添加样式：</strong></p>
-</li>
-</ol>
-<figure class="highlight css"><table><tr><td class="code"><pre><span class="line"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span><br><span class="line">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span><br><span class="line">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span><br><span class="line">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span><br><span class="line">    <span class="attribute">display</span>: inline-block;</span><br><span class="line">    <span class="attribute">text-align</span>: center;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li><strong>在 Markdown 文件中使用：</strong></li>
-</ol>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方法-3：使用-Hexo-的-标签"><a href="#解决方法-3：使用-Hexo-的-标签" class="headerlink" title="解决方法 3：使用 Hexo 的 &lt;style&gt; 标签"></a>解决方法 3：使用 Hexo 的 <code>&lt;style&gt;</code> 标签</h2><p>如果不想全局修改，只想在某一篇文章中生效样式，可以直接在 Markdown 文件中添加 <code>&lt;style&gt;</code> 标签。<br>示例： </p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"></span></span><br><span class="line"><span class="language-css"><span class="selector-class">.skill-tags</span> <span class="selector-class">.tag</span> &#123;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">background-color</span>: <span class="number">#e0f7fa</span>; <span class="comment">/* 浅蓝色背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">color</span>: <span class="number">#006064</span>; <span class="comment">/* 深蓝色文字 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">font-size</span>: <span class="number">0.875rem</span>; <span class="comment">/* 文字大小 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">padding</span>: <span class="number">4px</span> <span class="number">12px</span>; <span class="comment">/* 内边距 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">border-radius</span>: <span class="number">999px</span>; <span class="comment">/* 圆角背景 */</span></span></span><br><span class="line"><span class="language-css">    <span class="attribute">display</span>: inline-block;</span></span><br><span class="line"><span class="language-css">    <span class="attribute">text-align</span>: center;</span></span><br><span class="line"><span class="language-css">&#125;</span></span><br><span class="line"><span class="language-css"></span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;skill-tags&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Next<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Plasmo<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Typescript<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>Supabase<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">span</span> <span class="attr">class</span>=<span class="string">&quot;tag&quot;</span>&gt;</span>TailwindCSS<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>注意：<br><code>&lt;style&gt;</code> 标签必须写在文章的 HTML 部分中，不能直接用在纯 Markdown 语法中。</p>
-<h2 id="解决方法-4：通过-Butterfly-的自定义组件功能"><a href="#解决方法-4：通过-Butterfly-的自定义组件功能" class="headerlink" title="解决方法 4：通过 Butterfly 的自定义组件功能"></a>解决方法 4：通过 Butterfly 的自定义组件功能</h2><p> Butterfly 主题支持自定义 <code>shortcode</code> 或 <strong>Nunjucks 模板</strong> ，可以在配置中添加一个通用组件。<br>步骤：</p>
-<ol>
-<li><p><strong>在 Butterfly 的 <code>source/_data</code> 中创建 <code>custom.swig</code> 文件（如果不存在）。</strong></p>
-</li>
-<li><p><strong>定义一个标签模板：</strong></p>
-</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;% for skill in skills %&#125;</span><br><span class="line">    &lt;span class=&quot;tag&quot; style=&quot;background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;&quot;&gt;&#123;&#123; skill &#125;&#125;&lt;/span&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li><strong>在 Markdown 文件中使用：</strong></li>
-</ol>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&#123;% custom skills=[&quot;Next&quot;, &quot;Plasmo&quot;, &quot;Typescript&quot;, &quot;Supabase&quot;, &quot;TailwindCSS&quot;] %&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong> </p>
-<hr>
-<p>如果样式完全无法生效，建议先检查以下内容：</p>
-<ol>
-<li><p>Markdown 文件是否启用了 HTML 渲染（Hexo 默认支持）。</p>
-</li>
-<li><p>自定义样式是否被主题的全局样式覆盖，可以用浏览器调试工具检查。</p>
-</li>
-<li><p>如果是 TailwindCSS，确保它已集成到 Butterfly 主题中。优先推荐 <strong>方法 2</strong>（主题配置中添加 CSS）或 <strong>方法 3</strong>（文章中嵌入 <code>&lt;style&gt;</code> 标签），这些方法既灵活又能避免重复代码。</p>
-</li>
-</ol>
-<blockquote>
-<p>样式效果</p>
-</blockquote>
-<div class="skill-tags">
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">效果一</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Plasmo</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Typescript</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">Supabase</span>
-    <span style="background-color: #e0f7fa; color: #006064; padding: 4px 12px; border-radius: 999px; display: inline-block; text-align: center;">TailwindCSS</span>
-</div>
-]]></content>
-      <categories>
-        <category>Hexo</category>
-        <category>Butterfly</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
-        <tag>Butterfly</tag>
       </tags>
   </entry>
   <entry>
@@ -10829,6 +10829,83 @@ K8s：好的，我保证永远有3个nginx在跑</li>
 ]]></content>
   </entry>
   <entry>
+    <title>医保</title>
+    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
+    <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
+<h2 id="一档医保报销比例"><a href="#一档医保报销比例" class="headerlink" title="一档医保报销比例"></a>一档医保报销比例</h2><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
+<h3 id="一、门诊报销比例"><a href="#一、门诊报销比例" class="headerlink" title="一、门诊报销比例"></a>一、门诊报销比例</h3><p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
+<ul>
+<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
+<li>二级医院报销比例：65%;</li>
+<li>三级医院报销比例：55%;</li>
+</ul>
+<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
+<h3 id="二、一档医保市内住院报销比例"><a href="#二、一档医保市内住院报销比例" class="headerlink" title="二、一档医保市内住院报销比例"></a>二、一档医保市内住院报销比例</h3><p>在一级以下医院支付比例为94%;</p>
+<p>二级医院支付比例为92%;</p>
+<p>三级医院支付比例为90%;</p>
+<p>退休人员支付比例为95%。</p>
+<p>住院起付线</p>
+<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
+<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
+<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
+<h2 id="灵活就业医保缴费标准"><a href="#灵活就业医保缴费标准" class="headerlink" title="灵活就业医保缴费标准"></a>灵活就业医保缴费标准</h2><p><img src="/.io//image.png"></p>
+<blockquote>
+<p>缴费金额：</p>
+</blockquote>
+<p>6733x0.02 个人余额134</p>
+<p>6733x0.07 个人缴纳医保费用471</p>
+<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
+<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
+<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
+<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
+<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
+</ul>
+<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
+<ul>
+<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
+<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
+<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
+</ul>
+<h2 id="门诊和住院医保报销的区别"><a href="#门诊和住院医保报销的区别" class="headerlink" title="门诊和住院医保报销的区别"></a>门诊和住院医保报销的区别</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>门诊</th>
+<th>住院</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>报销比例</td>
+<td>一般较低</td>
+<td>一般较高</td>
+</tr>
+<tr>
+<td>起付线</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>年度限额</td>
+<td>一般有</td>
+<td>一般有</td>
+</tr>
+<tr>
+<td>报销范围</td>
+<td>诊疗费、药费、检查费等</td>
+<td>所有医疗费用</td>
+</tr>
+</tbody></table>
+]]></content>
+      <categories>
+        <category>社保</category>
+      </categories>
+      <tags>
+        <tag>医保</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>分布式与微服务</title>
     <url>/2026/01/22/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1/</url>
     <content><![CDATA[<p>好的，这是一个非常核心的现代软件架构问题。我们用一种清晰、通俗的方式来解释。</p>
@@ -10940,83 +11017,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </categories>
       <tags>
         <tag>分布式,微服务</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>医保</title>
-    <url>/2025/01/03/%E5%8C%BB%E4%BF%9D/</url>
-    <content><![CDATA[<h1 id="灵活就业一档医保报销政策"><a href="#灵活就业一档医保报销政策" class="headerlink" title="灵活就业一档医保报销政策"></a>灵活就业一档医保报销政策</h1><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。普通门诊统筹支付比例与医疗机构级别挂钩，最高可报销75%，更多报销内容说明见正文。</p>
-<h2 id="一档医保报销比例"><a href="#一档医保报销比例" class="headerlink" title="一档医保报销比例"></a>一档医保报销比例</h2><p>深圳灵活就业人员缴纳的医保是职工一档医保，享受的也是职工一档医保待遇。</p>
-<h3 id="一、门诊报销比例"><a href="#一、门诊报销比例" class="headerlink" title="一、门诊报销比例"></a>一、门诊报销比例</h3><p>职工基本医保、居民基本医保普通门诊统筹支付比例与医疗机构级别挂钩。</p>
-<ul>
-<li>一级以下医疗机构(例如社康)报销比例：75%;</li>
-<li>二级医院报销比例：65%;</li>
-<li>三级医院报销比例：55%;</li>
-</ul>
-<p>退休人员、60周岁及以上居民在上述基础上相应提高5%。</p>
-<h3 id="二、一档医保市内住院报销比例"><a href="#二、一档医保市内住院报销比例" class="headerlink" title="二、一档医保市内住院报销比例"></a>二、一档医保市内住院报销比例</h3><p>在一级以下医院支付比例为94%;</p>
-<p>二级医院支付比例为92%;</p>
-<p>三级医院支付比例为90%;</p>
-<p>退休人员支付比例为95%。</p>
-<p>住院起付线</p>
-<p>参保人在市内定点医疗机构住院发生的基本医疗费用，未超过起付线的由参保人支付;超过起付线的部分，由基本医疗保险统筹基金按规定支付。</p>
-<p>住院起付线按照医院级别设定，其中一级以下医院为200元，二级医院为400元，三级医院为600元。</p>
-<p>参保人在一个医疗保险年度内二次及以上住院的，住院起付线分别为：一级以下医院为100元，二级医院为200元，三级医院为300元。</p>
-<h2 id="灵活就业医保缴费标准"><a href="#灵活就业医保缴费标准" class="headerlink" title="灵活就业医保缴费标准"></a>灵活就业医保缴费标准</h2><p><img src="/.io//image.png"></p>
-<blockquote>
-<p>缴费金额：</p>
-</blockquote>
-<p>6733x0.02 个人余额134</p>
-<p>6733x0.07 个人缴纳医保费用471</p>
-<p>一级医院  限额1万多  报销 75% 费用，个人只需要支付剩余的 25% 费用。</p>
-<p><code>小知识</code>：社康是一级，三甲医院是是三级</p>
-<p><code>各级别医院医保报销比例一般情况</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销比例最高，鼓励患者首诊在社区医院。</li>
-<li>二级医院： 报销比例次之，适合治疗一些常见的疾病。</li>
-<li>三级医院（三甲医院）： 报销比例最低，主要用于治疗疑难杂症和重症疾病。</li>
-</ul>
-<p><code>不同级别医院的医保报销限额</code>（医保内的项目和药物）：</p>
-<ul>
-<li>一级医院（社区医院）： 报销限额相对较低，但报销比例较高。</li>
-<li>二级医院： 报销限额比一级医院高，但比三级医院低。</li>
-<li>三级医院（三甲医院）： 报销限额最高，但报销比例相对较低。</li>
-</ul>
-<h2 id="门诊和住院医保报销的区别"><a href="#门诊和住院医保报销的区别" class="headerlink" title="门诊和住院医保报销的区别"></a>门诊和住院医保报销的区别</h2><table>
-<thead>
-<tr>
-<th>项目</th>
-<th>门诊</th>
-<th>住院</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>报销比例</td>
-<td>一般较低</td>
-<td>一般较高</td>
-</tr>
-<tr>
-<td>起付线</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>年度限额</td>
-<td>一般有</td>
-<td>一般有</td>
-</tr>
-<tr>
-<td>报销范围</td>
-<td>诊疗费、药费、检查费等</td>
-<td>所有医疗费用</td>
-</tr>
-</tbody></table>
-]]></content>
-      <categories>
-        <category>社保</category>
-      </categories>
-      <tags>
-        <tag>医保</tag>
       </tags>
   </entry>
   <entry>
