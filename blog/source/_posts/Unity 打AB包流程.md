@@ -1,10 +1,10 @@
 ---
-title: unity 打AB包流程
+title: Unity 打AB包流程
 date: 2025-01-23 11:08:13
 updated: 2025-01-23 11:08:13
-tags:
-categories:
-keywords:
+tags: [Unity,AssetBundles]
+categories: [Unity,AssetBundles]
+keywords: Unity 打AB包
 description:
 ---
 下面是详细的打包流程、代码示例，以及生成版本文件的完整实现过程。此内容适用于 Unity 项目中使用 AssetBundles 打包并支持版本文件生成与热更新的场景。
