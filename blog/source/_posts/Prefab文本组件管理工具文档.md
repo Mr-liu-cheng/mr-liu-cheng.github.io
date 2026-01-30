@@ -2,9 +2,9 @@
 title: Prefab文本组件管理工具文档
 date: 2025-07-09 14:16:02
 updated: 2025-07-09 14:16:02
-tags: unity工具
-categories: unity工具
-keywords: unity工具,Prefab,Text
+tags: Unity
+categories: [Unity,Tools]
+keywords: Prefab文本组件
 description:
 ---
 # Prefab文本组件管理工具文档
