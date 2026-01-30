@@ -725,42 +725,6 @@
       </tags>
   </entry>
   <entry>
-    <title>GitHub Actions 没有触发的核心原因</title>
-    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
-    <content><![CDATA[<p>谢谢提供路径信息。</p>
-<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
-<blockquote>
-<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-</blockquote>
-<hr>
-<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
-<hr>
-<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
-<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
-
-<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
-<hr>
-<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
-<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
-<hr>
-<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
-]]></content>
-      <categories>
-        <category>代码托管平台</category>
-        <category>Github</category>
-        <category>Actions</category>
-      </categories>
-      <tags>
-        <tag>GitHub</tag>
-        <tag>Actions</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>GitHub Actions部署流程</title>
     <url>/2025/05/08/GitHub%20Actions%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B/</url>
     <content><![CDATA[<p>我们来逐步<strong>解读你提供的 GitHub Actions 自动部署 Hexo 博客的完整脚本</strong>，帮助你理解每一步在干什么、为什么需要它：</p>
@@ -828,6 +792,42 @@
 <p>📌 <strong>结果：你写完文章推送后，网页几秒后自动更新，不再需要本地执行 <code>hexo deploy</code> 命令。</strong></p>
 <hr>
 <p>是否需要我帮你生成一个带图标徽章的 README 标明“本项目使用 GitHub Actions 自动部署”？</p>
+]]></content>
+      <categories>
+        <category>代码托管平台</category>
+        <category>Github</category>
+        <category>Actions</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
+        <tag>Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub Actions 没有触发的核心原因</title>
+    <url>/2025/05/08/GitHub%20Actions%20%E6%B2%A1%E6%9C%89%E8%A7%A6%E5%8F%91/</url>
+    <content><![CDATA[<p>谢谢提供路径信息。</p>
+<p>你的 GitHub Actions 没有触发的<strong>核心原因</strong>在于：</p>
+<blockquote>
+<p>你把 <code>deploy.yml</code> 放在了 <strong><code>mr-liu-cheng.github.io/blog/.github/workflows/deploy.yml</code></strong><br>而它 <strong>应该放在仓库根目录下的 <code>.github/workflows/</code> 中</strong>，即：<br>✅ 正确路径是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mr-liu-cheng.github.io/.github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+</blockquote>
+<hr>
+<h2 id="🔧-为什么要这样放？"><a href="#🔧-为什么要这样放？" class="headerlink" title="🔧 为什么要这样放？"></a>🔧 为什么要这样放？</h2><p>GitHub Actions 的工作流只会被识别和执行 <strong>主仓库 <code>.github/workflows/</code> 目录下的 YAML 文件</strong>，这是固定机制，不能嵌套到子目录或子文件夹里（比如你现在的 <code>blog/</code> 子目录）。</p>
+<hr>
+<h2 id="✅-修复步骤（只需一次性修改）"><a href="#✅-修复步骤（只需一次性修改）" class="headerlink" title="✅ 修复步骤（只需一次性修改）"></a>✅ 修复步骤（只需一次性修改）</h2><p>你可以按下面操作调整：</p>
+<h3 id="①-把-deploy-yml-移动到主目录-github-workflows-："><a href="#①-把-deploy-yml-移动到主目录-github-workflows-：" class="headerlink" title="① 把 deploy.yml 移动到主目录 .github/workflows/："></a>① 把 <code>deploy.yml</code> 移动到主目录 <code>.github/workflows/</code>：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 从 blog 子目录移回仓库根目录</span></span><br><span class="line"><span class="built_in">mkdir</span> -p .github/workflows</span><br><span class="line"><span class="built_in">mv</span> blog/.github/workflows/deploy.yml .github/workflows/deploy.yml</span><br></pre></td></tr></table></figure>
+
+<h3 id="②-提交并推送修改："><a href="#②-提交并推送修改：" class="headerlink" title="② 提交并推送修改："></a>② 提交并推送修改：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .github/workflows/deploy.yml</span><br><span class="line">git commit -m <span class="string">&quot;Fix: Move deploy.yml to correct workflows directory&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<h3 id="③-推送任意文章或文件到-master-分支再试一次："><a href="#③-推送任意文章或文件到-master-分支再试一次：" class="headerlink" title="③ 推送任意文章或文件到 master 分支再试一次："></a>③ 推送任意文章或文件到 <code>master</code> 分支再试一次：</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;test&quot;</span> &gt;&gt; test.md</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Trigger deployment&quot;</span></span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+
+<p>然后你去 GitHub 页面上看 Actions 选项卡，应该就会触发部署流程了 ✅</p>
+<hr>
+<h2 id="🚀-补充建议"><a href="#🚀-补充建议" class="headerlink" title="🚀 补充建议"></a>🚀 补充建议</h2><p>如果你有多级子目录结构用于管理博客源码，可以在 <code>blog/</code> 下保留源码，但确保部署 workflow 放在主路径下。</p>
+<p>或者用两仓库方案也可以（一个写博客源码，一个部署页面），具体可根据你习惯来。</p>
+<hr>
+<p>是否需要我给你一份推荐结构的 Hexo 博客项目模板？也可以直接 fork 来用。</p>
 ]]></content>
       <categories>
         <category>代码托管平台</category>
@@ -932,6 +932,73 @@
       <tags>
         <tag>GitHub</tag>
         <tag>Actions</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>GitHub 作为热更服务器</title>
+    <url>/2025/01/22/GitHub%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
+<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
+<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
+<li><p>在 Unity 中创建 AssetBundle：</p>
+<ul>
+<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
+<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
+</ul>
+</li>
+<li><p>打包 AssetBundles：</p>
+<ul>
+<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
+<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
+<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
+<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
+</li>
+<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
+<ul>
+<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
+<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
+</ul>
+</li>
+<li><p>你会得到一个资源下载的 URL，类似于：</p>
+<ul>
+<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
+<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
+<ol>
+<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
+<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
+<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
+</ol>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
+<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
+<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
+<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
+</ul>
+<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
+<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
+<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
+<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
+</ul>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
+]]></content>
+      <categories>
+        <category>GitHub</category>
+      </categories>
+      <tags>
+        <tag>GitHub</tag>
       </tags>
   </entry>
   <entry>
@@ -1510,73 +1577,6 @@
       <tags>
         <tag>GitHub</tag>
         <tag>GitLab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Github 作为热更服务器</title>
-    <url>/2025/01/22/Github%20%E4%BD%9C%E4%B8%BA%E7%83%AD%E6%9B%B4%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
-    <content><![CDATA[<p>要使用 <strong>GitHub</strong> 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 <strong>Releases</strong> 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：</p>
-<h3 id="1-准备资源（例如-AssetBundles）"><a href="#1-准备资源（例如-AssetBundles）" class="headerlink" title="1. 准备资源（例如 AssetBundles）"></a>1. <strong>准备资源（例如 AssetBundles）</strong></h3><p>首先，你需要将 Unity 项目的资源打包成 <strong>AssetBundles</strong>。这是 Unity 热更新的常见方式。通过 AssetBundles，你可以在游戏运行时动态加载资源，而不需要重新发布整个游戏。</p>
-<h4 id="创建-AssetBundles："><a href="#创建-AssetBundles：" class="headerlink" title="创建 AssetBundles："></a>创建 AssetBundles：</h4><ol>
-<li><p>在 Unity 中创建 AssetBundle：</p>
-<ul>
-<li>选择你想要打包的资源（例如场景、模型、纹理等）。</li>
-<li>在 Inspector 面板中，给它们指定一个 <strong>AssetBundle 名称</strong>。例如，将所有角色模型的 AssetBundle 命名为 <code>character_assets</code>。</li>
-</ul>
-</li>
-<li><p>打包 AssetBundles：</p>
-<ul>
-<li>通过 <code>BuildPipeline.BuildAssetBundles</code> 方法将这些资源导出为 AssetBundles 文件。</li>
-</ul>
-</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleBuilder</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Assets/Build AssetBundles&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">BuildAllAssetBundles</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        BuildPipeline.BuildAssetBundles(<span class="string">&quot;Assets/AssetBundles&quot;</span>, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>执行该方法后，你的 AssetBundles 将被打包并存储到 <code>Assets/AssetBundles</code> 目录中。</p>
-<h3 id="2-将-AssetBundles-上传到-GitHub"><a href="#2-将-AssetBundles-上传到-GitHub" class="headerlink" title="2. 将 AssetBundles 上传到 GitHub"></a>2. <strong>将 AssetBundles 上传到 GitHub</strong></h3><p>将打包好的 AssetBundles 上传到 GitHub 的 <strong>Release 页面</strong>，使它们成为可公开访问的资源。</p>
-<h4 id="创建-GitHub-仓库并上传资源："><a href="#创建-GitHub-仓库并上传资源：" class="headerlink" title="创建 GitHub 仓库并上传资源："></a>创建 GitHub 仓库并上传资源：</h4><ol>
-<li><p>在 GitHub 上创建一个新仓库（如果还没有的话）。</p>
-</li>
-<li><p>将打包好的 AssetBundles 文件（例如 <code>.ab</code> 文件）上传到 GitHub 仓库的 <strong>Releases</strong> 页面。你可以创建一个新的版本（tag）并上传相关的资源文件。</p>
-<ul>
-<li>进入你的 GitHub 仓库页面，点击 <strong>Releases</strong> 标签。</li>
-<li>创建一个新版本，并上传你打包的 AssetBundles 文件。每个版本的资源将对应一个特定的版本号，便于管理更新。</li>
-</ul>
-</li>
-<li><p>你会得到一个资源下载的 URL，类似于：</p>
-<ul>
-<li><code>https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab</code></li>
-</ul>
-</li>
-</ol>
-<h3 id="3-在-Unity-中动态下载资源"><a href="#3-在-Unity-中动态下载资源" class="headerlink" title="3. 在 Unity 中动态下载资源"></a>3. <strong>在 Unity 中动态下载资源</strong></h3><p>在游戏运行时，你可以通过 HTTP 请求从 GitHub 下载 AssetBundles 并加载它们。你需要使用 Unity 的 <strong>UnityWebRequest</strong> 来进行下载，并使用 AssetBundle API 来加载和使用资源。</p>
-<h4 id="示例代码：从-GitHub-下载-AssetBundle-并加载"><a href="#示例代码：从-GitHub-下载-AssetBundle-并加载" class="headerlink" title="示例代码：从 GitHub 下载 AssetBundle 并加载"></a>示例代码：从 GitHub 下载 AssetBundle 并加载</h4><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">AssetBundleManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> assetBundleURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/download/v1.0/character_assets.ab&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> AssetBundle loadedAssetBundle;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载 AssetBundle</span></span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 下载成功，加载 AssetBundle</span></span><br><span class="line">            loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle loaded successfully.&quot;</span>);</span><br><span class="line">                <span class="comment">// 从 AssetBundle 中加载资源</span></span><br><span class="line">                <span class="keyword">var</span> asset = loadedAssetBundle.LoadAsset(<span class="string">&quot;CharacterPrefab&quot;</span>);</span><br><span class="line">                Instantiate(asset);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download AssetBundle: &quot;</span> + request.error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-版本控制与更新"><a href="#4-版本控制与更新" class="headerlink" title="4. 版本控制与更新"></a>4. <strong>版本控制与更新</strong></h3><p>为了支持热更新，你需要管理不同版本的 AssetBundles。每次有新的资源更新时，按照以下步骤操作：</p>
-<ol>
-<li><strong>更新资源</strong>：每次修改或添加资源时，重新打包 AssetBundles，并在 GitHub 上创建新的 Release。</li>
-<li><strong>版本管理</strong>：确保每次更新都更新版本号，方便你的游戏检测和下载新的版本。</li>
-<li><strong>检查更新</strong>：在游戏启动时，可以通过比较本地和远程版本，来决定是否需要下载最新的资源。例如，你可以将版本号存储在远程的一个 JSON 文件中，游戏启动时检查并决定是否下载新的 AssetBundle。</li>
-</ol>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.Networking;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionManager</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">string</span> versionURL = <span class="string">&quot;https://github.com/your-username/your-repo/releases/latest/download/version.json&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">Start</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 下载版本信息</span></span><br><span class="line">        UnityWebRequest versionRequest = UnityWebRequest.Get(versionURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> versionRequest.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (versionRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">string</span> json = versionRequest.downloadHandler.text;</span><br><span class="line">            VersionData versionData = JsonUtility.FromJson&lt;VersionData&gt;(json);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 检查本地版本和远程版本</span></span><br><span class="line">            <span class="keyword">if</span> (versionData.version &gt; PlayerPrefs.GetInt(<span class="string">&quot;Version&quot;</span>, <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;New version available, updating...&quot;</span>);</span><br><span class="line">                <span class="comment">// 下载新的 AssetBundle</span></span><br><span class="line">                StartCoroutine(DownloadAssetBundle(versionData.assetBundleURL));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">&quot;Failed to download version info.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">IEnumerator <span class="title">DownloadAssetBundle</span>(<span class="params"><span class="built_in">string</span> assetBundleURL</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest request = UnityWebRequest.Get(assetBundleURL);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> request.SendWebRequest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (request.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            AssetBundle loadedAssetBundle = AssetBundle.LoadFromMemory(request.downloadHandler.data);</span><br><span class="line">            <span class="keyword">if</span> (loadedAssetBundle != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.Log(<span class="string">&quot;AssetBundle updated.&quot;</span>);</span><br><span class="line">                PlayerPrefs.SetInt(<span class="string">&quot;Version&quot;</span>, versionData.version); <span class="comment">// 保存新版本号</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;Failed to load AssetBundle.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">System.Serializable</span>]</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">VersionData</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">int</span> version;</span><br><span class="line">        <span class="keyword">public</span> <span class="built_in">string</span> assetBundleURL;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-优点与挑战"><a href="#5-优点与挑战" class="headerlink" title="5. 优点与挑战"></a>5. <strong>优点与挑战</strong></h3><h4 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h4><ul>
-<li><strong>简单易用</strong>：GitHub 为你提供了免费的文件托管服务，你只需要通过 GitHub Releases 上传 AssetBundles 即可。</li>
-<li><strong>版本控制</strong>：通过 GitHub 的 Release 标签，你可以很方便地管理和发布不同版本的资源。</li>
-<li><strong>公开访问</strong>：GitHub 的资源链接是公开的，玩家可以在游戏运行时直接从这些 URL 下载最新的资源。</li>
-</ul>
-<h4 id="挑战："><a href="#挑战：" class="headerlink" title="挑战："></a>挑战：</h4><ul>
-<li><strong>访问速度与带宽限制</strong>：GitHub 的带宽和下载速度可能会受到限制，尤其是当下载量增多时，可能会影响资源的加载速度。</li>
-<li><strong>资源存储限制</strong>：虽然 GitHub 免费账户有一定的存储空间限制，但对于小型项目和低频更新，GitHub 是一个可行的选择。大规模项目可能需要其他更高效的 CDN 服务。</li>
-<li><strong>安全性</strong>：公开的资源如果不进行加密或版本管理，可能会被非授权的用户获取和篡改。</li>
-</ul>
-<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>使用 <strong>GitHub</strong> 作为热更新资源服务器对于小型游戏或独立开发者来说是一个实用且免费的选择。你只需上传 AssetBundles 到 GitHub 的 Releases 页面，并通过 Unity 的 <code>UnityWebRequest</code> 下载并加载资源。不过，需要注意带宽、存储限制以及合理管理版本更新，确保游戏能够正确地下载并加载最新资源。</p>
-]]></content>
-      <categories>
-        <category>Github</category>
-      </categories>
-      <tags>
-        <tag>Github</tag>
       </tags>
   </entry>
   <entry>
@@ -5193,217 +5193,6 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </tags>
   </entry>
   <entry>
-    <title>Lua语法检测工具文档</title>
-    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
-    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
-<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
-<li>批量扫描指定目录下的所有Lua文件</li>
-<li>使用原生Lua虚拟机进行语法验证</li>
-<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
-<li>支持递归扫描子目录</li>
-<li>提供简洁直观的GUI界面</li>
-</ul>
-<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
-<li>将脚本放置在Unity项目的Editor文件夹下</li>
-<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
-</ol>
-<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
-<ul>
-<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
-<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
-</ul>
-<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
-<li>确认或修改Lua文件目录路径</li>
-<li>点击”开始检测”按钮</li>
-<li>查看Unity控制台输出：<ul>
-<li>检测开始和结束的标记信息</li>
-<li>每个文件的检测结果</li>
-<li>语法错误的详细描述</li>
-</ul>
-</li>
-</ol>
-<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
-<li><strong>正常文件</strong>：不会产生额外输出</li>
-<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
-<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
-<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
-<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
-<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
-<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
-<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
-</ol>
-<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
-<li><code>StartCheckLua</code>：主检测流程控制</li>
-<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
-<li><code>OnGUI</code>：提供用户界面交互</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
-<li>工具仅检测语法正确性，不执行实际代码</li>
-<li>需要确保Lua文件路径正确且可访问</li>
-<li>检测结果输出到Unity控制台</li>
-<li>工具不会修改任何Lua文件内容</li>
-<li>必须选择Assets目录下的路径</li>
-</ol>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Unity</category>
-        <category>Tools</category>
-      </categories>
-      <tags>
-        <tag>Lua</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown 语法</title>
-    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
-    <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
-<hr>
-<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
-<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
-<ul>
-<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
-<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
-<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
-</ul>
-<h3 id="PPT-预览"><a href="#PPT-预览" class="headerlink" title="PPT 预览"></a>PPT 预览</h3><p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
-<hr>
-<h2 id="什么是-Markdown"><a href="#什么是-Markdown" class="headerlink" title="什么是 Markdown"></a>什么是 Markdown</h2><p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
-<hr>
-<h3 id="1-制作待办事宜-Todo-列表"><a href="#1-制作待办事宜-Todo-列表" class="headerlink" title="1. 制作待办事宜 Todo 列表"></a>1. 制作待办事宜 <code>Todo</code> 列表</h3><ul>
-<li><input checked disabled type="checkbox"> 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
-<li><input checked disabled type="checkbox"> 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
-<li><input checked disabled type="checkbox"> 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
-<li><input checked disabled type="checkbox"> 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
-<li><input checked disabled type="checkbox"> 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
-<li><input checked disabled type="checkbox"> 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
-<li><input checked disabled type="checkbox"> 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
-<li><input checked disabled type="checkbox"> ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
-<li><input checked disabled type="checkbox"> ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
-<li><input checked disabled type="checkbox"> 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
-<li><input checked disabled type="checkbox"> 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
-<li><input checked disabled type="checkbox"> 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
-</ul>
-<hr>
-<h3 id="2-书写一个质能守恒公式-LaTeX"><a href="#2-书写一个质能守恒公式-LaTeX" class="headerlink" title="2. 书写一个质能守恒公式[^LaTeX]"></a>2. 书写一个质能守恒公式[^LaTeX]</h3><p>$$<br>E&#x3D;mc^2<br>$$</p>
-<hr>
-<h3 id="3-高亮一段代码-code"><a href="#3-高亮一段代码-code" class="headerlink" title="3. 高亮一段代码[^code]"></a>3. 高亮一段代码[^code]</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="4-高效绘制流程图"><a href="#4-高效绘制流程图" class="headerlink" title="4. 高效绘制流程图"></a>4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3><pre><code class="highlight mermaid">graph TD
-    A[用户请求] --&gt; B[语义解析]
-    B --&gt; C[RAG检索]
-    
-    C --&gt;|✅ 知识库匹配| D[上下文增强]
-    C --&gt;|❌ 无匹配| E[任务分解]
-    
-    D --&gt; E
-    
-    E --&gt; F&#123;工具选择&#125;
-    
-    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;
-    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;
-    
-    G --&gt;|✏️ 文件操作| I[读写/替换]
-    G --&gt;|🖥️ 系统命令执行| J[执行命令]
-    G --&gt;|🔍 代码分析| K[代码分析]
-    
-    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]
-    H --&gt;|📦 访问MCP资源| M[访问MCP资源]
-    
-    I --&gt; N[结果验证]
-    J --&gt; N
-    K --&gt; N
-    L --&gt; N
-    M --&gt; N
-    
-    N --&gt; O&#123;完成判断&#125;
-    
-    O --&gt;|✅| P[提交最终结果]
-    O --&gt;|❌| E</code></pre>
-
-<hr>
-<h3 id="5-高效绘制序列图"><a href="#5-高效绘制序列图" class="headerlink" title="5. 高效绘制序列图"></a>5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3><pre><code class="highlight mermaid">sequenceDiagram
-  participant Alice
-  participant Bob
-  Alice-&gt;John: Hello John, how are you?
-  loop Healthcheck
-      John-&gt;John: Fight against hypochondria
-  end
-  Note right of John: Rational thoughts &lt;br/&gt;prevail...
-  John--&gt;Alice: Great!
-  John-&gt;Bob: How about you?
-  Bob--&gt;John: Jolly good!</code></pre>
-
-<hr>
-<h3 id="6-高效绘制甘特图"><a href="#6-高效绘制甘特图" class="headerlink" title="6. 高效绘制甘特图"></a>6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3><blockquote>
-<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
-</blockquote>
-<pre><code class="highlight mermaid">gantt
-  title 项目开发流程
-  section 项目确定
-    需求分析       :a1, 2019-06-22, 3d
-    可行性报告     :after a1, 5d
-    概念验证       : 5d
-  section 项目实施
-    概要设计      :2019-07-05  , 5d
-    详细设计      :2019-07-08, 10d
-    编码          :2019-07-15, 10d
-    测试          :2019-07-22, 5d
-  section 发布验收
-    发布: 2d
-    验收: 3d</code></pre>
-
-<hr>
-<h3 id="8-绘制表格"><a href="#8-绘制表格" class="headerlink" title="8. 绘制表格"></a>8. 绘制表格</h3><table>
-<thead>
-<tr>
-<th align="left">作品名称</th>
-<th align="left">在线地址</th>
-<th align="center">上线日期</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">逍遥自在轩</td>
-<td align="left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
-<td align="center">2024-04-26</td>
-</tr>
-<tr>
-<td align="left">玉桃文飨轩</td>
-<td align="left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
-<td align="center">2022-08-26</td>
-</tr>
-<tr>
-<td align="left">缘知随心庭</td>
-<td align="left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
-<td align="center">2022-02-26</td>
-</tr>
-<tr>
-<td align="left">静轩之别苑</td>
-<td align="left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
-<td align="center">2019-01-12</td>
-</tr>
-<tr>
-<td align="left">晚晴幽草轩</td>
-<td align="left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
-<td align="center">2014-09-20</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="9-更详细语法说明"><a href="#9-更详细语法说明" class="headerlink" title="9. 更详细语法说明"></a>9. 更详细语法说明</h3><p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
-<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
-<p>最新更新于 2025.04.16</p>
-]]></content>
-      <categories>
-        <category>Markdown</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Lua 应用</title>
     <url>/2025/02/19/Lua%20%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>文档：</p>
@@ -6433,6 +6222,217 @@ K8s：好的，我保证永远有3个nginx在跑</li>
       </categories>
       <tags>
         <tag>Lua</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Lua语法检测工具文档</title>
+    <url>/2025/07/09/Lua%E8%AF%AD%E6%B3%95%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h1 id="Lua语法检测工具文档"><a href="#Lua语法检测工具文档" class="headerlink" title="Lua语法检测工具文档"></a>Lua语法检测工具文档</h1><h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>Lua语法检测工具是一个Unity编辑器扩展工具，用于批量检查指定目录下所有Lua脚本的语法正确性。该工具通过创建Lua虚拟机环境，尝试加载每个Lua文件来验证其语法是否合法，帮助开发者在早期发现潜在的语法错误。</p>
+<h2 id="功能特性"><a href="#功能特性" class="headerlink" title="功能特性"></a>功能特性</h2><ul>
+<li>批量扫描指定目录下的所有Lua文件</li>
+<li>使用原生Lua虚拟机进行语法验证</li>
+<li>显示详细的错误信息，包括文件路径和具体错误描述</li>
+<li>支持递归扫描子目录</li>
+<li>提供简洁直观的GUI界面</li>
+</ul>
+<h2 id="使用说明"><a href="#使用说明" class="headerlink" title="使用说明"></a>使用说明</h2><h3 id="安装与启动"><a href="#安装与启动" class="headerlink" title="安装与启动"></a>安装与启动</h3><ol>
+<li>将脚本放置在Unity项目的Editor文件夹下</li>
+<li>在Unity编辑器中，通过菜单栏选择 <code>Tools/lua语法检测</code> 打开工具窗口</li>
+</ol>
+<h3 id="界面说明"><a href="#界面说明" class="headerlink" title="界面说明"></a>界面说明</h3><p>工具窗口包含以下主要部分：</p>
+<ul>
+<li><strong>路径选择</strong>：显示和修改Lua文件所在目录（默认为<code>Assets/_GameCenter/ClientLua/Model/Language</code>）</li>
+<li><strong>检测按钮</strong>：点击后开始扫描指定目录并检测所有Lua文件语法</li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ol>
+<li>确认或修改Lua文件目录路径</li>
+<li>点击”开始检测”按钮</li>
+<li>查看Unity控制台输出：<ul>
+<li>检测开始和结束的标记信息</li>
+<li>每个文件的检测结果</li>
+<li>语法错误的详细描述</li>
+</ul>
+</li>
+</ol>
+<h3 id="输出结果解读"><a href="#输出结果解读" class="headerlink" title="输出结果解读"></a>输出结果解读</h3><ul>
+<li><strong>正常文件</strong>：不会产生额外输出</li>
+<li><strong>语法错误文件</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[ERROR] 文件相对路径</span><br><span class="line">错误描述</span><br></pre></td></tr></table></figure></li>
+<li><strong>文件读取错误</strong>：输出格式为：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[FILE ERROR] 读取文件失败: 文件相对路径</span><br><span class="line">错误原因</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="技术实现"><a href="#技术实现" class="headerlink" title="技术实现"></a>技术实现</h2><h3 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h3><ol>
+<li><strong>文件扫描</strong>：递归查找指定目录下的所有.lua文件</li>
+<li><strong>Lua环境初始化</strong>：创建Lua虚拟机状态</li>
+<li><strong>语法检测</strong>：对每个文件内容执行luaL_loadstring操作</li>
+<li><strong>错误处理</strong>：捕获并记录加载过程中产生的错误</li>
+<li><strong>资源清理</strong>：关闭Lua虚拟机状态</li>
+</ol>
+<h3 id="关键方法"><a href="#关键方法" class="headerlink" title="关键方法"></a>关键方法</h3><ul>
+<li><code>StartCheckLua</code>：主检测流程控制</li>
+<li><code>CheckLuaSyntax</code>：执行实际的语法检测</li>
+<li><code>OnGUI</code>：提供用户界面交互</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ol>
+<li>工具仅检测语法正确性，不执行实际代码</li>
+<li>需要确保Lua文件路径正确且可访问</li>
+<li>检测结果输出到Unity控制台</li>
+<li>工具不会修改任何Lua文件内容</li>
+<li>必须选择Assets目录下的路径</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LuaInterface;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * CheckLuaSyntaxWindow</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 功能：批量检测指定文件夹下所有 Lua 脚本是否存在语法错误。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 使用说明：</span></span><br><span class="line"><span class="comment"> * 1. 将本脚本放入 Unity 工程的 Editor 目录中。</span></span><br><span class="line"><span class="comment"> * 2. 在 Unity 菜单栏中点击：Tools &gt; lua语法检测 打开工具窗口。</span></span><br><span class="line"><span class="comment"> * 3. 在弹出的窗口中，点击 “...” 按钮选择待检测的 Lua 文件夹（必须位于 Assets 下）。</span></span><br><span class="line"><span class="comment"> * 4. 点击“开始检测”按钮，工具将自动递归扫描所有 .lua 文件并检测语法问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 特性：</span></span><br><span class="line"><span class="comment"> * - 支持全项目范围递归查找 `.lua` 文件。</span></span><br><span class="line"><span class="comment"> * - 采用底层 Lua VM（通过 LuaDLL）进行语法编译检查，检测准确。</span></span><br><span class="line"><span class="comment"> * - 检测结果以 Unity 控制台日志输出，包含：</span></span><br><span class="line"><span class="comment"> *   * [ERROR] 表示语法错误（含错误信息）</span></span><br><span class="line"><span class="comment"> *   * [FILE ERROR] 表示读取文件失败</span></span><br><span class="line"><span class="comment"> * - 所有语法错误将在控制台中清晰展示，便于开发者快速定位问题。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * 注意事项：</span></span><br><span class="line"><span class="comment"> * - 所选目录 **必须在 Assets 目录中**，否则路径转换会失败。</span></span><br><span class="line"><span class="comment"> * - 仅检查语法正确性，不执行 Lua 逻辑、不校验运行时引用。</span></span><br><span class="line"><span class="comment"> * - 使用的是底层 C API（LuaDLL），**不会影响项目中现有的 Lua VM（如 LuaState）**。</span></span><br><span class="line"><span class="comment"> * - 工具默认打开标准 Lua 库，兼容绝大部分普通语法。</span></span><br><span class="line"><span class="comment"> * - 检测后请注意控制台输出，按需修复报错脚本。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CheckLuaSyntaxWindow</span> : <span class="title">EditorWindow</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">string</span> folderPath, defaultPath = <span class="string">&quot;Assets/_GameCenter/ClientLua/Model/Language&quot;</span>;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;Tools/lua语法检测&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ShowWindow</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        GetWindow&lt;CheckLuaSyntaxWindow&gt;(<span class="string">&quot;Lua 语法检测&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        folderPath = <span class="built_in">string</span>.IsNullOrEmpty(folderPath) ? defaultPath : folderPath;</span><br><span class="line">        GUILayout.Label(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, EditorStyles.boldLabel);</span><br><span class="line">        EditorGUILayout.BeginHorizontal();</span><br><span class="line">        EditorGUILayout.LabelField(<span class="string">&quot;目录路径:&quot;</span>, folderPath);</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;...&quot;</span>, GUILayout.Width(<span class="number">30</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">var</span> path = EditorUtility.OpenFolderPanel(<span class="string">&quot;选择 Lua 文件目录&quot;</span>, folderPath, <span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">string</span>.IsNullOrEmpty(path)) <span class="keyword">return</span>;</span><br><span class="line">            <span class="keyword">if</span> (!path.Contains(<span class="string">&quot;Assets&quot;</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;所选文件夹不在 Assets 目录下，无法处理！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            folderPath = path.Substring(path.IndexOf(<span class="string">&quot;Assets&quot;</span>));</span><br><span class="line">        &#125;</span><br><span class="line">        EditorGUILayout.EndHorizontal();</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;开始检测&quot;</span>)) StartCheckLua(folderPath);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">StartCheckLua</span>(<span class="params"><span class="built_in">string</span> path</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">$&quot;===== 开始 Lua 语法检测 ===== <span class="subst">&#123;path&#125;</span> <span class="subst">&#123;Application.dataPath&#125;</span>&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更健壮的路径处理</span></span><br><span class="line">        <span class="keyword">var</span> fullPath = Path.GetFullPath(Path.Combine(Application.dataPath, path.Replace(<span class="string">&quot;Assets/&quot;</span>, <span class="string">&quot;&quot;</span>)));</span><br><span class="line">        <span class="keyword">if</span> (!Directory.Exists(fullPath))</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(<span class="string">$&quot;路径不存在: <span class="subst">&#123;fullPath&#125;</span>&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> L = IntPtr.Zero;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            L = LuaDLL.lua_open();</span><br><span class="line">            <span class="keyword">if</span> (L == IntPtr.Zero)</span><br><span class="line">            &#123;</span><br><span class="line">                Debug.LogError(<span class="string">&quot;无法创建 Lua 状态&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            LuaDLL.luaL_openlibs(L);</span><br><span class="line">            <span class="keyword">var</span> luaFiles = Directory.GetFiles(fullPath, <span class="string">&quot;*.lua&quot;</span>, SearchOption.AllDirectories);</span><br><span class="line">            <span class="keyword">foreach</span> (<span class="keyword">var</span> file <span class="keyword">in</span> luaFiles)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> relativePath = <span class="string">&quot;Assets&quot;</span> + file.Substring(Application.dataPath.Length);</span><br><span class="line">                <span class="keyword">try</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">var</span> luaCode = File.ReadAllText(file);</span><br><span class="line">                    <span class="keyword">var</span> error = CheckLuaSyntax(luaCode, L);</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(error))</span><br><span class="line">                        Debug.LogError(<span class="string">$&quot;[ERROR] <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;error&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Exception e)</span><br><span class="line">                &#123;</span><br><span class="line">                    Debug.LogError(<span class="string">$&quot;[FILE ERROR] 读取文件失败: <span class="subst">&#123;relativePath&#125;</span>\n<span class="subst">&#123;e.Message&#125;</span>&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (L != IntPtr.Zero) LuaDLL.lua_close(L);</span><br><span class="line">        &#125;</span><br><span class="line">        Debug.Log(<span class="string">&quot;===== 检测完成 =====&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="built_in">string</span> <span class="title">CheckLuaSyntax</span>(<span class="params"><span class="built_in">string</span> code, IntPtr L</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 清空栈</span></span><br><span class="line">            LuaDLL.lua_settop(L, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">if</span> (LuaDLL.luaL_loadstring(L, code) == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出成功加载的函数</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">var</span> error = LuaDLL.lua_tostring(L, <span class="number">-1</span>);</span><br><span class="line">                LuaDLL.lua_pop(L, <span class="number">1</span>); <span class="comment">// 弹出错误消息</span></span><br><span class="line">                <span class="keyword">return</span> error;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Exception e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> e.Message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Unity</category>
+        <category>Tools</category>
+      </categories>
+      <tags>
+        <tag>Lua</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown 语法</title>
+    <url>/2025/05/09/Markdown%20%E8%AF%AD%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="欢迎使用-Arya-在线-Markdown-编辑器"><a href="#欢迎使用-Arya-在线-Markdown-编辑器" class="headerlink" title="欢迎使用 Arya 在线 Markdown 编辑器"></a>欢迎使用 <code>Arya</code> 在线 Markdown 编辑器</h1><p><a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a>，是一款基于 <code>Vue</code>、<code>Vditor</code>，为未来而构建的在线 Markdown 编辑器；轻量且强大：内置粘贴 HTML 自动转换为 Markdown，支持流程图、甘特图、时序图、任务列表，可导出携带样式的图片、PDF、微信公众号特制的 HTML 等等。</p>
+<hr>
+<h2 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h2><p><strong>微注</strong>：清空目前这份默认文档，即处于可使用态。<a href="https://markdown.lovejade.cn/?ref=markdown.lovejade.cn">Arya</a> 另一大优点在于：编辑内容只会在您本地进行保存，不会上传您的数据至服务器，<strong>绝不窥测用户个人隐私，可放心使用</strong>；Github 源码：<a href="https://github.com/nicejade/markdown-online-editor">markdown-online-editor</a>，部分功能仍在开发🚧，敬请期待。</p>
+<p>默认为<a href="https://hacpai.com/article/1577370404903?ref=github.com">所见即所得</a>模式，可通过 <code>⌘-⇧-M</code>（<code>Ctrl-⇧-M</code>）进行切换；或通过以下方式：</p>
+<ul>
+<li>所见即所得：<code>⌘-⌥-7</code>（<code>Ctrl-alt-7</code>）；</li>
+<li>即时渲染：<code>⌘-⌥-8</code>（<code>Ctrl-alt-8</code>）；</li>
+<li>分屏渲染：<code>⌘-⌥-9</code>（<code>Ctrl-alt-9</code>）；</li>
+</ul>
+<h3 id="PPT-预览"><a href="#PPT-预览" class="headerlink" title="PPT 预览"></a>PPT 预览</h3><p>如果您用作 <code>PPT</code> 预览（入口在<code>设置</code>中），需要注意，这里暂还不能支持各种图表的渲染；您可以使用 <code>---</code> 来定义水平方向上幻灯片，用 <code>--</code> 来定义垂直幻灯片；更多设定可以参见 <a href="https://github.com/hakimel/reveal.js#table-of-contents">RevealJs 文档</a>。</p>
+<hr>
+<h2 id="什么是-Markdown"><a href="#什么是-Markdown" class="headerlink" title="什么是 Markdown"></a>什么是 Markdown</h2><p><code>Markdown</code> 是一种方便记忆、书写的纯文本标记语言，用户可以使用这些标记符号，以最小的输入代价，生成极富表现力的文档：譬如您正在阅读的这份文档。它使用简单的符号标记不同的标题，分割不同的段落，<strong>粗体</strong>、<em>斜体</em> 或者<a href="https://vue-cli3.lovejade.cn/explore/">超文本链接</a>，更棒的是，它还可以：</p>
+<hr>
+<h3 id="1-制作待办事宜-Todo-列表"><a href="#1-制作待办事宜-Todo-列表" class="headerlink" title="1. 制作待办事宜 Todo 列表"></a>1. 制作待办事宜 <code>Todo</code> 列表</h3><ul>
+<li><input checked disabled type="checkbox"> 🎉 通常 <code>Markdown</code> 解析器自带的基本功能；</li>
+<li><input checked disabled type="checkbox"> 🍀 支持<strong>流程图</strong>、<strong>甘特图</strong>、<strong>时序图</strong>、<strong>任务列表</strong>；</li>
+<li><input checked disabled type="checkbox"> 🏁 支持粘贴 HTML 自动转换为 Markdown；</li>
+<li><input checked disabled type="checkbox"> 💃🏻 支持插入原生 Emoji、设置常用表情列表；</li>
+<li><input checked disabled type="checkbox"> 🚑 支持编辑内容保存<strong>本地存储</strong>，防止意外丢失；</li>
+<li><input checked disabled type="checkbox"> 📝 支持<strong>实时预览</strong>，主窗口大小拖拽，字符计数；</li>
+<li><input checked disabled type="checkbox"> 🛠 支持常用快捷键(<strong>Tab</strong>)，及代码块添加复制</li>
+<li><input checked disabled type="checkbox"> ✨ 支持<strong>导出</strong>携带样式的 PDF、PNG、JPEG 等；</li>
+<li><input checked disabled type="checkbox"> ✨ 升级 Vditor，新增对 <code>echarts</code> 图表的支持；</li>
+<li><input checked disabled type="checkbox"> 👏 支持检查并格式化 Markdown 语法，使其专业；</li>
+<li><input checked disabled type="checkbox"> 🦑 支持五线谱、及<a href="https://github.com/b3log/vditor/issues/117?ref=hacpai.com#issuecomment-526986052">部分站点、视频、音频解析</a>；</li>
+<li><input checked disabled type="checkbox"> 🌟 增加对<strong>所见即所得</strong>编辑模式的支持(<code>⌘-⇧-M</code>)；</li>
+</ul>
+<hr>
+<h3 id="2-书写一个质能守恒公式-LaTeX"><a href="#2-书写一个质能守恒公式-LaTeX" class="headerlink" title="2. 书写一个质能守恒公式[^LaTeX]"></a>2. 书写一个质能守恒公式[^LaTeX]</h3><p>$$<br>E&#x3D;mc^2<br>$$</p>
+<hr>
+<h3 id="3-高亮一段代码-code"><a href="#3-高亮一段代码-code" class="headerlink" title="3. 高亮一段代码[^code]"></a>3. 高亮一段代码[^code]</h3><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 给页面里所有的 DOM 元素添加一个 1px 的描边（outline）;</span></span><br><span class="line">[].<span class="property">forEach</span>.<span class="title function_">call</span>($$(<span class="string">&quot;*&quot;</span>),<span class="keyword">function</span>(<span class="params">a</span>)&#123;</span><br><span class="line">  a.<span class="property">style</span>.<span class="property">outline</span>=<span class="string">&quot;1px solid #&quot;</span>+(~~(<span class="title class_">Math</span>.<span class="title function_">random</span>()*(<span class="number">1</span>&lt;&lt;<span class="number">24</span>))).<span class="title function_">toString</span>(<span class="number">16</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-高效绘制流程图"><a href="#4-高效绘制流程图" class="headerlink" title="4. 高效绘制流程图"></a>4. 高效绘制<a href="https://github.com/knsv/mermaid#flowchart">流程图</a></h3><pre><code class="highlight mermaid">graph TD
+    A[用户请求] --&gt; B[语义解析]
+    B --&gt; C[RAG检索]
+    
+    C --&gt;|✅ 知识库匹配| D[上下文增强]
+    C --&gt;|❌ 无匹配| E[任务分解]
+    
+    D --&gt; E
+    
+    E --&gt; F&#123;工具选择&#125;
+    
+    F --&gt;|🛠️ 核心工具| G&#123;基础操作&#125;
+    F --&gt;|🔌 MCP扩展服务| H&#123;MCP操作&#125;
+    
+    G --&gt;|✏️ 文件操作| I[读写/替换]
+    G --&gt;|🖥️ 系统命令执行| J[执行命令]
+    G --&gt;|🔍 代码分析| K[代码分析]
+    
+    H --&gt;|⚙️ 使用MCP工具| L[使用MCP工具]
+    H --&gt;|📦 访问MCP资源| M[访问MCP资源]
+    
+    I --&gt; N[结果验证]
+    J --&gt; N
+    K --&gt; N
+    L --&gt; N
+    M --&gt; N
+    
+    N --&gt; O&#123;完成判断&#125;
+    
+    O --&gt;|✅| P[提交最终结果]
+    O --&gt;|❌| E</code></pre>
+
+<hr>
+<h3 id="5-高效绘制序列图"><a href="#5-高效绘制序列图" class="headerlink" title="5. 高效绘制序列图"></a>5. 高效绘制<a href="https://github.com/knsv/mermaid#sequence-diagram">序列图</a></h3><pre><code class="highlight mermaid">sequenceDiagram
+  participant Alice
+  participant Bob
+  Alice-&gt;John: Hello John, how are you?
+  loop Healthcheck
+      John-&gt;John: Fight against hypochondria
+  end
+  Note right of John: Rational thoughts &lt;br/&gt;prevail...
+  John--&gt;Alice: Great!
+  John-&gt;Bob: How about you?
+  Bob--&gt;John: Jolly good!</code></pre>
+
+<hr>
+<h3 id="6-高效绘制甘特图"><a href="#6-高效绘制甘特图" class="headerlink" title="6. 高效绘制甘特图"></a>6. 高效绘制<a href="https://github.com/knsv/mermaid#gantt-diagram">甘特图</a></h3><blockquote>
+<p><strong>甘特图</strong>内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
+</blockquote>
+<pre><code class="highlight mermaid">gantt
+  title 项目开发流程
+  section 项目确定
+    需求分析       :a1, 2019-06-22, 3d
+    可行性报告     :after a1, 5d
+    概念验证       : 5d
+  section 项目实施
+    概要设计      :2019-07-05  , 5d
+    详细设计      :2019-07-08, 10d
+    编码          :2019-07-15, 10d
+    测试          :2019-07-22, 5d
+  section 发布验收
+    发布: 2d
+    验收: 3d</code></pre>
+
+<hr>
+<h3 id="8-绘制表格"><a href="#8-绘制表格" class="headerlink" title="8. 绘制表格"></a>8. 绘制表格</h3><table>
+<thead>
+<tr>
+<th align="left">作品名称</th>
+<th align="left">在线地址</th>
+<th align="center">上线日期</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">逍遥自在轩</td>
+<td align="left"><a href="https://niceshare.site/?ref=markdown.lovejade.cn">https://niceshare.site</a></td>
+<td align="center">2024-04-26</td>
+</tr>
+<tr>
+<td align="left">玉桃文飨轩</td>
+<td align="left"><a href="https://share.lovejade.cn/?ref=markdown.lovejade.cn">https://share.lovejade.cn</a></td>
+<td align="center">2022-08-26</td>
+</tr>
+<tr>
+<td align="left">缘知随心庭</td>
+<td align="left"><a href="https://fine.niceshare.site/?ref=markdown.lovejade.cn">https://fine.niceshare.site</a></td>
+<td align="center">2022-02-26</td>
+</tr>
+<tr>
+<td align="left">静轩之别苑</td>
+<td align="left"><a href="http://quickapp.lovejade.cn/?ref=markdown.lovejade.cn">http://quickapp.lovejade.cn</a></td>
+<td align="center">2019-01-12</td>
+</tr>
+<tr>
+<td align="left">晚晴幽草轩</td>
+<td align="left"><a href="https://www.jeffjade.com/?ref=markdown.lovejade.cn">https://www.jeffjade.com</a></td>
+<td align="center">2014-09-20</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="9-更详细语法说明"><a href="#9-更详细语法说明" class="headerlink" title="9. 更详细语法说明"></a>9. 更详细语法说明</h3><p>想要查看更详细的语法说明，可以参考这份 <a href="https://github.com/nicejade/nice-front-end-tutorial/blob/master/tutorial/markdown-tutorial.md">Markdown 资源列表</a>，涵盖入门至进阶教程，以及资源、平台等信息，能让您对她有更深的认知。</p>
+<p>总而言之，不同于其它<strong>所见即所得</strong>的编辑器：你只需使用键盘专注于书写文本内容，就可以生成印刷级的排版格式，省却在键盘和工具栏之间来回切换，调整内容和格式的麻烦。<strong>Markdown 在流畅的书写和印刷级的阅读体验之间找到了平衡。</strong> 目前它已经成为世界上最大的技术分享网站 <code>GitHub</code> 和 技术问答网站 <code>StackOverFlow</code> 的御用书写格式，而且越发流行，正在在向各行业渗透。</p>
+<p>最新更新于 2025.04.16</p>
+]]></content>
+      <categories>
+        <category>Markdown</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -9494,7 +9494,7 @@ graph TD
     <url>/2025/01/13/Unity-%E5%AE%89%E8%A3%85%E5%8C%85/</url>
     <content><![CDATA[<h1 id="collab-proxy-缺失-PlasticSCM-log4netPlastic-dll"><a href="#collab-proxy-缺失-PlasticSCM-log4netPlastic-dll" class="headerlink" title="collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll"></a>collab-proxy 缺失 PlasticSCM&#x2F;log4netPlastic.dll</h1><p><strong>描述：</strong></p>
 <blockquote>
-<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#111;&#x6d;&#46;&#x75;&#x6e;&#x69;&#x74;&#x79;&#46;&#x63;&#111;&#108;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#x2e;&#54;&#46;&#48;">&#x63;&#111;&#x6d;&#46;&#x75;&#x6e;&#x69;&#x74;&#x79;&#46;&#x63;&#111;&#108;&#108;&#x61;&#x62;&#45;&#x70;&#114;&#x6f;&#120;&#121;&#64;&#50;&#x2e;&#54;&#46;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
+<p>error CS0006: Metadata file ‘Library&#x2F;PackageCache&#x2F;<a href="mailto:&#x63;&#x6f;&#x6d;&#x2e;&#x75;&#x6e;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#108;&#108;&#97;&#98;&#x2d;&#x70;&#x72;&#x6f;&#x78;&#x79;&#64;&#50;&#x2e;&#54;&#x2e;&#48;">&#x63;&#x6f;&#x6d;&#x2e;&#x75;&#x6e;&#105;&#116;&#x79;&#x2e;&#x63;&#111;&#108;&#108;&#97;&#98;&#x2d;&#x70;&#x72;&#x6f;&#x78;&#x79;&#64;&#50;&#x2e;&#54;&#x2e;&#48;</a>&#x2F;Lib&#x2F;Editor&#x2F;PlasticSCM&#x2F;log4netPlastic.dll’ could not be found</p>
 </blockquote>
 <p><strong>原因分析：</strong></p>
 <p>这个错误 <code>error CS0006</code> 表示 <strong>编译器无法找到所需的 DLL 文件</strong>，而在你的报错信息中，缺失的文件是 <code>log4netPlastic.dll</code>，它属于 Unity Collaboration 或 PlasticSCM（Unity 的版本控制工具）。</p>
@@ -9915,6 +9915,102 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>Unity 托管代码与非托管代码</title>
+    <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
+<h3 id="1-托管代码（Managed-Code）"><a href="#1-托管代码（Managed-Code）" class="headerlink" title="1. 托管代码（Managed Code）"></a>1. <strong>托管代码（Managed Code）</strong></h3><p><strong>托管代码</strong> 是由 .NET 运行时（如 <strong>CLR</strong>，即公共语言运行时）托管和管理的代码。也就是说，托管代码的执行是在 <strong>CLR 环境中</strong>进行的，CLR 提供了内存管理、异常处理、垃圾回收、安全性等功能。这意味着开发者无需自己管理内存分配和释放，CLR 会负责这些操作。</p>
+<h4 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h4><ul>
+<li><strong>内存管理</strong>：托管代码的内存管理是由垃圾回收器（GC，Garbage Collector）自动处理的。</li>
+<li><strong>类型安全</strong>：CLR 会确保类型的安全性，例如防止类型转换错误、非法内存访问等。</li>
+<li><strong>自动垃圾回收</strong>：CLR 会定期回收不再使用的内存空间，避免内存泄漏。</li>
+<li><strong>安全性</strong>：CLR 会进行代码的安全检查，确保代码不会执行恶意操作。</li>
+<li><strong>平台独立性</strong>：托管代码一般是通过 <strong>中间语言（IL，Intermediate Language）</strong> 编译的，这样可以通过不同平台上的 CLR 实现执行。</li>
+</ul>
+<p>托管代码的一个例子就是 <strong>C#</strong> 中编写的代码，它会被编译成 <strong>中间语言（IL）</strong>，然后在 .NET 环境中运行。</p>
+<p><strong>例如</strong>：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Hello, World!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码就是托管代码，它会被 C# 编译器编译为中间语言（IL），然后通过 CLR 执行。</p>
+<h3 id="2-非托管代码（Unmanaged-Code）"><a href="#2-非托管代码（Unmanaged-Code）" class="headerlink" title="2. 非托管代码（Unmanaged Code）"></a>2. <strong>非托管代码（Unmanaged Code）</strong></h3><p><strong>非托管代码</strong> 是指不由 CLR 或类似的运行时环境管理的代码。这类代码直接与操作系统交互，开发者必须手动管理内存、资源和安全性等问题。非托管代码通常是用 <strong>C++<strong>、</strong>C</strong> 或其他低级语言编写的。</p>
+<h4 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h4><ul>
+<li><strong>手动内存管理</strong>：开发者需要自己负责分配和释放内存，容易出现内存泄漏问题。</li>
+<li><strong>直接访问硬件</strong>：非托管代码能够直接操作硬件，进行系统级别的操作。</li>
+<li><strong>无垃圾回收</strong>：没有像 CLR 那样的垃圾回收机制，必须手动释放资源。</li>
+<li><strong>性能优势</strong>：由于没有运行时环境的管理，非托管代码通常比托管代码更加高效，尤其是在对性能要求极高的场景下。</li>
+</ul>
+<p>非托管代码通常被编译为机器码并直接运行在操作系统上。</p>
+<p><strong>例如</strong>：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的 C++ 代码是非托管代码，它被编译为机器代码，直接在操作系统中执行。</p>
+<h3 id="3-托管代码与非托管代码的区别"><a href="#3-托管代码与非托管代码的区别" class="headerlink" title="3. 托管代码与非托管代码的区别"></a>3. <strong>托管代码与非托管代码的区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>托管代码</th>
+<th>非托管代码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>执行环境</td>
+<td>运行在 <strong>CLR</strong>（公共语言运行时）中</td>
+<td>直接运行在操作系统上</td>
+</tr>
+<tr>
+<td>内存管理</td>
+<td>自动由 <strong>垃圾回收器（GC）</strong> 管理</td>
+<td>需要开发者手动管理内存</td>
+</tr>
+<tr>
+<td>类型安全</td>
+<td>自动进行类型检查，防止类型错误</td>
+<td>可能会发生类型错误，必须手动管理</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>CLR 进行安全检查，防止恶意代码执行</td>
+<td>代码可能没有安全性保障，易受攻击</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>性能较低，因为有垃圾回收等运行时开销</td>
+<td>性能较高，因为没有运行时环境的开销</td>
+</tr>
+<tr>
+<td>示例语言</td>
+<td>C#、VB.NET、F# 等</td>
+<td>C、C++ 等</td>
+</tr>
+<tr>
+<td>可移植性</td>
+<td>通过中间语言（IL）可以跨平台运行</td>
+<td>必须针对每个平台进行编译</td>
+</tr>
+</tbody></table>
+<h3 id="4-托管代码与非托管代码的交互"><a href="#4-托管代码与非托管代码的交互" class="headerlink" title="4. 托管代码与非托管代码的交互"></a>4. <strong>托管代码与非托管代码的交互</strong></h3><p>虽然托管代码和非托管代码有很多差异，但在实际应用中，它们经常需要互相交互，特别是在需要访问系统底层或与已有的非托管代码库集成时。通常有几种方式来实现托管代码与非托管代码的交互：</p>
+<ul>
+<li><p><strong>P&#x2F;Invoke（平台调用）</strong>：托管代码可以通过 <strong>P&#x2F;Invoke</strong> 调用非托管的 API（例如 Windows API）。</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, CharSet = CharSet.Auto)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> IntPtr <span class="title">GetConsoleWindow</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        IntPtr hwnd = GetConsoleWindow();</span><br><span class="line">        Console.WriteLine(hwnd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上是通过 <strong>P&#x2F;Invoke</strong> 调用 Windows 的非托管函数 <code>GetConsoleWindow</code>。</p>
+</li>
+<li><p><strong>C++&#x2F;CLI（C++ 和托管代码混合）</strong>：C++&#x2F;CLI 是一种可以同时操作托管代码和非托管代码的语言，可以方便地在同一项目中混合使用 C++（非托管代码）和 C#（托管代码）。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#using <span class="string">&lt;System.dll&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ref <span class="keyword">class</span> <span class="title class_">ManagedClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PrintMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Console::<span class="built_in">WriteLine</span>(<span class="string">&quot;Hello from C++/CLI!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>COM（组件对象模型）</strong>：通过 COM 机制，非托管代码可以通过 COM 接口与托管代码进行交互。</p>
+</li>
+</ul>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. <strong>总结</strong></h3><ul>
+<li><strong>托管代码</strong> 是由 .NET 运行时管理的代码，它具有内存管理、安全性和平台独立性的优势。常见的托管语言包括 C# 和 VB.NET。</li>
+<li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
+<li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Unity 开发非游戏应用</title>
     <url>/2025/01/15/Unity-%E5%BC%80%E5%8F%91%E9%9D%9E%E6%B8%B8%E6%88%8F%E5%BA%94%E7%94%A8/</url>
     <content><![CDATA[<p>Unity 是一个强大的跨平台开发工具，虽然它主要用于游戏开发，但也可以用于开发普通软件（如工具类应用、展示应用或数字孪生系统）。如果目标是使用 Unity 开发普通软件，为了减少项目的体积和复杂度，以及优化性能，可以有选择地移除或禁用一些与普通软件无关的功能和模块。</p>
@@ -10058,102 +10154,6 @@ graph TD
 </ol>
 <hr>
 <p>通过以上优化，你可以让 Unity 成为一个适合普通软件开发的平台。如果需要进一步细化某个方面的操作，欢迎详细讨论！</p>
-]]></content>
-      <categories>
-        <category>Unity</category>
-      </categories>
-      <tags>
-        <tag>Unity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity 托管代码与非托管代码</title>
-    <url>/2025/01/16/Unity-%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81%E4%B8%8E%E9%9D%9E%E6%89%98%E7%AE%A1%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<p>你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 <strong>托管代码</strong> 和 <strong>非托管代码</strong>（通常是与托管代码相对的概念），以及它们的区别。</p>
-<h3 id="1-托管代码（Managed-Code）"><a href="#1-托管代码（Managed-Code）" class="headerlink" title="1. 托管代码（Managed Code）"></a>1. <strong>托管代码（Managed Code）</strong></h3><p><strong>托管代码</strong> 是由 .NET 运行时（如 <strong>CLR</strong>，即公共语言运行时）托管和管理的代码。也就是说，托管代码的执行是在 <strong>CLR 环境中</strong>进行的，CLR 提供了内存管理、异常处理、垃圾回收、安全性等功能。这意味着开发者无需自己管理内存分配和释放，CLR 会负责这些操作。</p>
-<h4 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h4><ul>
-<li><strong>内存管理</strong>：托管代码的内存管理是由垃圾回收器（GC，Garbage Collector）自动处理的。</li>
-<li><strong>类型安全</strong>：CLR 会确保类型的安全性，例如防止类型转换错误、非法内存访问等。</li>
-<li><strong>自动垃圾回收</strong>：CLR 会定期回收不再使用的内存空间，避免内存泄漏。</li>
-<li><strong>安全性</strong>：CLR 会进行代码的安全检查，确保代码不会执行恶意操作。</li>
-<li><strong>平台独立性</strong>：托管代码一般是通过 <strong>中间语言（IL，Intermediate Language）</strong> 编译的，这样可以通过不同平台上的 CLR 实现执行。</li>
-</ul>
-<p>托管代码的一个例子就是 <strong>C#</strong> 中编写的代码，它会被编译成 <strong>中间语言（IL）</strong>，然后在 .NET 环境中运行。</p>
-<p><strong>例如</strong>：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Hello, World!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的代码就是托管代码，它会被 C# 编译器编译为中间语言（IL），然后通过 CLR 执行。</p>
-<h3 id="2-非托管代码（Unmanaged-Code）"><a href="#2-非托管代码（Unmanaged-Code）" class="headerlink" title="2. 非托管代码（Unmanaged Code）"></a>2. <strong>非托管代码（Unmanaged Code）</strong></h3><p><strong>非托管代码</strong> 是指不由 CLR 或类似的运行时环境管理的代码。这类代码直接与操作系统交互，开发者必须手动管理内存、资源和安全性等问题。非托管代码通常是用 <strong>C++<strong>、</strong>C</strong> 或其他低级语言编写的。</p>
-<h4 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h4><ul>
-<li><strong>手动内存管理</strong>：开发者需要自己负责分配和释放内存，容易出现内存泄漏问题。</li>
-<li><strong>直接访问硬件</strong>：非托管代码能够直接操作硬件，进行系统级别的操作。</li>
-<li><strong>无垃圾回收</strong>：没有像 CLR 那样的垃圾回收机制，必须手动释放资源。</li>
-<li><strong>性能优势</strong>：由于没有运行时环境的管理，非托管代码通常比托管代码更加高效，尤其是在对性能要求极高的场景下。</li>
-</ul>
-<p>非托管代码通常被编译为机器码并直接运行在操作系统上。</p>
-<p><strong>例如</strong>：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的 C++ 代码是非托管代码，它被编译为机器代码，直接在操作系统中执行。</p>
-<h3 id="3-托管代码与非托管代码的区别"><a href="#3-托管代码与非托管代码的区别" class="headerlink" title="3. 托管代码与非托管代码的区别"></a>3. <strong>托管代码与非托管代码的区别</strong></h3><table>
-<thead>
-<tr>
-<th>特性</th>
-<th>托管代码</th>
-<th>非托管代码</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>执行环境</td>
-<td>运行在 <strong>CLR</strong>（公共语言运行时）中</td>
-<td>直接运行在操作系统上</td>
-</tr>
-<tr>
-<td>内存管理</td>
-<td>自动由 <strong>垃圾回收器（GC）</strong> 管理</td>
-<td>需要开发者手动管理内存</td>
-</tr>
-<tr>
-<td>类型安全</td>
-<td>自动进行类型检查，防止类型错误</td>
-<td>可能会发生类型错误，必须手动管理</td>
-</tr>
-<tr>
-<td>安全性</td>
-<td>CLR 进行安全检查，防止恶意代码执行</td>
-<td>代码可能没有安全性保障，易受攻击</td>
-</tr>
-<tr>
-<td>性能</td>
-<td>性能较低，因为有垃圾回收等运行时开销</td>
-<td>性能较高，因为没有运行时环境的开销</td>
-</tr>
-<tr>
-<td>示例语言</td>
-<td>C#、VB.NET、F# 等</td>
-<td>C、C++ 等</td>
-</tr>
-<tr>
-<td>可移植性</td>
-<td>通过中间语言（IL）可以跨平台运行</td>
-<td>必须针对每个平台进行编译</td>
-</tr>
-</tbody></table>
-<h3 id="4-托管代码与非托管代码的交互"><a href="#4-托管代码与非托管代码的交互" class="headerlink" title="4. 托管代码与非托管代码的交互"></a>4. <strong>托管代码与非托管代码的交互</strong></h3><p>虽然托管代码和非托管代码有很多差异，但在实际应用中，它们经常需要互相交互，特别是在需要访问系统底层或与已有的非托管代码库集成时。通常有几种方式来实现托管代码与非托管代码的交互：</p>
-<ul>
-<li><p><strong>P&#x2F;Invoke（平台调用）</strong>：托管代码可以通过 <strong>P&#x2F;Invoke</strong> 调用非托管的 API（例如 Windows API）。</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Runtime.InteropServices;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">DllImport(<span class="string">&quot;kernel32.dll&quot;</span>, CharSet = CharSet.Auto)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">extern</span> IntPtr <span class="title">GetConsoleWindow</span>()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        IntPtr hwnd = GetConsoleWindow();</span><br><span class="line">        Console.WriteLine(hwnd);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上是通过 <strong>P&#x2F;Invoke</strong> 调用 Windows 的非托管函数 <code>GetConsoleWindow</code>。</p>
-</li>
-<li><p><strong>C++&#x2F;CLI（C++ 和托管代码混合）</strong>：C++&#x2F;CLI 是一种可以同时操作托管代码和非托管代码的语言，可以方便地在同一项目中混合使用 C++（非托管代码）和 C#（托管代码）。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#using <span class="string">&lt;System.dll&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> ref <span class="keyword">class</span> <span class="title class_">ManagedClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">PrintMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Console::<span class="built_in">WriteLine</span>(<span class="string">&quot;Hello from C++/CLI!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>COM（组件对象模型）</strong>：通过 COM 机制，非托管代码可以通过 COM 接口与托管代码进行交互。</p>
-</li>
-</ul>
-<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. <strong>总结</strong></h3><ul>
-<li><strong>托管代码</strong> 是由 .NET 运行时管理的代码，它具有内存管理、安全性和平台独立性的优势。常见的托管语言包括 C# 和 VB.NET。</li>
-<li><strong>非托管代码</strong> 是直接运行在操作系统上的代码，需要开发者手动管理内存和资源，常见的非托管语言包括 C 和 C++。</li>
-<li>在很多情况下，托管代码和非托管代码是需要协同工作的，Unity 中通常使用托管代码（如 C#），但在需要性能或底层系统调用时，也可以使用非托管代码（如 C++）。</li>
-</ul>
 ]]></content>
       <categories>
         <category>Unity</category>
@@ -11270,6 +11270,34 @@ graph TD
       </tags>
   </entry>
   <entry>
+    <title>提升</title>
+    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
+    <content><![CDATA[<ol>
+<li>做demo</li>
+<li>看技术文章</li>
+<li>逛社区，看别人的问题和解决方案</li>
+<li>研究GitHub开源项目</li>
+<li>学习新技术，看教程</li>
+<li>刷boss直聘,关注市场技术需求和趋势</li>
+<li>根据unity 官方认证考核要求，系统学习技能点</li>
+<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
+<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
+<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>提升</category>
+      </categories>
+      <tags>
+        <tag>提升</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>多语言文件批量对比工具文档</title>
     <url>/2025/07/09/%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%96%87%E4%BB%B6%E6%89%B9%E9%87%8F%E5%AF%B9%E6%AF%94%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/</url>
     <content><![CDATA[<h2 id="工具概述"><a href="#工具概述" class="headerlink" title="工具概述"></a>工具概述</h2><p>多语言文件批量对比工具是一个Unity编辑器扩展工具，用于批量扫描和对比游戏中的多语言Lua文件，检查不同语言版本之间的键值一致性。该工具能够自动识别同名语言文件组，并对比各组文件中键的差异，帮助开发者快速发现多语言文件中的缺失或多余键值。</p>
@@ -11340,34 +11368,6 @@ graph TD
         <tag>Lua</tag>
         <tag>unity工具</tag>
         <tag>多语言</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>提升</title>
-    <url>/2025/05/21/%E6%8F%90%E5%8D%87/</url>
-    <content><![CDATA[<ol>
-<li>做demo</li>
-<li>看技术文章</li>
-<li>逛社区，看别人的问题和解决方案</li>
-<li>研究GitHub开源项目</li>
-<li>学习新技术，看教程</li>
-<li>刷boss直聘,关注市场技术需求和趋势</li>
-<li>根据unity 官方认证考核要求，系统学习技能点</li>
-<li><a href="https://unity.com/cn/products/unity-certifications/associate-game-developer">https://unity.com/cn/products/unity-certifications/associate-game-developer</a></li>
-<li><a href="https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf">https://images.response.unity3d.com/Web/Unity/%7B49e92fbc-2b28-4405-9e4c-64b56e231fbe%7D_Unity_Certified_Associate__Game_Developer_Exam_Objectives_document.pdf</a></li>
-<li><a href="https://certification.u3d.cn/exam/67d29d3cc72f320008354040">https://certification.u3d.cn/exam/67d29d3cc72f320008354040</a></li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">课程大纲：</span><br><span class="line"></span><br><span class="line">Part1</span><br><span class="line">Unity编辑器基础</span><br><span class="line"></span><br><span class="line">Part2</span><br><span class="line">Unity物理引擎系统</span><br><span class="line"></span><br><span class="line">Part3</span><br><span class="line">Unity动画系统</span><br><span class="line"></span><br><span class="line">Part4</span><br><span class="line">Unity导航寻路系统</span><br><span class="line"></span><br><span class="line">Part5</span><br><span class="line">UnityUI系统</span><br><span class="line"></span><br><span class="line">Part6</span><br><span class="line">Unity特效系统</span><br><span class="line"></span><br><span class="line">Part7</span><br><span class="line">Unity资源动态加载和热更</span><br><span class="line"></span><br><span class="line">Part8</span><br><span class="line">Unity数据存储</span><br><span class="line"></span><br><span class="line">Part9</span><br><span class="line">Unity移动平台输入控制和发布</span><br><span class="line"></span><br><span class="line">Part10</span><br><span class="line">Unity版本控制管理系统</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">考试内容</span><br><span class="line">你会遇到涉及以下主题的问题：</span><br><span class="line"></span><br><span class="line">动画</span><br><span class="line">资源管理</span><br><span class="line">音频</span><br><span class="line">就业准备</span><br><span class="line">游戏美术原理</span><br><span class="line">游戏设计原理</span><br><span class="line">行业意识</span><br><span class="line">光照</span><br><span class="line">材质和特效</span><br><span class="line">物理</span><br><span class="line">编程</span><br><span class="line">项目管理</span><br><span class="line">服务</span><br></pre></td></tr></table></figure>
-<hr>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">要求：</span><br><span class="line"></span><br><span class="line">1.Unity编辑器界面基本操作</span><br><span class="line"></span><br><span class="line">2.解析Unity编辑器的资源</span><br><span class="line"></span><br><span class="line">3.预制体Prefab</span><br><span class="line"></span><br><span class="line">4.游戏项目管理</span><br><span class="line"></span><br><span class="line">5.游戏场景的光照</span><br><span class="line"></span><br><span class="line">6.Unity脚本常用工具类学习</span><br><span class="line"></span><br><span class="line">7.Invoke与与协程函数</span><br><span class="line"></span><br><span class="line">8.相机Camera控制</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>提升</category>
-      </categories>
-      <tags>
-        <tag>提升</tag>
       </tags>
   </entry>
   <entry>
