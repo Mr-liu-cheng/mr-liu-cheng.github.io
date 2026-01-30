@@ -1,10 +1,10 @@
 ---
-title: Github 作为热更服务器
+title: GitHub 作为热更服务器
 date: 2025-01-22 16:50:36
 updated: 2025-01-22 16:50:36
-tags: Github
-categories: Github
-keywords: Github 作为热更服务器
+tags: GitHub
+categories: GitHub
+keywords: GitHub 作为热更服务器
 description:
 ---
 要使用 **GitHub** 作为 Unity 项目的热更新资源服务器，你可以通过 GitHub 的 **Releases** 功能来托管和管理资源（如 AssetBundles）。这样，你可以通过 Unity 在运行时动态下载这些资源，而无需每次更新游戏客户端。下面是如何使用 GitHub 来托管 Unity 热更新资源的详细步骤：
