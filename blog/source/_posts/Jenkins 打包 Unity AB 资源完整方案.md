@@ -2,9 +2,9 @@
 title: Jenkins 打包 Unity AB 资源完整方案
 date: 2026-01-29 12:06:02
 updated: 2026-01-29 12:06:02
-tags: Jenkins,自动化,打包
+tags: [Jenkins,自动化,打包]
 categories: Jenkins
-keywords: Jenkins,自动化,打包
+keywords: [Jenkins,自动化,打包]
 description: 
 ---
 
