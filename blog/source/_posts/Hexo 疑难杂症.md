@@ -1,5 +1,5 @@
 ---
-title: hexo 疑难杂症
+title: Hexo 疑难杂症
 date: 2024-12-28 22:56:28
 updated: 2024-12-28 22:56:28
 tags:
