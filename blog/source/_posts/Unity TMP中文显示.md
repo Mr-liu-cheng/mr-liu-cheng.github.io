@@ -1,15 +1,15 @@
 ---
-title: unity tmp中文显示
+title: Unity TMP中文显示
 date: 2024-12-13 00:20:00
 updated: 2024-12-25 14:28:12
 tags: 
-  - tmp
-  - unity
-categories: unity
-description: unity 使用系统字体生成tmp字体资源
+  - TMP
+  - Unity
+categories: Unity
+description: Unity 使用系统字体生成TMP字体资源
 keywords:
-  - unity
-  - tmp
+  - Unity
+  - TMP
   - 相对路中文显示径
   - 字体资源
 ---
