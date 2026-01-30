@@ -2,9 +2,9 @@
 title: Unity 托管代码与非托管代码
 date: 2025-01-16 14:57:32
 updated: 2025-01-16 14:57:32
-tags:
-categories:
-keywords:
+tags: Unity
+categories: Unity
+keywords: Unity 托管代码与非托管代码
 description:
 ---
 你提到的“托管代码”与“与托管代码”似乎是对术语的重复或笔误。这里我会解释 **托管代码** 和 **非托管代码**（通常是与托管代码相对的概念），以及它们的区别。
