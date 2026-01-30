@@ -1,10 +1,10 @@
 ---
-title: git submodule
+title: Git Submodule
 date: 2025-02-06 11:01:26
 updated: 2025-02-06 11:01:26
-tags:
-categories:
-keywords:
+tags: Git
+categories: Git
+keywords: [Git,Submodule]
 description:
 ---
 是的，**Git Submodule** 是一个 **独立的 Git 仓库**，因此它确实有自己的版本管理和开发分支。子模块和主项目是相互独立的 Git 仓库，每个子模块可以拥有自己的分支、版本历史以及 Git 配置。
