@@ -2,7 +2,7 @@
 title: GitLab vs GitHub
 date: 2026-01-29 12:06:02
 updated: 2026-01-29 12:06:02
-tags: GitLab,GitHub
+tags: [GitLab,GitHub]
 categories: 代码托管平台
 keywords: GitLab,GitHub
 description: 
