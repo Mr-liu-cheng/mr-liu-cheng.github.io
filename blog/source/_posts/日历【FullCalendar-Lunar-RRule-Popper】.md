@@ -3,7 +3,7 @@ title: 日历【FullCalendar+Lunar+RRule+Popper】
 date: 2025-01-02 04:22:41
 updated: 2025-01-02 04:22:41
 tags: [FullCalendar,Lunar,RRule,Popper]
-categories: FullCalendar
+categories: [Hexo,Beautify,FullCalendar]
 keywords: [FullCalendar,Lunar,RRule,Popper,日历]
 description:
 ---
