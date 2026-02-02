@@ -2,9 +2,9 @@
 title: Royal Empire 登录流程
 date: 2025-06-03 11:20:13
 updated: 2025-06-03 11:20:13
-tags: [Markdown,mermaid]
+tags: [Markdown,Mermaid]
 categories: [游戏项目,Royal Empire]
-keywords: [登录流程,mermaid]
+keywords: [登录流程,Mermaid]
 description:
 ---
 ```
