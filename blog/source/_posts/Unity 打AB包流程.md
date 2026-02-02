@@ -2,8 +2,8 @@
 title: Unity 打AB包流程
 date: 2025-01-23 11:08:13
 updated: 2025-01-23 11:08:13
-tags: [Unity,AssetBundles]
-categories: [Unity,AssetBundles]
+tags: [Unity,AssetBundle]
+categories: [Unity,AssetBundle]
 keywords: Unity 打AB包
 description:
 ---
