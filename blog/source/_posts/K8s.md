@@ -2,7 +2,7 @@
 title: K8s
 date: 2026-01-22 12:06:02
 updated: 2026-01-22 12:06:02
-tags: [分布式,微服务,集群管理,K8s]
+tags: [分布式,微服务,集群,K8s]
 categories: 网络编程
 keywords: [分布式,微服务,集群管理,K8s]
 description: 棋牌捕鱼类游戏工作项目中用到
