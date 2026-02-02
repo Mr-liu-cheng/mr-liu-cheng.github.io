@@ -2,7 +2,7 @@
 title: 深入理解 Docker 镜像
 date: 2026-01-29 12:06:02
 updated: 2026-01-29 12:06:02
-tags: Docker镜像
+tags: [Docker,镜像]
 categories: Docker
 keywords: Docker镜像
 description: 
