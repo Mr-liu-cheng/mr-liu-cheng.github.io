@@ -1,0 +1,518 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Firebase | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="我猜你可能是在游戏开发或运营中遇到了Firebase，我来用游戏开发的视角给你解释清楚！ Firebase是什么？简单说，Firebase是Google提供的一套“游戏后端服务全家桶”。它让开发者不用自己搭建复杂的服务器，就能实现游戏需要的各种后台功能。 为什么游戏开发者爱用Firebase？1. 省时省力：不用自己造轮子想象一下你要做这些事：  存储玩家数据（等级、金币、装备） 处理用户登录（微">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Firebase">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2026/02/02/Firebase/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="我猜你可能是在游戏开发或运营中遇到了Firebase，我来用游戏开发的视角给你解释清楚！ Firebase是什么？简单说，Firebase是Google提供的一套“游戏后端服务全家桶”。它让开发者不用自己搭建复杂的服务器，就能实现游戏需要的各种后台功能。 为什么游戏开发者爱用Firebase？1. 省时省力：不用自己造轮子想象一下你要做这些事：  存储玩家数据（等级、金币、装备） 处理用户登录（微">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2026-02-02T10:28:46.000Z">
+<meta property="article:modified_time" content="2026-02-02T10:28:46.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="Firebase">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2026/02/02/Firebase/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Firebase',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">87</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">49</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">Firebase</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Firebase</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-02T10:28:46.000Z" title="更新于 2026-02-02 10:28:46">2026-02-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SDk/">SDk</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>我猜你可能是在游戏开发或运营中遇到了Firebase，我来用游戏开发的视角给你解释清楚！</p>
+<h2 id="Firebase是什么？"><a href="#Firebase是什么？" class="headerlink" title="Firebase是什么？"></a><strong>Firebase是什么？</strong></h2><p>简单说，Firebase是Google提供的一套<strong>“游戏后端服务全家桶”</strong>。它让开发者不用自己搭建复杂的服务器，就能实现游戏需要的各种后台功能。</p>
+<h2 id="为什么游戏开发者爱用Firebase？"><a href="#为什么游戏开发者爱用Firebase？" class="headerlink" title="为什么游戏开发者爱用Firebase？"></a><strong>为什么游戏开发者爱用Firebase？</strong></h2><h3 id="1-省时省力：不用自己造轮子"><a href="#1-省时省力：不用自己造轮子" class="headerlink" title="1. 省时省力：不用自己造轮子"></a><strong>1. 省时省力：不用自己造轮子</strong></h3><p>想象一下你要做这些事：</p>
+<ul>
+<li>存储玩家数据（等级、金币、装备）</li>
+<li>处理用户登录（微信、QQ、游客登录）</li>
+<li>做排行榜</li>
+<li>分析玩家行为</li>
+<li>处理实时聊天</li>
+</ul>
+<p><strong>传统做法</strong>：租服务器、写后端代码、维护数据库 → 耗时几个月<br><strong>用Firebase</strong>：直接调用API → 几天搞定</p>
+<h3 id="2-游戏开发中的实用场景"><a href="#2-游戏开发中的实用场景" class="headerlink" title="2. 游戏开发中的实用场景"></a><strong>2. 游戏开发中的实用场景</strong></h3><h4 id="🎮-玩家数据存储"><a href="#🎮-玩家数据存储" class="headerlink" title="🎮 玩家数据存储"></a><strong>🎮 玩家数据存储</strong></h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 保存玩家进度就这么简单！</span></span><br><span class="line">firebase.<span class="title function_">database</span>().<span class="title function_">ref</span>(<span class="string">&#x27;players/&#x27;</span> + playerId).<span class="title function_">set</span>(&#123;</span><br><span class="line">  <span class="attr">level</span>: <span class="number">25</span>,</span><br><span class="line">  <span class="attr">gold</span>: <span class="number">5000</span>,</span><br><span class="line">  <span class="attr">inventory</span>: [<span class="string">&#x27;sword&#x27;</span>, <span class="string">&#x27;potion&#x27;</span>, <span class="string">&#x27;shield&#x27;</span>],</span><br><span class="line">  <span class="attr">last_login</span>: <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>()</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h4 id="📊-实时排行榜"><a href="#📊-实时排行榜" class="headerlink" title="📊 实时排行榜"></a><strong>📊 实时排行榜</strong></h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自动排序的排行榜</span></span><br><span class="line">leaderboardRef.<span class="title function_">child</span>(playerId).<span class="title function_">set</span>(&#123;</span><br><span class="line">  <span class="attr">score</span>: <span class="number">9999</span>,</span><br><span class="line">  <span class="attr">name</span>: playerName,</span><br><span class="line">  <span class="attr">timestamp</span>: firebase.<span class="property">database</span>.<span class="property">ServerValue</span>.<span class="property">TIMESTAMP</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// Firebase自动按分数排序！</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="📱-跨平台支持"><a href="#📱-跨平台支持" class="headerlink" title="📱 跨平台支持"></a><strong>📱 跨平台支持</strong></h4><ul>
+<li>iOS、Android、网页游戏、小程序全支持</li>
+<li>一份代码，全平台运行</li>
+</ul>
+<h4 id="🔍-深度玩家分析"><a href="#🔍-深度玩家分析" class="headerlink" title="🔍 深度玩家分析"></a><strong>🔍 深度玩家分析</strong></h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 记录关键事件</span></span><br><span class="line">firebase.<span class="title function_">analytics</span>().<span class="title function_">logEvent</span>(<span class="string">&#x27;level_up&#x27;</span>, &#123;</span><br><span class="line">  <span class="attr">level</span>: <span class="number">25</span>,</span><br><span class="line">  <span class="attr">time_spent</span>: <span class="number">3600</span>, <span class="comment">// 秒</span></span><br><span class="line">  <span class="attr">items_used</span>: <span class="number">3</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>能知道：</p>
+<ul>
+<li>玩家在哪一关流失最多</li>
+<li>什么道具最受欢迎</li>
+<li>付费转化率如何</li>
+</ul>
+<h4 id="💥-崩溃监控"><a href="#💥-崩溃监控" class="headerlink" title="💥 崩溃监控"></a><strong>💥 崩溃监控</strong></h4><p>游戏崩溃了怎么办？</p>
+<ul>
+<li>Crashlytics自动收集崩溃报告</li>
+<li>告诉你：什么设备、在哪个场景、为什么崩溃</li>
+<li>优先处理影响最多玩家的崩溃</li>
+</ul>
+<h4 id="🤝-实时多人功能"><a href="#🤝-实时多人功能" class="headerlink" title="🤝 实时多人功能"></a><strong>🤝 实时多人功能</strong></h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建实时房间</span></span><br><span class="line"><span class="keyword">const</span> roomRef = firebase.<span class="title function_">database</span>().<span class="title function_">ref</span>(<span class="string">&#x27;rooms/&#x27;</span> + roomId);</span><br><span class="line">roomRef.<span class="title function_">set</span>(&#123;</span><br><span class="line">  <span class="attr">players</span>: [player1Id, player2Id],</span><br><span class="line">  <span class="attr">status</span>: <span class="string">&#x27;waiting&#x27;</span>,</span><br><span class="line">  <span class="attr">created</span>: <span class="title class_">Date</span>.<span class="title function_">now</span>()</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 监听对手操作</span></span><br><span class="line">roomRef.<span class="title function_">child</span>(<span class="string">&#x27;moves&#x27;</span>).<span class="title function_">on</span>(<span class="string">&#x27;child_added&#x27;</span>, <span class="function">(<span class="params">snapshot</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> move = snapshot.<span class="title function_">val</span>();</span><br><span class="line">  <span class="comment">// 更新对手动作到游戏界面</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-具体游戏类型中的应用"><a href="#3-具体游戏类型中的应用" class="headerlink" title="3. 具体游戏类型中的应用"></a><strong>3. 具体游戏类型中的应用</strong></h3><h4 id="休闲游戏（消除、跑酷）"><a href="#休闲游戏（消除、跑酷）" class="headerlink" title="*休闲游戏（消除、跑酷）*"></a>*<em><strong>休闲游戏</strong>（消除、跑酷）</em>*</h4><ul>
+<li>✅ 保存关卡进度</li>
+<li>✅ 道具数量同步</li>
+<li>✅ 简单的全球排行榜</li>
+<li>✅ 看广告&#x2F;内购数据统计</li>
+</ul>
+<h4 id="RPG-策略游戏"><a href="#RPG-策略游戏" class="headerlink" title="RPG&#x2F;策略游戏"></a><strong><strong>RPG&#x2F;策略游戏</strong></strong></h4><ul>
+<li>✅ 存储复杂角色数据</li>
+<li>✅ 公会&#x2F;联盟系统（聊天、成员管理）</li>
+<li>✅ 异步PVP（记录对手阵容，离线对战）</li>
+<li>✅ 邮件&#x2F;通知系统</li>
+</ul>
+<h4 id="社交游戏"><a href="#社交游戏" class="headerlink" title="社交游戏"></a><strong><strong>社交游戏</strong></strong></h4><ul>
+<li>✅ 好友系统</li>
+<li>✅ 实时聊天</li>
+<li>✅ 动态分享</li>
+<li>✅ 邀请好友功能</li>
+</ul>
+<h4 id="超休闲游戏"><a href="#超休闲游戏" class="headerlink" title="超休闲游戏"></a><strong><strong>超休闲游戏</strong></strong></h4><ul>
+<li>✅ 快速上线（几周就能出成品）</li>
+<li>✅ A&#x2F;B测试（哪个图标下载量高？）</li>
+<li>✅ 广告收入优化分析</li>
+</ul>
+<h3 id="4-实际游戏案例"><a href="#4-实际游戏案例" class="headerlink" title="4. 实际游戏案例"></a><strong>4. 实际游戏案例</strong></h3><table>
+<thead>
+<tr>
+<th>游戏类型</th>
+<th>使用的Firebase功能</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>《弓箭传说》类</strong></td>
+<td>Realtime DB, Analytics</td>
+<td>装备数据同步、关卡统计</td>
+</tr>
+<tr>
+<td><strong>《Among Us》类</strong></td>
+<td>Firestore, Cloud Functions</td>
+<td>实时房间状态、游戏逻辑</td>
+</tr>
+<tr>
+<td><strong>《原神》类</strong></td>
+<td>Authentication, Storage</td>
+<td>账号系统、资源更新</td>
+</tr>
+<tr>
+<td><strong>棋牌游戏</strong></td>
+<td>Cloud Messaging</td>
+<td>轮到谁出牌的推送通知</td>
+</tr>
+</tbody></table>
+<h3 id="5-成本优势（对独立开发者友好）"><a href="#5-成本优势（对独立开发者友好）" class="headerlink" title="5. 成本优势（对独立开发者友好）"></a><strong>5. 成本优势（对独立开发者友好）</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">免费档足够小游戏用：</span><br><span class="line">- 1GB数据库</span><br><span class="line">- 10GB文件存储  </span><br><span class="line">- 5万次登录/月</span><br><span class="line">- 无限分析事件</span><br></pre></td></tr></table></figure>
+<p>很多独立游戏在初期完全免费！</p>
+<h3 id="6-与其他游戏服务的对比"><a href="#6-与其他游戏服务的对比" class="headerlink" title="6. 与其他游戏服务的对比"></a><strong>6. 与其他游戏服务的对比</strong></h3><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>自己开发</th>
+<th>用Firebase</th>
+<th>用其他服务（如PlayFab）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>数据库</strong></td>
+<td>买服务器+MySQL</td>
+<td>Firestore（自动同步）</td>
+<td>专用游戏数据库</td>
+</tr>
+<tr>
+<td><strong>用户系统</strong></td>
+<td>写注册登录代码</td>
+<td>Auth（30种登录方式）</td>
+<td>定制化更强</td>
+</tr>
+<tr>
+<td><strong>实时功能</strong></td>
+<td>Socket.io自己搭</td>
+<td>Realtime DB（现成的）</td>
+<td>可能有延迟优势</td>
+</tr>
+<tr>
+<td><strong>成本</strong></td>
+<td>前期高，维护难</td>
+<td>按用量付费，起步免费</td>
+<td>月费较贵</td>
+</tr>
+</tbody></table>
+<h3 id="7-局限性（什么时候不适合用Firebase）"><a href="#7-局限性（什么时候不适合用Firebase）" class="headerlink" title="7. 局限性（什么时候不适合用Firebase）"></a><strong>7. 局限性（什么时候不适合用Firebase）</strong></h3><p><strong>不适合：</strong></p>
+<ul>
+<li>🚫 大型MMO（每秒数千操作，延迟要求极高）</li>
+<li>🚫 复杂游戏逻辑服务器（如战局计算）</li>
+<li>🚫 需要完全自定义的数据库结构</li>
+</ul>
+<p><strong>适合：</strong></p>
+<ul>
+<li>✅ 中小型游戏</li>
+<li>✅ 快速原型验证</li>
+<li>✅ 需要实时数据同步的功能</li>
+<li>✅ 不想管后端的独立开发者</li>
+</ul>
+<h3 id="8-快速上手建议"><a href="#8-快速上手建议" class="headerlink" title="8. 快速上手建议"></a><strong>8. 快速上手建议</strong></h3><p>如果你是游戏开发者：</p>
+<ol>
+<li><strong>先试试</strong>：用免费版做个游戏demo</li>
+<li><strong>核心功能</strong>：先接Analytics（分析玩家）和Crashlytics（抓崩溃）</li>
+<li><strong>逐步添加</strong>：再加数据存储、登录系统</li>
+<li><strong>注意限制</strong>：关注实时数据库的连接数限制</li>
+</ol>
+<h3 id="一句话总结"><a href="#一句话总结" class="headerlink" title="一句话总结"></a><strong>一句话总结</strong></h3><p><strong>Firebase让游戏开发者能像搭积木一样快速搭建游戏后台，把时间花在游戏玩法本身，而不是重复造轮子。</strong></p>
+<p>很多你喜欢的独立游戏和休闲游戏，后台可能都是用Firebase做的。它降低了游戏开发的门槛，让一个人也能做出有在线功能的作品。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2026/02/02/Firebase/">https://mr-liu-cheng.github.io/2026/02/02/Firebase/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Firebase/">Firebase</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/02/02/%E6%B8%B8%E6%88%8F%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91/" title="游戏后台开发"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">游戏后台开发</div></div><div class="info-2"><div class="info-item-1">开发游戏网页版后台分析和管理系统，你需要从以下几个方面进行规划和准备： 一、明确核心功能模块 数据看板  实时数据：在线人数、实时收入、服务器状态 KPI概览：DAU&#x2F;MAU、留存率、付费率、ARPU等 可视化图表：折线图、柱状图、热力图等   玩家管理  玩家信息查询：账号、等级、装备、付费记录 行为分析：登录频率、关卡进度、游戏时长 人工操作：封禁&#x2F;解封、补偿发放、消息推送    3.游戏内容管理  配置管理：活动配置、商品定价、概率调整 版本控制：热更新、公告发布、资源管理   运营分析  多维分析：渠道分析、区服对比、用户分层 留存分析：N日留存漏斗 付费分析：LTV、付费习惯、充值渠道   安全与监控  操作日志：管理员操作审计 异常检测：数据异常报警、外挂监控 权限管理：角色权限控制    二、技术架构选型 前端技术栈  框架：React&#x2F;Vue&#x2F;Angular（建议选React+Ant...</div></div></div></a><a class="pagination-related" href="/2026/02/04/DevOps/" title="DevOps"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">DevOps</div></div><div class="info-2"><div class="info-item-1">DevOps（Development 和 Operations 的组合词）是一组文化理念、实践和工具的统称，旨在缩短软件开发生命周期，并持续、高质量地交付软件。它打破了传统上开发（Dev）和运维（Ops）团队之间的壁垒，强调两者在整个应用生命周期中的紧密协作与沟通。 简单来说，DevOps的核心目标是：让软件的构建、测试、发布变得更加快速、频繁和可靠。  DevOps 的核心支柱（CALMS模型）通常用 CALMS 模型来概括DevOps的精髓：  文化： 最重要的部分。强调协作、共享责任、打破部门墙，建立“你构建，你运行”的文化。 自动化： 尽可能自动化一切重复性工作（构建、测试、部署、基础设施配置等）。这是实现快速交付的关键。 精益： 借鉴精益制造思想，关注价值流，减少浪费，实现小批量、持续流动的工作方式。 度量： 用数据和指标驱动改进（如部署频率、变更前置时间、平均恢复时间、变更失败率等）。 分享： 鼓励知识、工具和经验的透明与共享，避免信息孤岛。   DevOps 的主要实践为了实现上述理念，团队通常会采用一系列具体实践：  持续集成：...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">87</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">49</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Firebase%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.</span> <span class="toc-text">Firebase是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E8%80%85%E7%88%B1%E7%94%A8Firebase%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">为什么游戏开发者爱用Firebase？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%9C%81%E6%97%B6%E7%9C%81%E5%8A%9B%EF%BC%9A%E4%B8%8D%E7%94%A8%E8%87%AA%E5%B7%B1%E9%80%A0%E8%BD%AE%E5%AD%90"><span class="toc-number">2.1.</span> <span class="toc-text">1. 省时省力：不用自己造轮子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.2.</span> <span class="toc-text">2. 游戏开发中的实用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8E%AE-%E7%8E%A9%E5%AE%B6%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8"><span class="toc-number">2.2.1.</span> <span class="toc-text">🎮 玩家数据存储</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%93%8A-%E5%AE%9E%E6%97%B6%E6%8E%92%E8%A1%8C%E6%A6%9C"><span class="toc-number">2.2.2.</span> <span class="toc-text">📊 实时排行榜</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%93%B1-%E8%B7%A8%E5%B9%B3%E5%8F%B0%E6%94%AF%E6%8C%81"><span class="toc-number">2.2.3.</span> <span class="toc-text">📱 跨平台支持</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%94%8D-%E6%B7%B1%E5%BA%A6%E7%8E%A9%E5%AE%B6%E5%88%86%E6%9E%90"><span class="toc-number">2.2.4.</span> <span class="toc-text">🔍 深度玩家分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%92%A5-%E5%B4%A9%E6%BA%83%E7%9B%91%E6%8E%A7"><span class="toc-number">2.2.5.</span> <span class="toc-text">💥 崩溃监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%A4%9D-%E5%AE%9E%E6%97%B6%E5%A4%9A%E4%BA%BA%E5%8A%9F%E8%83%BD"><span class="toc-number">2.2.6.</span> <span class="toc-text">🤝 实时多人功能</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%85%B7%E4%BD%93%E6%B8%B8%E6%88%8F%E7%B1%BB%E5%9E%8B%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">2.3.</span> <span class="toc-text">3. 具体游戏类型中的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%91%E9%97%B2%E6%B8%B8%E6%88%8F%EF%BC%88%E6%B6%88%E9%99%A4%E3%80%81%E8%B7%91%E9%85%B7%EF%BC%89"><span class="toc-number">2.3.1.</span> <span class="toc-text">*休闲游戏（消除、跑酷）*</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RPG-%E7%AD%96%E7%95%A5%E6%B8%B8%E6%88%8F"><span class="toc-number">2.3.2.</span> <span class="toc-text">RPG&#x2F;策略游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A4%BE%E4%BA%A4%E6%B8%B8%E6%88%8F"><span class="toc-number">2.3.3.</span> <span class="toc-text">社交游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B6%85%E4%BC%91%E9%97%B2%E6%B8%B8%E6%88%8F"><span class="toc-number">2.3.4.</span> <span class="toc-text">超休闲游戏</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AE%9E%E9%99%85%E6%B8%B8%E6%88%8F%E6%A1%88%E4%BE%8B"><span class="toc-number">2.4.</span> <span class="toc-text">4. 实际游戏案例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%88%90%E6%9C%AC%E4%BC%98%E5%8A%BF%EF%BC%88%E5%AF%B9%E7%8B%AC%E7%AB%8B%E5%BC%80%E5%8F%91%E8%80%85%E5%8F%8B%E5%A5%BD%EF%BC%89"><span class="toc-number">2.5.</span> <span class="toc-text">5. 成本优势（对独立开发者友好）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E4%B8%8E%E5%85%B6%E4%BB%96%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">2.6.</span> <span class="toc-text">6. 与其他游戏服务的对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%B1%80%E9%99%90%E6%80%A7%EF%BC%88%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E9%80%82%E5%90%88%E7%94%A8Firebase%EF%BC%89"><span class="toc-number">2.7.</span> <span class="toc-text">7. 局限性（什么时候不适合用Firebase）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%E5%BB%BA%E8%AE%AE"><span class="toc-number">2.8.</span> <span class="toc-text">8. 快速上手建议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">2.9.</span> <span class="toc-text">一句话总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/DevOps/" title="DevOps">DevOps</a><time datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/Firebase/" title="Firebase">Firebase</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/%E6%B8%B8%E6%88%8F%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91/" title="游戏后台开发">游戏后台开发</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/%E7%BD%91%E7%BB%9C%E5%90%8C%E6%AD%A5/" title="网络同步">网络同步</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/01/30/CDN/" title="CDN">CDN</a><time datetime="2026-01-30T10:28:46.000Z" title="发表于 2026-01-30 10:28:46">2026-01-30</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '655d477499863eb982222f2f64038481'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
