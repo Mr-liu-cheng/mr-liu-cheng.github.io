@@ -3,7 +3,7 @@ title: AppsFlyer
 date: 2026-02-04 10:28:46
 updated: 2026-02-04 10:28:46
 tags: [AppsFlyer]
-categories: SDK
+categories: [SDK]
 keywords:  [AppsFlyer]
 description:
 ---
