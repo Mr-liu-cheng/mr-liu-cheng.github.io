@@ -1,0 +1,490 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>AppsFlyer | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="AppsFlyer 是移动端的“效果监测和归因分析平台”，专门解决一个核心问题：你的用户到底是从哪里来的？哪个渠道最值得投钱？ 用最简单的话说如果你在抖音、Google、Facebook 上投广告推广你的游戏&#x2F;App，AppsFlyer 就像一个 “侦探”，能准确告诉你：  每个用户是通过 哪个广告（甚至哪个创意）下载的 这个用户后续 花了多少钱、玩了多久 最终算出：在抖音投1块钱，能赚">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AppsFlyer">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2026/02/04/AppsFlyer/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="AppsFlyer 是移动端的“效果监测和归因分析平台”，专门解决一个核心问题：你的用户到底是从哪里来的？哪个渠道最值得投钱？ 用最简单的话说如果你在抖音、Google、Facebook 上投广告推广你的游戏&#x2F;App，AppsFlyer 就像一个 “侦探”，能准确告诉你：  每个用户是通过 哪个广告（甚至哪个创意）下载的 这个用户后续 花了多少钱、玩了多久 最终算出：在抖音投1块钱，能赚">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2026-02-04T10:28:46.000Z">
+<meta property="article:modified_time" content="2026-02-04T10:28:46.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="AppsFlyer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2026/02/04/AppsFlyer/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'AppsFlyer',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">50</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">AppsFlyer</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">AppsFlyer</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-04T10:28:46.000Z" title="更新于 2026-02-04 10:28:46">2026-02-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SDK/">SDK</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p><strong>AppsFlyer 是移动端的“效果监测和归因分析平台”</strong>，专门解决一个核心问题：<strong>你的用户到底是从哪里来的？哪个渠道最值得投钱？</strong></p>
+<h2 id="用最简单的话说"><a href="#用最简单的话说" class="headerlink" title="用最简单的话说"></a><strong>用最简单的话说</strong></h2><p>如果你在抖音、Google、Facebook 上投广告推广你的游戏&#x2F;App，AppsFlyer 就像一个 <strong>“侦探”</strong>，能准确告诉你：</p>
+<ul>
+<li>每个用户是通过 <strong>哪个广告</strong>（甚至哪个创意）下载的</li>
+<li>这个用户后续 <strong>花了多少钱、玩了多久</strong></li>
+<li>最终算出：<strong>在抖音投1块钱，能赚回多少钱？</strong></li>
+</ul>
+<h2 id="为什么游戏行业必须用它？"><a href="#为什么游戏行业必须用它？" class="headerlink" title="为什么游戏行业必须用它？"></a><strong>为什么游戏行业必须用它？</strong></h2><h3 id="1-解决“广告黑盒”问题"><a href="#1-解决“广告黑盒”问题" class="headerlink" title="1. 解决“广告黑盒”问题"></a><strong>1. 解决“广告黑盒”问题</strong></h3><p><strong>没有AppsFlyer时：</strong></p>
+<ul>
+<li>你在抖音投了100万广告</li>
+<li>新增了10万用户</li>
+<li>但<strong>你不知道</strong>这10万用户里，哪些真是抖音来的，哪些是自然流量</li>
+</ul>
+<p><strong>有了AppsFlyer后：</strong></p>
+<ul>
+<li>能精确知道：抖音带来8万，Google带来1.5万，自然流量0.5万</li>
+<li>甚至知道：抖音里<strong>“那个跳舞的素材视频”</strong> 带来3万用户，且付费率最高</li>
+</ul>
+<h3 id="2-游戏中的具体应用场景"><a href="#2-游戏中的具体应用场景" class="headerlink" title="2. 游戏中的具体应用场景"></a><strong>2. 游戏中的具体应用场景</strong></h3><h4 id="💰-买量投放优化"><a href="#💰-买量投放优化" class="headerlink" title="💰 买量投放优化"></a><strong>💰 买量投放优化</strong></h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AppsFlyer记录每一次安装来源</span></span><br><span class="line">用户点击抖音广告 → 下载游戏 → <span class="title class_">AppsFlyer</span>标记：</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">source</span>: <span class="string">&quot;TikTok&quot;</span>,</span><br><span class="line">  <span class="attr">campaign</span>: <span class="string">&quot;夏日活动&quot;</span>,</span><br><span class="line">  <span class="attr">adset</span>: <span class="string">&quot;达人张三&quot;</span>,</span><br><span class="line">  <span class="attr">ad</span>: <span class="string">&quot;视频创意A&quot;</span>,</span><br><span class="line">  <span class="attr">cost</span>: <span class="number">2.5</span> <span class="comment">// 用户获取成本</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>你能知道：</strong></p>
+<ul>
+<li>哪个渠道的玩家<strong>充值最多</strong>（ROI高）</li>
+<li>哪个时段的广告<strong>转化最好</strong></li>
+<li>哪个广告创意的<strong>留存率最高</strong></li>
+</ul>
+<h4 id="🎮-深度数据关联"><a href="#🎮-深度数据关联" class="headerlink" title="🎮 深度数据关联"></a><strong>🎮 深度数据关联</strong></h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把广告数据和游戏行为打通</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">user_id</span>: <span class="string">&quot;123&quot;</span>,</span><br><span class="line">  <span class="attr">install_source</span>: <span class="string">&quot;Facebook_广告B&quot;</span>,</span><br><span class="line">  <span class="attr">first_purchase</span>: <span class="number">68</span>元, <span class="comment">// 首充</span></span><br><span class="line">  <span class="attr">LTV_7days</span>: <span class="number">150</span>元, <span class="comment">// 7天生命周期价值</span></span><br><span class="line">  <span class="attr">current_level</span>: <span class="number">35</span>,</span><br><span class="line">  <span class="attr">favorite_hero</span>: <span class="string">&quot;法师&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="🌐-防作弊和刷量"><a href="#🌐-防作弊和刷量" class="headerlink" title="🌐 防作弊和刷量"></a><strong>🌐 防作弊和刷量</strong></h4><ul>
+<li>识别假量：机器人点击、虚假安装</li>
+<li>保护广告预算不被黑产刷走</li>
+<li>提供反作弊报告，向媒体平台追讨损失</li>
+</ul>
+<h3 id="3-与Firebase的关键区别"><a href="#3-与Firebase的关键区别" class="headerlink" title="3. 与Firebase的关键区别"></a><strong>3. 与Firebase的关键区别</strong></h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th><strong>AppsFlyer</strong></th>
+<th><strong>Firebase</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心定位</strong></td>
+<td><strong>广告效果归因</strong></td>
+<td><strong>应用开发和分析</strong></td>
+</tr>
+<tr>
+<td><strong>主要用途</strong></td>
+<td>回答：钱花在哪最值？</td>
+<td>回答：用户在我App里干啥？</td>
+</tr>
+<tr>
+<td><strong>数据视角</strong></td>
+<td><strong>安装前</strong>（点击哪个广告）</td>
+<td><strong>安装后</strong>（在App内行为）</td>
+</tr>
+<tr>
+<td><strong>关键功能</strong></td>
+<td>渠道归因、ROI计算、防作弊</td>
+<td>崩溃分析、事件跟踪、用户留存</td>
+</tr>
+<tr>
+<td><strong>收费模式</strong></td>
+<td>按安装量收费</td>
+<td>按使用量免费起步</td>
+</tr>
+</tbody></table>
+<h3 id="4-游戏运营的实际工作流"><a href="#4-游戏运营的实际工作流" class="headerlink" title="4. 游戏运营的实际工作流"></a><strong>4. 游戏运营的实际工作流</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1. 市场部在抖音投广告</span><br><span class="line">   ↓</span><br><span class="line">2. 用户点击广告下载游戏</span><br><span class="line">   ↓</span><br><span class="line">3. AppsFlyer标记：这是“抖音-暑期活动”来的用户</span><br><span class="line">   ↓</span><br><span class="line">4. 该用户3天后充值648元</span><br><span class="line">   ↓</span><br><span class="line">5. 运营在后台看到：</span><br><span class="line">   - 抖音渠道：总花费10万 → 带来充值20万 → ROI=200%</span><br><span class="line">   - Google渠道：总花费8万 → 带来充值10万 → ROI=125%</span><br><span class="line">   ↓</span><br><span class="line">6. 决策：**下周预算全投抖音！**</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-支持的游戏推广场景"><a href="#5-支持的游戏推广场景" class="headerlink" title="5. 支持的游戏推广场景"></a><strong>5. 支持的游戏推广场景</strong></h3><h4 id="买量投放全流程监控"><a href="#买量投放全流程监控" class="headerlink" title="买量投放全流程监控"></a><strong>买量投放全流程监控</strong></h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">广告平台（抖音） → 点击 → 应用商店 → 下载 → 打开 → 注册 → 新手引导 → 首充</span><br><span class="line">每一步的转化率AppsFlyer都能追踪</span><br></pre></td></tr></table></figure>
+
+<h4 id="跨平台归因"><a href="#跨平台归因" class="headerlink" title="跨平台归因"></a><strong>跨平台归因</strong></h4><ul>
+<li>用户在手机刷抖音看到广告</li>
+<li>用iPad下载游戏</li>
+<li>在电脑网页版充值<br><strong>→ AppsFlyer能串联成同一个人</strong></li>
+</ul>
+<h4 id="再营销（Retargeting）"><a href="#再营销（Retargeting）" class="headerlink" title="再营销（Retargeting）"></a><strong>再营销（Retargeting）</strong></h4><ul>
+<li>识别流失玩家（7天没登录）</li>
+<li>自动在Facebook推送特定广告：“你的英雄在等你！”</li>
+<li>追踪哪些玩家被广告拉回</li>
+</ul>
+<h3 id="6-实际游戏案例"><a href="#6-实际游戏案例" class="headerlink" title="6. 实际游戏案例"></a><strong>6. 实际游戏案例</strong></h3><h4 id="《原神》类游戏"><a href="#《原神》类游戏" class="headerlink" title="《原神》类游戏"></a><strong>《原神》类游戏</strong></h4><ul>
+<li>在全球20个渠道同时买量</li>
+<li>用AppsFlyer比较：美国市场Google好还是TikTok好？</li>
+<li>发现：日本市场Twitter带来的用户付费率最高</li>
+</ul>
+<h4 id="超休闲游戏"><a href="#超休闲游戏" class="headerlink" title="超休闲游戏"></a><strong>超休闲游戏</strong></h4><ul>
+<li>每天测试100个广告素材</li>
+<li>AppsFlyer实时显示：素材A的CPI（单次安装成本）最低</li>
+<li>立即把90%预算分配给素材A</li>
+</ul>
+<h4 id="SLG策略游戏"><a href="#SLG策略游戏" class="headerlink" title="SLG策略游戏"></a><strong>SLG策略游戏</strong></h4><ul>
+<li>追踪每个用户从点击到首次充值（7-30天周期）</li>
+<li>发现：百度渠道来的用户前期付费少，但长线LTV高</li>
+<li>调整策略：不只看首日ROI，看长期价值</li>
+</ul>
+<h3 id="7-必须注意的问题"><a href="#7-必须注意的问题" class="headerlink" title="7. 必须注意的问题"></a><strong>7. 必须注意的问题</strong></h3><h4 id="iOS隐私政策影响（ATT框架）"><a href="#iOS隐私政策影响（ATT框架）" class="headerlink" title="iOS隐私政策影响（ATT框架）"></a><strong>iOS隐私政策影响（ATT框架）</strong></h4><ul>
+<li>iOS 14.5后，用户必须授权才能跟踪</li>
+<li>导致iOS端归因准确度下降</li>
+<li>AppsFlyer提供SKAdNetwork解决方案（苹果官方方案）</li>
+</ul>
+<h4 id="成本不菲"><a href="#成本不菲" class="headerlink" title="成本不菲"></a><strong>成本不菲</strong></h4><ul>
+<li>按安装量收费，大厂每月可能花费数十万</li>
+<li>但对中小开发者有起步套餐</li>
+</ul>
+<h4 id="数据延迟"><a href="#数据延迟" class="headerlink" title="数据延迟"></a><strong>数据延迟</strong></h4><ul>
+<li>通常有24-48小时数据延迟</li>
+<li>不能做实时调整</li>
+</ul>
+<h3 id="8-行业地位"><a href="#8-行业地位" class="headerlink" title="8. 行业地位"></a><strong>8. 行业地位</strong></h3><ul>
+<li><strong>市场份额第一</strong>：移动归因领域占70%+市场</li>
+<li><strong>客户包括</strong>：腾讯、网易、米哈游、莉莉丝等几乎所有大厂</li>
+<li><strong>集成媒体</strong>：支持超过6000个广告渠道</li>
+</ul>
+<h2 id="一句话总结"><a href="#一句话总结" class="headerlink" title="一句话总结"></a><strong>一句话总结</strong></h2><p><strong>AppsFlyer是游戏公司的“财务审计师” + “广告侦探”——它告诉公司，每一分广告费花在了哪里，带来了多少回报，防止被渠道欺骗，是移动游戏买量时代的必备基础设施。</strong></p>
+<p>如果你的游戏要投放广告获取用户，就必须用AppsFlyer或类似工具（如Adjust、Branch）；如果只是自己做着玩，不买量，那就不需要它。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2026/02/04/AppsFlyer/">https://mr-liu-cheng.github.io/2026/02/04/AppsFlyer/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/AppsFlyer/">AppsFlyer</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/02/04/DevOps/" title="DevOps"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">DevOps</div></div><div class="info-2"><div class="info-item-1">DevOps（Development 和 Operations 的组合词）是一组文化理念、实践和工具的统称，旨在缩短软件开发生命周期，并持续、高质量地交付软件。它打破了传统上开发（Dev）和运维（Ops）团队之间的壁垒，强调两者在整个应用生命周期中的紧密协作与沟通。 简单来说，DevOps的核心目标是：让软件的构建、测试、发布变得更加快速、频繁和可靠。  DevOps 的核心支柱（CALMS模型）通常用 CALMS 模型来概括DevOps的精髓：  文化： 最重要的部分。强调协作、共享责任、打破部门墙，建立“你构建，你运行”的文化。 自动化： 尽可能自动化一切重复性工作（构建、测试、部署、基础设施配置等）。这是实现快速交付的关键。 精益： 借鉴精益制造思想，关注价值流，减少浪费，实现小批量、持续流动的工作方式。 度量： 用数据和指标驱动改进（如部署频率、变更前置时间、平均恢复时间、变更失败率等）。 分享： 鼓励知识、工具和经验的透明与共享，避免信息孤岛。   DevOps 的主要实践为了实现上述理念，团队通常会采用一系列具体实践：  持续集成：...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">88</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">50</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%9D%E8%AF%B4"><span class="toc-number">1.</span> <span class="toc-text">用最简单的话说</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B8%B8%E6%88%8F%E8%A1%8C%E4%B8%9A%E5%BF%85%E9%A1%BB%E7%94%A8%E5%AE%83%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">为什么游戏行业必须用它？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%A7%A3%E5%86%B3%E2%80%9C%E5%B9%BF%E5%91%8A%E9%BB%91%E7%9B%92%E2%80%9D%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.</span> <span class="toc-text">1. 解决“广告黑盒”问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%B8%B8%E6%88%8F%E4%B8%AD%E7%9A%84%E5%85%B7%E4%BD%93%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.2.</span> <span class="toc-text">2. 游戏中的具体应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%92%B0-%E4%B9%B0%E9%87%8F%E6%8A%95%E6%94%BE%E4%BC%98%E5%8C%96"><span class="toc-number">2.2.1.</span> <span class="toc-text">💰 买量投放优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8E%AE-%E6%B7%B1%E5%BA%A6%E6%95%B0%E6%8D%AE%E5%85%B3%E8%81%94"><span class="toc-number">2.2.2.</span> <span class="toc-text">🎮 深度数据关联</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%8C%90-%E9%98%B2%E4%BD%9C%E5%BC%8A%E5%92%8C%E5%88%B7%E9%87%8F"><span class="toc-number">2.2.3.</span> <span class="toc-text">🌐 防作弊和刷量</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%8EFirebase%E7%9A%84%E5%85%B3%E9%94%AE%E5%8C%BA%E5%88%AB"><span class="toc-number">2.3.</span> <span class="toc-text">3. 与Firebase的关键区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%B8%B8%E6%88%8F%E8%BF%90%E8%90%A5%E7%9A%84%E5%AE%9E%E9%99%85%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">2.4.</span> <span class="toc-text">4. 游戏运营的实际工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%94%AF%E6%8C%81%E7%9A%84%E6%B8%B8%E6%88%8F%E6%8E%A8%E5%B9%BF%E5%9C%BA%E6%99%AF"><span class="toc-number">2.5.</span> <span class="toc-text">5. 支持的游戏推广场景</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B9%B0%E9%87%8F%E6%8A%95%E6%94%BE%E5%85%A8%E6%B5%81%E7%A8%8B%E7%9B%91%E6%8E%A7"><span class="toc-number">2.5.1.</span> <span class="toc-text">买量投放全流程监控</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%A8%E5%B9%B3%E5%8F%B0%E5%BD%92%E5%9B%A0"><span class="toc-number">2.5.2.</span> <span class="toc-text">跨平台归因</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%8D%E8%90%A5%E9%94%80%EF%BC%88Retargeting%EF%BC%89"><span class="toc-number">2.5.3.</span> <span class="toc-text">再营销（Retargeting）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%AE%9E%E9%99%85%E6%B8%B8%E6%88%8F%E6%A1%88%E4%BE%8B"><span class="toc-number">2.6.</span> <span class="toc-text">6. 实际游戏案例</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E3%80%8A%E5%8E%9F%E7%A5%9E%E3%80%8B%E7%B1%BB%E6%B8%B8%E6%88%8F"><span class="toc-number">2.6.1.</span> <span class="toc-text">《原神》类游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B6%85%E4%BC%91%E9%97%B2%E6%B8%B8%E6%88%8F"><span class="toc-number">2.6.2.</span> <span class="toc-text">超休闲游戏</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SLG%E7%AD%96%E7%95%A5%E6%B8%B8%E6%88%8F"><span class="toc-number">2.6.3.</span> <span class="toc-text">SLG策略游戏</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%BF%85%E9%A1%BB%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">2.7.</span> <span class="toc-text">7. 必须注意的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#iOS%E9%9A%90%E7%A7%81%E6%94%BF%E7%AD%96%E5%BD%B1%E5%93%8D%EF%BC%88ATT%E6%A1%86%E6%9E%B6%EF%BC%89"><span class="toc-number">2.7.1.</span> <span class="toc-text">iOS隐私政策影响（ATT框架）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%88%90%E6%9C%AC%E4%B8%8D%E8%8F%B2"><span class="toc-number">2.7.2.</span> <span class="toc-text">成本不菲</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BB%B6%E8%BF%9F"><span class="toc-number">2.7.3.</span> <span class="toc-text">数据延迟</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E8%A1%8C%E4%B8%9A%E5%9C%B0%E4%BD%8D"><span class="toc-number">2.8.</span> <span class="toc-text">8. 行业地位</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">一句话总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/AppsFlyer/" title="AppsFlyer">AppsFlyer</a><time datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/DevOps/" title="DevOps">DevOps</a><time datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/Firebase/" title="Firebase">Firebase</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/%E6%B8%B8%E6%88%8F%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91/" title="游戏后台开发">游戏后台开发</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/%E7%BD%91%E7%BB%9C%E5%90%8C%E6%AD%A5/" title="网络同步">网络同步</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '8faeb29bb6661113aaab67bf9aea0ce8'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
