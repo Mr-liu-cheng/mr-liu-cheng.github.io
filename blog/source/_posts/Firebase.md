@@ -1,9 +1,9 @@
 ---
 title: Firebase
-date: 2026-02-02 10:28:46
-updated: 2026-02-02 10:28:46
+date: 2026-02-04 10:28:46
+updated: 2026-02-04 10:28:46
 tags: [Firebase]
-categories: SDk
+categories: [SDK]
 keywords:  [Firebase]
 description:
 ---
