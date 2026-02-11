@@ -1,0 +1,479 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="dark"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>PSD2UGUI | LiuCheng's Blog</title><meta name="author" content="LiuCheng"><meta name="copyright" content="LiuCheng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#0d0d0d"><meta name="description" content="设计一个PSD到UGUI的转换工具需要综合考虑易用性、准确性、扩展性和性能。下面是一个详细的设计方案：  一、核心功能设计1. PSD解析模块 图层识别：解析PSD图层结构、命名、可见性、锁定状态 样式提取： 文字属性（字体、大小、颜色、对齐方式） 形状&#x2F;矢量图层（路径、填充、描边） 图层效果（阴影、内发光、外发光、描边等） 图层混合模式和不透明度   切片支持：识别标记为切片的图层（如">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PSD2UGUI">
+<meta property="og:url" content="https://mr-liu-cheng.github.io/2026/02/11/PSD2UGUI/">
+<meta property="og:site_name" content="LiuCheng&#39;s Blog">
+<meta property="og:description" content="设计一个PSD到UGUI的转换工具需要综合考虑易用性、准确性、扩展性和性能。下面是一个详细的设计方案：  一、核心功能设计1. PSD解析模块 图层识别：解析PSD图层结构、命名、可见性、锁定状态 样式提取： 文字属性（字体、大小、颜色、对齐方式） 形状&#x2F;矢量图层（路径、填充、描边） 图层效果（阴影、内发光、外发光、描边等） 图层混合模式和不透明度   切片支持：识别标记为切片的图层（如">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mr-liu-cheng.github.io/img/favicon.png">
+<meta property="article:published_time" content="2026-02-11T10:28:46.000Z">
+<meta property="article:modified_time" content="2026-02-11T10:28:46.000Z">
+<meta property="article:author" content="LiuCheng">
+<meta property="article:tag" content="Unity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mr-liu-cheng.github.io/img/favicon.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://mr-liu-cheng.github.io/2026/02/11/PSD2UGUI/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script async="async" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><script>(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: 'ca-pub-1389699351715193',
+  enable_page_level_ads: 'true'
+});</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'PSD2UGUI',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (true) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/favicon.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">89</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">49</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="not-top-img fixed" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/favicon.png" alt="Logo"><span class="site-name">LiuCheng's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">PSD2UGUI</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-solid fa-book"></i><span> Doc</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fa-solid fa-timeline"></i><span> Archives</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tag</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fa-solid fa-folder-tree"></i><span> Categories</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/game/"><i class="fa-fw fa-solid fa-gamepad"></i><span> Game</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/About/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div><div class="menus_item"><span class="site-page group hide"><i class="fa-fw fa-regular fa-pen-to-square"></i><span> More</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/musicPage/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> Movie</span></a></li><li><a class="site-page child" href="/%E5%BD%B1%E8%A7%86%E5%88%86%E4%BA%AB/"><i class="fa-fw fa-solid fa-film"></i><span> Vidio Sharing</span></a></li><li><a class="site-page child" href="/%E7%BE%8E%E9%A3%9F/"><i class="fa-fw fa-solid fa-mug-hot"></i><span> Delicious</span></a></li><li><a class="site-page child" href="/%E6%B8%B8%E8%AE%B0/"><i class="fa-fw fa-solid fa-person-hiking"></i><span> Tourist</span></a></li><li><a class="site-page child" href="/Photos/"><i class="fa-fw fas fa-images"></i><span> Photos</span></a></li><li><a class="site-page child" href="/Calendar/"><i class="fa-fw fa-regular fa-calendar-check"></i><span> Calendar</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">PSD2UGUI</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-02-11T10:28:46.000Z" title="发表于 2026-02-11 10:28:46">2026-02-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-02-11T10:28:46.000Z" title="更新于 2026-02-11 10:28:46">2026-02-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Unity/">Unity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div><article class="container post-content" id="article-container"><p>设计一个PSD到UGUI的转换工具需要综合考虑<strong>易用性、准确性、扩展性和性能</strong>。下面是一个详细的设计方案：</p>
+<hr>
+<h2 id="一、核心功能设计"><a href="#一、核心功能设计" class="headerlink" title="一、核心功能设计"></a>一、核心功能设计</h2><h3 id="1-PSD解析模块"><a href="#1-PSD解析模块" class="headerlink" title="1. PSD解析模块"></a>1. <strong>PSD解析模块</strong></h3><ul>
+<li><strong>图层识别</strong>：解析PSD图层结构、命名、可见性、锁定状态</li>
+<li><strong>样式提取</strong>：<ul>
+<li>文字属性（字体、大小、颜色、对齐方式）</li>
+<li>形状&#x2F;矢量图层（路径、填充、描边）</li>
+<li>图层效果（阴影、内发光、外发光、描边等）</li>
+<li>图层混合模式和不透明度</li>
+</ul>
+</li>
+<li><strong>切片支持</strong>：识别标记为切片的图层（如 <code>btn_start@2x</code>）</li>
+</ul>
+<h3 id="2-UGUI生成模块"><a href="#2-UGUI生成模块" class="headerlink" title="2. UGUI生成模块"></a>2. <strong>UGUI生成模块</strong></h3><ul>
+<li><strong>智能转换策略</strong>：<ul>
+<li>文本图层 → <code>TextMeshPro</code> 或 <code>Text</code> 组件</li>
+<li>形状图层 → <code>Image</code> 组件（生成Sprite）或 <code>Mask</code> 组件</li>
+<li>图层组 → <code>Canvas</code> 或 <code>RectTransform</code> 容器</li>
+<li>按钮状态：通过命名规则自动生成多态（如 <code>btn_normal</code>, <code>btn_pressed</code>）</li>
+</ul>
+</li>
+<li><strong>九宫格识别</strong>：根据图层命名或标记自动设置 <code>Image</code> 的 <code>SpriteDrawMode</code></li>
+</ul>
+<h3 id="3-资源管理"><a href="#3-资源管理" class="headerlink" title="3. 资源管理"></a>3. <strong>资源管理</strong></h3><ul>
+<li><strong>纹理生成</strong>：将图层或图层组合并导出为Sprite（支持多分辨率）</li>
+<li><strong>字体处理</strong>：自动匹配或替换字体（PS字体 → Unity可用字体）</li>
+<li><strong>图集打包</strong>：可选自动打包图集功能</li>
+</ul>
+<hr>
+<h2 id="二、工具架构设计"><a href="#二、工具架构设计" class="headerlink" title="二、工具架构设计"></a>二、工具架构设计</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">PSD2UGUI Tool</span><br><span class="line">├── PSD Parser（Photoshop文件解析）</span><br><span class="line">│   ├── Layer Extractor（图层提取）</span><br><span class="line">│   ├── Style Analyzer（样式分析）</span><br><span class="line">│   └── Hierarchy Builder（层级构建）</span><br><span class="line">├── Conversion Engine（转换引擎）</span><br><span class="line">│   ├── Rule-Based Converter（基于规则的转换）</span><br><span class="line">│   ├── Component Generator（组件生成）</span><br><span class="line">│   └── Layout Calculator（布局计算）</span><br><span class="line">├── Resource Manager（资源管理器）</span><br><span class="line">│   ├── Texture Exporter（纹理导出）</span><br><span class="line">│   ├── Asset Organizer（资源组织）</span><br><span class="line">│   └── Atlas Packer（图集打包）</span><br><span class="line">└── Unity Integration（Unity集成）</span><br><span class="line">    ├── Editor Window（编辑器窗口）</span><br><span class="line">    ├── Prefab Builder（预制体生成）</span><br><span class="line">    └── Undo/Redo Support（撤销重做）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、关键实现细节"><a href="#三、关键实现细节" class="headerlink" title="三、关键实现细节"></a>三、关键实现细节</h2><h3 id="1-命名约定系统"><a href="#1-命名约定系统" class="headerlink" title="1. 命名约定系统"></a>1. <strong>命名约定系统</strong></h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例命名规则检测</span></span><br><span class="line"><span class="built_in">enum</span> LayerType &#123;</span><br><span class="line">    Button,</span><br><span class="line">    Image,</span><br><span class="line">    Text,</span><br><span class="line">    Slider,</span><br><span class="line">    Toggle,</span><br><span class="line">    Container</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过后缀识别</span></span><br><span class="line"><span class="keyword">static</span> Dictionary&lt;<span class="built_in">string</span>, LayerType&gt; SuffixRules = <span class="keyword">new</span>() &#123;</span><br><span class="line">    &#123; <span class="string">&quot;_btn&quot;</span>, LayerType.Button &#125;,</span><br><span class="line">    &#123; <span class="string">&quot;_txt&quot;</span>, LayerType.Text &#125;,</span><br><span class="line">    &#123; <span class="string">&quot;_img&quot;</span>, LayerType.Image &#125;,</span><br><span class="line">    &#123; <span class="string">&quot;_mask&quot;</span>, LayerType.Mask &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-布局转换策略"><a href="#2-布局转换策略" class="headerlink" title="2. 布局转换策略"></a>2. <strong>布局转换策略</strong></h3><ul>
+<li><strong>锚点自动计算</strong>：根据图层在画布中的位置推断锚点</li>
+<li><strong>响应式适配</strong>：生成支持多种屏幕分辨率的布局</li>
+<li><strong>像素完美对齐</strong>：保持PSD中的精确像素位置</li>
+</ul>
+<h3 id="3-组件映射表"><a href="#3-组件映射表" class="headerlink" title="3. 组件映射表"></a>3. <strong>组件映射表</strong></h3><table>
+<thead>
+<tr>
+<th>PSD元素</th>
+<th>UGUI组件</th>
+<th>特殊处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文字图层</td>
+<td>TextMeshPro</td>
+<td>字体匹配，富文本支持</td>
+</tr>
+<tr>
+<td>形状图层</td>
+<td>Image + Sprite</td>
+<td>可点击区域优化</td>
+</tr>
+<tr>
+<td>图层效果</td>
+<td>Shadow&#x2F;Outline组件</td>
+<td>性能优化选项</td>
+</tr>
+<tr>
+<td>图层组</td>
+<td>ScrollRect&#x2F;GridLayout</td>
+<td>滚动区域识别</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="四、用户交互设计"><a href="#四、用户交互设计" class="headerlink" title="四、用户交互设计"></a>四、用户交互设计</h2><h3 id="1-Unity-Editor界面"><a href="#1-Unity-Editor界面" class="headerlink" title="1. Unity Editor界面"></a>1. <strong>Unity Editor界面</strong></h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[<span class="meta">CustomEditor(typeof(PSDImporter))</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">PSDImporterWindow</span> : <span class="title">EditorWindow</span> &#123;</span><br><span class="line">    <span class="comment">// 主要功能区</span></span><br><span class="line">    <span class="built_in">enum</span> Tab &#123; Import, Settings, Advanced &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 可视化配置</span></span><br><span class="line">    SerializedProperty importSettings;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">OnGUI</span>()</span> &#123;</span><br><span class="line">        <span class="comment">// 1. PSD文件选择区域</span></span><br><span class="line">        <span class="comment">// 2. 转换选项（生成Prefab、生成图集等）</span></span><br><span class="line">        <span class="comment">// 3. 图层映射预览</span></span><br><span class="line">        <span class="comment">// 4. 批量处理支持</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-转换配置选项"><a href="#2-转换配置选项" class="headerlink" title="2. 转换配置选项"></a>2. <strong>转换配置选项</strong></h3><ul>
+<li><strong>纹理设置</strong>：导出格式（PNG&#x2F;JPG）、压缩质量</li>
+<li><strong>生成选项</strong>：是否生成动画控制器、是否自动命名</li>
+<li><strong>优化选项</strong>：合并相似图层、移除隐藏图层</li>
+</ul>
+<hr>
+<h2 id="五、推荐技术栈"><a href="#五、推荐技术栈" class="headerlink" title="五、推荐技术栈"></a>五、推荐技术栈</h2><ol>
+<li><p><strong>PSD解析库</strong>：</p>
+<ul>
+<li>官方：Adobe Photoshop SDK（功能最全）</li>
+<li>开源：<code>PsdPlugin</code>（.NET）或 <code>psd.js</code>（通过Node.js后端）</li>
+</ul>
+</li>
+<li><p><strong>Unity开发</strong>：</p>
+<ul>
+<li>Editor扩展：<code>UnityEditor</code>命名空间</li>
+<li>UI生成：<code>UGUI</code> + <code>TextMeshPro</code></li>
+<li>序列化：<code>ScriptableObject</code>存储配置</li>
+</ul>
+</li>
+<li><p><strong>辅助工具</strong>：</p>
+<ul>
+<li>图像处理：<code>UnityEngine.Experimental.Rendering</code></li>
+<li>文件监控：<code>FileSystemWatcher</code>实现自动重载</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="六、实施路线图"><a href="#六、实施路线图" class="headerlink" title="六、实施路线图"></a>六、实施路线图</h2><ol>
+<li><strong>Phase 1</strong>：基础PSD解析和简单UI生成</li>
+<li><strong>Phase 2</strong>：完整组件支持（按钮、滑动条等）</li>
+<li><strong>Phase 3</strong>：性能优化和团队协作功能</li>
+</ol>
+<p>这样的工具可以显著提升UI制作效率，建议先实现核心的图层到UGUI组件转换，再逐步添加高级功能。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io">LiuCheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://mr-liu-cheng.github.io/2026/02/11/PSD2UGUI/">https://mr-liu-cheng.github.io/2026/02/11/PSD2UGUI/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://mr-liu-cheng.github.io" target="_blank">LiuCheng's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Unity/">Unity</a></div><div class="post-share"><div class="social-share" data-image="/img/favicon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wxpay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wxpay.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/02/04/AppsFlyer/" title="AppsFlyer"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">AppsFlyer</div></div><div class="info-2"><div class="info-item-1">AppsFlyer 是移动端的“效果监测和归因分析平台”，专门解决一个核心问题：你的用户到底是从哪里来的？哪个渠道最值得投钱？ 用最简单的话说如果你在抖音、Google、Facebook 上投广告推广你的游戏&#x2F;App，AppsFlyer 就像一个 “侦探”，能准确告诉你：  每个用户是通过 哪个广告（甚至哪个创意）下载的 这个用户后续 花了多少钱、玩了多久 最终算出：在抖音投1块钱，能赚回多少钱？  为什么游戏行业必须用它？1. 解决“广告黑盒”问题没有AppsFlyer时：  你在抖音投了100万广告 新增了10万用户 但你不知道这10万用户里，哪些真是抖音来的，哪些是自然流量  有了AppsFlyer后：  能精确知道：抖音带来8万，Google带来1.5万，自然流量0.5万 甚至知道：抖音里“那个跳舞的素材视频” 带来3万用户，且付费率最高  2. 游戏中的具体应用场景💰 买量投放优化123456789// AppsFlyer记录每一次安装来源用户点击抖音广告 → 下载游戏 → AppsFlyer标记：&#123;  source:...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/02/05/Game-Framework%E6%B5%81%E7%A8%8B/" title="Game Framework流程"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-05</div><div class="info-item-2">Game Framework流程</div></div><div class="info-2"><div class="info-item-1"> Game Framework 是一个基于 Unity 的轻量级游戏开发框架，提供了模块化的架构，包括资源管理、UI管理、事件系统、数据存储等功能。其整体流程大致如下： 教程：  花桑GameFramework解析 烟雨迷离半世殇GF教程 烟雨迷离半世殇GF视频教程 GF API 手册 常见问题 源码分析  参考项目：  GF官方（包涵GameFrameWork 源码，UnityGameFrameWork Package， StarForce 示例工程） 花桑塔防游戏  导入插件：  下载 解压到游戏 Assets 父级目录下，避免污染 Assets,文件中的框架被封装成dll如下要想阅读源码跳转至此 手动修改 package.json 为”version”: “1.0.0” ，否则会报错：导入插件报错：Cannot perform upm operation: Unable to add package， version 字段不符合 Semantic Versioning（语义化版本） 规范。 保存文件，然后重新尝试导入。  源码导入：  Q：如何把...</div></div></div></a><a class="pagination-related" href="/2025/01/13/HybridCLR-%E7%AC%94%E8%AE%B0/" title="HybridCLR 笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-13</div><div class="info-item-2">HybridCLR 笔记</div></div><div class="info-2"><div class="info-item-1">hybridclr Package手册最佳实践不支持特性AOT泛型热更新程序集的 auto reference 如果你们项目把Assembly-CSharp作为AOT程序集，强烈建议关闭热更新程序集的auto reference选项。因为Assembly-CSharp是最顶层assembly，开启此选项后会自动引用剩余所有assembly，包括热更新程序集，很容易就出现失误引用热更新程序集导致打包失败的情况。  这段话的核心是提醒开发者避免在 Unity 项目中意外地让 Assembly-CSharp（默认的主程序集）引用到热更新程序集，以防止打包或运行时出现问题。以下是详细解释：  1. 什么是 auto reference 选项？ Unity 中的 auto reference 是一个程序集配置选项，控制是否让其他程序集（如 Assembly-CSharp）自动引用当前程序集。 默认情况下，这个选项是 开启 的，意味着该程序集会被自动引用，无需手动配置。   2. Assembly-CSharp 是什么？ Assembly-CSharp 是 Unity...</div></div></div></a><a class="pagination-related" href="/2025/07/09/Prefab%E6%96%87%E6%9C%AC%E7%BB%84%E4%BB%B6%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7%E6%96%87%E6%A1%A3/" title="Prefab文本组件管理工具文档"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-09</div><div class="info-item-2">Prefab文本组件管理工具文档</div></div><div class="info-2"><div class="info-item-1">Prefab文本组件管理工具文档工具概述Prefab文本组件管理工具是一个Unity编辑器扩展工具，专门用于批量管理和清理预制体(Prefab)中的文本组件内容。该工具能够扫描指定目录下的所有预制体，查找并管理UGUI Text、RichText和TextMeshPro(TMP)文本组件，支持查询非空文本组件和批量清空文本内容。 功能特性 批量扫描：递归查找指定目录下的所有预制体文件 多类型支持：同时支持UGUI Text、RichText和TextMeshPro(TMP)组件 文本查询：查找并列出所有包含非空文本的组件 批量清理：一键清空所有文本组件内容 详细报告：提供操作过程和结果的详细输出 进度显示：可视化进度条显示处理进度  使用说明安装与启动 将脚本放置在Unity项目的Editor文件夹下 在Unity编辑器中，通过菜单栏选择 Tools/文本组件管理...</div></div></div></a><a class="pagination-related" href="/2025/01/20/Unity%20Assetbundle/" title="Unity Assetbundle"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-20</div><div class="info-item-2">Unity Assetbundle</div></div><div class="info-2"><div class="info-item-1">了解什么是Assetbundle严格来说，AssetBundle是Asset的一个集合，是个压缩包。相比直接使用Asset，它有如下几个好处:    特性 AssetBundle 直接使用 Asset    内存管理 资源按需加载，支持加载和卸载，减少内存占用 所有资源在场景启动时加载，无法按需卸载，内存占用大   加载性能 通过按需加载，可以加载所需资源，减少初次加载时间 所有资源在启动时一次性加载，可能导致加载延迟和卡顿   资源的依赖关系 支持自动管理资源依赖，通过 Manifest 文件解决依赖关系 需要手动管理资源的依赖关系，容易导致丢失依赖   更新与热更新 支持热更新，通过增量更新机制可以减少更新数据量 不支持热更新，更新时必须重新打包整个项目   包体大小 可以对 Asset 进行压缩，减小包体大小 资源不压缩，包体较大   跨平台支持 可以为不同平台打包不同的 AssetBundle 所有平台共享相同的资源，可能导致不必要的资源浪费   网络加载 可以通过网络加载...</div></div></div></a><a class="pagination-related" href="/2025/06/17/Unity%20Overdraw%20%E5%88%86%E6%9E%90/" title="Unity Overdraw 分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-17</div><div class="info-item-2">Unity Overdraw 分析</div></div><div class="info-2"><div class="info-item-1">在 Unity 中查看界面（UI）的 Overdraw（过度绘制）情况，可以使用 Unity 的 Scene 视图 + Frame Debugger 以及 Profiler 和 RenderDoc 工具。下面是详细方法：  ✅ 方法一：Scene 视图中的 Overdraw 模式（推荐）操作步骤： 打开 Unity 编辑器。 切换到 Scene 视图（不是 Game 视图）。 在 Scene 视图左上角点击 “Shaded” 下拉菜单。 选择 “Overdraw” 模式。   ✅ 在该模式下，颜色越亮说明重叠的次数越多，白色代表非常多次重叠。  注意事项： 这个模式主要对 UI 的渲染顺序 和 透明图片叠加 非常直观。 你需要选中 Canvas 或 UI 元素所在的层级来定位问题。   ✅ 方法二：Frame Debugger（推荐用于查找具体调用）操作步骤： 打开 Unity 的 Window &gt; Analysis &gt; Frame Debugger。 点击左上角的 Enable。 运行游戏，进入你要查看的 UI 界面。 在 Frame Debugger...</div></div></div></a><a class="pagination-related" href="/2025/06/17/Unity%20Rebuild%20%E5%88%86%E6%9E%90/" title="Unity Rebuild 分析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-06-17</div><div class="info-item-2">Unity Rebuild 分析</div></div><div class="info-2"><div class="info-item-1">在 Unity 的 UI 系统（UGUI）中，Rebuild 是指 UI 元素在生命周期中的某些阶段发生变化时触发的一种“重建”流程。频繁的 Rebuild 会带来性能问题，尤其在界面复杂或频繁更新时。下面是关于 Rebuild 的全面分析：  🧩 什么是 Rebuild？UI 元素发生如下变化时，会触发 Rebuild：  位置&#x2F;大小发生变化（RectTransform 变动） 内容变动（Text 文本变了） 属性变动（颜色、字体、sprite 等）  Unity 会将这些 UI 元素加入到一个队列，在 Canvas 的渲染阶段进行一次“重建”。  🔍 Rebuild 的类型（对应 CanvasUpdate 枚举）Unity 的 Rebuild 会按照 5 个阶段进行处理，分别是： 12345678public enum CanvasUpdate &#123;    Prelayout,    Layout,    PostLayout,    PreRender,    LatePreRender,    MaxUpdateValue&#125;  这些阶段由...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/favicon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">LiuCheng</div><div class="author-info-description">不积跬步无以至千里</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">89</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">49</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Mr-liu-cheng"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://mr-liu-cheng.github.io/img/weixin.jpg" target="_blank" title="WeChat"><i class="fa-brands fa-weixin" style="color: #00ff00;"></i></a><a class="social-icon" href="mailto:liuchengyg@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://mr-liu-cheng.github.io/img/qq.jpg" target="_blank" title="QQ"><i class="fa-brands fa-qq" style="color: #ffffff;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Stay hungry, stay foolish.</div></div><div class="card-widget study-widget" id="study-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>学习目标</span></div><div class="item-content"><div>
+  <ul>
+    <li>Shader</li>
+    <li>华佗热更新</li>
+    <li>微信游戏发布</li>
+    <li>Steam游戏发布</li>
+    <li>广告SDK接入</li>
+  </ul>
+</div>
+</div></div><div class="card-widget calendar-widget" id="calendar-list"><div class="item-headline"><i class="fas fa-tasks"></i><span>今日事今日毕</span></div><div class="item-content"><head>
+    <meta charset="UTF-8">
+    <title>FullCalendar 农历和调休示例</title>
+    <script src='https://cdn.jsdelivr.net/npm/rrule@2.6.4/dist/es5/rrule.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <a href="/Calendar/">
+        <!-- 日历容器 -->
+        <div id="calendar_aside"></div>
+        <!-- FullCalendar JavaScript -->
+        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@latest/main.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+        <!-- 引入农历库 -->
+        <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@latest/lunar.min.js"></script>
+        <!-- 本地脚本加载路径需要添加根目录节点-->
+        <script src="/js/myCalendar.js"></script>
+        <script>
+            Show("calendar_aside");
+        </script>
+    </a>
+</body>
+</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">一、核心功能设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-PSD%E8%A7%A3%E6%9E%90%E6%A8%A1%E5%9D%97"><span class="toc-number">1.1.</span> <span class="toc-text">1. PSD解析模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-UGUI%E7%94%9F%E6%88%90%E6%A8%A1%E5%9D%97"><span class="toc-number">1.2.</span> <span class="toc-text">2. UGUI生成模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%B5%84%E6%BA%90%E7%AE%A1%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">3. 资源管理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%B7%A5%E5%85%B7%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">二、工具架构设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%85%B3%E9%94%AE%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="toc-number">3.</span> <span class="toc-text">三、关键实现细节</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%91%BD%E5%90%8D%E7%BA%A6%E5%AE%9A%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.1.</span> <span class="toc-text">1. 命名约定系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%B8%83%E5%B1%80%E8%BD%AC%E6%8D%A2%E7%AD%96%E7%95%A5"><span class="toc-number">3.2.</span> <span class="toc-text">2. 布局转换策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%BB%84%E4%BB%B6%E6%98%A0%E5%B0%84%E8%A1%A8"><span class="toc-number">3.3.</span> <span class="toc-text">3. 组件映射表</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E7%94%A8%E6%88%B7%E4%BA%A4%E4%BA%92%E8%AE%BE%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">四、用户交互设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Unity-Editor%E7%95%8C%E9%9D%A2"><span class="toc-number">4.1.</span> <span class="toc-text">1. Unity Editor界面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BD%AC%E6%8D%A2%E9%85%8D%E7%BD%AE%E9%80%89%E9%A1%B9"><span class="toc-number">4.2.</span> <span class="toc-text">2. 转换配置选项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%8E%A8%E8%8D%90%E6%8A%80%E6%9C%AF%E6%A0%88"><span class="toc-number">5.</span> <span class="toc-text">五、推荐技术栈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%AE%9E%E6%96%BD%E8%B7%AF%E7%BA%BF%E5%9B%BE"><span class="toc-number">6.</span> <span class="toc-text">六、实施路线图</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/11/PSD2UGUI/" title="PSD2UGUI">PSD2UGUI</a><time datetime="2026-02-11T10:28:46.000Z" title="发表于 2026-02-11 10:28:46">2026-02-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/AppsFlyer/" title="AppsFlyer">AppsFlyer</a><time datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/DevOps/" title="DevOps">DevOps</a><time datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/04/Firebase/" title="Firebase">Firebase</a><time datetime="2026-02-04T10:28:46.000Z" title="发表于 2026-02-04 10:28:46">2026-02-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/02/02/%E6%B8%B8%E6%88%8F%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91/" title="游戏后台开发">游戏后台开发</a><time datetime="2026-02-02T10:28:46.000Z" title="发表于 2026-02-02 10:28:46">2026-02-02</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2026 By LiuCheng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button><button id="music-button" type="button" title="music"><i class="fas fa-music"> </i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default'
+
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
+
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
+
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
+
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
+
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
+
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
+
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
+
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = {"language":"zh-CN","distractionFreeMode":true}
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: 'Ov23lisuIzc4KST5xLzO',
+      clientSecret: '55972644d3071dd4c51a2e71064e336d2f51aa66',
+      repo: 'mr-liu-cheng.github.io',
+      owner: 'Mr-liu-cheng',
+      admin: ['Mr-liu-cheng'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '9b6c1fd4c840406e740772661f035d35'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><div id="music-player" style="display: none;"></div><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script>  fetch("/music/playlist.json")    .then(response => response.json())    .then(data => {      const ap = new APlayer({        container: document.getElementById("music-player"),        fixed: true,        autoplay: false,        audio: data,        lrcType: 3      });    })    .catch(error => console.error("Error loading playlist:", error));</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => fn())
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      pjax.loadUrl('/404')
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
