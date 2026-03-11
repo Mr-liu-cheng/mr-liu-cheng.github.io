@@ -153,3 +153,338 @@ public class PSDImporterWindow : EditorWindow {
 3. **Phase 3**：性能优化和团队协作功能
 
 这样的工具可以显著提升UI制作效率，建议先实现核心的图层到UGUI组件转换，再逐步添加高级功能。
+
+
+## 七、jsx脚本
+
+``` js
+// **************************************************
+// Optimized version of "Export PSDUI.jsx"
+// - Faster export by duplicating only the target layer into a temp document
+// - Avoids per-layer: rasterizeAll + mergeVisibleLayers on full PSD + history rollback
+// - Builds XML via array join (faster than repeated string concatenation)
+//
+// Usage:
+// 1) Put this file into Photoshop Scripts folder, or run via File > Scripts > Browse...
+// 2) Open a PSD, run the script, choose destination folder.
+// **************************************************
+//
+// enable double clicking from the Macintosh Finder or the Windows Explorer
+// #target photoshop
+//
+
+var sceneData;
+var sceneDataParts;
+var duppedPsd;
+var tmpDoc;
+var tmpDocBaseState;
+var destinationFolder;
+var uuid;
+var sourcePsdName;
+var layerCount = 0; // 当前文档的图层数
+var layerSetsCount = 0; // 当前文档的图层组数
+var getLayerRec1Count = 0;
+var dirpath;
+var pngSaveOptions;
+var pngSaveAsOptions;
+
+// 导出速度/质量开关
+// - true: 更快更小（PNG-8，适合 UI 图标/纯色/少色）
+// - false: PNG-24（颜色更全，通常稍慢）
+var FAST_PNG8 = true;
+// 导出引擎开关
+// - false: 优先用 saveAs(PNG)（通常比 Save for Web 快）
+// - true: 使用 Save for Web（兼容性高，但常见更慢）
+var USE_SAVE_FOR_WEB = false;
+// 简易性能统计（会在结束弹窗里显示各阶段耗时）
+var ENABLE_PROFILING = true;
+var prof = {
+    dup_ms: 0,
+    switch_ms: 0,
+    raster_ms: 0,
+    crop_ms: 0,
+    export_ms: 0
+};
+
+// 默认不栅格化（很多图层直接导出就足够；栅格化常常很耗时）
+// 如果你发现导出的 PNG 和 PS 里看到的不一致（矢量/智能对象/样式），再改成 true
+var RASTERIZE_BEFORE_EXPORT = false;
+
+main();
+
+function main() {
+    try {
+        if (app.documents.length <= 0) {
+            if (app.playbackDisplayDialogs != DialogModes.NO) {
+                alert("You must have a document open to export!");
+            }
+            return 'cancel';
+        }
+
+        destinationFolder = Folder.selectDialog("Choose the destination for export.");
+        if (!destinationFolder) return;
+
+        uuid = 1;
+        sourcePsdName = app.activeDocument.name;
+        var layerCount1 = app.documents[sourcePsdName].layers.length;
+        var layerSetsCount1 = app.documents[sourcePsdName].layerSets.length;
+        if ((layerCount1 <= 1) && (layerSetsCount1 <= 0)) {
+            if (app.playbackDisplayDialogs != DialogModes.NO) {
+                alert("You need a document with multiple layers to export!");
+                return 'cancel';
+            }
+        }
+
+        var startTime = new Date();
+
+        var savedRulerUnits = app.preferences.rulerUnits;
+        var savedTypeUnits = app.preferences.typeUnits;
+        app.preferences.rulerUnits = Units.PIXELS;
+        app.preferences.typeUnits = TypeUnits.PIXELS;
+
+        duppedPsd = app.activeDocument.duplicate();
+        duppedPsd.activeLayer = duppedPsd.layers[duppedPsd.layers.length - 1];
+
+        // 复用临时文档，避免每个图层都新建/关闭文档
+        tmpDoc = app.documents.add(duppedPsd.width, duppedPsd.height, duppedPsd.resolution, "tmp_export_psdui", NewDocumentMode.RGB, DocumentFill.TRANSPARENT);
+        tmpDocBaseState = tmpDoc.activeHistoryState;
+
+        // 复用导出选项对象，避免每张图都 new 一次
+        pngSaveOptions = new ExportOptionsSaveForWeb();
+        pngSaveOptions.format = SaveDocumentType.PNG;
+        pngSaveOptions.PNG8 = FAST_PNG8;
+        pngSaveOptions.transparency = true;
+        pngSaveOptions.interlaced = false;
+        try { pngSaveOptions.includeProfile = false; } catch (ignoredProfile) { }
+
+        pngSaveAsOptions = new PNGSaveOptions();
+        pngSaveAsOptions.interlaced = false;
+
+        sceneDataParts = [];
+        sceneDataParts.push("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        sceneDataParts.push("<PSDUI>");
+        sceneDataParts.push("<psdSize>");
+        sceneDataParts.push("<width>" + duppedPsd.width.value + "</width>");
+        sceneDataParts.push("<height>" + duppedPsd.height.value + "</height>");
+        sceneDataParts.push("</psdSize>");
+
+        // 注意：后续会从 duppedPsd 复制图层到临时文档导出
+        exportLayerSet(duppedPsd);
+
+        sceneDataParts.push("</PSDUI>");
+        sceneData = sceneDataParts.join("");
+
+        SumObj(duppedPsd);
+        try { tmpDoc.close(SaveOptions.DONOTSAVECHANGES); } catch (ignoredClose) { }
+        duppedPsd.close(SaveOptions.DONOTSAVECHANGES);
+
+        var sceneFile = new File(destinationFolder + "/" + destinationFolder.name + ".xml");
+        sceneFile.open('w');
+        sceneFile.writeln(sceneData);
+        sceneFile.close();
+
+        app.preferences.rulerUnits = savedRulerUnits;
+        app.preferences.typeUnits = savedTypeUnits;
+
+        var totalTime = (new Date() - startTime) / 1000;
+        var minutes = Math.floor(totalTime / 60);
+        var seconds = Math.floor(totalTime % 60);
+
+        var cnt = "总图层：" + layerCount + "   总图层组：" + layerSetsCount + "   耗时: " + minutes + " 分 " + seconds +
+            " 秒" + "   计算大小的次数:" + getLayerRec1Count;
+        if (ENABLE_PROFILING) {
+            cnt += "\n复制图层: " + Math.round(prof.dup_ms) + "ms"
+                + "  切换文档: " + Math.round(prof.switch_ms) + "ms"
+                + "  栅格化: " + Math.round(prof.raster_ms) + "ms"
+                + "  裁切: " + Math.round(prof.crop_ms) + "ms"
+                + "  导出写盘: " + Math.round(prof.export_ms) + "ms";
+        }
+        $.writeln(cnt);
+        
+        alert(cnt);
+    } finally {
+        // no-op
+    }
+}
+
+function exportLayerSet(obj) {
+    if (obj.name.search("#") >= 0) return;
+
+    sceneDataParts.push("<layers>");
+    for (var i = obj.layers.length - 1; 0 <= i; i--) {
+        if (obj.layers[i].typename == "LayerSet") {
+            sceneDataParts.push("<Layer>");
+            sceneDataParts.push("<type>Normal</type>");
+            sceneDataParts.push("<name>" + obj.layers[i].name + "</name>");
+            exportLayerSet(obj.layers[i]);
+            sceneDataParts.push("<images>");
+            for (var j = obj.layers[i].artLayers.length - 1; 0 <= j; j--) {
+                exportArtLayer(obj.layers[i].artLayers[j]);
+            }
+            sceneDataParts.push("</images>");
+            sceneDataParts.push("</Layer>");
+        }
+    }
+    sceneDataParts.push("</layers>");
+}
+
+function SumObj(obj) {
+    sunLayerCount(obj);
+}
+
+function sunLayerCount(obj) {
+    for (var i = obj.layers.length - 1; 0 <= i; i--) {
+        if (obj.layers[i].typename == "LayerSet") {
+            layerSetsCount++;
+            sunLayerCount(obj.layers[i]);
+        } else {
+            layerCount++;
+        }
+    }
+}
+
+function exportArtLayer(obj) {
+    if (obj.name.search("#") >= 0) return;
+
+    sceneDataParts.push("<Image>\n");
+    if (LayerKind.TEXT == obj.kind) {
+        exportLabel(obj);
+    } else {
+        exportImage(obj);
+    }
+    sceneDataParts.push("</Image>\n");
+}
+
+function exportLabel(obj) {
+    sceneDataParts.push("<imageType>Label</imageType>\n");
+    var validFileName = makeValidFileName(obj.name);
+    sceneDataParts.push("<name>" + validFileName + "</name>\n");
+
+    // 文本也需要位置与尺寸；默认不落盘 png（保持原脚本行为）
+    saveSingleLayerPng(obj, validFileName, false);
+
+    sceneDataParts.push("<arguments>");
+    sceneDataParts.push("<string>" + obj.textItem.color.rgb.hexValue + "</string>");
+    sceneDataParts.push("<string>" + obj.textItem.font + "</string>");
+    sceneDataParts.push("<string>" + obj.textItem.size.value + "</string>");
+    sceneDataParts.push("<string>" + obj.textItem.contents + "</string>");
+    sceneDataParts.push("</arguments>");
+}
+
+function exportImage(obj) {
+    var validFileName = makeValidFileName(obj.name);
+    sceneDataParts.push("<name>" + validFileName + "</name>\n");
+
+    if (obj.name.search("Common") >= 0) {
+        sceneDataParts.push("<imageSource>Common</imageSource>\n");
+        saveSingleLayerPng(obj, validFileName, false);
+    } else {
+        sceneDataParts.push("<imageSource>Custom</imageSource>\n");
+        saveSingleLayerPng(obj, validFileName, true);
+    }
+
+    if (obj.name.search("9Slice") >= 0) {
+        sceneDataParts.push("<imageType>SliceImage</imageType>\n");
+    } else {
+        sceneDataParts.push("<imageType>Image</imageType>\n");
+    }
+}
+
+// 只复制当前图层到临时文档导出：避免对整份 PSD 反复 rasterizeAll/merge/trim/history
+function saveSingleLayerPng(layer, fileName, writeToDisk) {
+    getLayerRec1Count++;
+
+    // 用 bounds 直接算尺寸与中心点（避免 trim）
+    // bounds 单位为当前 rulerUnits（main 中已切到 px）
+    var b = layer.bounds; // [left, top, right, bottom]
+    var l = b[0].value, t = b[1].value, r = b[2].value, bt = b[3].value;
+    var width = Math.max(0, r - l);
+    var height = Math.max(0, bt - t);
+
+    // 空层直接输出 0 尺寸（也避免后续导出）
+    if (width === 0 || height === 0) {
+        sceneDataParts.push("<position><x>0</x><y>0</y></position>");
+        sceneDataParts.push("<size><width>0</width><height>0</height></size>");
+        return;
+    }
+
+    var docW = duppedPsd.width.value;
+    var docH = duppedPsd.height.value;
+    var centerX = (l + r) / 2;
+    var centerY = (t + bt) / 2;
+    var x = centerX - (docW / 2);
+    var y = -(centerY - (docH / 2));
+
+    if (writeToDisk) {
+        // 在复用的临时文档里复制图层，然后 crop 到 bounds 导出
+        var ts = ENABLE_PROFILING ? new Date().getTime() : 0;
+        app.activeDocument = tmpDoc;
+        tmpDoc.activeHistoryState = tmpDocBaseState;
+        if (ENABLE_PROFILING) prof.switch_ms += (new Date().getTime() - ts);
+
+        // Photoshop 限制：复制源图层前，源文档必须是活动文档
+        ts = ENABLE_PROFILING ? new Date().getTime() : 0;
+        app.activeDocument = duppedPsd;
+        if (ENABLE_PROFILING) prof.switch_ms += (new Date().getTime() - ts);
+
+        var t0 = ENABLE_PROFILING ? new Date().getTime() : 0;
+        layer.duplicate(tmpDoc, ElementPlacement.PLACEATBEGINNING);
+        if (ENABLE_PROFILING) prof.dup_ms += (new Date().getTime() - t0);
+
+        ts = ENABLE_PROFILING ? new Date().getTime() : 0;
+        app.activeDocument = tmpDoc;
+        if (ENABLE_PROFILING) prof.switch_ms += (new Date().getTime() - ts);
+        tmpDoc.activeLayer = tmpDoc.layers[0];
+
+        // 有些图层（文字/形状/智能对象）不栅格化导出会更慢或不一致，尽量栅格化当前层
+        if (RASTERIZE_BEFORE_EXPORT) {
+            var tr = ENABLE_PROFILING ? new Date().getTime() : 0;
+            try { tmpDoc.activeLayer.rasterize(RasterizeType.ENTIRELAYER); } catch (ignoredRaster) { }
+            if (ENABLE_PROFILING) prof.raster_ms += (new Date().getTime() - tr);
+        }
+
+        // crop 需要 UnitValue
+        var t1 = ENABLE_PROFILING ? new Date().getTime() : 0;
+        tmpDoc.crop([UnitValue(l, "px"), UnitValue(t, "px"), UnitValue(r, "px"), UnitValue(bt, "px")]);
+        if (ENABLE_PROFILING) prof.crop_ms += (new Date().getTime() - t1);
+
+        var pngFile = new File(destinationFolder + "/" + fileName + ".png");
+        var t2 = ENABLE_PROFILING ? new Date().getTime() : 0;
+        if (USE_SAVE_FOR_WEB) {
+            tmpDoc.exportDocument(pngFile, ExportType.SAVEFORWEB, pngSaveOptions);
+        } else {
+            // saveAs 通常更快；asCopy=true 避免污染 tmpDoc 名称/路径
+            tmpDoc.saveAs(pngFile, pngSaveAsOptions, true, Extension.LOWERCASE);
+        }
+        if (ENABLE_PROFILING) prof.export_ms += (new Date().getTime() - t2);
+    }
+
+    sceneDataParts.push("<position>");
+    sceneDataParts.push("<x>" + x + "</x>");
+    sceneDataParts.push("<y>" + y + "</y>");
+    sceneDataParts.push("</position>");
+
+    sceneDataParts.push("<size>");
+    sceneDataParts.push("<width>" + width + "</width>");
+    sceneDataParts.push("<height>" + height + "</height>");
+    sceneDataParts.push("</size>");
+}
+
+function makeValidFileName(fileName) {
+    var validName = fileName.replace(/^\s+|\s+$/gm, ''); // trim spaces
+    validName = validName.replace(/[\\\*\/\?:"\|<>]/g, ''); // remove characters not allowed in a file name
+    validName = validName.replace(/[ ]/g, '_'); // replace spaces with underscores
+
+    if (validName.match("Common")) {
+        validName = validName.substring(validName.lastIndexOf("@") + 1);
+    } else if (!sourcePsdName.match("Common")) {
+        validName += "_" + uuid++;
+    }
+
+    // 大量图层时 $.writeln 会拖慢速度，如需调试再打开
+    // $.writeln(validName);
+    return validName;
+}
+
+
+```
